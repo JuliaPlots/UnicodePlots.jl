@@ -93,7 +93,7 @@ end
 
 function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
                                        width=40, height=10, margin=3,
-                                       title::String="", border=:solid)
+                                       title::String="", border=:solid, labels=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = width >= 5 ? width: 5
   height = height >= 5 ? height: 5
@@ -115,20 +115,23 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
     setPoint!(c, X[i], Y[i])
   end
 
-  minYString=string(minY); maxYString=string(maxY)
-  maxLen = max(length(minYString), length(maxYString))
+  minYString=string(minY)
+  maxYString=string(maxY)
+  maxLen = labels ? max(length(minYString), length(maxYString)) : 0
   plotOffset = maxLen + margin
   borderPadding = repeat(" ", plotOffset + 1)
   drawTitle(io, borderPadding, title)
 
-  len = length(maxYString); padY1 = string(repeat(" ", margin), repeat(" ", maxLen - len))
-  len = length(minYString); padY2 = string(repeat(" ", margin), repeat(" ", maxLen - len))
+  len = length(maxYString)
+  padY1 = labels ? string(repeat(" ", margin), repeat(" ", maxLen - len)): ""
+  len = length(minYString)
+  padY2 = labels ? string(repeat(" ", margin), repeat(" ", maxLen - len)): ""
   borderWidth = width + 1
   drawBorderTop(io, borderPadding, borderWidth, border)
   for y in reverse(1:size(c.grid,2))
-    if y == height
+    if labels && y == height
       print(padY1, maxYString, " ", b[:l])
-    elseif y == 1
+    elseif labels && y == 1
       print(padY2, minYString, " ", b[:l])
     else
       print(io, borderPadding, b[:l])
@@ -139,18 +142,19 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
     print(io," ", b[:r], "\n")
   end
   drawBorderBottom(io, borderPadding, borderWidth, border)
-
-  minXString=string(minX); minLen = length(minXString)
-  maxXString=string(maxX); maxLen = length(maxXString)
-  print(io, borderPadding, minXString)
-  cnt = borderWidth - maxLen - minLen + 1
-  pad = cnt > 0 ? repeat(" ", cnt) : ""
-  print(io, pad, maxXString, "\n")
+  if labels
+    minXString=string(minX); minLen = length(minXString)
+    maxXString=string(maxX); maxLen = length(maxXString)
+    print(io, borderPadding, minXString)
+    cnt = borderWidth - maxLen - minLen + 1
+    pad = cnt > 0 ? repeat(" ", cnt) : ""
+    print(io, pad, maxXString, "\n")
+  end
 end
 
 function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
                                     width=40, height=10, margin=3,
-                                    title::String="", border=:solid)
+                                    title::String="", border=:solid, labels=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   minX = min(X...); minY = min(Y...)
   maxX = max(X...); maxY = max(Y...)
@@ -164,7 +168,7 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
     yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
   end
   scatterplot(io, xVec, yVec; width=width, height=height, margin=margin,
-              title=title, border=border)
+              title=title, border=border, labels=labels)
 end
 
 function scatterplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)

@@ -44,11 +44,12 @@ Accepts either two vectors or a dictionary
 
 All plots support a common set of named parameters
 
-* **title**: Text to display on the top of the plot
-* **width**: Number of characters per row that should be used for plotting
-* **height**: Number of rows that should be used for plotting
-* **margin**: Number of empty characters to the left of the whole plot
-* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`
+* **title**: Text to display on the top of the plot. Defaults to `""`
+* **width**: Number of characters per row that should be used for plotting. Defaults to `40`
+* **height**: Number of rows that should be used for plotting. Not applicable to `barplot`. Defaults to `10`
+* **margin**: Number of empty characters to the left of the whole plot. Defaults to `3`
+* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. Defaults to`:solid`
+* **labels**: Can be used to hide the labels. Defaults to`true`
 
 ## Todo
 

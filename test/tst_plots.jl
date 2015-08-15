@@ -12,6 +12,7 @@ barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10, margin=20)
 barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=1)
 barplot([:Please,:dont,:crash,:dude], [10,24,1,0], width=100)
 barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="C'mon man, keep on going!")
+barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="No lab", labels = false)
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=0)
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=-1)
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,-1,1,1])
@@ -58,3 +59,4 @@ y = [1,2, -1, 4]
 scatterplot(x, y)
 
 lineplot(sin, 1:.5:10)
+lineplot(sin, 1:.5:10, labels = false)
