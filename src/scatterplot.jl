@@ -43,6 +43,7 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   padY2 = labels ? string(repeat(" ", margin), repeat(" ", maxLen - len)): ""
   borderWidth = width + 1
   drawBorderTop(io, borderPadding, borderWidth, border)
+  print(io, "\n")
   for y in reverse(1:size(c.grid,2))
     if labels && y == height
       print(io, padY1, maxYString, " ", b[:l])
@@ -57,6 +58,7 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
     print(io," ", b[:r], "\n")
   end
   drawBorderBottom(io, borderPadding, borderWidth, border)
+  print(io, "\n")
   if labels
     minXString=string(minX); minLen = length(minXString)
     maxXString=string(maxX); maxLen = length(maxXString)

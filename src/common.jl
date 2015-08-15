@@ -82,21 +82,29 @@ for k in keys(colorEncode)
 end
 colorDecode[0b00]=:white
 
-signs = ['⡀' '⠄' '⠂' '⠁';
-         '⢀' '⠠' '⠐' '⠈']
+# ▖▗▘▙▚▛▜▝▞▟
+# ▁▂▃▄▅▆▇█
+# ░▒▓
+#signs = ['⡀' '⠄' '⠂' '⠁';
+#         '⢀' '⠠' '⠐' '⠈']
 
-function drawTitle(io::IO, padding::String, title::String)
-  title == "" || print(io, padding, " ", title, "\n")
+function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
+  if title != ""
+    offset = safeRound(plotWidth / 2 - length(title) / 2 + 1)
+    offset = offset > 0 ? offset: 0
+    tpad = repeat(spceStr, offset)
+    print(io, padding, tpad, title, "\n")
+  end
 end
 
 function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print(io, padding, b[:ul], repeat(b[:u], length), b[:ur], "\n")
+  border == :none || print(io, padding, b[:ul], repeat(b[:u], length), b[:ur])
 end
 
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print(io, padding, b[:dl], repeat(b[:d], length), b[:dr], "\n")
+  border == :none || print(io, padding, b[:dl], repeat(b[:d], length), b[:dr])
 end
 
 function printColor(color::Uint8, io::IO, args...)

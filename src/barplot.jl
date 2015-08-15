@@ -16,6 +16,7 @@ function barplot{T,N<:Real}(io::IO, text::Vector{T}, heights::Vector{N};
   drawTitle(io, borderPadding, title)
   borderWidth = width + maxFreqLen + 2
   drawBorderTop(io, borderPadding, borderWidth, border)
+  print(io, "\n")
   for (label, height) in zip(text, heights)
     str = labels ? string(label): ""
     len = length(str)
@@ -36,6 +37,7 @@ function barplot{T,N<:Real}(io::IO, text::Vector{T}, heights::Vector{N};
     print(io,pad, b[:r], "\n")
   end
   drawBorderBottom(io, borderPadding, borderWidth, border)
+  print(io, "\n")
   nothing
 end
 

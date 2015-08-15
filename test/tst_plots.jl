@@ -100,4 +100,14 @@ drawLine!(canvas, 0., 0., 1., 1., :blue)
 drawLine!(canvas, .3, .7, 1., 0., :red)
 drawLine!(canvas, 0., 2., .5, 0., :yellow)
 show(STDOUT, canvas)
-
+myPlot = Plot(canvas, title="testtitle")
+myPlot.leftLabels[3] = "hello"
+myPlot.leftLabels[5] = "hello again"
+myPlot.leftLabels[1] = "0.7!"
+myPlot.leftLabels[10] = "Bottom anno"
+myPlot.rightLabels[2] = "What's going on over here!"
+myPlot.decorations[:bl] = "Hey ho!"
+myPlot.decorations[:br] = "yoyo sup"
+myPlot.decorations[:tr] = "More here!"
+myPlot.decorations[:tl] = "Some here!"
+show(STDOUT, myPlot)

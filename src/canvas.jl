@@ -1,6 +1,13 @@
 
 import Base.show
 
+const spce = if VERSION < v"0.4-"
+  char(0x2800)
+else
+  Char(0x2800)
+end
+const spceStr = string(spce)
+
 signs = ['⡀' '⠄' '⠂' '⠁';
          '⢀' '⠠' '⠐' '⠈']
 
@@ -26,11 +33,8 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
   pixelHeight = charHeight * 4
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
   plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
-  grid, colors = if VERSION < v"0.4-"
-    fill(char(0x2800), charWidth, charHeight), fill(0x00, charWidth, charHeight)
-  else
-    fill(Char(0x2800), charWidth, charHeight), fill(0x00, charWidth, charHeight)
-  end
+  grid = fill(spce, charWidth, charHeight)
+  colors = fill(0x00, charWidth, charHeight)
   BrailleCanvas(grid, colors, pixelWidth, pixelHeight, plotOriginX, plotOriginY, plotWidth, plotHeight)
 end
 
@@ -38,24 +42,26 @@ nrows(c::BrailleCanvas) = size(c.grid,2)
 ncols(c::BrailleCanvas) = size(c.grid,1)
 
 function drawRow(io::IO, c::BrailleCanvas, row::Int)
-  nrows = size(c.grid,2)
-  0 < row <= nrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = nrows - row + 1
-  for x in 1:size(c.grid,1)
+  nunrows = nrows(c)
+  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+  y = nunrows - row + 1
+  for x in 1:ncols(c)
     printColor(c.colors[x,y], io, c.grid[x,y])
   end
 end
 
 function show(io::IO, c::BrailleCanvas)
   b = borderDashed
-  borderLength = size(c.grid,1)
+  borderLength = ncols(c)
   drawBorderTop(io, "", borderLength, :solid)
-  for row in 1:size(c.grid,2)
+  print(io, "\n")
+  for row in 1:nrows(c)
     print(io, b[:l])
     drawRow(io, c, row)
     print(io, b[:r], "\n")
   end
   drawBorderBottom(io, "", borderLength, :solid)
+  print(io, "\n")
 end
 
 function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol=:white)
@@ -68,7 +74,7 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol=:wh
   charX = safeFloor(tmp) + 1
   charXOff = (pixelX % 2) + 1
   if charX < safeRound(tmp) + 1 && charXOff == 1
-    charX = charX +1
+    charX = charX + 1
   end
   charY = safeFloor(pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % 4) + 1
@@ -114,8 +120,8 @@ function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::
   nsteps = abs(dx) > abs(dy) ? abs(dx): abs(dy)
   incX = dx / nsteps
   incY = dy / nsteps
-  curX = px1;
-  curY = py1;
+  curX = px1
+  curY = py1
   fpw = convert(FloatingPoint, c.pixelWidth)
   fph = convert(FloatingPoint, c.pixelHeight)
   setPixel!(c, safeRound(curX), safeRound(curY), color)
