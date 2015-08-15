@@ -17,6 +17,11 @@ barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="C'mon man, keep on goi
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,-1,1,1])
 barplot([:Please,:dont,:crash,:dude], [1.,.7,.1,.6], width=10)
 
+testD=["Something"=>10, "other"=>32, "than"=>1, "before"=>20]
+barplot(testD)
+barplot(testD,width=70)
+
+
 x = [-1.,2, 3, 7]
 y = [1.,2, 9, 4]
 lineplot(x, y)

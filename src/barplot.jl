@@ -1,5 +1,5 @@
 
-function barplot{T,N}(io::IO, labels::Vector{T}, heights::Vector{N}; border=:solid, title::String="", marigin::Int=3, color::Symbol=:blue, width::Int=40)
+function barplot{T,N<:Real}(io::IO, labels::Vector{T}, heights::Vector{N}; border=:solid, title::String="", marigin::Int=3, color::Symbol=:blue, width::Int=40)
   width > 0 || throw(ArgumentError("the given width has to be positive"))
   b=borderMap[border]
   maxLen = max([length(string(l)) for l in labels]...)
@@ -34,7 +34,15 @@ function barplot{T,N}(io::IO, labels::Vector{T}, heights::Vector{N}; border=:sol
   nothing
 end
 
+function barplot{T,N<:Real}(io::IO, dict::Dict{T,N}; args...)
+  barplot(STDOUT, collect(keys(dict)), collect(values(dict)); args...)
+end
 
-function barplot{T,N}(labels::Vector{T},heights::Vector{N}; args...)
+
+function barplot{T,N<:Real}(labels::Vector{T},heights::Vector{N}; args...)
   barplot(STDOUT, labels, heights; args...)
+end
+
+function barplot{T,N<:Real}(dict::Dict{T,N}; args...)
+  barplot(STDOUT, dict; args...)
 end
