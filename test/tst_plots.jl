@@ -87,12 +87,17 @@ stairs(x, y)
 #@time scatterplot(x, y)
 #@time lineplot(x, y)
 
-can = BrailleCanvas(40,10)
-drawLine!(can, 0., 0., .9, 9999., :yellow)
-setPoint!(can, rand(10), rand(10))
-drawLine!(can, 0., 0., 1., 1., :blue)
-drawLine!(can, .3, .7, 1., 0., :red)
-drawLine!(can, 0., 2., .5, 0., :yellow)
-show(STDOUT, can)
+canvas = BrailleCanvas(40, 10, # number of columns and rows
+                       plotOriginX = 0., plotOriginY = 0., # position in virtual space
+                       plotWidth = 1., plotHeight = 1.) # size of the virtual space
+drawLine!(canvas, 0., 0., 1., 1., :blue)
+setPoint!(canvas, rand(50), rand(50), :red)
+drawLine!(canvas, 0., 1., .5, 0., :yellow)
 
+drawLine!(canvas, 0., 0., .9, 9999., :yellow)
+setPoint!(canvas, rand(10), rand(10))
+drawLine!(canvas, 0., 0., 1., 1., :blue)
+drawLine!(canvas, .3, .7, 1., 0., :red)
+drawLine!(canvas, 0., 2., .5, 0., :yellow)
+show(STDOUT, canvas)
 
