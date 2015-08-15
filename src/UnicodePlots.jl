@@ -1,6 +1,6 @@
 module UnicodePlots
 
-export barplot, lineplot, scatterplot
+export barplot, lineplot, scatterplot, stairs
 
 include("common.jl")
 include("canvas.jl")

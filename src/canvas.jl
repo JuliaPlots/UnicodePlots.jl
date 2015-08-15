@@ -169,8 +169,21 @@ function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   for i in 2:(length(X))
     tV = collect(X[i-1]:.002smallDiff:X[i])
     tl = length(tV)
+    # if there is a huge Y gap but no X gap, draw vertical line
+    tV = if tl > 1
+      tV
+    else
+      np = safeRound(abs(Y[i]-Y[i-1]) / diffY * height * 8.)
+      if np > 0
+        tl = np
+        ones(np) * X[i]
+      else
+        tV
+      end
+    end
     xVec = [xVec; tV]
     yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
+    #yVec = [yVec; linspace(Y[i-1],Y[i],tl)]
   end
   scatterplot(io, xVec, yVec; width=width, height=height, margin=margin,
               title=title, border=border, labels=labels)
@@ -206,4 +219,19 @@ function lineplot{R<:Real,S<:Real}(io::IO, Y::Function, startx::R, endx::S, step
   rnge = startx:endx
   y = convert(Vector{Float64}, [Y(i) for i in startx:step:endx])
   lineplot(io, collect(rnge), y; args...)
+end
+
+function stairs{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R}; args...)
+  xVec = X[1]; yVec = Y[1]
+  for i = 2:(length(X))
+    tInX = X[i]
+    tInY = Y[i-1]
+    xVec = [xVec; tInX; X[i]]
+    yVec = [yVec; tInY; Y[i]]
+  end
+  lineplot(io, xVec, yVec; args...)
+end
+
+function stairs{F<:Real,R<:Real}(X::Vector{F},Y::Vector{R}; args...)
+  stairs(STDOUT, X, Y; args...)
 end

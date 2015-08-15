@@ -14,7 +14,11 @@ Pkg.clone("https://github.com/Evizero/UnicodePlots.jl")
 
 ## Tutorial
 
-There are three main plotting capabilities for now
+There are four main plotting capabilities for now:
+  - Scatterplot
+  - Lineplot
+  - Barplot (horizontal)
+  - Staircase Plot
 
 #### Scatterplot
 
@@ -40,6 +44,12 @@ Accepts either two vectors or a dictionary
 
 ![Barplot Screenshot](doc/img/barplot.png)
 
+#### Staircase plot
+
+Accepts two vectors
+
+![Staircase Screenshot](doc/img/stairs.png)
+
 ## Options
 
 All plots support a common set of named parameters
@@ -50,6 +60,8 @@ All plots support a common set of named parameters
 * **margin**: Number of empty characters to the left of the whole plot. Defaults to `3`
 * **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. Defaults to`:solid`
 * **labels**: Can be used to hide the labels. Defaults to`true`
+
+_Note_: You can also print your plots to another stream than `STDOUT` by passing the IO stream as the first argument. You should probably use `border=:dotted` for external plots.
 
 ## Todo
 

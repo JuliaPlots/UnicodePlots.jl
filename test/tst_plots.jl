@@ -73,3 +73,9 @@ lineplot(sin, 1:.5:10)
 lineplot(sin, 1:.5:10, labels = false)
 lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4])
 lineplot(sin, [1, 2, 3, 4])
+
+x = [1,2, 4, 7, 8]
+y = [1,3, 4, 2, 7]
+stairs(x, y)
+y = [1,3, 4, 2, 7000]
+stairs(x, y)
