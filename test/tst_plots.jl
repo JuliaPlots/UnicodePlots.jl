@@ -16,6 +16,8 @@ barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="No lab", labels = fals
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=0)
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=-1)
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,-1,1,1])
+@test_throws DimensionMismatch barplot([:Please,:dont,:crash,:dude], [10,1,1])
+@test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,0], margin=-1)
 barplot([:Please,:dont,:crash,:dude], [1.,.7,.1,.6], width=10)
 
 testD = if VERSION < v"0.4-"
@@ -35,7 +37,10 @@ y = [1.,2, -1, 4]
 lineplot(x, y)
 x = [1,2, 3, 7]
 y = [1,2, -1, 4]
+@test_throws DimensionMismatch barplot(x, [10,1,1])
+@test_throws DimensionMismatch lineplot(x, [10,1,1])
 lineplot(x, y)
+@test_throws ArgumentError lineplot(x, y, margin=-1)
 lineplot(x, y, width=50, height=10)
 lineplot(x, y, width=100, height=10)
 lineplot(x, y, width=90, height=40)
@@ -52,6 +57,7 @@ x = [-1.,2, 3, 700000]
 y = [1.,2, 9, 4000000]
 lineplot(x, y)
 lineplot(x, y, width=5, height=5)
+@test_throws ArgumentError scatterplot(x, y, margin=-1)
 x = [1.,2, 3, 7]
 y = [1.,2, -1, 4]
 scatterplot(x, y)

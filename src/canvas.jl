@@ -92,13 +92,14 @@ function setPoint!(c::Canvas, plotX::Float64, plotY::Float64)
 end
 
 function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
-                                       width=40, height=10, margin=3,
-                                       title::String="", border=:solid, labels=true)
+                                       width::Int=40, height::Int=10, margin::Int=3,
+                                       title::String="", border=:solid, labels::Bool=true)
+  margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-  X = convert(Vector{Float64},X)
-  Y = convert(Vector{Float64},Y)
   width = width >= 5 ? width: 5
   height = height >= 5 ? height: 5
+  X = convert(Vector{Float64},X)
+  Y = convert(Vector{Float64},Y)
   b=borderMap[border]
   minX = min(X...); minY = min(Y...)
   maxX = max(X...); maxY = max(Y...)
@@ -155,8 +156,8 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
 end
 
 function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
-                                    width=40, height=10, margin=3,
-                                    title::String="", border=:solid, labels=true)
+                                    width::Int=40, height::Int=10, margin::Int=3,
+                                    title::String="", border=:solid, labels::Bool=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   X = convert(Vector{Float64},X)
   Y = convert(Vector{Float64},Y)
