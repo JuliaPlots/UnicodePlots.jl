@@ -168,8 +168,28 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
               title=title, border=border, gridlines=gridlines)
 end
 
+function scatterplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)
+  scatterplot(io,
+              convert(Vector{Float64},X),
+              convert(Vector{Float64},Y); args...)
+end
+
+function scatterplot(X::Vector{Int},Y::Vector{Int}; args...)
+  scatterplot(STDOUT, X, Y; args...)
+end
+
 function scatterplot{F<:FloatingPoint}(X::Vector{F},Y::Vector{F}; args...)
   scatterplot(STDOUT, X, Y; args...)
+end
+
+function lineplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)
+  lineplot(io, X, Y; args...)
+end
+
+function lineplot(X::Vector{Int},Y::Vector{Int}; args...)
+  lineplot(STDOUT,
+           convert(Vector{Float64},X),
+           convert(Vector{Float64},Y); args...)
 end
 
 function lineplot{F<:FloatingPoint}(X::Vector{F},Y::Vector{F}; args...)
