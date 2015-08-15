@@ -24,7 +24,7 @@ Accepts two numerical vectors
 
 #### Lineplot
 
-Accepts two numerical vectors and draws the line in the order of the elements
+Accepts two numerical vectors or a function and a range. The function will draw the line in the order of the given elements
 
 ![Lineplot Screenshot](doc/img/line.png)
 

@@ -194,3 +194,14 @@ end
 function lineplot{F<:FloatingPoint}(X::Vector{F},Y::Vector{F}; args...)
   lineplot(STDOUT, X, Y; args...)
 end
+
+function lineplot(io::IO, Y::Function, X::Range; args...)
+  y = [Y(i) for i in X]
+  lineplot(io,
+           convert(Vector{Float64},collect(X)),
+           convert(Vector{Float64},y); args...)
+end
+
+function lineplot(Y::Function, X::Range; args...)
+  lineplot(STDOUT, Y, X; args...)
+end

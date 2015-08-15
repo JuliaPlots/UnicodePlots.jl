@@ -55,3 +55,5 @@ scatterplot(x, y)
 x = [1,2, 3, 7]
 y = [1,2, -1, 4]
 scatterplot(x, y)
+
+lineplot(sin, 1:.5:10)
