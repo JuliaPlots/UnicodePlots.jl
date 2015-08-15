@@ -18,13 +18,19 @@ There are three main plotting capabilities for now
 
 #### Scatterplot
 
+Accepts two numerical vectors
+
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
 #### Lineplot
 
+Accepts two numerical vectors and draws the line in the order of the elements
+
 ![Lineplot Screenshot](doc/img/line.png)
 
 #### Barplot
+
+Accepts either two vectors or a dictionary
 
 ![Barplot Screenshot](doc/img/barplot.png)
 
