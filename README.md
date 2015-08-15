@@ -60,9 +60,10 @@ Here is a simple example:
 canvas = BrailleCanvas(40, 10, # number of columns and rows (characters)
                        plotOriginX = 0., plotOriginY = 0., # position in virtual space
                        plotWidth = 1., plotHeight = 1.) # size of the virtual space
-drawLine!(canvas, 0., 0., 1., 1., :blue)
-setPoint!(canvas, rand(50), rand(50), :red)
-drawLine!(canvas, 0., 1., .5, 0., :yellow)
+drawLine!(canvas, 0., 0., 1., 1., :blue)    # virtual space
+setPoint!(canvas, rand(50), rand(50), :red) # virtual space
+drawLine!(canvas, 0., 1., .5, 0., :yellow)  # virtual space
+setPixel!(canvas, 5, 8, :red)               # pixel space
 ```
 ![Basic Canvas](doc/img/canvas.png)
 
