@@ -19,47 +19,47 @@ borderMap=Dict{Symbol,Dict{Symbol,String}}()
 borderSolid=Dict{Symbol,String}()
 borderSolid[:ul]="┌"
 borderSolid[:ur]="┐"
-borderSolid[:dl]="└"
-borderSolid[:dr]="┘"
+borderSolid[:bl]="└"
+borderSolid[:br]="┘"
 borderSolid[:u]="─"
 borderSolid[:l]="│"
-borderSolid[:d]="─"
+borderSolid[:b]="─"
 borderSolid[:r]="│"
 borderBold=Dict{Symbol,String}()
 borderBold[:ul]="┏"
 borderBold[:ur]="┓"
-borderBold[:dl]="┗"
-borderBold[:dr]="┛"
+borderBold[:bl]="┗"
+borderBold[:br]="┛"
 borderBold[:u]="━"
 borderBold[:l]="┃"
-borderBold[:d]="━"
+borderBold[:b]="━"
 borderBold[:r]="┃"
 borderNone=Dict{Symbol,String}()
 borderNone[:ul]=" "
 borderNone[:ur]=" "
-borderNone[:dl]=" "
-borderNone[:dr]=" "
+borderNone[:bl]=" "
+borderNone[:br]=" "
 borderNone[:u]=" "
 borderNone[:l]=" "
-borderNone[:d]=" "
+borderNone[:b]=" "
 borderNone[:r]=" "
 borderDashed=Dict{Symbol,String}()
 borderDashed[:ul]="┌"
 borderDashed[:ur]="┐"
-borderDashed[:dl]="└"
-borderDashed[:dr]="┘"
+borderDashed[:bl]="└"
+borderDashed[:br]="┘"
 borderDashed[:u]="╌"
 borderDashed[:l]="│"
-borderDashed[:d]="╌"
+borderDashed[:b]="╌"
 borderDashed[:r]="│"
 borderDotted=Dict{Symbol,String}()
 borderDotted[:ul]="⡤"
 borderDotted[:ur]="⢤"
-borderDotted[:dl]="⠓"
-borderDotted[:dr]="⠚"
+borderDotted[:bl]="⠓"
+borderDotted[:br]="⠚"
 borderDotted[:u]="⠤"
 borderDotted[:l]="⡇"
-borderDotted[:d]="⠒"
+borderDotted[:b]="⠒"
 borderDotted[:r]="⢸"
 borderMap[:solid]=borderSolid
 borderMap[:bold]=borderBold
@@ -104,7 +104,7 @@ end
 
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print(io, padding, b[:dl], repeat(b[:d], length), b[:dr])
+  border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 function printColor(color::Uint8, io::IO, args...)
