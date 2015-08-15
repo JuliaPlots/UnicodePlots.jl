@@ -88,6 +88,7 @@ stairs(x, y)
 #@time lineplot(x, y)
 
 can = BrailleCanvas(40,10)
+@time setPoint!(can, rand(10), rand(10))
 @time drawLine!(can, 0., 0., 1., 1.)
 @time drawLine!(can, .5, .5, 1., 0.)
 @time drawLine!(can, 0., 0., .9, 9999.)

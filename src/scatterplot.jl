@@ -67,7 +67,7 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   end
 end
 
-function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
+function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F}, Y::Vector{R};
                                     width::Int=40, height::Int=10, margin::Int=3,
                                     title::String="", border=:solid, labels::Bool=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))

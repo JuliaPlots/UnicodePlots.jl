@@ -90,6 +90,14 @@ function setPoint!(c::BrailleCanvas, plotX::FloatingPoint, plotY::FloatingPoint)
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY))
 end
 
+function setPoint!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R})
+  length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+  for i in 1:length(X)
+    setPoint!(c, X[i], Y[i])
+  end
+end
+
+# Implementation of the digital differential analyser (DDA)
 function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::F)
   toff = x1 - c.plotOriginX
   px1 = toff / c.plotWidth * c.pixelWidth
