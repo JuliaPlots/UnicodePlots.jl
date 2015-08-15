@@ -36,7 +36,7 @@ Accepts either two vectors or a dictionary
 
 ## Options
 
-All plots support a common set of options
+All plots support a common set of named parameters
 
 * **border** The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
 

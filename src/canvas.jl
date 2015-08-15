@@ -31,16 +31,15 @@ end
 
 function Canvas(charWidth::Int, charHeight::Int,
                 plotOriginX::Float64, plotOriginY::Float64,
-                plotWidth::Float64, plotHeight::Float64;
-                gridlines::Bool=false)
+                plotWidth::Float64, plotHeight::Float64)
   charWidth = charWidth < 5 ? 5 : charWidth
   charHeight = charHeight < 5 ? 5 : charHeight
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
   plotHeight > 0 || throw(ArgumentError("Width has to be positive"))
   grid = if VERSION < v"0.4-"
-    fill(char(gridlines ? 0x2812 : 0x2800), charWidth, charHeight)
+    fill(char(0x2800), charWidth, charHeight)
   else
-    fill(Char(gridlines ? 0x2812 : 0x2800), charWidth, charHeight)
+    fill(Char(0x2800), charWidth, charHeight)
   end
   Canvas(grid, charWidth * 2, charHeight * 4, plotOriginX, plotOriginY, plotWidth, plotHeight)
 end
@@ -94,7 +93,7 @@ end
 
 function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
                                        width=40, height=10, marigin=3,
-                                       title::String="", border=:solid, gridlines::Bool=false)
+                                       title::String="", border=:solid)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = width >= 5 ? width: 5
   height = height >= 5 ? height: 5
@@ -106,7 +105,7 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
   padX = 0.01 * diffX; padY = 0.01 * diffY
   plotOriginX = minX - padX; plotWidth = maxX - plotOriginX + padX
   plotOriginY = minY - padY; plotHeight = maxY - plotOriginY + padY
-  c = Canvas(width, height, plotOriginX, plotOriginY, plotWidth, plotHeight, gridlines = gridlines)
+  c = Canvas(width, height, plotOriginX, plotOriginY, plotWidth, plotHeight)
   if minY < 0 < maxY
     for i in linspace(minX, maxX, width*2)
       setPoint!(c, i, 0.)
@@ -151,7 +150,7 @@ end
 
 function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
                                     width=40, height=10, marigin=3,
-                                    title::String="", border=:solid, gridlines::Bool=false)
+                                    title::String="", border=:solid)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   minX = min(X...); minY = min(Y...)
   maxX = max(X...); maxY = max(Y...)
@@ -165,7 +164,7 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
     yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
   end
   scatterplot(io, xVec, yVec; width=width, height=height, marigin=marigin,
-              title=title, border=border, gridlines=gridlines)
+              title=title, border=border)
 end
 
 function scatterplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)
