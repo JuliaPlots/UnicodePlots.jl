@@ -67,6 +67,21 @@ borderMap[:none]=borderNone
 borderMap[:dashed]=borderDashed
 borderMap[:dotted]=borderDotted
 
+colorEncode=Dict{Symbol,Uint8}()
+colorEncode[:white]=0b111
+colorEncode[:blue]=0b001
+colorEncode[:red]=0b010
+colorEncode[:magenta]=0b011
+colorEncode[:yellow]=0b100
+colorEncode[:green]=0b101
+colorEncode[:cyan]=0b110
+colorDecode=Dict{Uint8,Symbol}()
+for k in keys(colorEncode)
+  v = colorEncode[k]
+  colorDecode[v]=k
+end
+colorDecode[0b00]=:white
+
 signs = ['⡀' '⠄' '⠂' '⠁';
          '⢀' '⠠' '⠐' '⠈']
 
@@ -82,4 +97,14 @@ end
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
   border == :none || print(io, padding, b[:dl], repeat(b[:d], length), b[:dr], "\n")
+end
+
+function printColor(color::Uint8, io::IO, args...)
+  #if isa(io, Base.TTY)
+    col = colorDecode[color]
+    str = string(args...)
+    print_with_color(col, io, str)
+  #else
+  #  print(io, args...)
+  #end
 end
