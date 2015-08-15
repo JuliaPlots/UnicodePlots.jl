@@ -34,6 +34,12 @@ Accepts either two vectors or a dictionary
 
 ![Barplot Screenshot](doc/img/barplot.png)
 
+## Options
+
+All plots support a common set of options
+
+* **border** The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
+
 ## Acknowledgement
 
 Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille)
