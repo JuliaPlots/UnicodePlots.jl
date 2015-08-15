@@ -92,7 +92,7 @@ function setPoint!(c::Canvas, plotX::Float64, plotY::Float64)
 end
 
 function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
-                                       width=40, height=10, marigin=3,
+                                       width=40, height=10, margin=3,
                                        title::String="", border=:solid)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = width >= 5 ? width: 5
@@ -117,12 +117,12 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
 
   minYString=string(minY); maxYString=string(maxY)
   maxLen = max(length(minYString), length(maxYString))
-  plotOffset = maxLen + marigin
+  plotOffset = maxLen + margin
   borderPadding = repeat(" ", plotOffset + 1)
   drawTitle(io, borderPadding, title)
 
-  len = length(maxYString); padY1 = string(repeat(" ", marigin), repeat(" ", maxLen - len))
-  len = length(minYString); padY2 = string(repeat(" ", marigin), repeat(" ", maxLen - len))
+  len = length(maxYString); padY1 = string(repeat(" ", margin), repeat(" ", maxLen - len))
+  len = length(minYString); padY2 = string(repeat(" ", margin), repeat(" ", maxLen - len))
   borderWidth = width + 1
   drawBorderTop(io, borderPadding, borderWidth, border)
   for y in reverse(1:size(c.grid,2))
@@ -149,7 +149,7 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
 end
 
 function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
-                                    width=40, height=10, marigin=3,
+                                    width=40, height=10, margin=3,
                                     title::String="", border=:solid)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   minX = min(X...); minY = min(Y...)
@@ -163,7 +163,7 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
     xVec = [xVec; tV]
     yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
   end
-  scatterplot(io, xVec, yVec; width=width, height=height, marigin=marigin,
+  scatterplot(io, xVec, yVec; width=width, height=height, margin=margin,
               title=title, border=border)
 end
 

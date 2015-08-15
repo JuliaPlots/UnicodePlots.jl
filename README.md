@@ -38,7 +38,11 @@ Accepts either two vectors or a dictionary
 
 All plots support a common set of named parameters
 
-* **border** The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
+* **title**: Text to display on the top of the plot
+* **width**: Number of characters per row that should be used for plotting 
+* **height**: Number of rows that should be used for plotting
+* **margin**: Number of empty characters to the left of the whole plot
+* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
 
 ## Acknowledgement
 

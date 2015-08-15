@@ -1,12 +1,12 @@
 
-function barplot{T,N<:Real}(io::IO, labels::Vector{T}, heights::Vector{N}; border=:solid, title::String="", marigin::Int=3, color::Symbol=:blue, width::Int=40)
+function barplot{T,N<:Real}(io::IO, labels::Vector{T}, heights::Vector{N}; border=:solid, title::String="", margin::Int=3, color::Symbol=:blue, width::Int=40)
   width > 0 || throw(ArgumentError("the given width has to be positive"))
   b=borderMap[border]
   maxLen = max([length(string(l)) for l in labels]...)
   min(heights...) >= 0 || throw(ArgumentError("All values have to be positive"))
   maxFreq = max(heights...)
   maxFreqLen = length(string(maxFreq))
-  plotOffset = maxLen + marigin
+  plotOffset = maxLen + margin
   borderPadding = repeat(" ", plotOffset)
   drawTitle(io, borderPadding, title)
   borderWidth = width + maxFreqLen + 2
@@ -14,7 +14,7 @@ function barplot{T,N<:Real}(io::IO, labels::Vector{T}, heights::Vector{N}; borde
   for (label, height) in zip(labels, heights)
     str = string(label)
     len = length(str)
-    pad = string(repeat(" ", marigin),repeat(" ", maxLen - len))
+    pad = string(repeat(" ", margin),repeat(" ", maxLen - len))
     bar = repeat("▪", safeRound(height / maxFreq * width))
     lbl = "$(pad)$(label)$(b[:l])"
     print(io, lbl)
@@ -27,7 +27,7 @@ function barplot{T,N<:Real}(io::IO, labels::Vector{T}, heights::Vector{N}; borde
     print(io, txt)
     line = string(lbl, bar, txt)
     lineLen = length(line)
-    pad = repeat(" ", maxLen + marigin + width + maxFreqLen + 3 - lineLen)
+    pad = repeat(" ", maxLen + margin + width + maxFreqLen + 3 - lineLen)
     print(io,pad, b[:r], "\n")
   end
   drawBorderBottom(io, borderPadding, borderWidth, border)
