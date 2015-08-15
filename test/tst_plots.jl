@@ -79,3 +79,8 @@ y = [1,3, 4, 2, 7]
 stairs(x, y)
 y = [1,3, 4, 2, 7000]
 stairs(x, y)
+
+#x=rand(100000)
+#y=rand(100000)
+#@time scatterplot(x, y)
+#@time lineplot(x, y)

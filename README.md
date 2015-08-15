@@ -72,3 +72,7 @@ _Note_: You can also print your plots to another stream than `STDOUT` by passing
 ## Acknowledgement
 
 Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille)
+
+## License
+
+This code is free to use under the terms of the MIT license.

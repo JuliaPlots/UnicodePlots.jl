@@ -101,8 +101,8 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   X = convert(Vector{Float64},X)
   Y = convert(Vector{Float64},Y)
   b=borderMap[border]
-  minX = min(X...); minY = min(Y...)
-  maxX = max(X...); maxY = max(Y...)
+  minX = minimum(X); minY = minimum(Y)
+  maxX = maximum(X); maxY = maximum(Y)
   diffX = maxX - minX; diffY = maxY - minY
   smallDiff = min(diffX, diffY)
   padX = 0.01 * diffX; padY = 0.01 * diffY
@@ -133,9 +133,9 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   drawBorderTop(io, borderPadding, borderWidth, border)
   for y in reverse(1:size(c.grid,2))
     if labels && y == height
-      print(padY1, maxYString, " ", b[:l])
+      print(io, padY1, maxYString, " ", b[:l])
     elseif labels && y == 1
-      print(padY2, minYString, " ", b[:l])
+      print(io, padY2, minYString, " ", b[:l])
     else
       print(io, borderPadding, b[:l])
     end
@@ -161,12 +161,13 @@ function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   X = convert(Vector{Float64},X)
   Y = convert(Vector{Float64},Y)
-  minX = min(X...); minY = min(Y...)
-  maxX = max(X...); maxY = max(Y...)
+  minX = minimum(X); minY = minimum(Y)
+  maxX = maximum(X); maxY = maximum(Y)
   diffX = maxX - minX; diffY = maxY - minY
   smallDiff = min(diffX, diffY)
-  xVec = X[1]; yVec = Y[1]
+  xVec =[X[1]]; yVec = [Y[1]]
   for i in 2:(length(X))
+
     tV = collect(X[i-1]:.002smallDiff:X[i])
     tl = length(tV)
     # if there is a huge Y gap but no X gap, draw vertical line
@@ -174,15 +175,20 @@ function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
       tV
     else
       np = safeRound(abs(Y[i]-Y[i-1]) / diffY * height * 8.)
-      if np > 0
+      if np > 1
         tl = np
         ones(np) * X[i]
       else
-        tV
+        X[i]
       end
     end
-    xVec = [xVec; tV]
-    yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
+    if tl > 1
+      append!(xVec, tV)
+      append!(yVec, linspace(Y[i-1],Y[i],tl))
+    else
+      push!(xVec, tV)
+      push!(yVec, Y[i])
+    end
     #yVec = [yVec; linspace(Y[i-1],Y[i],tl)]
   end
   scatterplot(io, xVec, yVec; width=width, height=height, margin=margin,
