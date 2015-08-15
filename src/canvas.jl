@@ -141,5 +141,11 @@ function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::
   c
 end
 
+function drawLine!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R}, color::Symbol=:white)
+  length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+  for i in 1:(length(X)-1)
+    drawLine!(c, X[i], Y[i], X[i+1], Y[i+1], color)
+  end
+end
 
 

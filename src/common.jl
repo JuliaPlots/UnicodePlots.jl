@@ -90,16 +90,16 @@ colorDecode[0b111]=:white
 
 function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
   if title != ""
-    offset = safeRound(plotWidth / 2 - length(title) / 2 + 1)
+    offset = safeRound(plotWidth / 2 - length(title) / 2)
     offset = offset > 0 ? offset: 0
     tpad = repeat(spceStr, offset)
-    print(io, padding, tpad, title, "\n")
+    print_with_color(:white, io, padding, tpad, title, "\n")
   end
 end
 
 function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+  border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)

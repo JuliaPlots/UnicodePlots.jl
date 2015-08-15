@@ -32,54 +32,54 @@ barplot(testD,width=70)
 
 x = [-1.,2, 3, 7]
 y = [1.,2, 9, 4]
-lineplot(x, y)
+print(lineplot(x, y))
 x = [1.,2, 3, 7]
 y = [1.,2, -1, 4]
-lineplot(x, y)
+print(lineplot(x, y))
 x = [1,2, 3, 7]
 y = [1,2, -1, 4]
 @test_throws DimensionMismatch barplot(x, [10,1,1])
 @test_throws DimensionMismatch lineplot(x, [10,1,1])
-lineplot(x, y)
+print(lineplot(x, y))
 @test_throws ArgumentError lineplot(x, y, margin=-1)
-lineplot(x, y, width=50, height=10)
-lineplot(x, y, width=100, height=10)
-lineplot(x, y, width=90, height=40)
-lineplot(x, y, width=50, height=5, margin = 0)
-lineplot(x, y, width=10, height=20, margin = 20)
-lineplot(x, y, width=5, height=5)
-lineplot(x, y, width=50, height=10, title="Hello world", border=:none)
-lineplot(x, y, width=50, height=10, title="Hello world", border=:dashed)
-lineplot(x, y, width=50, height=10, title="Hello world", border=:solid)
-lineplot(x, y, width=50, height=10, title="Hello world", border=:bold)
-lineplot(x, y, width=50, height=10, title="Hello world", border=:dotted)
-lineplot(x, y, width=50, height=10, border=:dotted)
+print(lineplot(x, y, width=50, height=10))
+print(lineplot(x, y, width=100, height=10))
+print(lineplot(x, y, width=90, height=40))
+print(lineplot(x, y, width=50, height=5, margin = 0))
+print(lineplot(x, y, width=10, height=20, margin = 20))
+print(lineplot(x, y, width=5, height=5))
+print(lineplot(x, y, width=50, height=10, title="Hello world", border=:none))
+print(lineplot(x, y, width=50, height=10, title="Hello world", border=:dashed))
+print(lineplot(x, y, width=50, height=10, title="Hello world", border=:solid))
+print(lineplot(x, y, width=50, height=10, title="Hello world", border=:bold))
+print(lineplot(x, y, width=50, height=10, title="Hello world", border=:dotted))
+print(lineplot(x, y, width=50, height=10, border=:dotted))
 x = [-1.,2, 3, 700000]
 y = [1.,2, 9, 4000000]
-lineplot(x, y)
-lineplot(x, y, width=5, height=5)
+print(lineplot(x, y))
+print(lineplot(x, y, width=5, height=5))
 @test_throws ArgumentError scatterplot(x, y, margin=-1)
 x = [1.,2, 3, 7]
 y = [1.,2, -1, 4]
-scatterplot(x, y)
+print(scatterplot(x, y))
 x = [1,2, 3, 7]
 y = [1,2, -1, 4]
-scatterplot(x, y)
+print(scatterplot(x, y))
 x = [1.,2, 3, 7]
 y = [1,2, -1, 4]
-scatterplot(x, y)
-lineplot(x, y)
+print(scatterplot(x, y))
+print(lineplot(x, y))
 
-lineplot(sin, 1:.5:10)
-lineplot(sin, 1:.5:10, labels = false)
-lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4])
-lineplot(sin, [1, 2, 3, 4])
+print(lineplot(sin, 1:.5:10))
+print(lineplot(sin, 1:.5:10, labels = false))
+print(lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4]))
+print(lineplot(sin, [1, 2, 3, 4]))
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]
-stairs(x, y)
+print(stairs(x, y))
 y = [1,3, 4, 2, 7000]
-stairs(x, y)
+print(stairs(x, y))
 
 #x=rand(100000)
 #y=rand(100000)
@@ -112,4 +112,5 @@ annotate!(myPlot, :tr, ":tr")
 drawLine!(myPlot, 0., 0.4, 1., .6, :blue)
 setPoint!(myPlot, rand(10), rand(10))
 setPixel!(myPlot, 1, 1)
+setTitle!(myPlot, "setTitle!(plot, title)")
 show(STDOUT, myPlot)

@@ -33,6 +33,7 @@ end
 function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)
   where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :tr :bl :br"))
   plot.decorations[where] = value
+  plot
 end
 
 function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)
@@ -44,21 +45,22 @@ function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::Str
   else
     throw(ArgumentError("Unknown location: try one of these :l :r"))
   end
+  plot
 end
 
-function drawLine!{T<:Canvas}(p::Plot{T}, args...; vars...)
-  drawLine!(p.canvas, args...; vars...)
-  p
+function drawLine!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  drawLine!(plot.canvas, args...; vars...)
+  plot
 end
 
-function setPixel!{T<:Canvas}(p::Plot{T}, args...; vars...)
-  setPixel!(p.canvas, args...; vars...)
-  p
+function setPixel!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  setPixel!(plot.canvas, args...; vars...)
+  plot
 end
 
-function setPoint!{T<:Canvas}(p::Plot{T}, args...; vars...)
-  setPoint!(p.canvas, args...; vars...)
-  p
+function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  setPoint!(plot.canvas, args...; vars...)
+  plot
 end
 
 function show(io::IO, p::Plot)
@@ -93,7 +95,7 @@ function show(io::IO, p::Plot)
       print(io, pad, topRightStr, "\n")
     end
   end
-  drawBorderTop(io, borderPadding, borderLength, :solid)
+  drawBorderTop(io, borderPadding, borderLength, p.border)
   print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
 
   # plot all rows
@@ -104,17 +106,20 @@ function show(io::IO, p::Plot)
     tLen = length(tleftLabel)
     tLenR = length(tRightLabel)
     # print left label
-    print(io, repeat(spceStr, p.margin), repeat(spceStr, maxLen - tLen), tleftLabel)
+    print(io, repeat(spceStr, p.margin))
+    p.showLabels && print(io, repeat(spceStr, maxLen - tLen), tleftLabel)
     # print left border
     print(io, plotPadding, b[:l])
     # print canvas row
     drawRow(io, c, row)
     #print right label and padding
-    print(io, b[:r], plotPadding, tRightLabel, repeat(spceStr, maxLenR - tLenR), "\n")
+    print(io, b[:r])
+    p.showLabels && print(io, plotPadding, tRightLabel, repeat(spceStr, maxLenR - tLenR))
+    print("\n")
   end
 
   # draw bottom border and bottom labels
-  drawBorderBottom(io, borderPadding, borderLength, :solid)
+  drawBorderBottom(io, borderPadding, borderLength, p.border)
   print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
   if p.showLabels
     botLeftStr = haskey(p.decorations, :bl) ? p.decorations[:bl] : ""
