@@ -4,7 +4,9 @@ import Base.show
 signs = ['⡀' '⠄' '⠂' '⠁';
          '⢀' '⠠' '⠐' '⠈']
 
-type Canvas
+abstract Canvas
+
+type BrailleCanvas <: Canvas
   grid::Array{Char,2}
   pixelWidth::Int
   pixelHeight::Int
@@ -14,7 +16,7 @@ type Canvas
   plotHeight::Float64
 end
 
-function show(io::IO, c::Canvas)
+function show(io::IO, c::BrailleCanvas)
   for y in reverse(1:size(c.grid,2))
     for x in 1:size(c.grid,1)
       print(c.grid[x,y])
@@ -29,7 +31,7 @@ function show(io::IO, c::Canvas)
   println("plotHeight: $(c.plotHeight)")
 end
 
-function Canvas(charWidth::Int, charHeight::Int,
+function BrailleCanvas(charWidth::Int, charHeight::Int,
                 plotOriginX::Float64, plotOriginY::Float64,
                 plotWidth::Float64, plotHeight::Float64)
   charWidth = charWidth < 5 ? 5 : charWidth
@@ -41,7 +43,7 @@ function Canvas(charWidth::Int, charHeight::Int,
   else
     fill(Char(0x2800), charWidth, charHeight)
   end
-  Canvas(grid, charWidth * 2, charHeight * 4, plotOriginX, plotOriginY, plotWidth, plotHeight)
+  BrailleCanvas(grid, charWidth * 2, charHeight * 4, plotOriginX, plotOriginY, plotWidth, plotHeight)
 end
 
 function safeRound(num)
@@ -60,7 +62,7 @@ function safeFloor(num)
   end
 end
 
-function setPixel!(c::Canvas, pixelX::Int, pixelY::Int)
+function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int)
   @assert 0 <= pixelX <= c.pixelWidth
   @assert 0 <= pixelY <= c.pixelHeight
   pixelX = pixelX < c.pixelWidth ? pixelX: pixelX - 1
@@ -81,7 +83,7 @@ function setPixel!(c::Canvas, pixelX::Int, pixelY::Int)
   end
 end
 
-function setPoint!(c::Canvas, plotX::Float64, plotY::Float64)
+function setPoint!(c::BrailleCanvas, plotX::Float64, plotY::Float64)
   @assert c.plotOriginX <= plotX < c.plotOriginX + c.plotWidth
   @assert c.plotOriginY <= plotY < c.plotOriginY + c.plotHeight
   plotXOffset = plotX - c.plotOriginX
@@ -108,7 +110,7 @@ function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
   padX = 0.01 * diffX; padY = 0.01 * diffY
   plotOriginX = minX - padX; plotWidth = maxX - plotOriginX + padX
   plotOriginY = minY - padY; plotHeight = maxY - plotOriginY + padY
-  c = Canvas(width, height, plotOriginX, plotOriginY, plotWidth, plotHeight)
+  c = BrailleCanvas(width, height, plotOriginX, plotOriginY, plotWidth, plotHeight)
   if minY < 0 < maxY
     for i in linspace(minX, maxX, width*2)
       setPoint!(c, i, 0.)
