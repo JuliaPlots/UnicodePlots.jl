@@ -44,6 +44,12 @@ All plots support a common set of named parameters
 * **margin**: Number of empty characters to the left of the whole plot
 * **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
 
+## Todo
+
+- [ ] Better rounding for labels
+- [ ] Color support for `lineplot` and `scatterplot`
+- [ ] Improve documentation
+
 ## Acknowledgement
 
 Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille)
