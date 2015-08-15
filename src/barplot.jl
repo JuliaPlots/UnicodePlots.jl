@@ -20,7 +20,7 @@ function barplot{T,N<:Real}(io::IO, text::Vector{T}, heights::Vector{N};
     str = labels ? string(label): ""
     len = length(str)
     pad = string(repeat(" ", margin),repeat(" ", maxLen - len))
-    bar = repeat("▪", safeRound(height / maxFreq * width))
+    bar = maxFreq > 0 ? repeat("▪", safeRound(height / maxFreq * width)): ""
     lbl = "$(pad)$(str)$(b[:l])"
     print(io, lbl)
     if isa(io, Base.TTY)

@@ -1,6 +1,7 @@
 
 barplot(["Please","don't","crash","my","friend"], [10,24,30,13,7])
 barplot([5,4,3,2,1], [10,24,30,13,7])
+barplot([5,4,3,2,1], [0,0,0,0,0])
 barplot([:Please,:dont,:crash,:dude], [10,24,1,13])
 barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:none)
 barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:solid)
