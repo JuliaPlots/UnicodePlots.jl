@@ -12,15 +12,15 @@ There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 
 There are three main plotting capabilities for now
 
-### scatterplot
+#### Scatterplot
 
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
-### lineplot
+#### Lineplot
 
 ![Lineplot Screenshot](doc/img/line.png)
 
-### barplot
+#### Barplot
 
 ![Barplot Screenshot](doc/img/barplot.png)
 
