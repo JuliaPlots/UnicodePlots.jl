@@ -83,5 +83,6 @@ stairs(x, y)
 
 #x=rand(100000)
 #y=rand(100000)
+#@time stairs(x, y)
 #@time scatterplot(x, y)
 #@time lineplot(x, y)

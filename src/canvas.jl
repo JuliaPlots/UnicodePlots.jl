@@ -228,12 +228,17 @@ function lineplot{R<:Real,S<:Real}(io::IO, Y::Function, startx::R, endx::S, step
 end
 
 function stairs{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R}; args...)
-  xVec = X[1]; yVec = Y[1]
+  xVec = zeros(length(X) * 2- 1)
+  yVec = zeros(length(X) * 2 - 1)
+  xVec[1] = X[1]
+  yVec[1] = Y[1]
+  o = 0
   for i = 2:(length(X))
-    tInX = X[i]
-    tInY = Y[i-1]
-    xVec = [xVec; tInX; X[i]]
-    yVec = [yVec; tInY; Y[i]]
+    xVec[i + o] = X[i]
+    xVec[i + o + 1] = X[i]
+    yVec[i + o] = Y[i-1]
+    yVec[i + o + 1] = Y[i]
+    o += 1
   end
   lineplot(io, xVec, yVec; args...)
 end
