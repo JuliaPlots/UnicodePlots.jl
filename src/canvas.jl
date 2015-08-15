@@ -17,6 +17,23 @@ type BrailleCanvas <: Canvas
   plotHeight::FloatingPoint
 end
 
+function BrailleCanvas(charWidth::Int, charHeight::Int;
+                plotOriginX::FloatingPoint = 0., plotOriginY::FloatingPoint = 0.,
+                plotWidth::FloatingPoint = 1., plotHeight::FloatingPoint = 1.)
+  charWidth = charWidth < 5 ? 5 : charWidth
+  charHeight = charHeight < 5 ? 5 : charHeight
+  pixelWidth = charWidth * 2
+  pixelHeight = charHeight * 4
+  plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
+  plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
+  grid, colors = if VERSION < v"0.4-"
+    fill(char(0x2800), charWidth, charHeight), fill(char(0x00), charWidth, charHeight)
+  else
+    fill(Char(0x2800), charWidth, charHeight), fill(Char(0x00), charWidth, charHeight)
+  end
+  BrailleCanvas(grid, colors, pixelWidth, pixelHeight, plotOriginX, plotOriginY, plotWidth, plotHeight)
+end
+
 nrows(c::BrailleCanvas) = size(c.grid,2)
 ncols(c::BrailleCanvas) = size(c.grid,1)
 
@@ -39,23 +56,6 @@ function show(io::IO, c::BrailleCanvas)
     print(io, b[:r], "\n")
   end
   drawBorderBottom(io, "", borderLength, :solid)
-end
-
-function BrailleCanvas(charWidth::Int, charHeight::Int;
-                plotOriginX::FloatingPoint = 0., plotOriginY::FloatingPoint = 0.,
-                plotWidth::FloatingPoint = 1., plotHeight::FloatingPoint = 1.)
-  charWidth = charWidth < 5 ? 5 : charWidth
-  charHeight = charHeight < 5 ? 5 : charHeight
-  pixelWidth = charWidth * 2
-  pixelHeight = charHeight * 4
-  plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
-  plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
-  grid, colors = if VERSION < v"0.4-"
-    fill(char(0x2800), charWidth, charHeight), fill(char(0x00), charWidth, charHeight)
-  else
-    fill(Char(0x2800), charWidth, charHeight), fill(Char(0x00), charWidth, charHeight)
-  end
-  BrailleCanvas(grid, colors, pixelWidth, pixelHeight, plotOriginX, plotOriginY, plotWidth, plotHeight)
 end
 
 function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int)
