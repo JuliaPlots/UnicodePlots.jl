@@ -8,6 +8,10 @@ Advanced Unicode plotting library designed for use in Julia's REPL.
 
 There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 
+```
+Pkg.clone("https://github.com/Evizero/UnicodePlots.jl")
+```
+
 ## Tutorial
 
 There are three main plotting capabilities for now
