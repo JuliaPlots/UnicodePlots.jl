@@ -24,10 +24,16 @@ Accepts two numerical vectors
 
 #### Lineplot
 
-Accepts two numerical vectors or a function and a range. The function will draw the line in the order of the given elements
+Accepts two numerical vector. The function will draw the line in the order of the given elements
 
-![Lineplot Screenshot](doc/img/line.png)
+![Lineplot Screenshot1](doc/img/line.png)
 
+It's also possible to specify a function and a range.
+
+![Lineplot Screenshot2](doc/img/sin.png)
+
+Granted, the labels could be better :-)
+ 
 #### Barplot
 
 Accepts either two vectors or a dictionary
