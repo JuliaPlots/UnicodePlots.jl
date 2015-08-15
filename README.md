@@ -52,7 +52,7 @@ Accepts two vectors
 
 ## Low-level Interface
 
-The main type that does all the hard lifting for plotting are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. underneath it uses Unicode characters to represent pixel.
+The primary structures that do all the heavy lifting for plotting are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. underneath it uses Unicode characters to represent pixel.
 
 Here is a simple example:
 
@@ -66,9 +66,9 @@ drawLine!(canvas, 0., 1., .5, 0., :yellow)
 ```
 ![Basic Canvas](doc/img/canvas.png)
 
-As you can see, one issue that arrises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the 8 pixel of a character could belong to a different color group, but a character can only have a single color. UnicodePlots deals with this using a colorblend for the whole group.
+As you can see, one issue that arrises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the 8 pixel of a character could belong to a different color group (a character can only have a single color). UnicodePlots deals with this using a colorblend for the whole group.
 
-![Blending Colors](doc/img/stairs.png)
+![Blending Colors](doc/img/braille.png)
 
 At the moment there is one type of Canvas implemented.
 
