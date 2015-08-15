@@ -86,3 +86,11 @@ stairs(x, y)
 #@time stairs(x, y)
 #@time scatterplot(x, y)
 #@time lineplot(x, y)
+
+can = BrailleCanvas(40,10)
+@time drawLine!(can, 0., 0., 1., 1.)
+@time drawLine!(can, .5, .5, 1., 0.)
+@time drawLine!(can, 0., 0., .9, 9999.)
+show(STDOUT, can)
+
+
