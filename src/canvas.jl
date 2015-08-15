@@ -75,7 +75,11 @@ function setPixel!(c::Canvas, pixelX::Int, pixelY::Int)
   end
   charY = safeFloor(pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % 4) + 1
-  c.grid[charX,charY] = c.grid[charX,charY] | signs[charXOff, charYOff]
+  if VERSION < v"0.4-"
+    c.grid[charX,charY] = c.grid[charX,charY] | signs[charXOff, charYOff]
+  else
+    c.grid[charX,charY] = Char(Uint64(c.grid[charX,charY]) | Uint64(signs[charXOff, charYOff]))
+  end
 end
 
 function setPoint!(c::Canvas, plotX::Float64, plotY::Float64)
@@ -156,8 +160,9 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
   xVec = X[1]; yVec = Y[1]
   for i in 2:(length(X))
     tV = collect(X[i-1]:.002smallDiff:X[i])
-    xVec = [xVec, tV]
-    yVec = [yVec, linspace(Y[i-1],Y[i],length(tV))]
+    tl = length(tV)
+    xVec = [xVec; tV]
+    yVec = tl > 1 ? [yVec; linspace(Y[i-1],Y[i],tl)]: [yVec; Y[i]]
   end
   scatterplot(io, xVec, yVec; width=width, height=height, marigin=marigin,
               title=title, border=border, gridlines=gridlines)

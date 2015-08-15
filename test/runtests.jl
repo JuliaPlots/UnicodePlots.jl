@@ -1,4 +1,4 @@
-using SimplePlots
+using UnicodePlots
 using Base.Test
 
 # write your own tests here
