@@ -47,6 +47,7 @@ lineplot(x, y, width=50, height=10, title="Hello world", border=:dashed)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:solid)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:bold)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:dotted)
+lineplot(x, y, width=50, height=10, border=:dotted)
 x = [-1.,2, 3, 700000]
 y = [1.,2, 9, 4000000]
 lineplot(x, y)
@@ -57,6 +58,12 @@ scatterplot(x, y)
 x = [1,2, 3, 7]
 y = [1,2, -1, 4]
 scatterplot(x, y)
+x = [1.,2, 3, 7]
+y = [1,2, -1, 4]
+scatterplot(x, y)
+lineplot(x, y)
 
 lineplot(sin, 1:.5:10)
 lineplot(sin, 1:.5:10, labels = false)
+lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4])
+lineplot(sin, [1, 2, 3, 4])

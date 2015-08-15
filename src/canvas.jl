@@ -91,10 +91,12 @@ function setPoint!(c::Canvas, plotX::Float64, plotY::Float64)
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY))
 end
 
-function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
+function scatterplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
                                        width=40, height=10, margin=3,
                                        title::String="", border=:solid, labels=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+  X = convert(Vector{Float64},X)
+  Y = convert(Vector{Float64},Y)
   width = width >= 5 ? width: 5
   height = height >= 5 ? height: 5
   b=borderMap[border]
@@ -152,10 +154,12 @@ function scatterplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
   end
 end
 
-function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
+function lineplot{F<:Real,R<:Real}(io::IO, X::Vector{F},Y::Vector{R};
                                     width=40, height=10, margin=3,
                                     title::String="", border=:solid, labels=true)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+  X = convert(Vector{Float64},X)
+  Y = convert(Vector{Float64},Y)
   minX = min(X...); minY = min(Y...)
   maxX = max(X...); maxY = max(Y...)
   diffX = maxX - minX; diffY = maxY - minY
@@ -171,41 +175,34 @@ function lineplot{F<:FloatingPoint}(io::IO, X::Vector{F},Y::Vector{F};
               title=title, border=border, labels=labels)
 end
 
-function scatterplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)
-  scatterplot(io,
-              convert(Vector{Float64},X),
-              convert(Vector{Float64},Y); args...)
-end
-
-function scatterplot(X::Vector{Int},Y::Vector{Int}; args...)
+function scatterplot{F<:Real,R<:Real}(X::Vector{F},Y::Vector{R}; args...)
   scatterplot(STDOUT, X, Y; args...)
 end
 
-function scatterplot{F<:FloatingPoint}(X::Vector{F},Y::Vector{F}; args...)
-  scatterplot(STDOUT, X, Y; args...)
-end
-
-function lineplot(io::IO, X::Vector{Int},Y::Vector{Int}; args...)
-  lineplot(io, X, Y; args...)
-end
-
-function lineplot(X::Vector{Int},Y::Vector{Int}; args...)
-  lineplot(STDOUT,
-           convert(Vector{Float64},X),
-           convert(Vector{Float64},Y); args...)
-end
-
-function lineplot{F<:FloatingPoint}(X::Vector{F},Y::Vector{F}; args...)
+function lineplot{F<:Real,R<:Real}(X::Vector{F},Y::Vector{R}; args...)
   lineplot(STDOUT, X, Y; args...)
 end
 
 function lineplot(io::IO, Y::Function, X::Range; args...)
-  y = [Y(i) for i in X]
-  lineplot(io,
-           convert(Vector{Float64},collect(X)),
-           convert(Vector{Float64},y); args...)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot(io, collect(X), y; args...)
 end
 
 function lineplot(Y::Function, X::Range; args...)
   lineplot(STDOUT, Y, X; args...)
+end
+
+function lineplot{R<:Real}(io::IO, Y::Function, X::Vector{R}; args...)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot(io, X, y; args...)
+end
+
+function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
+  lineplot(STDOUT, Y, X; args...)
+end
+
+function lineplot{R<:Real,S<:Real}(io::IO, Y::Function, startx::R, endx::S, step::Real = 1.; args...)
+  rnge = startx:endx
+  y = convert(Vector{Float64}, [Y(i) for i in startx:step:endx])
+  lineplot(io, collect(rnge), y; args...)
 end
