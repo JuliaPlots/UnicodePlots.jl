@@ -1,5 +1,6 @@
 
 import Base.show
+import Base.print
 
 const spce = if VERSION < v"0.4-"
   char(0x2800)
@@ -47,6 +48,13 @@ function drawRow(io::IO, c::BrailleCanvas, row::Int)
   y = nunrows - row + 1
   for x in 1:ncols(c)
     printColor(c.colors[x,y], io, c.grid[x,y])
+  end
+end
+
+function print(io::IO, c::BrailleCanvas)
+  for row in 1:nrows(c)
+    drawRow(io, c, row)
+    print(io, "\n")
   end
 end
 

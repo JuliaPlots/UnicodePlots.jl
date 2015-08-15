@@ -95,19 +95,21 @@ setPoint!(canvas, rand(50), rand(50), :red)
 drawLine!(canvas, 0., 1., .5, 0., :yellow)
 
 drawLine!(canvas, 0., 0., .9, 9999., :yellow)
-setPoint!(canvas, rand(10), rand(10))
 drawLine!(canvas, 0., 0., 1., 1., :blue)
 drawLine!(canvas, .3, .7, 1., 0., :red)
 drawLine!(canvas, 0., 2., .5, 0., :yellow)
 show(STDOUT, canvas)
 myPlot = Plot(canvas, title="testtitle")
-myPlot.leftLabels[3] = "hello"
-myPlot.leftLabels[5] = "hello again"
-myPlot.leftLabels[1] = "0.7!"
-myPlot.leftLabels[10] = "Bottom anno"
-myPlot.rightLabels[2] = "What's going on over here!"
-myPlot.decorations[:bl] = "Hey ho!"
-myPlot.decorations[:br] = "yoyo sup"
-myPlot.decorations[:tr] = "More here!"
-myPlot.decorations[:tl] = "Some here!"
+annotate!(myPlot, :l, 3, "hello")
+annotate!(myPlot, :l, 5, "hello again")
+annotate!(myPlot, :l, 1, "0.7!")
+annotate!(myPlot, :l, 10, "Bottom Anno")
+annotate!(myPlot, :r, 2, "What's going on over here!")
+annotate!(myPlot, :bl, ":bl")
+annotate!(myPlot, :br, ":br")
+annotate!(myPlot, :tl, ":tl")
+annotate!(myPlot, :tr, ":tr")
+drawLine!(myPlot, 0., 0.4, 1., .6, :blue)
+setPoint!(myPlot, rand(10), rand(10))
+setPixel!(myPlot, 1, 1)
 show(STDOUT, myPlot)

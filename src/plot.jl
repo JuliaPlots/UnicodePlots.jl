@@ -25,6 +25,42 @@ function Plot{T<:Canvas}(canvas::T;
   Plot{T}(canvas, title, margin, padding, border, leftLabels, rightLabels, decorations, showLabels)
 end
 
+function setTitle!{T<:Canvas}(plot::Plot{T}, title::String)
+  plot.title = title
+  plot
+end
+
+function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)
+  where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :tr :bl :br"))
+  plot.decorations[where] = value
+end
+
+function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)
+  0 < row <= nrows(plot.canvas)
+  if where == :l
+    plot.leftLabels[row] = value
+  elseif where == :r
+    plot.rightLabels[row] = value
+  else
+    throw(ArgumentError("Unknown location: try one of these :l :r"))
+  end
+end
+
+function drawLine!{T<:Canvas}(p::Plot{T}, args...; vars...)
+  drawLine!(p.canvas, args...; vars...)
+  p
+end
+
+function setPixel!{T<:Canvas}(p::Plot{T}, args...; vars...)
+  setPixel!(p.canvas, args...; vars...)
+  p
+end
+
+function setPoint!{T<:Canvas}(p::Plot{T}, args...; vars...)
+  setPoint!(p.canvas, args...; vars...)
+  p
+end
+
 function show(io::IO, p::Plot)
   b = borderMap[p.border]
   c = p.canvas

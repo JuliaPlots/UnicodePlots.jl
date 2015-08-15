@@ -17,47 +17,47 @@ end
 
 borderMap=Dict{Symbol,Dict{Symbol,String}}()
 borderSolid=Dict{Symbol,String}()
-borderSolid[:ul]="┌"
-borderSolid[:ur]="┐"
+borderSolid[:tl]="┌"
+borderSolid[:tr]="┐"
 borderSolid[:bl]="└"
 borderSolid[:br]="┘"
-borderSolid[:u]="─"
+borderSolid[:t]="─"
 borderSolid[:l]="│"
 borderSolid[:b]="─"
 borderSolid[:r]="│"
 borderBold=Dict{Symbol,String}()
-borderBold[:ul]="┏"
-borderBold[:ur]="┓"
+borderBold[:tl]="┏"
+borderBold[:tr]="┓"
 borderBold[:bl]="┗"
 borderBold[:br]="┛"
-borderBold[:u]="━"
+borderBold[:t]="━"
 borderBold[:l]="┃"
 borderBold[:b]="━"
 borderBold[:r]="┃"
 borderNone=Dict{Symbol,String}()
-borderNone[:ul]=" "
-borderNone[:ur]=" "
+borderNone[:tl]=" "
+borderNone[:tr]=" "
 borderNone[:bl]=" "
 borderNone[:br]=" "
-borderNone[:u]=" "
+borderNone[:t]=" "
 borderNone[:l]=" "
 borderNone[:b]=" "
 borderNone[:r]=" "
 borderDashed=Dict{Symbol,String}()
-borderDashed[:ul]="┌"
-borderDashed[:ur]="┐"
+borderDashed[:tl]="┌"
+borderDashed[:tr]="┐"
 borderDashed[:bl]="└"
 borderDashed[:br]="┘"
-borderDashed[:u]="╌"
+borderDashed[:t]="╌"
 borderDashed[:l]="│"
 borderDashed[:b]="╌"
 borderDashed[:r]="│"
 borderDotted=Dict{Symbol,String}()
-borderDotted[:ul]="⡤"
-borderDotted[:ur]="⢤"
+borderDotted[:tl]="⡤"
+borderDotted[:tr]="⢤"
 borderDotted[:bl]="⠓"
 borderDotted[:br]="⠚"
-borderDotted[:u]="⠤"
+borderDotted[:t]="⠤"
 borderDotted[:l]="⡇"
 borderDotted[:b]="⠒"
 borderDotted[:r]="⢸"
@@ -68,7 +68,7 @@ borderMap[:dashed]=borderDashed
 borderMap[:dotted]=borderDotted
 
 colorEncode=Dict{Symbol,Uint8}()
-colorEncode[:white]=0b111
+colorEncode[:white]=0b000
 colorEncode[:blue]=0b001
 colorEncode[:red]=0b010
 colorEncode[:magenta]=0b011
@@ -80,7 +80,7 @@ for k in keys(colorEncode)
   v = colorEncode[k]
   colorDecode[v]=k
 end
-colorDecode[0b00]=:white
+colorDecode[0b111]=:white
 
 # ▖▗▘▙▚▛▜▝▞▟
 # ▁▂▃▄▅▆▇█
@@ -99,7 +99,7 @@ end
 
 function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print(io, padding, b[:ul], repeat(b[:u], length), b[:ur])
+  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
