@@ -44,10 +44,20 @@ borderDashed[:u]="╌"
 borderDashed[:l]="│"
 borderDashed[:d]="╌"
 borderDashed[:r]="│"
+borderDotted=Dict{Symbol,String}()
+borderDotted[:ul]="⡤"
+borderDotted[:ur]="⢤"
+borderDotted[:dl]="⠓"
+borderDotted[:dr]="⠚"
+borderDotted[:u]="⠤"
+borderDotted[:l]="⡇"
+borderDotted[:d]="⠒"
+borderDotted[:r]="⢸"
 borderMap[:solid]=borderSolid
 borderMap[:bold]=borderBold
 borderMap[:none]=borderNone
 borderMap[:dashed]=borderDashed
+borderMap[:dotted]=borderDotted
 
 signs = ['⡀' '⠄' '⠂' '⠁';
          '⢀' '⠠' '⠐' '⠈']

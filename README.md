@@ -33,7 +33,7 @@ It's also possible to specify a function and a range.
 ![Lineplot Screenshot2](doc/img/sin.png)
 
 Granted, the labels could be better :-)
- 
+
 #### Barplot
 
 Accepts either two vectors or a dictionary
@@ -45,10 +45,10 @@ Accepts either two vectors or a dictionary
 All plots support a common set of named parameters
 
 * **title**: Text to display on the top of the plot
-* **width**: Number of characters per row that should be used for plotting 
+* **width**: Number of characters per row that should be used for plotting
 * **height**: Number of rows that should be used for plotting
 * **margin**: Number of empty characters to the left of the whole plot
-* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, and `:none` 
+* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`
 
 ## Todo
 

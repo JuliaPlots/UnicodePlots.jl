@@ -45,6 +45,7 @@ lineplot(x, y, width=50, height=10, title="Hello world", border=:none)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:dashed)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:solid)
 lineplot(x, y, width=50, height=10, title="Hello world", border=:bold)
+lineplot(x, y, width=50, height=10, title="Hello world", border=:dotted)
 x = [-1.,2, 3, 700000]
 y = [1.,2, 9, 4000000]
 lineplot(x, y)
