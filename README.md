@@ -8,7 +8,7 @@ Advanced Unicode plotting library designed for use in Julia's REPL.
 
 There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 
-```
+```Julia
 Pkg.add("UnicodePlots")
 using UnicodePlots
 ```
@@ -24,7 +24,7 @@ There are a couple of ways to generate typical plots without much verbosity. The
   
 Here is a quick hello world example of a typical use-case:
 
-```
+```Julia
 myPlot = lineplot([1, 2, 3, 7], [1, 2, -1, 4], color=:red, title="My Plot")
 drawLine!(myPlot, 1., -1., 7., 2., :blue)
 annotate!(myPlot, :r, 2, "red  ... Curve 1")
@@ -100,6 +100,7 @@ The method `annotate!` is responsible for the setting all the textual decoration
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
     `where` can be any of: `:l` (left), `:r` (right)
+    
     `row` can be between 1 and the number of character rows of the canvas
 
 
@@ -136,6 +137,10 @@ At the moment there is one type of Canvas implemented:
 - [ ] Better rounding for labels
 - [X] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
+- [ ] Animated plots using cursor movement
+- [ ] Refactor barplot to the new API
+- [ ] Animated sparklines using cursor movement
+- [ ] 4x4-block-canavs as preparation for histograms
 
 ## License
 
