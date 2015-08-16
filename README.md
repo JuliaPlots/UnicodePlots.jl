@@ -95,13 +95,13 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
-    `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
+    - `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
-    `where` can be any of: `:l` (left), `:r` (right)
+    - `where` can be any of: `:l` (left), `:r` (right)
     
-    `row` can be between 1 and the number of character rows of the canvas
+    - `row` can be between 1 and the number of character rows of the canvas
 
 
 ## Low-level Interface
