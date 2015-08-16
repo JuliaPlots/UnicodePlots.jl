@@ -158,14 +158,14 @@ At the moment there is one type of Canvas implemented:
 ## Todo
 
 - [ ] Better rounding for labels
-- [X] Color support for `lineplot` and `scatterplot`
+- [x] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
 - [ ] Screenshots for all different plot options (e.g. border)
 - [ ] Animated plots using cursor movement
 - [ ] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
-- [ ] color cleanup: standard to white, no explicit color for border
+- [x] color cleanup: standard to white, no explicit color for border
 
 ## License
 
