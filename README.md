@@ -14,7 +14,7 @@ Pkg.clone("https://github.com/Evizero/UnicodePlots.jl")
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without a lot of verbosity. There are four main high-level functions to use for typical scenarios:
+There are a couple of ways to generate typical plots without a lot of verbosity. These are the four main high-level functions for typical scenarios:
 
   - Scatterplot
   - Lineplot
@@ -34,10 +34,6 @@ annotate!(myPlot, :r, 4, "blue ... Curve 2")
 
 
 #### Scatterplot
-
-```Julia
-function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:blue, args...)
-```
 
 Creates a new scatter plot (point cloud), centers it on the given data points, and returns the new plot.
 
@@ -94,7 +90,7 @@ All plots support a common set of named parameters
 
 _Note_: You can also print your plots to another stream than `STDOUT` by passing the IO stream as the first argument. You should probably use `border=:dotted` for external plots.
 
-The method `annotate` is responsible for the setting all the textual decorations of a plot. It has two functions:
+The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
@@ -103,7 +99,7 @@ The method `annotate` is responsible for the setting all the textual decorations
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
     `where` can be any of: `:l` (left), `:r` (right)
-    `row` can between 1 and the number of character rows of the canvas
+    `row` can be between 1 and the number of character rows of the canvas
 
 
 ## Low-level Interface
