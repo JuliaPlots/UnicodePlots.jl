@@ -7,7 +7,7 @@ const spce = if VERSION < v"0.4-"
 else
   Char(0x2800)
 end
-const spceStr = string(spce)
+const spceStr = " " #string(spce)
 
 signs = ['⡀' '⠄' '⠂' '⠁';
          '⢀' '⠠' '⠐' '⠈']

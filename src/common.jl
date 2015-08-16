@@ -99,7 +99,7 @@ end
 
 function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
   b=borderMap[border]
-  border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)

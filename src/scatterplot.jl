@@ -38,7 +38,7 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   newPlot
 end
 
-function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:blue, args...)
+function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   minX = minimum(X); minY = minimum(Y)
@@ -48,7 +48,7 @@ function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=
   newPlot
 end
 
-function lineplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:blue, args...)
+function lineplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
