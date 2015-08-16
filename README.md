@@ -141,6 +141,7 @@ At the moment there is one type of Canvas implemented:
 - [ ] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
+- [ ] color cleanup: standard to white, no explicit color for border
 
 ## License
 
