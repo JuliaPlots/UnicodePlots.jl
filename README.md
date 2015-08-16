@@ -15,7 +15,7 @@ using UnicodePlots
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without a lot of verbosity. These are the four main high-level functions for typical scenarios:
+There are a couple of ways to generate typical plots without a much verbosity. These are the four main high-level functions for typical scenarios:
 
   - Scatterplot
   - Lineplot
@@ -121,14 +121,14 @@ setPixel!(canvas, 5, 8, :red)               # pixel space
 
 ![Basic Canvas](doc/img/canvas.png)
 
-As you can see, one issue that arrises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). UnicodePlots deals with this using a colorblend for the whole group.
+As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
 
 ![Blending Colors](doc/img/braille.png)
 
 At the moment there is one type of Canvas implemented:
 
   - **BrailleCanvas**:
-    This type of canvas is probably the one with the highest resolution for unicode plotting. It essentially uses the unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels than can individually be manipulated using binary operations.
+    This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels than can individually be manipulated using binary operations.
 
 
 ## Todo
