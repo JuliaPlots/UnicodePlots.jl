@@ -8,14 +8,14 @@ Advanced Unicode plotting library designed for use in Julia's REPL.
 
 There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 
-```
+```Julia
 Pkg.add("UnicodePlots")
 using UnicodePlots
 ```
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without a much verbosity. These are the four main high-level functions for typical scenarios:
+There are a couple of ways to generate typical plots without much verbosity. These are the four main high-level functions for typical scenarios:
 
   - Scatterplot
   - Lineplot
@@ -24,7 +24,7 @@ There are a couple of ways to generate typical plots without a much verbosity. T
   
 Here is a quick hello world example of a typical use-case:
 
-```
+```Julia
 myPlot = lineplot([1, 2, 3, 7], [1, 2, -1, 4], color=:red, title="My Plot")
 drawLine!(myPlot, 1., -1., 7., 2., :blue)
 annotate!(myPlot, :r, 2, "red  ... Curve 1")
@@ -80,14 +80,37 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 
 All plots support a common set of named parameters
 
-- **title**: Text to display on the top of the plot. Defaults to `""`
-- **width**: Number of characters per row that should be used for plotting. Defaults to `40`
-- **height**: Number of rows that should be used for plotting. Not applicable to `barplot`. Defaults to `10`
-- **margin**: Number of empty characters to the left of the whole plot. Defaults to `3`.
-- **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. Defaults to`:solid`
-- **padding**: Space of the left and right of the plot between the labels and the canvas. Defaults to `1`.
-- **labels**: Can be used to hide the labels. Defaults to`true`
-- **color**: Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+- `title = ""`: 
+ 
+    Text to display on the top of the plot.
+
+- `width = 40`: 
+ 
+    Number of characters per row that should be used for plotting. 
+
+- `height = 10`:
+ 
+    Number of rows that should be used for plotting. Not applicable to `barplot`. 
+
+- `margin = 3`: 
+ 
+    Number of empty characters to the left of the whole plot. 
+
+- `border = :solid`: 
+ 
+    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. 
+
+- `padding = 1`: 
+ 
+    Space of the left and right of the plot between the labels and the canvas. 
+
+- `labels = true`: 
+ 
+    Can be used to hide the labels. 
+
+- `color = :blue`: 
+ 
+    Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
 
@@ -95,12 +118,13 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
-    `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
+    - `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
-    `where` can be any of: `:l` (left), `:r` (right)
-    `row` can be between 1 and the number of character rows of the canvas
+    - `where` can be any of: `:l` (left), `:r` (right)
+    
+    - `row` can be between 1 and the number of character rows of the canvas
 
 
 ## Low-level Interface
@@ -136,6 +160,12 @@ At the moment there is one type of Canvas implemented:
 - [ ] Better rounding for labels
 - [X] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
+- [ ] Screenshots for all different plot options (e.g. border)
+- [ ] Animated plots using cursor movement
+- [ ] Refactor barplot to the new API
+- [ ] Animated sparklines using cursor movement
+- [ ] 4x4-block-canavs as preparation for histograms
+- [ ] color cleanup: standard to white, no explicit color for border
 
 ## License
 
