@@ -79,9 +79,36 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
+## Options
+
+All plots support a common set of named parameters
+
+- **title**: Text to display on the top of the plot. Defaults to `""`
+- **width**: Number of characters per row that should be used for plotting. Defaults to `40`
+- **height**: Number of rows that should be used for plotting. Not applicable to `barplot`. Defaults to `10`
+- **margin**: Number of empty characters to the left of the whole plot. Defaults to `3`.
+- **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. Defaults to`:solid`
+- **padding**: Space of the left and right of the plot between the labels and the canvas. Defaults to `1`.
+- **labels**: Can be used to hide the labels. Defaults to`true`
+- **color**: Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+
+_Note_: You can also print your plots to another stream than `STDOUT` by passing the IO stream as the first argument. You should probably use `border=:dotted` for external plots.
+
+The method `annotate` is responsible for the setting all the textual decorations of a plot. It has two functions:
+
+- `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
+
+    `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
+
+- `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
+
+    `where` can be any of: `:l` (left), `:r` (right)
+    `row` can between 1 and the number of character rows of the canvas
+
+
 ## Low-level Interface
 
-The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. underneath it uses Unicode characters to represent pixel.
+The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.
 
 Here is a simple example:
 
@@ -106,26 +133,12 @@ At the moment there is one type of Canvas implemented:
   - **BrailleCanvas**:
     This type of canvas is probably the one with the highest resolution for unicode plotting. It essentially uses the unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels than can individually be manipulated using binary operations.
 
-## Options
-
-All plots support a common set of named parameters
-
-* **title**: Text to display on the top of the plot. Defaults to `""`
-* **width**: Number of characters per row that should be used for plotting. Defaults to `40`
-* **height**: Number of rows that should be used for plotting. Not applicable to `barplot`. Defaults to `10`
-* **margin**: Number of empty characters to the left of the whole plot. Defaults to `3`.
-* **border**: The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. Defaults to`:solid`
-* **padding**: Space of the left and right of the plot between the labels and the canvas. Defaults to `1`.
-* **labels**: Can be used to hide the labels. Defaults to`true`
-* **color**: Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
-
-_Note_: You can also print your plots to another stream than `STDOUT` by passing the IO stream as the first argument. You should probably use `border=:dotted` for external plots.
 
 ## Todo
 
 - [ ] Better rounding for labels
 - [X] Color support for `lineplot` and `scatterplot`
-- [ ] Improve documentation
+- [x] Improve documentation
 
 ## License
 
