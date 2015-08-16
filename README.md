@@ -15,7 +15,7 @@ using UnicodePlots
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without a much verbosity. These are the four main high-level functions for typical scenarios:
+There are a couple of ways to generate typical plots without much verbosity. These are the four main high-level functions for typical scenarios:
 
   - Scatterplot
   - Lineplot
