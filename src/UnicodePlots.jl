@@ -2,7 +2,7 @@ module UnicodePlots
 
 export Canvas, BrailleCanvas
 export setPixel!, setPoint!, drawLine!
-export drawRow, nrows, ncols
+export printRow, nrows, ncols
 
 export Plot
 export annotate!, setTitle!

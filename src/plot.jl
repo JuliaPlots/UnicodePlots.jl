@@ -111,7 +111,7 @@ function show(io::IO, p::Plot)
     # print left border
     print(io, plotPadding, b[:l])
     # print canvas row
-    drawRow(io, c, row)
+    printRow(io, c, row)
     #print right label and padding
     print(io, b[:r])
     p.showLabels && print(io, plotPadding, tRightLabel, repeat(spceStr, maxLenR - tLenR))
