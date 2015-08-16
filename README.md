@@ -89,7 +89,7 @@ All plots support a common set of named parameters
 - **labels**: Can be used to hide the labels. Defaults to`true`
 - **color**: Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
 
-_Note_: You can also print your plots to another stream than `STDOUT` by passing the IO stream as the first argument. You should probably use `border=:dotted` for external plots.
+_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
 
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
