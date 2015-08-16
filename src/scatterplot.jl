@@ -14,10 +14,13 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   minX = minimum(X); minY = minimum(Y)
   maxX = maximum(X); maxY = maximum(Y)
   diffX = maxX - minX; diffY = maxY - minY
+  padX = 0.01 * diffX; padY = 0.01 * diffY
+  plotOriginX = minX - padX; plotWidth = maxX - plotOriginX + padX
+  plotOriginY = minY - padY; plotHeight = maxY - plotOriginY + padY
 
   canvas = BrailleCanvas(width, height,
-                         plotOriginX = minX, plotOriginY = minY,
-                         plotWidth = diffX, plotHeight = diffY)
+                         plotOriginX = plotOriginX, plotOriginY = plotOriginY,
+                         plotWidth = plotWidth, plotHeight = plotHeight)
   newPlot = Plot(canvas, title=title, margin=margin,
                  padding=padding, border=border, showLabels=labels)
 
@@ -27,12 +30,19 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   annotate!(newPlot, :l, height, minYString)
   annotate!(newPlot, :bl, minXString)
   annotate!(newPlot, :br, maxXString)
+  if minY < 0 < maxY
+    for i in linspace(minX, maxX, width*2)
+      setPoint!(newPlot, i, 0., :white)
+    end
+  end
   newPlot
 end
 
 function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:blue, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
+  minX = minimum(X); minY = minimum(Y)
+  maxX = maximum(X); maxY = maximum(Y)
   newPlot = createPlotWindow(X, Y; args...)
   setPoint!(newPlot, X, Y, color)
   newPlot
