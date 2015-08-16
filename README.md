@@ -160,6 +160,7 @@ At the moment there is one type of Canvas implemented:
 - [ ] Better rounding for labels
 - [X] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
+- [ ] Screenshots for all different plot options (e.g. border)
 - [ ] Animated plots using cursor movement
 - [ ] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
