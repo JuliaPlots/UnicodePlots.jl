@@ -154,7 +154,7 @@ As you can see, one issue that arises when multiple pixel are represented by one
 At the moment there is one type of Canvas implemented:
 
   - **BrailleCanvas**:
-    This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels than can individually be manipulated using binary operations.
+    This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 
 
 ## Todo
@@ -167,7 +167,9 @@ At the moment there is one type of Canvas implemented:
 - [ ] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
-- [x] color cleanup: standard to white, no explicit color for border
+- [x] Color cleanup: standard to white, no explicit color for border
+- [ ] Add canvas for 2d density plots
+- [ ] Add heatmaps and hinton diagrams
 
 ## License
 
