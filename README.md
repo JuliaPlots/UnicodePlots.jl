@@ -80,35 +80,35 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 
 All plots support a common set of named parameters
 
-- `title = ""`: 
+- `title::String = ""`: 
  
     Text to display on the top of the plot.
 
-- `width = 40`: 
+- `width::Int = 40`: 
  
     Number of characters per row that should be used for plotting. 
 
-- `height = 10`:
+- `height::Int = 10`:
  
     Number of rows that should be used for plotting. Not applicable to `barplot`. 
 
-- `margin = 3`: 
+- `margin::Int = 3`: 
  
     Number of empty characters to the left of the whole plot. 
 
-- `border = :solid`: 
+- `border::Symbol = :solid`: 
  
     The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. 
 
-- `padding = 1`: 
+- `padding::Int = 1`: 
  
     Space of the left and right of the plot between the labels and the canvas. 
 
-- `labels = true`: 
+- `labels::Bool = true`: 
  
     Can be used to hide the labels. 
 
-- `color = :blue`: 
+- `color::Symbol = :blue`: 
  
     Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
 
