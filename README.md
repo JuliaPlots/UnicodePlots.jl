@@ -114,6 +114,8 @@ All plots support a common set of named parameters
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
 
+## Methods
+
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
