@@ -81,7 +81,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 #### Historgram
 
 ```Julia
-histogram(rand(1000), bins=5, title="Histogram")
+histogram(rand(1000), bins=10, title="Histogram")
 ```
 ![Histogram Screenshot](doc/img/hist.png)
 
