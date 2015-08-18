@@ -7,7 +7,7 @@ function histogram(x, n::Int=5; args...)
     for i in 1:length(counts)
         push!(labels, string("(",edges[i],",",edges[i]+binwidth,"]"))
     end
-    barplot(labels, counts; args...)
+    barplot(labels, counts; symb="▇", args...)
 end
 
 function histogram(x; bins::Int=5, args...)

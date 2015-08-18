@@ -4,17 +4,18 @@ type BarplotCanvas{R<:Real} <: Canvas
   charWidth::Int
   maxFreq::R
   maxFreqLen::R
+  symb::String
 
-  function BarplotCanvas(bars::Vector{R}, charWidth::Int, color::Symbol=:blue)
+  function BarplotCanvas(bars::Vector{R}, charWidth::Int, color::Symbol=:blue, symb="▪")
     charWidth = max(charWidth, 5)
     maxFreq = maximum(bars)
     maxFreqLen = length(string(maxFreq))
-    new(bars, color, charWidth, maxFreq, maxFreqLen)
+    new(bars, color, charWidth, maxFreq, maxFreqLen, symb)
   end
 end
 
-function BarplotCanvas{R<:Real}(bars::Vector{R}, charWidth::Int; color::Symbol=:blue)
-  BarplotCanvas{R}(bars, charWidth, color)
+function BarplotCanvas{R<:Real}(bars::Vector{R}, charWidth::Int; color::Symbol=:blue, symb="▪")
+  BarplotCanvas{R}(bars, charWidth, color, symb)
 end
 
 function addRow!{R<:Real}(c::BarplotCanvas{R}, bars::Vector{R})
@@ -38,7 +39,7 @@ function printRow(io::IO, c::BarplotCanvas, row::Int)
   bar = c.bars[row]
   maxBarWidth = max(c.charWidth - 2 - c.maxFreqLen, 1)
   barLen = c.maxFreq > 0 ? safeRound(bar / c.maxFreq * maxBarWidth): 0
-  barStr = c.maxFreq > 0 ? repeat("▪", barLen): ""
+  barStr = c.maxFreq > 0 ? repeat(c.symb, barLen): ""
   barLbl = string(bar)
   print_with_color(c.color, io, barStr)
   print_with_color(:white, io, spceStr, barLbl)
@@ -51,13 +52,13 @@ function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
                           border=:solid, title::String="",
                           margin::Int=3, padding::Int=1,
                           color::Symbol=:blue, width::Int=40,
-                          labels::Bool=true)
+                          labels::Bool=true, symb="▪")
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
   width = max(width, 5)
 
-  canvas = BarplotCanvas(heights, width, color = color)
+  canvas = BarplotCanvas(heights, width, color = color, symb = symb)
   newPlot = Plot(canvas, title=title, margin=margin,
                  padding=padding, border=border, showLabels=labels)
   for i in 1:length(text)
