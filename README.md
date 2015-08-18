@@ -21,7 +21,7 @@ There are a couple of ways to generate typical plots without much verbosity. The
   - Lineplot
   - Barplot (horizontal)
   - Staircase Plot
-  
+
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
@@ -80,36 +80,36 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 
 All plots support a common set of named parameters
 
-- `title::String = ""`: 
- 
+- `title::String = ""`:
+
     Text to display on the top of the plot.
 
-- `width::Int = 40`: 
- 
-    Number of characters per row that should be used for plotting. 
+- `width::Int = 40`:
+
+    Number of characters per row that should be used for plotting.
 
 - `height::Int = 10`:
- 
-    Number of rows that should be used for plotting. Not applicable to `barplot`. 
 
-- `margin::Int = 3`: 
- 
-    Number of empty characters to the left of the whole plot. 
+    Number of rows that should be used for plotting. Not applicable to `barplot`.
 
-- `border::Symbol = :solid`: 
- 
-    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`. 
+- `margin::Int = 3`:
 
-- `padding::Int = 1`: 
- 
-    Space of the left and right of the plot between the labels and the canvas. 
+    Number of empty characters to the left of the whole plot.
 
-- `labels::Bool = true`: 
- 
-    Can be used to hide the labels. 
+- `border::Symbol = :solid`:
 
-- `color::Symbol = :blue`: 
- 
+    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`.
+
+- `padding::Int = 1`:
+
+    Space of the left and right of the plot between the labels and the canvas.
+
+- `labels::Bool = true`:
+
+    Can be used to hide the labels.
+
+- `color::Symbol = :blue`:
+
     Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
@@ -125,9 +125,10 @@ The method `annotate!` is responsible for the setting all the textual decoration
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
     - `where` can be any of: `:l` (left), `:r` (right)
-    
+
     - `row` can be between 1 and the number of character rows of the canvas
 
+![Staircase Screenshot](doc/img/annotate.png)
 
 ## Low-level Interface
 
