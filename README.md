@@ -87,13 +87,19 @@ All plots support a common set of named parameters
 - `width::Int = 40`:
 
     Number of characters per row that should be used for plotting.
-
+    
+    ```Julia
+    lineplot(sin, 1:.5:20, width = 80)
+    ```
     ![Width Screenshot](doc/img/width.png)
 
 - `height::Int = 10`:
 
     Number of rows that should be used for plotting. Not applicable to `barplot`.
 
+    ```Julia
+    lineplot(sin, 1:.5:20, height = 18)
+    ```
     ![Height Screenshot](doc/img/height.png)
 
 - `margin::Int = 3`:
@@ -104,6 +110,12 @@ All plots support a common set of named parameters
 
     The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`.
 
+  ```Julia
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:bold)
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dashed)
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dotted)
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:none)
+  ```
     ![Border Screenshot](doc/img/border.png)
 
 - `padding::Int = 1`:
@@ -114,6 +126,9 @@ All plots support a common set of named parameters
 
     Can be used to hide the labels.
 
+  ```Julia
+  lineplot(sin, 1:.5:20, labels=false)
+  ```
     ![Labels Screenshot](doc/img/labels.png)
 
 - `color::Symbol = :blue`:
