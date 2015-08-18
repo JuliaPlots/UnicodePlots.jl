@@ -141,3 +141,4 @@ annotate!(myPlot, :b, "how are")
 annotate!(myPlot, :br, "you?")
 print(myPlot)
 
+print(histogram(rand(1000), bins=10, title="Histogram"))

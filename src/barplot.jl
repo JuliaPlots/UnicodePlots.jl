@@ -77,6 +77,7 @@ function barplot!{C<:BarplotCanvas,T<:String,N<:Real}(plot::Plot{C},
   for i = 1:length(heights)
     annotate!(plot, :l, curIdx + i, text[i])
   end
+  plot
 end
 
 function barplot{T,N<:Real}(dict::Dict{T,N}; args...)

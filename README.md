@@ -21,6 +21,7 @@ There are a couple of ways to generate typical plots without much verbosity. The
   - Lineplot
   - Barplot (horizontal)
   - Staircase Plot
+  - Histogram (horizontal)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -75,6 +76,13 @@ Accepts two vectors
 stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
+
+#### Historgram
+
+```Julia
+histogram(rand(1000), bins=5, title="Histogram")
+```
+![Historgram Screenshot](doc/img/hist.png)
 
 ### Options
 
