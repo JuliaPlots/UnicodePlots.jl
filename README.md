@@ -88,9 +88,13 @@ All plots support a common set of named parameters
 
     Number of characters per row that should be used for plotting.
 
+    ![Width Screenshot](doc/img/width.png)
+
 - `height::Int = 10`:
 
     Number of rows that should be used for plotting. Not applicable to `barplot`.
+
+    ![Height Screenshot](doc/img/heiht.png)
 
 - `margin::Int = 3`:
 
@@ -100,6 +104,8 @@ All plots support a common set of named parameters
 
     The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`.
 
+    ![Border Screenshot](doc/img/border.png)
+
 - `padding::Int = 1`:
 
     Space of the left and right of the plot between the labels and the canvas.
@@ -107,6 +113,8 @@ All plots support a common set of named parameters
 - `labels::Bool = true`:
 
     Can be used to hide the labels.
+
+    ![Labels Screenshot](doc/img/labels.png)
 
 - `color::Symbol = :blue`:
 
@@ -132,7 +140,7 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
     - `row` can be between 1 and the number of character rows of the canvas
 
-![Staircase Screenshot](doc/img/annotate.png)
+![Annotate Screenshot](doc/img/annotate.png)
 
 ## Low-level Interface
 
@@ -167,7 +175,7 @@ At the moment there is one type of Canvas implemented:
 - [ ] Better rounding for labels
 - [x] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
-- [ ] Screenshots for all different plot options (e.g. border)
+- [x] Screenshots for all different plot options (e.g. border)
 - [ ] Animated plots using cursor movement
 - [ ] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
