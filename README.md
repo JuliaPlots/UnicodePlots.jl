@@ -87,7 +87,7 @@ All plots support a common set of named parameters
 - `width::Int = 40`:
 
     Number of characters per row that should be used for plotting.
-    
+
     ```Julia
     lineplot(sin, 1:.5:20, width = 80)
     ```
@@ -147,7 +147,7 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
-    - `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
+    - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right)
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
 
@@ -179,11 +179,13 @@ As you can see, one issue that arises when multiple pixel are represented by one
 
 ![Blending Colors](doc/img/braille.png)
 
-At the moment there is one type of Canvas implemented:
+At the moment there are two types of Canvas implemented:
 
   - **BrailleCanvas**:
     This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 
+  - **BarplotCanvas**:
+    This canvas is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addRow!` which allows the user to add additional bars to the canvas
 
 ## Todo
 
@@ -192,7 +194,7 @@ At the moment there is one type of Canvas implemented:
 - [x] Improve documentation
 - [x] Screenshots for all different plot options (e.g. border)
 - [ ] Animated plots using cursor movement
-- [ ] Refactor barplot to the new API
+- [x] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
 - [x] Color cleanup: standard to white, no explicit color for border

@@ -1,34 +1,31 @@
 
-barplot(["Please","don't","crash","my","friend"], [10,24,30,13,7])
-barplot([5,4,3,2,1], [10,24,30,13,7])
-barplot([5,4,3,2,1], [0,0,0,0,0])
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13])
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:none)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:solid)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:dashed)
-barplot([:Please,:dont,:crash,:dude], [1,1,1,1000000], color=:red)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10, margin=0)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10, margin=20)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=1)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,0], width=100)
-barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="C'mon man, keep on going!")
-barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="No lab", labels = false)
-@test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=0)
-@test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=-1)
+myDict=Dict{String, Int}()
+myDict["Hi"] = 37
+myDict["ho"] = 23
+print(barplot(myDict))
+myPlot=barplot(["Please","don't","crash","my","friend"], [10,24,30,13,7])
+print(myPlot)
+barplot!(myPlot, ["just", "dont", "!"], [2, 49, 15])
+@test_throws DimensionMismatch barplot!(myPlot, ["just", "dont", "!"], [2, 49])
+print(myPlot)
+print(barplot([5,4,3,2,1], [10,24,30,13,7]))
+print(barplot([5,4,3,2,1], [0,0,0,0,0]))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13]))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:none))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:solid))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], border=:dashed))
+print(barplot([:Please,:dont,:crash,:dude], [1,1,1,1000000], color=:red))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10, margin=0))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=10, margin=20))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,13], width=1))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,0], width=100))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="C'mon man, keep on going!"))
+print(barplot([:Please,:dont,:crash,:dude], [10,24,1,0], title="No lab", labels = false))
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,-1,1,1])
 @test_throws DimensionMismatch barplot([:Please,:dont,:crash,:dude], [10,1,1])
 @test_throws ArgumentError barplot([:Please,:dont,:crash,:dude], [10,24,1,0], margin=-1)
-barplot([:Please,:dont,:crash,:dude], [1.,.7,.1,.6], width=10)
-
-testD = if VERSION < v"0.4-"
-  ["Something"=>10, "other"=>32, "than"=>1, "before"=>20]
-else
-  Dict("Something"=>10, "other"=>32, "than"=>1, "before"=>20)
-end
-barplot(testD)
-barplot(testD,width=70)
-
+print(barplot([:Please,:dont,:crash,:dude], [1.,.7,.1,.6], width=10))
 
 x = [-1.,2, 3, 7]
 y = [1.,2, 9, 4]
@@ -135,7 +132,7 @@ print(myPlot)
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]
-myPlot = stairs(x, y, width = 10)
+myPlot = stairs(x, y, width = 10, padding = 3)
 annotate!(myPlot, :tl, "Hello")
 annotate!(myPlot, :t, "how are")
 annotate!(myPlot, :tr, "you?")

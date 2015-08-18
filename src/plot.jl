@@ -5,8 +5,8 @@ type Plot{T<:Canvas}
   margin::Int
   padding::Int
   border::Symbol
-  leftLabels::Vector{String}
-  rightLabels::Vector{String}
+  leftLabels::Dict{Int,String}
+  rightLabels::Dict{Int,String}
   decorations::Dict{Symbol,String}
   showLabels::Bool
 end
@@ -19,8 +19,8 @@ function Plot{T<:Canvas}(canvas::T;
                          showLabels=true)
   rows = nrows(canvas)
   cols = ncols(canvas)
-  leftLabels = fill("", rows)
-  rightLabels = fill("", rows)
+  leftLabels = Dict{Int,String}()
+  rightLabels = Dict{Int,String}()
   decorations = Dict{Symbol,String}()
   Plot{T}(canvas, title, margin, padding, border, leftLabels, rightLabels, decorations, showLabels)
 end
@@ -37,7 +37,7 @@ function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)
 end
 
 function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)
-  0 < row <= nrows(plot.canvas)
+  #0 < row <= nrows(plot.canvas)
   if where == :l
     plot.leftLabels[row] = value
   elseif where == :r
@@ -69,8 +69,8 @@ function show(io::IO, p::Plot)
   borderLength = ncols(c)
 
   # get length of largest strings to the left and right
-  maxLen = p.showLabels ? maximum([length(string(l)) for l in p.leftLabels]) : 0
-  maxLenR = p.showLabels ? maximum([length(string(l)) for l in p.rightLabels]) : 0
+  maxLen = p.showLabels && !isempty(p.leftLabels) ? maximum([length(string(l)) for l in values(p.leftLabels)]) : 0
+  maxLenR = p.showLabels && !isempty(p.rightLabels) ? maximum([length(string(l)) for l in values(p.rightLabels)]) : 0
 
   # offset where the plot (incl border) begins
   plotOffset = maxLen + p.margin + p.padding
@@ -95,7 +95,7 @@ function show(io::IO, p::Plot)
       cnt = safeRound(borderLength / 2 - topMidLen / 2 - topLeftLen)
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, topMidStr)
-      cnt = borderLength - topRightLen - topLeftLen - topMidLen + p.padding + 1 - cnt
+      cnt = borderLength - topRightLen - topLeftLen - topMidLen + 2 - cnt
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, topRightStr, "\n")
     end
@@ -106,8 +106,8 @@ function show(io::IO, p::Plot)
   # plot all rows
   for row in 1:nrows(c)
     # Current labels to left and right of the row and their length
-    tleftLabel = p.leftLabels[row]
-    tRightLabel = p.rightLabels[row]
+    tleftLabel = haskey(p.leftLabels,row) ? p.leftLabels[row] : ""
+    tRightLabel = haskey(p.rightLabels,row) ? p.rightLabels[row] : ""
     tLen = length(tleftLabel)
     tLenR = length(tRightLabel)
     # print left label
@@ -138,7 +138,7 @@ function show(io::IO, p::Plot)
       cnt = safeRound(borderLength / 2 - botMidLen / 2 - botLeftLen)
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, botMidStr)
-      cnt = borderLength - botRightLen - botLeftLen - botMidLen + p.padding + 1 - cnt
+      cnt = borderLength - botRightLen - botLeftLen - botMidLen + 2 - cnt
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, botRightStr, "\n")
     end
