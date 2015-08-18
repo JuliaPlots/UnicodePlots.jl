@@ -76,7 +76,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
-## Options
+### Options
 
 All plots support a common set of named parameters
 
@@ -114,7 +114,7 @@ All plots support a common set of named parameters
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
 
-## Methods
+### Methods
 
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
