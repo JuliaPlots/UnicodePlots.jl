@@ -9,8 +9,8 @@ else
 end
 const spceStr = " " #string(spce)
 
-signs = ['⡀' '⠄' '⠂' '⠁';
-         '⢀' '⠠' '⠐' '⠈']
+signs = ['⠁' '⠂' '⠄' '⡀';
+         '⠈' '⠐' '⠠' '⢀']
 
 abstract Canvas
 
@@ -45,7 +45,7 @@ ncols(c::BrailleCanvas) = size(c.grid,1)
 function printRow(io::IO, c::BrailleCanvas, row::Int)
   nunrows = nrows(c)
   0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = nunrows - row + 1
+  y = row
   for x in 1:ncols(c)
     printColor(c.colors[x,y], io, c.grid[x,y])
   end
@@ -106,7 +106,7 @@ function setPoint!(c::BrailleCanvas, plotX::FloatingPoint, plotY::FloatingPoint,
   plotXOffset = plotX - c.plotOriginX
   pixelX = plotXOffset / c.plotWidth * c.pixelWidth
   plotYOffset = plotY - c.plotOriginY
-  pixelY = plotYOffset / c.plotHeight * c.pixelHeight
+  pixelY = c.pixelHeight - plotYOffset / c.plotHeight * c.pixelHeight
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY), color)
 end
 
@@ -132,9 +132,9 @@ function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::
   toff = x2 - c.plotOriginX
   px2 = toff / c.plotWidth * c.pixelWidth
   toff = y1 - c.plotOriginY
-  py1 = toff / c.plotHeight * c.pixelHeight
+  py1 = c.pixelHeight - toff / c.plotHeight * c.pixelHeight
   toff = y2 - c.plotOriginY
-  py2 = toff / c.plotHeight * c.pixelHeight
+  py2 = c.pixelHeight - toff / c.plotHeight * c.pixelHeight
   dx = px2 - px1
   dy = py2 - py1
   nsteps = abs(dx) > abs(dy) ? abs(dx): abs(dy)
