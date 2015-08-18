@@ -108,9 +108,11 @@ end
 annotate!(myPlot, :l, 5, ":l  5")
 annotate!(myPlot, :r, 5, "5  :r")
 annotate!(myPlot, :bl, ":bl")
+annotate!(myPlot, :b, ":b")
 annotate!(myPlot, :br, ":br")
 annotate!(myPlot, :tl, ":tl")
 annotate!(myPlot, :tr, ":tr")
+annotate!(myPlot, :t, ":t")
 drawLine!(myPlot, 0., 1., 1., 0., :blue)
 setPoint!(myPlot, rand(10), rand(10))
 setPixel!(myPlot, 1, 1)
@@ -130,3 +132,15 @@ myPlot = lineplot(sin, 1:.5:10, color=:blue, labels = false)
 print(myPlot)
 lineplot!(myPlot, cos, 1:.5:10, color=:red)
 print(myPlot)
+
+x = [1,2, 4, 7, 8]
+y = [1,3, 4, 2, 7]
+myPlot = stairs(x, y, width = 10)
+annotate!(myPlot, :tl, "Hello")
+annotate!(myPlot, :t, "how are")
+annotate!(myPlot, :tr, "you?")
+annotate!(myPlot, :bl, "Hello")
+annotate!(myPlot, :b, "how are")
+annotate!(myPlot, :br, "you?")
+print(myPlot)
+

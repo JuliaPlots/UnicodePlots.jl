@@ -31,7 +31,7 @@ function setTitle!{T<:Canvas}(plot::Plot{T}, title::String)
 end
 
 function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)
-  where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :tr :bl :br"))
+  where == :t || where == :b || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
   plot.decorations[where] = value
   plot
 end
@@ -85,12 +85,17 @@ function show(io::IO, p::Plot)
   drawTitle(io, borderPadding, p.title, plotWidth = borderLength)
   if p.showLabels
     topLeftStr = haskey(p.decorations, :tl) ? p.decorations[:tl] : ""
+    topMidStr = haskey(p.decorations, :t) ? p.decorations[:t] : ""
     topRightStr = haskey(p.decorations, :tr) ? p.decorations[:tr] : ""
-    if topLeftStr != "" || topRightStr != ""
+    if topLeftStr != "" || topRightStr != "" || topMidStr != ""
       topLeftLen = length(topLeftStr)
+      topMidLen = length(topMidStr)
       topRightLen = length(topRightStr)
       print(io, borderPadding, topLeftStr)
-      cnt = borderLength - topRightLen - topLeftLen + p.padding + 1
+      cnt = safeRound(borderLength / 2 - topMidLen / 2 - topLeftLen)
+      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      print(io, pad, topMidStr)
+      cnt = borderLength - topRightLen - topLeftLen - topMidLen + p.padding + 1 - cnt
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, topRightStr, "\n")
     end
@@ -123,12 +128,17 @@ function show(io::IO, p::Plot)
   print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
   if p.showLabels
     botLeftStr = haskey(p.decorations, :bl) ? p.decorations[:bl] : ""
+    botMidStr = haskey(p.decorations, :b) ? p.decorations[:b] : ""
     botRightStr = haskey(p.decorations, :br) ? p.decorations[:br] : ""
-    if botLeftStr != "" || botRightStr != ""
+    if botLeftStr != "" || botRightStr != "" || botMidStr != ""
       botLeftLen = length(botLeftStr)
+      botMidLen = length(botMidStr)
       botRightLen = length(botRightStr)
       print(io, borderPadding, botLeftStr)
-      cnt = borderLength - botRightLen - botLeftLen + p.padding + 1
+      cnt = safeRound(borderLength / 2 - botMidLen / 2 - botLeftLen)
+      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      print(io, pad, botMidStr)
+      cnt = borderLength - botRightLen - botLeftLen - botMidLen + p.padding + 1 - cnt
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print(io, pad, botRightStr, "\n")
     end
