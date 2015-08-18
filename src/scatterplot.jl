@@ -38,6 +38,12 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   newPlot
 end
 
+function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+  X = convert(Vector{FloatingPoint},X)
+  Y = convert(Vector{FloatingPoint},Y)
+  setPoint!(plot, X, Y, color)
+end
+
 function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
@@ -45,7 +51,12 @@ function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=
   maxX = maximum(X); maxY = maximum(Y)
   newPlot = createPlotWindow(X, Y; args...)
   setPoint!(newPlot, X, Y, color)
-  newPlot
+end
+
+function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+  X = convert(Vector{FloatingPoint},X)
+  Y = convert(Vector{FloatingPoint},Y)
+  drawLine!(plot, X, Y, color)
 end
 
 function lineplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
@@ -53,7 +64,11 @@ function lineplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:wh
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
   drawLine!(newPlot, X, Y, color)
-  newPlot
+end
+
+function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, X::Range; args...)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot!(plot, collect(X), y; args...)
 end
 
 function lineplot(Y::Function, X::Range; args...)
@@ -61,9 +76,20 @@ function lineplot(Y::Function, X::Range; args...)
   lineplot(collect(X), y; args...)
 end
 
+function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::Vector{R}; args...)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot!(plot, X, y; args...)
+end
+
 function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   lineplot(X, y; args...)
+end
+
+function lineplot!{T<:Canvas,R<:Real,S<:Real}(plot::Plot{T}, Y::Function, startx::R, endx::S, step::Real = 1.; args...)
+  rnge = startx:endx
+  y = convert(Vector{Float64}, [Y(i) for i in startx:step:endx])
+  lineplot!(plot, collect(rnge), y; args...)
 end
 
 function lineplot{R<:Real,S<:Real}(Y::Function, startx::R, endx::S, step::Real = 1.; args...)
@@ -72,8 +98,24 @@ function lineplot{R<:Real,S<:Real}(Y::Function, startx::R, endx::S, step::Real =
   lineplot(collect(rnge), y; args...)
 end
 
+function stairs!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; args...)
+  xVec = zeros(length(X) * 2 - 1)
+  yVec = zeros(length(X) * 2 - 1)
+  xVec[1] = X[1]
+  yVec[1] = Y[1]
+  o = 0
+  for i = 2:(length(X))
+    xVec[i + o] = X[i]
+    xVec[i + o + 1] = X[i]
+    yVec[i + o] = Y[i-1]
+    yVec[i + o + 1] = Y[i]
+    o += 1
+  end
+  lineplot!(plot, xVec, yVec; args...)
+end
+
 function stairs{F<:Real,R<:Real}(X::Vector{F},Y::Vector{R}; args...)
-  xVec = zeros(length(X) * 2- 1)
+  xVec = zeros(length(X) * 2 - 1)
   yVec = zeros(length(X) * 2 - 1)
   xVec[1] = X[1]
   yVec[1] = Y[1]

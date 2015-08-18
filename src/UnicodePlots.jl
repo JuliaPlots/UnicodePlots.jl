@@ -8,6 +8,7 @@ export Plot
 export annotate!, setTitle!
 
 export barplot, lineplot, scatterplot, stairs
+export barplot, lineplot!, scatterplot!, stairs!
 
 include("common.jl")
 include("canvas.jl")

@@ -102,8 +102,8 @@ drawLine!(canvas, 0., 2., .5, 0., :yellow)
 show(STDOUT, canvas)
 myPlot = Plot(canvas, title="testtitle")
 for i in 1:10
-    annotate!(myPlot, :l, i, "$i")
-    annotate!(myPlot, :r, i, "$i")
+  annotate!(myPlot, :l, i, "$i")
+  annotate!(myPlot, :r, i, "$i")
 end
 annotate!(myPlot, :l, 5, ":l  5")
 annotate!(myPlot, :r, 5, "5  :r")
@@ -118,3 +118,15 @@ setPixel!(myPlot, 1, 1, :green)
 setPixel!(myPlot, 1, 1, color=:green)
 setTitle!(myPlot, "setTitle!(plot, title)")
 show(STDOUT, myPlot)
+
+x = [1,2, 4, 7, 8]
+y = [1,3, 4, 2, 7]
+myPlot = stairs(x, y)
+print(myPlot)
+stairs!(myPlot, x- .2, y + 1.5)
+print(myPlot)
+
+myPlot = lineplot(sin, 1:.5:10, color=:blue, labels = false)
+print(myPlot)
+lineplot!(myPlot, cos, 1:.5:10, color=:red)
+print(myPlot)
