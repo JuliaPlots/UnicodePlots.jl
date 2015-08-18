@@ -118,6 +118,10 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
+- `setTitle!{T<:Canvas}(plot::Plot{T}, title::String)`
+
+    - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
     - `where` can be any of: `:tl` (top-left), `:tr` (top-right), `:bl` (bottom-left), `:br` (bottom-right)
