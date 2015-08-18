@@ -94,7 +94,7 @@ All plots support a common set of named parameters
 
     Number of rows that should be used for plotting. Not applicable to `barplot`.
 
-    ![Height Screenshot](doc/img/heiht.png)
+    ![Height Screenshot](doc/img/height.png)
 
 - `margin::Int = 3`:
 
