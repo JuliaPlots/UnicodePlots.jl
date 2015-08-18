@@ -22,6 +22,7 @@ There are a couple of ways to generate typical plots without much verbosity. The
   - Barplot (horizontal)
   - Staircase Plot
   - Histogram (horizontal)
+  - Sparsity Pattern
 
 Here is a quick hello world example of a typical use-case:
 
@@ -82,7 +83,14 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 ```Julia
 histogram(rand(1000), bins=5, title="Histogram")
 ```
-![Historgram Screenshot](doc/img/hist.png)
+![Histogram Screenshot](doc/img/hist.png)
+
+#### Sparsity Pattern
+
+```Julia
+spy(sprand(100,100,.15))
+```
+![Spy Screenshot](doc/img/spy.png)
 
 ### Options
 

@@ -10,6 +10,8 @@ export annotate!, setTitle!
 export barplot, lineplot, scatterplot, stairs, histogram
 export barplot!, lineplot!, scatterplot!, stairs!
 
+export spy
+
 include("common.jl")
 include("canvas.jl")
 include("braillecanvas.jl")
@@ -17,5 +19,5 @@ include("plot.jl")
 include("barplot.jl")
 include("histogram.jl")
 include("scatterplot.jl")
-
+include("spy.jl")
 end # module

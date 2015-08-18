@@ -142,3 +142,5 @@ annotate!(myPlot, :br, "you?")
 print(myPlot)
 
 print(histogram(rand(1000), bins=10, title="Histogram"))
+
+print(spy(sprand(100,100,.15)))
