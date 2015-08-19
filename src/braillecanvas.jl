@@ -40,18 +40,6 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
   BrailleCanvas(grid, colors, pixelWidth, pixelHeight, plotOriginX, plotOriginY, plotWidth, plotHeight)
 end
 
-nrows(c::BrailleCanvas) = size(c.grid,2)
-ncols(c::BrailleCanvas) = size(c.grid,1)
-
-function printRow(io::IO, c::BrailleCanvas, row::Int)
-  nunrows = nrows(c)
-  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = row
-  for x in 1:ncols(c)
-    printColor(c.colors[x,y], io, c.grid[x,y])
-  end
-end
-
 function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   0 <= pixelX <= c.pixelWidth || return nothing
   0 <= pixelY <= c.pixelHeight || return nothing
@@ -76,11 +64,11 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   c
 end
 
-function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int; color::Symbol=:white)
+function setPixel!(c::Canvas, pixelX::Int, pixelY::Int; color::Symbol=:white)
   setPixel!(c, pixelX, pixelY, color)
 end
 
-function setPoint!(c::BrailleCanvas, plotX::FloatingPoint, plotY::FloatingPoint, color::Symbol)
+function setPoint!(c::Canvas, plotX::FloatingPoint, plotY::FloatingPoint, color::Symbol)
   c.plotOriginX <= plotX < c.plotOriginX + c.plotWidth || return nothing
   c.plotOriginY <= plotY < c.plotOriginY + c.plotHeight || return nothing
   plotXOffset = plotX - c.plotOriginX
@@ -90,23 +78,24 @@ function setPoint!(c::BrailleCanvas, plotX::FloatingPoint, plotY::FloatingPoint,
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY), color)
 end
 
-function setPoint!(c::BrailleCanvas, plotX::FloatingPoint, plotY::FloatingPoint; color::Symbol=:white)
+function setPoint!(c::Canvas, plotX::FloatingPoint, plotY::FloatingPoint; color::Symbol=:white)
   setPoint!(c, plotX, plotY, color)
 end
 
-function setPoint!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
+function setPoint!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   for i in 1:length(X)
     setPoint!(c, X[i], Y[i], color)
   end
+  c
 end
 
-function setPoint!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R}; color::Symbol=:white)
+function setPoint!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color::Symbol=:white)
   setPoint!(c, X, Y, color)
 end
 
 # Implementation of the digital differential analyser (DDA)
-function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
+function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
   toff = x1 - c.plotOriginX
   px1 = toff / c.plotWidth * c.pixelWidth
   toff = x2 - c.plotOriginX
@@ -133,17 +122,18 @@ function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::
   c
 end
 
-function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
+function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
   drawLine!(c, x1, y1, x2, y2, color)
 end
 
-function drawLine!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
+function drawLine!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   for i in 1:(length(X)-1)
     drawLine!(c, X[i], Y[i], X[i+1], Y[i+1], color)
   end
+  c
 end
 
-function drawLine!{F<:Real,R<:Real}(c::BrailleCanvas, X::Vector{F}, Y::Vector{R}; color::Symbol=:white)
+function drawLine!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color::Symbol=:white)
   drawLine!(c, X, Y, color)
 end

@@ -144,3 +144,18 @@ print(myPlot)
 print(histogram(rand(1000), bins=10, title="Histogram"))
 
 print(spy(sprand(100,100,.15)))
+
+x1, y1 = rand(500)*10, rand(500)*10
+x2, y2 = rand(1000)*6+1, rand(1000)*6+1
+canvas = BrailleCanvas(40, 20,
+                       plotOriginX = 0., plotOriginY = 0.,
+                       plotWidth = 10., plotHeight = 10.)
+setPoint!(canvas, x1, y1, :red)
+setPoint!(canvas, x2, y2, :blue)
+show(canvas)
+canvas = DensityCanvas(40, 20,
+                       plotOriginX = 0., plotOriginY = 0.,
+                       plotWidth = 10., plotHeight = 10.)
+setPoint!(canvas, x1, y1, :red)
+setPoint!(canvas, x2, y2, :blue)
+show(canvas)
