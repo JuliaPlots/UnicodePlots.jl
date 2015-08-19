@@ -124,11 +124,11 @@ function drawLine!{F<:FloatingPoint}(c::BrailleCanvas, x1::F, y1::F, x2::F, y2::
   curY = py1
   fpw = convert(FloatingPoint, c.pixelWidth)
   fph = convert(FloatingPoint, c.pixelHeight)
-  setPixel!(c, safeRound(curX), safeRound(curY), color)
+  setPixel!(c, safeFloor(curX), safeFloor(curY), color)
   for i = 1:nsteps
     curX += incX
     curY += incY
-    setPixel!(c, safeRound(curX), safeRound(curY), color)
+    setPixel!(c, safeFloor(curX), safeFloor(curY), color)
   end
   c
 end
