@@ -22,12 +22,14 @@ function addRow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
   append!(c.bars, bars)
   c.maxFreq = maximum(c.bars)
   c.maxFreqLen = length(string(c.maxFreq))
+  c
 end
 
 function addRow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
   push!(c.bars, bar)
   c.maxFreq = max(c.maxFreq, bar)
   c.maxFreqLen = length(string(c.maxFreq))
+  c
 end
 
 nrows(c::BarplotGraphics) = length(c.bars)
@@ -49,10 +51,10 @@ function printRow(io::IO, c::BarplotGraphics, row::Int)
 end
 
 function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
-                          border=:solid, title::String="",
-                          margin::Int=3, padding::Int=1,
-                          color::Symbol=:blue, width::Int=40,
-                          labels::Bool=true, symb="▪")
+                                    border=:solid, title::String="",
+                                    margin::Int=3, padding::Int=1,
+                                    color::Symbol=:blue, width::Int=40,
+                                    labels::Bool=true, symb="▪")
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
@@ -68,9 +70,9 @@ function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
 end
 
 function barplot!{C<:BarplotGraphics,T<:String,N<:Real}(plot::Plot{C},
-                                                      text::Vector{T},
-                                                      heights::Vector{N};
-                                                      args...)
+                                                        text::Vector{T},
+                                                        heights::Vector{N};
+                                                        args...)
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   !isempty(text)|| throw(ArgumentError("Can't append empty array to barplot"))
   curIdx = nrows(plot.graphics)
