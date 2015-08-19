@@ -42,7 +42,7 @@ annotate!(myPlot, :r, 4, "blue ... Curve 2")
 Creates a new scatter plot (point cloud), centers it on the given data points, and returns the new plot.
 
 ```Julia
-scatterplot([1,2,5], [9, -1, 3], title = "My Scatterplot")
+scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot")
 ```
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
@@ -221,7 +221,7 @@ At the moment there are two types of Canvas implemented:
 
 ## Todo
 
-- [ ] Better rounding for labels
+- [x] Better rounding for labels
 - [x] Color support for `lineplot` and `scatterplot`
 - [x] Improve documentation
 - [x] Screenshots for all different plot options (e.g. border)
@@ -230,7 +230,7 @@ At the moment there are two types of Canvas implemented:
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
 - [x] Color cleanup: standard to white, no explicit color for border
-- [ ] Add canvas for 2d density plots
+- [x] Add canvas for 2d density plots
 - [ ] Add heatmaps and hinton diagrams
 
 ## License
