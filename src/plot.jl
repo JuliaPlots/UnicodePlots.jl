@@ -115,7 +115,7 @@ function show(io::IO, p::Plot)
     #print right label and padding
     print(io, b[:r])
     p.showLabels && print(io, plotPadding, tRightLabel, repeat(spceStr, maxLenR - tLenR))
-    print("\n")
+    print(io, "\n")
   end
 
   # draw bottom border and bottom labels
