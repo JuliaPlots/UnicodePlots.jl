@@ -7,7 +7,7 @@ export printRow, nrows, ncols
 export Plot
 export annotate!, setTitle!
 
-export barplot, lineplot, scatterplot, stairs, histogram
+export barplot, lineplot, scatterplot, stairs, histogram, densityplot
 export barplot!, lineplot!, scatterplot!, stairs!
 
 export spy
@@ -20,5 +20,6 @@ include("plot.jl")
 include("barplot.jl")
 include("histogram.jl")
 include("scatterplot.jl")
+include("densityplot.jl")
 include("spy.jl")
 end # module

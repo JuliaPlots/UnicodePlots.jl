@@ -15,6 +15,29 @@ function safeFloor(num)
   end
 end
 
+function safeCeil(num)
+  if VERSION < v"0.4-"
+    iceil(num)
+  else
+    ceil(Integer,num)
+  end
+end
+
+magnitude{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
+floatround{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? round(x, magnitude(m)+1) : -round(-x, magnitude(m)+1)
+floatfloor{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? floor(x, magnitude(m)) : -ceil(-x, magnitude(m))
+floatceil{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? ceil(x, magnitude(m)) : -floor(-x, magnitude(m))
+floatround{F<:FloatingPoint}(x::F) = x > 0 ? floatround(x,x): floatround(x,-x)
+floatfloor{F<:FloatingPoint}(x::F) = x > 0 ? floatfloor(x,x): floatfloor(x,-x)
+floatceil{F<:FloatingPoint}(x::F) = x > 0 ? floatceil(x,x): floatceil(x,-x)
+
+function plottingRange{F<:FloatingPoint,R<:FloatingPoint}(xmin::F, xmax::R)
+  diffX = xmax - xmin
+  xmin = floatfloor(xmin, diffX)
+  xmax = floatceil(xmax, diffX)
+  xmin, xmax
+end
+
 borderMap=Dict{Symbol,Dict{Symbol,String}}()
 borderSolid=Dict{Symbol,String}()
 borderSolid[:tl]="┌"

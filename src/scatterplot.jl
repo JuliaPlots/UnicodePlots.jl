@@ -10,10 +10,10 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   height = max(height, 5)
   minX = minimum(X); minY = minimum(Y)
   maxX = maximum(X); maxY = maximum(Y)
-  diffX = maxX - minX; diffY = maxY - minY
-  padX = 0.01 * diffX; padY = 0.01 * diffY
-  plotOriginX = minX - padX; plotWidth = maxX - plotOriginX + padX
-  plotOriginY = minY - padY; plotHeight = maxY - plotOriginY + padY
+  minX, maxX = plottingRange(minX, maxX)
+  minY, maxY = plottingRange(minY, maxY)
+  plotOriginX = minX; plotWidth = maxX - plotOriginX
+  plotOriginY = minY; plotHeight = maxY - plotOriginY
 
   canvas = BrailleCanvas(width, height,
                          plotOriginX = plotOriginX, plotOriginY = plotOriginY,
@@ -21,8 +21,10 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   newPlot = Plot(canvas, title=title, margin=margin,
                  padding=padding, border=border, showLabels=labels)
 
-  minXString=string(minX); maxXString=string(maxX)
-  minYString=string(minY); maxYString=string(maxY)
+  minXString=string(isinteger(minX) ? safeRound(minX) : minX)
+  maxXString=string(isinteger(maxX) ? safeRound(maxX) : maxX)
+  minYString=string(isinteger(minY) ? safeRound(minY) : minY)
+  maxYString=string(isinteger(maxY) ? safeRound(maxY) : maxY)
   annotate!(newPlot, :l, 1, maxYString)
   annotate!(newPlot, :l, height, minYString)
   annotate!(newPlot, :bl, minXString)
@@ -84,15 +86,15 @@ function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
 end
 
 function lineplot!{T<:Canvas,R<:Real,S<:Real}(plot::Plot{T}, Y::Function, startx::R, endx::S, step::Real = 1.; args...)
-  rnge = startx:endx
-  y = convert(Vector{Float64}, [Y(i) for i in startx:step:endx])
-  lineplot!(plot, collect(rnge), y; args...)
+  X = collect(startx:step:endx)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot!(plot, X, y; args...)
 end
 
 function lineplot{R<:Real,S<:Real}(Y::Function, startx::R, endx::S, step::Real = 1.; args...)
-  rnge = startx:endx
-  y = convert(Vector{Float64}, [Y(i) for i in startx:step:endx])
-  lineplot(collect(rnge), y; args...)
+  X = collect(startx:step:endx)
+  y = convert(Vector{Float64}, [Y(i) for i in X])
+  lineplot(X, y; args...)
 end
 
 function stairs!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; args...)

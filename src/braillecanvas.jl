@@ -8,11 +8,6 @@ end
 signs = ['⠁' '⠂' '⠄' '⡀';
          '⠈' '⠐' '⠠' '⢀']
 
-const spce = if VERSION < v"0.4-"
-  char(0x2800)
-else
-  Char(0x2800)
-end
 type BrailleCanvas <: Canvas
   grid::Array{Char,2}
   colors::Array{Uint8,2}
@@ -29,8 +24,8 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
                        plotOriginY::FloatingPoint = 0.,
                        plotWidth::FloatingPoint = 1.,
                        plotHeight::FloatingPoint = 1.)
-  charWidth = charWidth < 5 ? 5 : charWidth
-  charHeight = charHeight < 5 ? 5 : charHeight
+  charWidth = max(charWidth, 5)
+  charHeight = max(charHeight, 5)
   pixelWidth = charWidth * 2
   pixelHeight = charHeight * 4
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))

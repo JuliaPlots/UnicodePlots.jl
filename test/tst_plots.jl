@@ -65,7 +65,9 @@ print(scatterplot(x, y))
 x = [1.,2, 3, 7]
 y = [1,2, -1, 4]
 print(scatterplot(x, y))
-print(lineplot(x, y))
+print(scatterplot(x*.001+1.1, y))
+print(lineplot(x, y*20+1000))
+print(lineplot(x+1000, -y))
 
 print(lineplot(sin, 1:.5:10))
 print(lineplot(sin, 1:.5:10, labels = false))
@@ -125,7 +127,7 @@ print(myPlot)
 stairs!(myPlot, x- .2, y + 1.5)
 print(myPlot)
 
-myPlot = lineplot(sin, 1:.5:10, color=:blue, labels = false)
+myPlot = lineplot(sin, 1:.5:12, color=:blue)
 print(myPlot)
 lineplot!(myPlot, cos, 1:.5:10, color=:red)
 print(myPlot)
@@ -153,9 +155,6 @@ canvas = BrailleCanvas(40, 20,
 setPoint!(canvas, x1, y1, :red)
 setPoint!(canvas, x2, y2, :blue)
 show(canvas)
-canvas = DensityCanvas(40, 20,
-                       plotOriginX = 0., plotOriginY = 0.,
-                       plotWidth = 10., plotHeight = 10.)
-setPoint!(canvas, x1, y1, :red)
-setPoint!(canvas, x2, y2, :blue)
-show(canvas)
+myPlot = densityplot(x1,y1)
+setPoint!(myPlot, x2, y2, :blue)
+show(myPlot)

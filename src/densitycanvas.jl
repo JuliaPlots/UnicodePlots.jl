@@ -17,8 +17,8 @@ function DensityCanvas(charWidth::Int, charHeight::Int;
                        plotOriginY::FloatingPoint = 0.,
                        plotWidth::FloatingPoint = 1.,
                        plotHeight::FloatingPoint = 1.)
-  charWidth = charWidth < 5 ? 5 : charWidth
-  charHeight = charHeight < 5 ? 5 : charHeight
+  charWidth = max(charWidth, 5)
+  charHeight = max(charHeight, 5)
   pixelWidth = charWidth
   pixelHeight = charHeight * 2
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
