@@ -1,4 +1,4 @@
-type BarplotCanvas{R<:Real} <: Canvas
+type BarplotGraphics{R<:Real} <: GraphicsArea
   bars::Vector{R}
   color::Symbol
   charWidth::Int
@@ -6,7 +6,7 @@ type BarplotCanvas{R<:Real} <: Canvas
   maxFreqLen::R
   symb::String
 
-  function BarplotCanvas(bars::Vector{R}, charWidth::Int, color::Symbol=:blue, symb="▪")
+  function BarplotGraphics(bars::Vector{R}, charWidth::Int, color::Symbol=:blue, symb="▪")
     charWidth = max(charWidth, 5)
     maxFreq = maximum(bars)
     maxFreqLen = length(string(maxFreq))
@@ -14,26 +14,26 @@ type BarplotCanvas{R<:Real} <: Canvas
   end
 end
 
-function BarplotCanvas{R<:Real}(bars::Vector{R}, charWidth::Int; color::Symbol=:blue, symb="▪")
-  BarplotCanvas{R}(bars, charWidth, color, symb)
+function BarplotGraphics{R<:Real}(bars::Vector{R}, charWidth::Int; color::Symbol=:blue, symb="▪")
+  BarplotGraphics{R}(bars, charWidth, color, symb)
 end
 
-function addRow!{R<:Real}(c::BarplotCanvas{R}, bars::Vector{R})
+function addRow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
   append!(c.bars, bars)
   c.maxFreq = maximum(c.bars)
   c.maxFreqLen = length(string(c.maxFreq))
 end
 
-function addRow!{R<:Real}(c::BarplotCanvas{R}, bar::R)
+function addRow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
   push!(c.bars, bar)
   c.maxFreq = max(c.maxFreq, bar)
   c.maxFreqLen = length(string(c.maxFreq))
 end
 
-nrows(c::BarplotCanvas) = length(c.bars)
-ncols(c::BarplotCanvas) = c.charWidth
+nrows(c::BarplotGraphics) = length(c.bars)
+ncols(c::BarplotGraphics) = c.charWidth
 
-function printRow(io::IO, c::BarplotCanvas, row::Int)
+function printRow(io::IO, c::BarplotGraphics, row::Int)
   numrows = nrows(c)
   0 < row <= numrows || throw(ArgumentError("Argument row out of bounds: $row"))
   bar = c.bars[row]
@@ -58,8 +58,8 @@ function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
   minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
   width = max(width, 5)
 
-  canvas = BarplotCanvas(heights, width, color = color, symb = symb)
-  newPlot = Plot(canvas, title=title, margin=margin,
+  area = BarplotGraphics(heights, width, color = color, symb = symb)
+  newPlot = Plot(area, title=title, margin=margin,
                  padding=padding, border=border, showLabels=labels)
   for i in 1:length(text)
     annotate!(newPlot, :l, i, text[i])
@@ -67,14 +67,14 @@ function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
   newPlot
 end
 
-function barplot!{C<:BarplotCanvas,T<:String,N<:Real}(plot::Plot{C},
+function barplot!{C<:BarplotGraphics,T<:String,N<:Real}(plot::Plot{C},
                                                       text::Vector{T},
                                                       heights::Vector{N};
                                                       args...)
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   !isempty(text)|| throw(ArgumentError("Can't append empty array to barplot"))
-  curIdx = nrows(plot.canvas)
-  addRow!(plot.canvas, heights)
+  curIdx = nrows(plot.graphics)
+  addRow!(plot.graphics, heights)
   for i = 1:length(heights)
     annotate!(plot, :l, curIdx + i, text[i])
   end

@@ -1,4 +1,18 @@
 
+const spce = if VERSION < v"0.4-"
+  char(0x2800)
+else
+  Char(0x2800)
+end
+
+signs = ['⠁' '⠂' '⠄' '⡀';
+         '⠈' '⠐' '⠠' '⢀']
+
+const spce = if VERSION < v"0.4-"
+  char(0x2800)
+else
+  Char(0x2800)
+end
 type BrailleCanvas <: Canvas
   grid::Array{Char,2}
   colors::Array{Uint8,2}

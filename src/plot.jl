@@ -1,6 +1,6 @@
 
-type Plot{T<:Canvas}
-  canvas::T
+type Plot{T<:GraphicsArea}
+  graphics::T
   title::String
   margin::Int
   padding::Int
@@ -11,32 +11,32 @@ type Plot{T<:Canvas}
   showLabels::Bool
 end
 
-function Plot{T<:Canvas}(canvas::T;
+function Plot{T<:GraphicsArea}(graphics::T;
                          title::String="",
                          margin::Int=3,
                          padding::Int=1,
                          border::Symbol=:solid,
                          showLabels=true)
-  rows = nrows(canvas)
-  cols = ncols(canvas)
+  rows = nrows(graphics)
+  cols = ncols(graphics)
   leftLabels = Dict{Int,String}()
   rightLabels = Dict{Int,String}()
   decorations = Dict{Symbol,String}()
-  Plot{T}(canvas, title, margin, padding, border, leftLabels, rightLabels, decorations, showLabels)
+  Plot{T}(graphics, title, margin, padding, border, leftLabels, rightLabels, decorations, showLabels)
 end
 
-function setTitle!{T<:Canvas}(plot::Plot{T}, title::String)
+function setTitle!{T<:GraphicsArea}(plot::Plot{T}, title::String)
   plot.title = title
   plot
 end
 
-function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String)
   where == :t || where == :b || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
   plot.decorations[where] = value
   plot
 end
 
-function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::String)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::String)
   #0 < row <= nrows(plot.canvas)
   if where == :l
     plot.leftLabels[row] = value
@@ -49,23 +49,23 @@ function annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, row::Int, value::Str
 end
 
 function drawLine!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  drawLine!(plot.canvas, args...; vars...)
+  drawLine!(plot.graphics, args...; vars...)
   plot
 end
 
 function setPixel!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  setPixel!(plot.canvas, args...; vars...)
+  setPixel!(plot.graphics, args...; vars...)
   plot
 end
 
 function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  setPoint!(plot.canvas, args...; vars...)
+  setPoint!(plot.graphics, args...; vars...)
   plot
 end
 
 function show(io::IO, p::Plot)
   b = borderMap[p.border]
-  c = p.canvas
+  c = p.graphics
   borderLength = ncols(c)
 
   # get length of largest strings to the left and right

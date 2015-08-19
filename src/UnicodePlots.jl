@@ -1,6 +1,6 @@
 module UnicodePlots
 
-export Canvas, BrailleCanvas, BarplotCanvas
+export Canvas, BrailleCanvas, BarplotCanvas, DensityCanvas
 export setPixel!, setPoint!, drawLine!, addRow!
 export printRow, nrows, ncols
 
@@ -15,6 +15,7 @@ export spy
 include("common.jl")
 include("canvas.jl")
 include("braillecanvas.jl")
+include("densitycanvas.jl")
 include("plot.jl")
 include("barplot.jl")
 include("histogram.jl")

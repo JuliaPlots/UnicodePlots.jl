@@ -2,26 +2,19 @@
 import Base.show
 import Base.print
 
-const spce = if VERSION < v"0.4-"
-  char(0x2800)
-else
-  Char(0x2800)
-end
 const spceStr = " " #string(spce)
 
-signs = ['⠁' '⠂' '⠄' '⡀';
-         '⠈' '⠐' '⠠' '⢀']
+abstract GraphicsArea
+abstract Canvas <: GraphicsArea
 
-abstract Canvas
-
-function print(io::IO, c::Canvas)
+function print(io::IO, c::GraphicsArea)
   for row in 1:nrows(c)
     printRow(io, c, row)
     print(io, "\n")
   end
 end
 
-function show(io::IO, c::Canvas)
+function show(io::IO, c::GraphicsArea)
   b = borderDashed
   borderLength = ncols(c)
   drawBorderTop(io, "", borderLength, :solid)
@@ -33,4 +26,16 @@ function show(io::IO, c::Canvas)
   end
   drawBorderBottom(io, "", borderLength, :solid)
   print(io, "\n")
+end
+
+nrows(c::Canvas) = size(c.grid,2)
+ncols(c::Canvas) = size(c.grid,1)
+
+function printRow(io::IO, c::Canvas, row::Int)
+  nunrows = nrows(c)
+  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+  y = row
+  for x in 1:ncols(c)
+    printColor(c.colors[x,y], io, c.grid[x,y])
+  end
 end
