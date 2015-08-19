@@ -155,6 +155,6 @@ canvas = BrailleCanvas(40, 20,
 setPoint!(canvas, x1, y1, :red)
 setPoint!(canvas, x2, y2, :blue)
 show(canvas)
-myPlot = densityplot(x1,y1)
+myPlot = densityplot(x1,y1, color = :red)
 setPoint!(myPlot, x2, y2, :blue)
 show(myPlot)

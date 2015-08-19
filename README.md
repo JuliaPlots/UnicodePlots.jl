@@ -23,6 +23,7 @@ There are a couple of ways to generate typical plots without much verbosity. The
   - Staircase Plot
   - Histogram (horizontal)
   - Sparsity Pattern
+  - Density Plot
 
 Here is a quick hello world example of a typical use-case:
 
@@ -78,7 +79,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
-#### Historgram
+#### Histogram
 
 ```Julia
 histogram(rand(1000), bins=10, title="Histogram")
@@ -91,6 +92,16 @@ histogram(rand(1000), bins=10, title="Histogram")
 spy(sprand(100,100,.15))
 ```
 ![Spy Screenshot](doc/img/spy.png)
+
+#### Density Plot
+
+```Julia
+x1, y1 = rand(500)*10, rand(500)*10
+x2, y2 = rand(1000)*5+1, rand(1000)*5+1
+myPlot = densityplot(x1,y1, color = :red)
+setPoint!(myPlot, x2, y2, :blue)
+```
+![Density Screenshot](doc/img/density.png)
 
 ### Options
 
