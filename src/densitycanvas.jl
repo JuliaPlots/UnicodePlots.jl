@@ -20,7 +20,7 @@ function DensityCanvas(charWidth::Int, charHeight::Int;
   charWidth = charWidth < 5 ? 5 : charWidth
   charHeight = charHeight < 5 ? 5 : charHeight
   pixelWidth = charWidth
-  pixelHeight = charHeight
+  pixelHeight = charHeight * 2
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
   plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
   grid = fill(0, charWidth, charHeight)
