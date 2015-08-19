@@ -30,8 +30,8 @@ Here is a quick hello world example of a typical use-case:
 ```Julia
 myPlot = lineplot([1, 2, 3, 7], [1, 2, -5, 7], color=:red, title="My Plot")
 drawLine!(myPlot, 0., 9., 9., -11., :blue)
-annotate!(myPlot, :r, 2, "red  ... Curve 1")
-annotate!(myPlot, :r, 4, "blue ... Curve 2")
+annotate!(myPlot, :r, 2, "Curve 1", :red)
+annotate!(myPlot, :r, 4, "Curve 2", :blue)
 ```
 
 ![Basic Canvas](doc/img/hello_world.png)
