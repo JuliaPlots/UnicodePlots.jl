@@ -28,8 +28,8 @@ There are a couple of ways to generate typical plots without much verbosity. The
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
-myPlot = lineplot([1, 2, 3, 7], [1, 2, -1, 4], color=:red, title="My Plot")
-drawLine!(myPlot, 1., -1., 7., 2., :blue)
+myPlot = lineplot([1, 2, 3, 7], [1, 2, -5, 7], color=:red, title="My Plot")
+drawLine!(myPlot, 0., 9., 9., -11., :blue)
 annotate!(myPlot, :r, 2, "red  ... Curve 1")
 annotate!(myPlot, :r, 4, "blue ... Curve 2")
 ```
@@ -51,7 +51,7 @@ scatterplot([1,2,5], [9, -1, 3], title = "My Scatterplot")
 Accepts two numerical vector. The function will draw the line in the order of the given elements
 
 ```Julia
-lineplot([1,2,5], [9, -1, 3], title = "My Lineplot", width = 50)
+lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
 ```
 ![Lineplot Screenshot1](doc/img/line.png)
 
@@ -68,6 +68,11 @@ Granted, the labels could be better :-)
 
 Accepts either two vectors or a dictionary
 
+```Julia
+barplot(["Paris", "New York", "Moskau", "Madrid"],
+        [2.244, 8.406, 11.92, 3.165],
+        title = "Population")
+```
 ![Barplot Screenshot](doc/img/barplot.png)
 
 #### Staircase plot
@@ -89,7 +94,7 @@ histogram(rand(1000), bins=10, title="Histogram")
 #### Sparsity Pattern
 
 ```Julia
-spy(sprand(100,100,.15))
+spy(sprand(100, 100, .15))
 ```
 ![Spy Screenshot](doc/img/spy.png)
 
