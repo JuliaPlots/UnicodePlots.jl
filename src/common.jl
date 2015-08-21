@@ -23,8 +23,10 @@ function safeCeil(num)
   end
 end
 
+# these are all hacks
 magnitude{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
-floatround{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? round(x, magnitude(m)+1) : -round(-x, magnitude(m)+1)
+ceilgnitude{F<:FloatingPoint}(x::F) = safeCeil(-log10(x))
+floatround{F<:FloatingPoint,R<:Real}(x::F,m::R) = x==0.?0.: (x > 0 ? round(x, ceilgnitude(m)+1) : -round(-x, ceilgnitude(m)+1))
 floatfloor{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? floor(x, magnitude(m)) : -ceil(-x, magnitude(m))
 floatceil{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? ceil(x, magnitude(m)) : -floor(-x, magnitude(m))
 floatround{F<:FloatingPoint}(x::F) = x > 0 ? floatround(x,x): floatround(x,-x)

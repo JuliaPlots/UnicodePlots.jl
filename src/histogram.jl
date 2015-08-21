@@ -3,9 +3,10 @@
 function histogram(x, n::Int=5; args...)
   edges, counts = hist(x,n)
   labels = String[]
-  binwidth = (edges.step - edges.start) / edges.divisor
+  binwidth = edges.step / edges.divisor
   for i in 1:length(counts)
-    push!(labels, string("(",edges[i],",",floatround(edges[i]+binwidth),"]"))
+		val = floatround(edges[i])
+    push!(labels, string("(",val,",",floatround(val+binwidth),"]"))
   end
   barplot(labels, counts; symb="▇", args...)
 end
