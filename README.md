@@ -223,17 +223,13 @@ At the moment there are few types of Canvas implemented:
 
 ## Todo
 
-- [x] Better rounding for labels
-- [x] Color support for `lineplot` and `scatterplot`
-- [x] Improve documentation
-- [x] Screenshots for all different plot options (e.g. border)
+- [ ] Ability to specify `xlim` and `ylim`
+- [ ] Better automatic labels
 - [ ] Animated plots using cursor movement
-- [x] Refactor barplot to the new API
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
-- [x] Color cleanup: standard to white, no explicit color for border
-- [x] Add canvas for 2d density plots
 - [ ] Add heatmaps and hinton diagrams
+- [ ] Boxplots in some form
 
 ## License
 
