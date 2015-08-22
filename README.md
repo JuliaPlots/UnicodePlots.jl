@@ -15,7 +15,7 @@ using UnicodePlots
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without much verbosity. These are the four main high-level functions for typical scenarios:
+There are a couple of ways to generate typical plots without much verbosity. Here is a list of the main high-level functions for common scenarios:
 
   - Scatterplot
   - Lineplot
@@ -36,10 +36,15 @@ annotate!(myPlot, :r, 4, "Curve 2", :blue)
 
 ![Basic Canvas](doc/img/hello_world.png)
 
+Every plot has a mutating variant that ends with a exclamation mark.
+
+```Julia
+lineplot!(myPlot, [0, 5, 10], [10, -10, 10], color=:yellow, title="My Plot")
+```
+
+![Basic Canvas](doc/img/hello_world2.png)
 
 #### Scatterplot
-
-Creates a new scatter plot (point cloud), centers it on the given data points, and returns the new plot.
 
 ```Julia
 scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot")
@@ -47,8 +52,6 @@ scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot")
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
 #### Lineplot
-
-Accepts two numerical vector. The function will draw the line in the order of the given elements
 
 ```Julia
 lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
@@ -62,8 +65,6 @@ lineplot(sin, 1:.5:10, color = :green)
 ```
 ![Lineplot Screenshot2](doc/img/sin.png)
 
-Granted, the labels could be better :-)
-
 #### Barplot
 
 Accepts either two vectors or a dictionary
@@ -76,8 +77,6 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 ![Barplot Screenshot](doc/img/barplot.png)
 
 #### Staircase plot
-
-Accepts two vectors
 
 ```Julia
 stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
@@ -171,11 +170,11 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
 ### Methods
 
-The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
-
 - `setTitle!{T<:Canvas}(plot::Plot{T}, title::String)`
 
     - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+
+The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
 - `annotate!{T<:Canvas}(plot::Plot{T}, where::Symbol, value::String)`
 
@@ -211,13 +210,16 @@ As you can see, one issue that arises when multiple pixel are represented by one
 
 ![Blending Colors](doc/img/braille.png)
 
-At the moment there are two types of Canvas implemented:
+At the moment there are few types of Canvas implemented:
 
   - **BrailleCanvas**:
     This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 
-  - **BarplotCanvas**:
-    This canvas is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addRow!` which allows the user to add additional bars to the canvas
+  - **DensityCanvas**:
+    Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+
+  - **BarplotGraphics**:
+    This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addRow!` which allows the user to add additional bars to the canvas
 
 ## Todo
 
