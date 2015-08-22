@@ -22,4 +22,5 @@ include("histogram.jl")
 include("scatterplot.jl")
 include("densityplot.jl")
 include("spy.jl")
-end # module
+
+end

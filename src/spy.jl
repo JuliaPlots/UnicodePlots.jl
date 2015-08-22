@@ -1,16 +1,18 @@
 
 # code by dpo
 function spy(A::SparseMatrixCSC;
-             width::Int=40, height::Int=20,
-             color=:green, labels::Bool=true,
-             title::String="Sparsity Pattern",
+             width::Int = 40,
+             height::Int = 20,
+             color = :green,
+             labels::Bool = true,
+             title::String = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
   canvas = BrailleCanvas(width, height,
-                         plotWidth=float(ncol)+1,
-                         plotHeight=float(nrow)+1)
-  plot = Plot(canvas; showLabels=labels, title=title, args...)# title, margin, padding, border, labels)
+                         plotWidth = float(ncol) + 1,
+                         plotHeight = float(nrow) + 1)
+  plot = Plot(canvas; showLabels = labels, title = title, args...)
   setPoint!(plot,
             convert(Vector{FloatingPoint}, cols),
             nrow + 1 - convert(Vector{FloatingPoint}, rows),

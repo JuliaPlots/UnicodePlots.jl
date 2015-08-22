@@ -32,7 +32,10 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
   plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
   grid = fill(spce, charWidth, charHeight)
   colors = fill(0x00, charWidth, charHeight)
-  BrailleCanvas(grid, colors, pixelWidth, pixelHeight, plotOriginX, plotOriginY, plotWidth, plotHeight)
+  BrailleCanvas(grid, colors,
+                pixelWidth, pixelHeight,
+                plotOriginX, plotOriginY,
+                plotWidth, plotHeight)
 end
 
 function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
@@ -51,11 +54,10 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   charYOff = (pixelY % 4) + 1
   if VERSION < v"0.4-"
     c.grid[charX,charY] = c.grid[charX,charY] | signs[charXOff, charYOff]
-    c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   else
     c.grid[charX,charY] = Char(Uint64(c.grid[charX,charY]) | Uint64(signs[charXOff, charYOff]))
-    c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   end
+  c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   c
 end
 

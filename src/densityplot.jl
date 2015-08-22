@@ -1,8 +1,11 @@
 function createDensityWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
-                                            width::Int=40, height::Int=20,
-                                            margin::Int=3, padding::Int=1,
-                                            title::String="", border=:solid,
-                                            labels::Bool=true)
+                                               width::Int = 40,
+                                               height::Int = 20,
+                                               margin::Int = 3,
+                                               padding::Int = 1,
+                                               title::String = "",
+                                               border::Symbol = :solid,
+                                               labels::Bool = true)
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = max(width, 5)
@@ -29,14 +32,16 @@ function createDensityWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   annotate!(newPlot, :bl, minXString)
   annotate!(newPlot, :br, maxXString)
   if minY < 0 < maxY
-    for i in linspace(minX, maxX, width*2)
+    for i in linspace(minX, maxX, width * 2)
       setPoint!(newPlot, i, 0., :white)
     end
   end
   newPlot
 end
 
-function densityplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+function densityplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R};
+                                      color::Symbol = :white,
+                                      args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   minX = minimum(X); minY = minimum(Y)

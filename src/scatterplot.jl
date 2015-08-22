@@ -1,9 +1,12 @@
 
 function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
-                                            width::Int=40, height::Int=10,
-                                            margin::Int=3, padding::Int=1,
-                                            title::String="", border=:solid,
-                                            labels::Bool=true)
+                                            width::Int = 40,
+                                            height::Int = 10,
+                                            margin::Int = 3,
+                                            padding::Int = 1,
+                                            title::String = "",
+                                            border::Symbol = :solid,
+                                            labels::Bool = true)
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = max(width, 5)
@@ -113,7 +116,7 @@ function stairs!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vect
   lineplot!(plot, xVec, yVec; args...)
 end
 
-function stairs{F<:Real,R<:Real}(X::Vector{F},Y::Vector{R}; args...)
+function stairs{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; args...)
   xVec = zeros(length(X) * 2 - 1)
   yVec = zeros(length(X) * 2 - 1)
   xVec[1] = X[1]

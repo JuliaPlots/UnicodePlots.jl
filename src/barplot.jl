@@ -6,7 +6,10 @@ type BarplotGraphics{R<:Real} <: GraphicsArea
   maxFreqLen::R
   symb::String
 
-  function BarplotGraphics(bars::Vector{R}, charWidth::Int, color::Symbol=:blue, symb="▪")
+  function BarplotGraphics(bars::Vector{R},
+                           charWidth::Int,
+                           color::Symbol = :blue,
+                           symb = "▪")
     charWidth = max(charWidth, 5)
     maxFreq = maximum(bars)
     maxFreqLen = length(string(maxFreq))
@@ -14,7 +17,10 @@ type BarplotGraphics{R<:Real} <: GraphicsArea
   end
 end
 
-function BarplotGraphics{R<:Real}(bars::Vector{R}, charWidth::Int; color::Symbol=:blue, symb="▪")
+function BarplotGraphics{R<:Real}(bars::Vector{R},
+                                  charWidth::Int;
+                                  color::Symbol = :blue,
+                                  symb = "▪")
   BarplotGraphics{R}(bars, charWidth, color, symb)
 end
 
@@ -51,10 +57,14 @@ function printRow(io::IO, c::BarplotGraphics, row::Int)
 end
 
 function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
-                                    border=:solid, title::String="",
-                                    margin::Int=3, padding::Int=1,
-                                    color::Symbol=:blue, width::Int=40,
-                                    labels::Bool=true, symb="▪")
+                                    border = :solid,
+                                    title::String = "",
+                                    margin::Int = 3,
+                                    padding::Int = 1,
+                                    color::Symbol = :blue,
+                                    width::Int = 40,
+                                    labels::Bool = true,
+                                    symb = "▪")
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))

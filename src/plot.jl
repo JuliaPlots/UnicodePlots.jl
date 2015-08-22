@@ -15,11 +15,11 @@ type Plot{T<:GraphicsArea}
 end
 
 function Plot{T<:GraphicsArea}(graphics::T;
-                         title::String="",
-                         margin::Int=3,
-                         padding::Int=1,
-                         border::Symbol=:solid,
-                         showLabels=true)
+                               title::String = "",
+                               margin::Int = 3,
+                               padding::Int = 1,
+                               border::Symbol = :solid,
+                               showLabels = true)
   rows = nrows(graphics)
   cols = ncols(graphics)
   leftLabels = Dict{Int,String}()
@@ -50,7 +50,6 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String;
 end
 
 function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::String, color::Symbol=:white)
-  #0 < row <= nrows(plot.canvas)
   if where == :l
     plot.leftLabels[row] = value
     plot.leftColors[row] = color
@@ -80,6 +79,25 @@ end
 function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
   setPoint!(plot.graphics, args...; vars...)
   plot
+end
+
+function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
+  if title != ""
+    offset = safeRound(plotWidth / 2 - length(title) / 2)
+    offset = offset > 0 ? offset: 0
+    tpad = repeat(spceStr, offset)
+    print_with_color(:white, io, padding, tpad, title, "\n")
+  end
+end
+
+function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
+  b = borderMap[border]
+  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+end
+
+function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
+  b = borderMap[border]
+  border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 function show(io::IO, p::Plot)

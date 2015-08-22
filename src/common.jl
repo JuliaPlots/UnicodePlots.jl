@@ -23,7 +23,8 @@ function safeCeil(num)
   end
 end
 
-# these are all hacks
+# these are all dirty, dirty hacks
+# please don't judge me!
 magnitude{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
 ceilgnitude{F<:FloatingPoint}(x::F) = safeCeil(-log10(x))
 floatround{F<:FloatingPoint,R<:Real}(x::F,m::R) = x==0.?0.: (x > 0 ? round(x, ceilgnitude(m)+1) : -round(-x, ceilgnitude(m)+1))
@@ -111,27 +112,6 @@ colorDecode[0b111]=:white
 # ▁▂▃▄▅▆▇█
 # ░▒▓█
 # ⬛
-#signs = ['⡀' '⠄' '⠂' '⠁';
-#         '⢀' '⠠' '⠐' '⠈']
-
-function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
-  if title != ""
-    offset = safeRound(plotWidth / 2 - length(title) / 2)
-    offset = offset > 0 ? offset: 0
-    tpad = repeat(spceStr, offset)
-    print_with_color(:white, io, padding, tpad, title, "\n")
-  end
-end
-
-function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
-  b=borderMap[border]
-  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
-end
-
-function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
-  b=borderMap[border]
-  border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
-end
 
 function printColor(color::Uint8, io::IO, args...)
   #if isa(io, Base.TTY)

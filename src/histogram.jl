@@ -1,12 +1,12 @@
 
 # code by IainNZ
-function histogram(x, n::Int=5; args...)
-  edges, counts = hist(x,n)
+function histogram(x, bins::Int=5; args...)
+  edges, counts = hist(x, bins)
   labels = String[]
   binwidth = edges.step / edges.divisor
   for i in 1:length(counts)
 		val = floatround(edges[i])
-    push!(labels, string("(",val,",",floatround(val+binwidth),"]"))
+    push!(labels, string("(", val, ",", floatround(val+binwidth), "]"))
   end
   barplot(labels, counts; symb="▇", args...)
 end
