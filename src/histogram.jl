@@ -5,8 +5,8 @@ function histogram(x, bins::Int=5; args...)
   labels = String[]
   binwidth = edges.step / edges.divisor
   for i in 1:length(counts)
-		val = floatround(edges[i])
-    push!(labels, string("(", val, ",", floatround(val+binwidth), "]"))
+		val = floatRoundLog10(edges[i])
+    push!(labels, string("(", val, ",", floatRoundLog10(val+binwidth), "]"))
   end
   barplot(labels, counts; symb="▇", args...)
 end

@@ -13,8 +13,9 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   height = max(height, 5)
   minX = minimum(X); minY = minimum(Y)
   maxX = maximum(X); maxY = maximum(Y)
-  minX, maxX = plottingRange(minX, maxX)
-  minY, maxY = plottingRange(minY, maxY)
+  diffX = maxX - minX; diffY = maxY - minY
+  minX, maxX = plottingRange(minX - .01*diffX, maxX + .01*diffX)
+  minY, maxY = plottingRange(minY - .01*diffY, maxY + .01*diffY)
   plotOriginX = minX; plotWidth = maxX - plotOriginX
   plotOriginY = minY; plotHeight = maxY - plotOriginY
 

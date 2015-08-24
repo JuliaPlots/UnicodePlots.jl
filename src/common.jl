@@ -23,21 +23,17 @@ function safeCeil(num)
   end
 end
 
-# these are all dirty, dirty hacks
-# please don't judge me!
-magnitude{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
-ceilgnitude{F<:FloatingPoint}(x::F) = safeCeil(-log10(x))
-floatround{F<:FloatingPoint,R<:Real}(x::F,m::R) = x==0.?0.: (x > 0 ? round(x, ceilgnitude(m)+1) : -round(-x, ceilgnitude(m)+1))
-floatfloor{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? floor(x, magnitude(m)) : -ceil(-x, magnitude(m))
-floatceil{F<:FloatingPoint,R<:Real}(x::F,m::R) = x > 0 ? ceil(x, magnitude(m)) : -floor(-x, magnitude(m))
-floatround{F<:FloatingPoint}(x::F) = x > 0 ? floatround(x,x): floatround(x,-x)
-floatfloor{F<:FloatingPoint}(x::F) = x > 0 ? floatfloor(x,x): floatfloor(x,-x)
-floatceil{F<:FloatingPoint}(x::F) = x > 0 ? floatceil(x,x): floatceil(x,-x)
+floorNegLog10{F<:FloatingPoint}(x::F) = safeCeil(-log10(x))
+roundNegLog10{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
+roundUpToTick{F<:FloatingPoint,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, floorNegLog10(m)) : -floor(-x, floorNegLog10(m)))
+roundDownToTick{F<:FloatingPoint,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, floorNegLog10(m)) : -ceil(-x, floorNegLog10(m)))
+floatRoundLog10{F<:FloatingPoint,R<:Real}(x::F,m::R) = x==0.?0.: (x > 0 ? round(x, floorNegLog10(m)+1) : -round(-x, floorNegLog10(m)+1))
+floatRoundLog10{F<:FloatingPoint}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
 
 function plottingRange{F<:FloatingPoint,R<:FloatingPoint}(xmin::F, xmax::R)
   diffX = xmax - xmin
-  xmin = floatfloor(xmin, diffX)
-  xmax = floatceil(xmax, diffX)
+  xmin = roundDownToTick(xmin, diffX)
+  xmax = roundUpToTick(xmax, diffX)
   xmin, xmax
 end
 
