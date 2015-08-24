@@ -28,7 +28,7 @@ There are a couple of ways to generate typical plots without much verbosity. Her
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
-myPlot = lineplot([1, 2, 3, 7], [1, 2, -5, 7], color=:red, title="My Plot")
+myPlot = lineplot([1, 2, 3, 7], [1, 2, -5, 7], color=:red, xlim=[0, 10], title="My Plot")
 drawLine!(myPlot, 0., 9., 9., -11., :blue)
 annotate!(myPlot, :r, 2, "Curve 1", :red)
 annotate!(myPlot, :r, 4, "Curve 2", :blue)
@@ -47,7 +47,7 @@ lineplot!(myPlot, [0, 5, 10], [10, -10, 10], color=:yellow, title="My Plot")
 #### Scatterplot
 
 ```Julia
-scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot")
+scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot", color = :red)
 ```
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
@@ -61,7 +61,7 @@ lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
 It's also possible to specify a function and a range.
 
 ```Julia
-lineplot(sin, 1:.5:10, color = :green)
+lineplot(sin, 1:.5:10, color = :green, xlim = [0, 10], ylim = [-1, 1])
 ```
 ![Lineplot Screenshot2](doc/img/sin.png)
 
@@ -79,7 +79,7 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 #### Staircase plot
 
 ```Julia
-stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7])
+stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, title = "My Staircase Plot")
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
@@ -132,6 +132,14 @@ All plots support a common set of named parameters
     lineplot(sin, 1:.5:20, height = 18)
     ```
     ![Height Screenshot](doc/img/height.png)
+
+- `xlim::Vector = [0, 1]`:
+
+    Plotting range for the x coordinate
+
+- `ylim::Vector = [0, 1]`:
+
+    Plotting range for the y coordinate
 
 - `margin::Int = 3`:
 

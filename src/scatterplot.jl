@@ -6,16 +6,30 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
                                             padding::Int = 1,
                                             title::String = "",
                                             border::Symbol = :solid,
-                                            labels::Bool = true)
+                                            labels::Bool = true,
+                                            xlim::Vector = [0.,0.],
+                                            ylim::Vector = [0.,0.])
+  length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = max(width, 5)
   height = max(height, 5)
-  minX = minimum(X); minY = minimum(Y)
-  maxX = maximum(X); maxY = maximum(Y)
-  diffX = maxX - minX; diffY = maxY - minY
-  minX, maxX = plottingRange(minX - .01*diffX, maxX + .01*diffX)
-  minY, maxY = plottingRange(minY - .01*diffY, maxY + .01*diffY)
+  minX = float(minimum(xlim))
+  maxX = float(maximum(xlim))
+  if minX == 0. && maxX == 0.
+    minX = minimum(X)
+    maxX = maximum(X)
+    diffX = maxX - minX
+    minX, maxX = plottingRange(minX - .01*diffX, maxX + .01*diffX)
+  end
+  minY = float(minimum(ylim))
+  maxY = float(maximum(ylim))
+  if minY == 0. && maxY == 0.
+    minY = minimum(Y)
+    maxY = maximum(Y)
+    diffY = maxY - minY
+    minY, maxY = plottingRange(minY - .01*diffY, maxY + .01*diffY)
+  end
   plotOriginX = minX; plotWidth = maxX - plotOriginX
   plotOriginY = minY; plotHeight = maxY - plotOriginY
 
@@ -50,8 +64,6 @@ end
 function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
-  minX = minimum(X); minY = minimum(Y)
-  maxX = maximum(X); maxY = maximum(Y)
   newPlot = createPlotWindow(X, Y; args...)
   setPoint!(newPlot, X, Y, color)
 end

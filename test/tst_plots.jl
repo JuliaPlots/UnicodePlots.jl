@@ -127,9 +127,12 @@ print(myPlot)
 stairs!(myPlot, x- .2, y + 1.5)
 print(myPlot)
 
-myPlot = lineplot(sin, 1:.5:12, color=:blue)
+@test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1., 2.])
+myPlot = lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1.])
 print(myPlot)
 lineplot!(myPlot, cos, 1:.5:10, color=:red)
+print(myPlot)
+myPlot = lineplot(sin, 1:.5:12, color=:blue, ylim=[-1,1], xlim=[-1.,5.])
 print(myPlot)
 
 x = [1,2, 4, 7, 8]
