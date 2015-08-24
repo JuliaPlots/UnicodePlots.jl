@@ -18,7 +18,6 @@ function createDensityWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   if minX == 0. && maxX == 0.
     minX = minimum(X)
     maxX = maximum(X)
-    diffX = maxX - minX
     minX, maxX = plottingRange(minX, maxX)
   end
   minY = float(minimum(ylim))
@@ -26,7 +25,6 @@ function createDensityWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   if minY == 0. && maxY == 0.
     minY = minimum(Y)
     maxY = maximum(Y)
-    diffY = maxY - minY
     minY, maxY = plottingRange(minY, maxY)
   end
   plotOriginX = minX; plotWidth = maxX - plotOriginX
