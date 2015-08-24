@@ -122,6 +122,8 @@ show(STDOUT, myPlot)
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]
+myPlot = stairs(x, y, style=:pre)
+print(myPlot)
 myPlot = stairs(x, y)
 print(myPlot)
 stairs!(myPlot, x- .2, y + 1.5)

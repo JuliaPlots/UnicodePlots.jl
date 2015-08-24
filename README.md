@@ -79,7 +79,8 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 #### Staircase plot
 
 ```Julia
-stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, title = "My Staircase Plot")
+# supported style are :pre and :post
+stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style=:post, title = "My Staircase Plot")
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
