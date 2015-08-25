@@ -234,8 +234,8 @@ At the moment there are few types of Canvas implemented:
 
 ## Todo
 
-- [ ] Ability to specify `xlim` and `ylim`
-- [ ] Better automatic labels
+- [x] Ability to specify `xlim` and `ylim`
+- [x] Better automatic labels
 - [ ] Animated plots using cursor movement
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
