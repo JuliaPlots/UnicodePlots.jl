@@ -3,6 +3,7 @@
 Advanced Unicode plotting library designed for use in Julia's REPL.
 
 [![Build Status](https://travis-ci.org/Evizero/UnicodePlots.jl.svg?branch=master)](https://travis-ci.org/Evizero/UnicodePlots.jl)
+[![Coverage Status](https://coveralls.io/repos/Evizero/UnicodePlots.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/Evizero/UnicodePlots.jl?branch=master)
 
 ## Installation
 
@@ -11,6 +12,12 @@ There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 ```Julia
 Pkg.add("UnicodePlots")
 using UnicodePlots
+```
+
+For the latest version
+
+```Julia
+Pkg.checkout("UnicodePlots")
 ```
 
 ## High-level Interface
@@ -234,8 +241,8 @@ At the moment there are few types of Canvas implemented:
 
 ## Todo
 
-- [ ] Ability to specify `xlim` and `ylim`
-- [ ] Better automatic labels
+- [x] Ability to specify `xlim` and `ylim`
+- [x] Better automatic labels
 - [ ] Animated plots using cursor movement
 - [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms

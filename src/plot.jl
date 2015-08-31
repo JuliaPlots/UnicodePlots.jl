@@ -185,15 +185,18 @@ function show(io::IO, p::Plot)
     tRightCol = haskey(p.rightColors,row) ? p.rightColors[row] : :white
     tLen = length(tleftLabel)
     tLenR = length(tRightLabel)
-    # print left label
+    # print left annotations
     print(io, repeat(spceStr, p.margin))
     if p.showLabels
       if row == ylabRow
+        # print ylabel
         print_with_color(:white, io, p.ylabel)
         print(io, repeat(spceStr, maxLen - length(p.ylabel) - tLen))
       else
+        # print padding to fill ylabel length
         print(io, repeat(spceStr, maxLen - tLen))
       end
+      # print the left annotation
       print_with_color(tleftCol, io, tleftLabel)
     end
     # print left border
