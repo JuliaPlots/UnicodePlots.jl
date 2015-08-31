@@ -5,7 +5,8 @@ export setPixel!, setPoint!, drawLine!, addRow!
 export printRow, nrows, ncols
 
 export Plot
-export annotate!, setTitle!
+export title, xlabel, ylabel
+export annotate!, title!, xlabel!, ylabel!
 
 export barplot, lineplot, scatterplot, stairs, histogram, densityplot
 export barplot!, lineplot!, scatterplot!, stairs!

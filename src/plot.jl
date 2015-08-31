@@ -2,6 +2,8 @@
 type Plot{T<:GraphicsArea}
   graphics::T
   title::String
+  xlabel::String
+  ylabel::String
   margin::Int
   padding::Int
   border::Symbol
@@ -16,6 +18,8 @@ end
 
 function Plot{T<:GraphicsArea}(graphics::T;
                                title::String = "",
+                               xlabel::String = "",
+                               ylabel::String = "",
                                margin::Int = 3,
                                padding::Int = 1,
                                border::Symbol = :solid,
@@ -28,13 +32,36 @@ function Plot{T<:GraphicsArea}(graphics::T;
   rightColors = Dict{Int,Symbol}()
   decorations = Dict{Symbol,String}()
   decoColors = Dict{Symbol,Symbol}()
-  Plot{T}(graphics, title, margin, padding, border,
+  Plot{T}(graphics, title, xlabel, ylabel,
+          margin, padding, border,
           leftLabels, leftColors, rightLabels, rightColors,
           decorations, decoColors, showLabels)
 end
 
-function setTitle!{T<:GraphicsArea}(plot::Plot{T}, title::String)
+function title{T<:GraphicsArea}(plot::Plot{T})
+  plot.title
+end
+
+function title!{T<:GraphicsArea}(plot::Plot{T}, title::String)
   plot.title = title
+  plot
+end
+
+function xlabel{T<:GraphicsArea}(plot::Plot{T})
+  plot.xlabel
+end
+
+function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)
+  plot.xlabel = xlabel
+  plot
+end
+
+function ylabel{T<:GraphicsArea}(plot::Plot{T})
+  plot.ylabel
+end
+
+function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::String)
+  plot.ylabel = ylabel
   plot
 end
 
@@ -108,6 +135,9 @@ function show(io::IO, p::Plot)
   # get length of largest strings to the left and right
   maxLen = p.showLabels && !isempty(p.leftLabels) ? maximum([length(string(l)) for l in values(p.leftLabels)]) : 0
   maxLenR = p.showLabels && !isempty(p.rightLabels) ? maximum([length(string(l)) for l in values(p.rightLabels)]) : 0
+  if p.ylabel != ""
+    maxLen += length(p.ylabel) + p.padding
+  end
 
   # offset where the plot (incl border) begins
   plotOffset = maxLen + p.margin + p.padding
@@ -143,6 +173,9 @@ function show(io::IO, p::Plot)
   drawBorderTop(io, borderPadding, borderLength, p.border)
   print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
 
+  # compute position of ylabel
+  ylabRow = safeFloor(nrows(c) / 2)
+
   # plot all rows
   for row in 1:nrows(c)
     # Current labels to left and right of the row and their length
@@ -154,17 +187,26 @@ function show(io::IO, p::Plot)
     tLenR = length(tRightLabel)
     # print left label
     print(io, repeat(spceStr, p.margin))
-    p.showLabels && print(io, repeat(spceStr, maxLen - tLen))
-    p.showLabels && print_with_color(tleftCol, io, tleftLabel)
+    if p.showLabels
+      if row == ylabRow
+        print_with_color(:white, io, p.ylabel)
+        print(io, repeat(spceStr, maxLen - length(p.ylabel) - tLen))
+      else
+        print(io, repeat(spceStr, maxLen - tLen))
+      end
+      print_with_color(tleftCol, io, tleftLabel)
+    end
     # print left border
     print(io, plotPadding, b[:l])
     # print canvas row
     printRow(io, c, row)
     #print right label and padding
     print(io, b[:r])
-    p.showLabels && print(io, plotPadding)
-    p.showLabels && print_with_color(tRightCol, io, tRightLabel)
-    p.showLabels && print(io, repeat(spceStr, maxLenR - tLenR))
+    if p.showLabels
+      print(io, plotPadding)
+      print_with_color(tRightCol, io, tRightLabel)
+      print(io, repeat(spceStr, maxLenR - tLenR))
+    end
     print(io, "\n")
   end
 
@@ -190,6 +232,8 @@ function show(io::IO, p::Plot)
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print_with_color(botRightCol, io, pad, botRightStr, "\n")
     end
+    # abuse the drawtitle function to print the xlabel. maybe refactor this
+    drawTitle(io, borderPadding, p.xlabel, plotWidth = borderLength)
   end
 end
 

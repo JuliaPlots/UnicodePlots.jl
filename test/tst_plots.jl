@@ -117,7 +117,19 @@ setPoint!(myPlot, rand(10), rand(10))
 setPixel!(myPlot, 1, 1)
 setPixel!(myPlot, 1, 1, :green)
 setPixel!(myPlot, 1, 1, color=:green)
-setTitle!(myPlot, "setTitle!(plot, title)")
+
+ttl = "title!(plot, text)"
+title!(myPlot, ttl)
+@test title(myPlot) == ttl
+
+xlab = "xlabel!(plot, text)"
+xlabel!(myPlot, xlab)
+@test xlabel(myPlot) == xlab
+
+ylab = "ylabel!(plot, text)"
+ylabel!(myPlot, ylab)
+@test ylabel(myPlot) == ylab
+
 show(STDOUT, myPlot)
 
 x = [1,2, 4, 7, 8]
