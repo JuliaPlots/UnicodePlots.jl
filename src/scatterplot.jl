@@ -20,6 +20,11 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
     minX = minimum(X)
     maxX = maximum(X)
     diffX = maxX - minX
+    if diffX == 0
+      t = minX
+      minX = t / 2
+      maxX = t + t / 2
+    end
     minX, maxX = plottingRange(minX - .01*diffX, maxX + .01*diffX)
   end
   minY = float(minimum(ylim))
@@ -28,6 +33,11 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
     minY = minimum(Y)
     maxY = maximum(Y)
     diffY = maxY - minY
+    if diffY == 0
+      t = minY
+      minY = t / 2
+      maxY = t + t / 2
+    end
     minY, maxY = plottingRange(minY - .01*diffY, maxY + .01*diffY)
   end
   plotOriginX = minX; plotWidth = maxX - plotOriginX
