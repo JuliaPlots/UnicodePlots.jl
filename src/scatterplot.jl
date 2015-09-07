@@ -13,7 +13,7 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
   length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
   width = max(width, 5)
-  height = max(height, 5)
+  height = max(height, 2)
   minX = float(minimum(xlim))
   maxX = float(maximum(xlim))
   if minX == 0. && maxX == 0.

@@ -25,7 +25,7 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
                        plotWidth::FloatingPoint = 1.,
                        plotHeight::FloatingPoint = 1.)
   charWidth = max(charWidth, 5)
-  charHeight = max(charHeight, 5)
+  charHeight = max(charHeight, 2)
   pixelWidth = charWidth * 2
   pixelHeight = charHeight * 4
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
