@@ -1,3 +1,4 @@
+isdefined(Base, :__precompile__) && __precompile__()
 module UnicodePlots
 
 export Canvas, BrailleCanvas, BarplotCanvas, DensityCanvas
