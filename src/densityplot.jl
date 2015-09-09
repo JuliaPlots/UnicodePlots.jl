@@ -44,11 +44,6 @@ function createDensityWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   annotate!(newPlot, :l, height, minYString)
   annotate!(newPlot, :bl, minXString)
   annotate!(newPlot, :br, maxXString)
-  if minY < 0 < maxY
-    for i in linspace(minX, maxX, width * 2)
-      setPoint!(newPlot, i, 0., :white)
-    end
-  end
   newPlot
 end
 

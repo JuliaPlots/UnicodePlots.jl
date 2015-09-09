@@ -73,6 +73,8 @@ print(lineplot(sin, 1:.5:10))
 print(lineplot(sin, 1:.5:10, labels = false))
 print(lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4]))
 print(lineplot(sin, [1, 2, 3, 4]))
+print(lineplot(sin, 1, 4))
+print(lineplot([sin, cos], 1, 4))
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]
@@ -104,6 +106,8 @@ for i in 1:10
   annotate!(myPlot, :l, i, "$i", color=:green)
   annotate!(myPlot, :r, i, "$i", :yellow)
 end
+print(scatterplot([1],[1]))
+@test_throws ArgumentError annotate!(myPlot, :bl, 5, ":l  5", :red)
 annotate!(myPlot, :l, 5, ":l  5", :red)
 annotate!(myPlot, :r, 5, "5  :r", color=:red)
 annotate!(myPlot, :bl, ":bl", :blue)

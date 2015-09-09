@@ -37,8 +37,8 @@ function plottingRange{F<:FloatingPoint,R<:FloatingPoint}(xmin::F, xmax::R)
   xmin, xmax
 end
 
-borderMap=Dict{Symbol,Dict{Symbol,String}}()
-borderSolid=Dict{Symbol,String}()
+const borderMap = Dict{Symbol,Dict{Symbol,String}}()
+const borderSolid = Dict{Symbol,String}()
 borderSolid[:tl]="┌"
 borderSolid[:tr]="┐"
 borderSolid[:bl]="└"
@@ -47,7 +47,7 @@ borderSolid[:t]="─"
 borderSolid[:l]="│"
 borderSolid[:b]="─"
 borderSolid[:r]="│"
-borderBold=Dict{Symbol,String}()
+const borderBold = Dict{Symbol,String}()
 borderBold[:tl]="┏"
 borderBold[:tr]="┓"
 borderBold[:bl]="┗"
@@ -56,7 +56,7 @@ borderBold[:t]="━"
 borderBold[:l]="┃"
 borderBold[:b]="━"
 borderBold[:r]="┃"
-borderNone=Dict{Symbol,String}()
+const borderNone = Dict{Symbol,String}()
 borderNone[:tl]=" "
 borderNone[:tr]=" "
 borderNone[:bl]=" "
@@ -65,7 +65,7 @@ borderNone[:t]=" "
 borderNone[:l]=" "
 borderNone[:b]=" "
 borderNone[:r]=" "
-borderDashed=Dict{Symbol,String}()
+const borderDashed = Dict{Symbol,String}()
 borderDashed[:tl]="┌"
 borderDashed[:tr]="┐"
 borderDashed[:bl]="└"
@@ -74,7 +74,7 @@ borderDashed[:t]="╌"
 borderDashed[:l]="│"
 borderDashed[:b]="╌"
 borderDashed[:r]="│"
-borderDotted=Dict{Symbol,String}()
+const borderDotted = Dict{Symbol,String}()
 borderDotted[:tl]="⡤"
 borderDotted[:tr]="⢤"
 borderDotted[:bl]="⠓"
@@ -89,7 +89,9 @@ borderMap[:none]=borderNone
 borderMap[:dashed]=borderDashed
 borderMap[:dotted]=borderDotted
 
-colorEncode=Dict{Symbol,Uint8}()
+const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
+
+const colorEncode = Dict{Symbol,Uint8}()
 colorEncode[:white]=0b000
 colorEncode[:blue]=0b001
 colorEncode[:red]=0b010
@@ -97,7 +99,7 @@ colorEncode[:magenta]=0b011
 colorEncode[:yellow]=0b100
 colorEncode[:green]=0b101
 colorEncode[:cyan]=0b110
-colorDecode=Dict{Uint8,Symbol}()
+const colorDecode = Dict{Uint8,Symbol}()
 for k in keys(colorEncode)
   v = colorEncode[k]
   colorDecode[v]=k

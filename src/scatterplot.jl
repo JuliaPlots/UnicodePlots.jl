@@ -91,14 +91,14 @@ function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}; c
   drawLine!(newPlot, X, Y, color)
 end
 
-function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, X::Range; args...)
-  y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot!(plot, collect(X), y; args...)
+function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, x::Range; args...)
+  X = collect(x)
+  lineplot!(plot, Y, X; args...)
 end
 
-function lineplot(Y::Function, X::Range; args...)
-  y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot(collect(X), y; args...)
+function lineplot(Y::Function, x::Range; args...)
+  X = collect(x)
+  lineplot(Y, X; args...)
 end
 
 function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVector{R}; args...)
@@ -108,21 +108,31 @@ end
 
 function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot(X, y; args...)
+  newPlot = lineplot(X, y; args...)
+  xlabel!(newPlot, "x")
+  ylabel!(newPlot, "f(x)")
 end
 
 function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, startx::Real, endx::Real; args...)
   diff = abs(endx - startx)
   X = collect(startx:(diff/(3*ncols(plot.graphics))):endx)
-  y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot!(plot, X, y; args...)
+  lineplot!(plot, Y, X; args...)
 end
 
 function lineplot(Y::Function, startx::Real, endx::Real; width::Int = 40, args...)
   diff = abs(endx - startx)
   X = collect(startx:(diff/(3*width)):endx)
-  y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot(X, y; args...)
+  lineplot(Y, X; width = width, args...)
+end
+
+function lineplot(Y::AbstractVector{Function}, startx::Real, endx::Real; args...)
+  n = length(Y)
+  @assert n > 0
+  newPlot = lineplot(Y[1], startx, endx; args...)
+  for i = 2:n
+    lineplot!(newPlot, Y[i], startx, endx; args...)
+  end
+  newPlot
 end
 
 function computeStairLines{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}, style::Symbol)
