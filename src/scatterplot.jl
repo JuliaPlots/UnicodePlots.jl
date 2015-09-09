@@ -25,7 +25,7 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
       minX = t / 2
       maxX = t + t / 2
     end
-    minX, maxX = plottingRange(minX - .01*diffX, maxX + .01*diffX)
+    minX, maxX = plottingRange(minX, maxX)
   end
   minY = float(minimum(ylim))
   maxY = float(maximum(ylim))
@@ -38,7 +38,7 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
       minY = t / 2
       maxY = t + t / 2
     end
-    minY, maxY = plottingRange(minY - .01*diffY, maxY + .01*diffY)
+    minY, maxY = plottingRange(minY, maxY)
   end
   plotOriginX = minX; plotWidth = maxX - plotOriginX
   plotOriginY = minY; plotHeight = maxY - plotOriginY
@@ -65,26 +65,26 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   newPlot
 end
 
-function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   setPoint!(plot, X, Y, color)
 end
 
-function scatterplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+function scatterplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
   setPoint!(newPlot, X, Y, color)
 end
 
-function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   drawLine!(plot, X, Y, color)
 end
 
-function lineplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}; color::Symbol=:white, args...)
+function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
@@ -101,7 +101,7 @@ function lineplot(Y::Function, X::Range; args...)
   lineplot(collect(X), y; args...)
 end
 
-function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::Vector{R}; args...)
+function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVector{R}; args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   lineplot!(plot, X, y; args...)
 end
@@ -111,19 +111,21 @@ function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
   lineplot(X, y; args...)
 end
 
-function lineplot!{T<:Canvas,R<:Real,S<:Real}(plot::Plot{T}, Y::Function, startx::R, endx::S, step::Real = 1.; args...)
-  X = collect(startx:step:endx)
+function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, startx::Real, endx::Real; args...)
+  diff = abs(endx - startx)
+  X = collect(startx:(diff/(3*ncols(plot.graphics))):endx)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   lineplot!(plot, X, y; args...)
 end
 
-function lineplot{R<:Real,S<:Real}(Y::Function, startx::R, endx::S, step::Real = 1.; args...)
-  X = collect(startx:step:endx)
+function lineplot(Y::Function, startx::Real, endx::Real; width::Int = 40, args...)
+  diff = abs(endx - startx)
+  X = collect(startx:(diff/(3*width)):endx)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   lineplot(X, y; args...)
 end
 
-function computeStairLines{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}, style::Symbol)
+function computeStairLines{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}, style::Symbol)
   if style == :post
     xVec = zeros(length(X) * 2 - 1)
     yVec = zeros(length(X) * 2 - 1)
@@ -155,7 +157,7 @@ function computeStairLines{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}, style::S
   end
 end
 
-function stairs!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Vector{F}, Y::Vector{R};
+function stairs!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
                                             style::Symbol = :post,
                                             args...)
   xVec, yVec = computeStairLines(X, Y, style)
