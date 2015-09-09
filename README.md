@@ -123,6 +123,10 @@ All plots support a common set of named parameters
 
     Text to display on the top of the plot.
 
+- `name::String = ""`:
+
+    Annotation of the current drawing to displayed on the right
+
 - `width::Int = 40`:
 
     Number of characters per row that should be used for plotting.
