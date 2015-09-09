@@ -65,29 +65,49 @@ function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
   newPlot
 end
 
-function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
+function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
+                                                 color::Symbol = :auto,
+                                                 name::String = "",
+                                                 args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
+  color = color == :auto ? nextColor!(plot) : color
+  name == "" || autoAnnotate!(plot, :r, name, color)
   setPoint!(plot, X, Y, color)
 end
 
-function scatterplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
+function scatterplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
+                                      color::Symbol=:auto,
+                                      name::String = "",
+                                      args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
+  color = color == :auto ? nextColor!(newPlot) : color
+  name == "" || autoAnnotate!(newPlot, :r, name, color)
   setPoint!(newPlot, X, Y, color)
 end
 
-function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
+function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
+                                              color::Symbol=:auto,
+                                              name::String = "",
+                                              args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
+  color = color == :auto ? nextColor!(plot) : color
+  name == "" || autoAnnotate!(plot, :r, name, color)
   drawLine!(plot, X, Y, color)
 end
 
-function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol=:white, args...)
+function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
+                                   color::Symbol=:auto,
+                                   name::String = "",
+                                   args...)
   X = convert(Vector{FloatingPoint},X)
   Y = convert(Vector{FloatingPoint},Y)
   newPlot = createPlotWindow(X, Y; args...)
+  color = color == :auto ? nextColor!(newPlot) : color
+  name == "" || autoAnnotate!(newPlot, :r, name, color)
   drawLine!(newPlot, X, Y, color)
 end
 
@@ -101,14 +121,20 @@ function lineplot(Y::Function, x::Range; args...)
   lineplot(Y, X; args...)
 end
 
-function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVector{R}; args...)
+function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVector{R};
+                                      name::String = "",
+                                      args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
-  lineplot!(plot, X, y; args...)
+  name = name == "" ? string(Y, "(x)") : name
+  lineplot!(plot, X, y; name = name, args...)
 end
 
-function lineplot{R<:Real}(Y::Function, X::Vector{R}; args...)
+function lineplot{R<:Real}(Y::Function, X::Vector{R};
+                           name::String = "",
+                           args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
-  newPlot = lineplot(X, y; args...)
+  name = name == "" ? string(Y, "(x)") : name
+  newPlot = lineplot(X, y; name = name, args...)
   xlabel!(newPlot, "x")
   ylabel!(newPlot, "f(x)")
 end
@@ -133,6 +159,30 @@ function lineplot(Y::AbstractVector{Function}, startx::Real, endx::Real; args...
     lineplot!(newPlot, Y[i], startx, endx; args...)
   end
   newPlot
+end
+
+function lineplot{F<:Real,R<:Real}(X::Range{F}, Y::Range{R}; args...)
+  lineplot(collect(X), collect(Y); args...)
+end
+
+function lineplot{F<:Real}(X::Range, Y::AbstractVector{F}; args...)
+  lineplot(collect(X), Y; args...)
+end
+
+function lineplot{F<:Real}(X::AbstractVector{F}, Y::Range; args...)
+  lineplot(X, collect(Y); args...)
+end
+
+function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Range{F}, Y::Range{R}; args...)
+  lineplot!(plot, collect(X), collect(Y); args...)
+end
+
+function lineplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::Range, Y::AbstractVector{F}; args...)
+  lineplot!(plot, collect(X), Y; args...)
+end
+
+function lineplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::Range; args...)
+  lineplot!(plot, X, collect(Y); args...)
 end
 
 function computeStairLines{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}, style::Symbol)

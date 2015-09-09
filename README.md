@@ -38,10 +38,7 @@ There are a couple of ways to generate typical plots without much verbosity. Her
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
-myPlot = lineplot([1, 2, 3, 7], [1, 2, -5, 7], color=:red, xlim=[0, 10], title="My Plot")
-drawLine!(myPlot, 0., 9., 9., -11., :blue)
-annotate!(myPlot, :r, 2, "Curve 1", :red)
-annotate!(myPlot, :r, 4, "Curve 2", :blue)
+myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title="My Plot", name="my line")
 ```
 
 ![Basic Canvas](doc/img/hello_world.png)
@@ -49,7 +46,7 @@ annotate!(myPlot, :r, 4, "Curve 2", :blue)
 Every plot has a mutating variant that ends with a exclamation mark.
 
 ```Julia
-lineplot!(myPlot, [0, 5, 10], [10, -10, 10], color=:yellow, title="My Plot")
+lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color=:yellow, name="other line")
 ```
 
 ![Basic Canvas](doc/img/hello_world2.png)
@@ -57,7 +54,7 @@ lineplot!(myPlot, [0, 5, 10], [10, -10, 10], color=:yellow, title="My Plot")
 #### Scatterplot
 
 ```Julia
-scatterplot([1, 2, 5], [9, -1, 3], title = "My Scatterplot", color = :red)
+scatterplot([1, 2, 4.8], [9, -5, 3], title = "My Scatterplot", color = :red)
 ```
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
@@ -90,7 +87,7 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 
 ```Julia
 # supported style are :pre and :post
-stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style=:post, title = "My Staircase Plot")
+stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "My Staircase Plot")
 ```
 ![Staircase Screenshot](doc/img/stairs.png)
 
@@ -192,6 +189,14 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 - `title!{T<:GraphicsArea}(plot::Plot{T}, title::String)`
 
     - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+
+- `xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)`
+
+    - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
+
+- `ylabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)`
+
+    - `ylabel` the string to display on the far left of the plot window.
 
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 

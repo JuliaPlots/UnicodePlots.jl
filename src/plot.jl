@@ -14,6 +14,7 @@ type Plot{T<:GraphicsArea}
   decorations::Dict{Symbol,String}
   decoColors::Dict{Symbol,Symbol}
   showLabels::Bool
+  autocolor::Int
 end
 
 function Plot{T<:GraphicsArea}(graphics::T;
@@ -35,7 +36,13 @@ function Plot{T<:GraphicsArea}(graphics::T;
   Plot{T}(graphics, title, xlabel, ylabel,
           margin, padding, border,
           leftLabels, leftColors, rightLabels, rightColors,
-          decorations, decoColors, showLabels)
+          decorations, decoColors, showLabels, 0)
+end
+
+function nextColor!{T<:GraphicsArea}(plot::Plot{T})
+  curColor = autoColors[plot.autocolor+1]
+  plot.autocolor = ((plot.autocolor + 1) % length(autoColors))
+  curColor
 end
 
 function title{T<:GraphicsArea}(plot::Plot{T})
@@ -62,6 +69,27 @@ end
 
 function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::String)
   plot.ylabel = ylabel
+  plot
+end
+
+function autoAnnotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String, color::Symbol=:white)
+  for row = 1:nrows(plot.graphics)
+    if where == :l
+      if(!haskey(plot.leftLabels, row) || plot.leftLabels[row] == "")
+        plot.leftLabels[row] = value
+        plot.leftColors[row] = color
+        return plot
+      end
+    elseif where == :r
+      if(!haskey(plot.rightLabels, row) || plot.rightLabels[row] == "")
+        plot.rightLabels[row] = value
+        plot.rightColors[row] = color
+        return plot
+      end
+    else
+      throw(ArgumentError("Unknown location: try one of these :l :r"))
+    end
+  end
   plot
 end
 

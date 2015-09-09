@@ -37,6 +37,7 @@ x = [1,2, 3, 7]
 y = [1,2, -1, 4]
 @test_throws DimensionMismatch barplot(x, [10,1,1])
 @test_throws DimensionMismatch lineplot(x, [10,1,1])
+print(lineplot(1:10, 1:10))
 print(lineplot(x, y))
 @test_throws ArgumentError lineplot(x, y, margin=-1)
 print(lineplot(x, y, width=50, height=10))
