@@ -234,7 +234,7 @@ setPixel!(canvas, 5, 8, :red)               # pixel space
 
 ![Basic Canvas](doc/img/canvas.png)
 
-You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printRow` to embed the canvas anywhere you wish. For example, `printRow(STDIO, canvas, 3)` writes the third character row of the canvas to the standard output.
+You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printRow` to embed the canvas anywhere you wish. For example, `printRow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
 As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
 
