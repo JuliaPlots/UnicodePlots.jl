@@ -68,7 +68,7 @@ lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
 It's also possible to specify a function and a range.
 
 ```Julia
-lineplot(sin, 1:.5:10, color = :green, xlim = [0, 10], ylim = [-1, 1])
+lineplot([sin, cos], 0, 10, xlim = [0, 10], ylim = [-1, 1])
 ```
 ![Lineplot Screenshot2](doc/img/sin.png)
 
