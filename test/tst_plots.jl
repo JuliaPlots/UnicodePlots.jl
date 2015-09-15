@@ -183,4 +183,10 @@ setPoint!(myPlot, x2, y2, :blue)
 show(myPlot)
 myPlot = densityplot(randn(1000), randn(1000), color = :blue)
 densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
-show(myPlot)
+print(myPlot)
+
+x = rand(100); y = rand(100)
+print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum(y)]))
+
+x = rand(100) * 1000; y = rand(100) * 1000
+print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum(y)]))
