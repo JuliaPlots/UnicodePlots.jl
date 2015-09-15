@@ -168,6 +168,7 @@ print(myPlot)
 print(histogram(rand(1000), bins=10, title="Histogram"))
 
 print(spy(sprand(100,100,.15)))
+print(spy(full(sprand(100,100,.15))))
 
 x1, y1 = rand(500)*10, rand(500)*10
 x2, y2 = rand(1000)*5+1, rand(1000)*5+1
