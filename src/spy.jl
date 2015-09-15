@@ -1,6 +1,6 @@
 
 # code by dpo
-function spy(A::SparseMatrixCSC;
+function spy(A::AbstractArray;
              width::Int = 40,
              height::Int = 20,
              color = :green,
