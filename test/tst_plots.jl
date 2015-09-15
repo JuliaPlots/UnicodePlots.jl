@@ -180,4 +180,6 @@ show(canvas)
 myPlot = densityplot(x1,y1, color = :red)
 setPoint!(myPlot, x2, y2, :blue)
 show(myPlot)
-
+myPlot = densityplot(randn(1000), randn(1000), color = :blue)
+densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
+show(myPlot)

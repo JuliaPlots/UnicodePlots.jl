@@ -10,7 +10,7 @@ export title, xlabel, ylabel
 export annotate!, title!, xlabel!, ylabel!
 
 export barplot, lineplot, scatterplot, stairs, histogram, densityplot
-export barplot!, lineplot!, scatterplot!, stairs!
+export barplot!, lineplot!, scatterplot!, stairs!, densityplot!
 
 export spy
 

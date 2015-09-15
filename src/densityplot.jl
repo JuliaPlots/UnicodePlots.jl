@@ -58,3 +58,12 @@ function densityplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R};
   setPoint!(newPlot, X, Y, color)
 end
 
+function densityplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T},
+                                                 X::Vector{F},
+                                                 Y::Vector{R};
+                                                 color::Symbol = :white,
+                                                 args...)
+  X = convert(Vector{FloatingPoint},X)
+  Y = convert(Vector{FloatingPoint},Y)
+  setPoint!(plot, X, Y, color)
+end

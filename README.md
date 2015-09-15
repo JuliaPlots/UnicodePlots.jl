@@ -108,10 +108,8 @@ spy(sprand(100, 100, .15))
 #### Density Plot
 
 ```Julia
-x1, y1 = rand(500)*10, rand(500)*10
-x2, y2 = rand(1000)*5+1, rand(1000)*5+1
-myPlot = densityplot(x1,y1, color = :red)
-setPoint!(myPlot, x2, y2, :blue)
+myPlot = densityplot(randn(1000), randn(1000), color = :blue)
+densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
 ```
 ![Density Screenshot](doc/img/density.png)
 
