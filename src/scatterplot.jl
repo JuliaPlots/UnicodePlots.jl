@@ -1,5 +1,5 @@
 
-function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
+function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F};
                                             width::Int = 40,
                                             height::Int = 10,
                                             margin::Int = 3,
@@ -69,8 +69,8 @@ function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVecto
                                                  color::Symbol = :auto,
                                                  name::String = "",
                                                  args...)
-  X = convert(Vector{FloatingPoint},X)
-  Y = convert(Vector{FloatingPoint},Y)
+  X = convert(Vector{(@compat AbstractFloat)},X)
+  Y = convert(Vector{(@compat AbstractFloat)},Y)
   color = color == :auto ? nextColor!(plot) : color
   name == "" || autoAnnotate!(plot, :r, name, color)
   setPoint!(plot, X, Y, color)
@@ -80,8 +80,8 @@ function scatterplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R}
                                       color::Symbol=:auto,
                                       name::String = "",
                                       args...)
-  X = convert(Vector{FloatingPoint},X)
-  Y = convert(Vector{FloatingPoint},Y)
+  X = convert(Vector{(@compat AbstractFloat)},X)
+  Y = convert(Vector{(@compat AbstractFloat)},Y)
   newPlot = createPlotWindow(X, Y; args...)
   color = color == :auto ? nextColor!(newPlot) : color
   name == "" || autoAnnotate!(newPlot, :r, name, color)
@@ -92,8 +92,8 @@ function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F
                                               color::Symbol=:auto,
                                               name::String = "",
                                               args...)
-  X = convert(Vector{FloatingPoint},X)
-  Y = convert(Vector{FloatingPoint},Y)
+  X = convert(Vector{(@compat AbstractFloat)},X)
+  Y = convert(Vector{(@compat AbstractFloat)},Y)
   color = color == :auto ? nextColor!(plot) : color
   name == "" || autoAnnotate!(plot, :r, name, color)
   drawLine!(plot, X, Y, color)
@@ -103,8 +103,8 @@ function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
                                    color::Symbol=:auto,
                                    name::String = "",
                                    args...)
-  X = convert(Vector{FloatingPoint},X)
-  Y = convert(Vector{FloatingPoint},Y)
+  X = convert(Vector{(@compat AbstractFloat)},X)
+  Y = convert(Vector{(@compat AbstractFloat)},Y)
   newPlot = createPlotWindow(X, Y; args...)
   color = color == :auto ? nextColor!(newPlot) : color
   name == "" || autoAnnotate!(newPlot, :r, name, color)

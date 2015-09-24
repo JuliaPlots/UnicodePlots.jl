@@ -13,17 +13,17 @@ type BrailleCanvas <: Canvas
   colors::Array{(@compat UInt8),2}
   pixelWidth::Int
   pixelHeight::Int
-  plotOriginX::FloatingPoint
-  plotOriginY::FloatingPoint
-  plotWidth::FloatingPoint
-  plotHeight::FloatingPoint
+  plotOriginX::(@compat AbstractFloat)
+  plotOriginY::(@compat AbstractFloat)
+  plotWidth::(@compat AbstractFloat)
+  plotHeight::(@compat AbstractFloat)
 end
 
 function BrailleCanvas(charWidth::Int, charHeight::Int;
-                       plotOriginX::FloatingPoint = 0.,
-                       plotOriginY::FloatingPoint = 0.,
-                       plotWidth::FloatingPoint = 1.,
-                       plotHeight::FloatingPoint = 1.)
+                       plotOriginX::(@compat AbstractFloat) = 0.,
+                       plotOriginY::(@compat AbstractFloat) = 0.,
+                       plotWidth::(@compat AbstractFloat) = 1.,
+                       plotHeight::(@compat AbstractFloat) = 1.)
   charWidth = max(charWidth, 5)
   charHeight = max(charHeight, 2)
   pixelWidth = charWidth * 2
@@ -65,7 +65,7 @@ function setPixel!(c::Canvas, pixelX::Int, pixelY::Int; color::Symbol=:white)
   setPixel!(c, pixelX, pixelY, color)
 end
 
-function setPoint!(c::Canvas, plotX::FloatingPoint, plotY::FloatingPoint, color::Symbol)
+function setPoint!(c::Canvas, plotX::(@compat AbstractFloat), plotY::(@compat AbstractFloat), color::Symbol)
   c.plotOriginX <= plotX < c.plotOriginX + c.plotWidth || return nothing
   c.plotOriginY <= plotY < c.plotOriginY + c.plotHeight || return nothing
   plotXOffset = plotX - c.plotOriginX
@@ -75,7 +75,7 @@ function setPoint!(c::Canvas, plotX::FloatingPoint, plotY::FloatingPoint, color:
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY), color)
 end
 
-function setPoint!(c::Canvas, plotX::FloatingPoint, plotY::FloatingPoint; color::Symbol=:white)
+function setPoint!(c::Canvas, plotX::(@compat AbstractFloat), plotY::(@compat AbstractFloat); color::Symbol=:white)
   setPoint!(c, plotX, plotY, color)
 end
 
@@ -92,7 +92,7 @@ function setPoint!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color
 end
 
 # Implementation of the digital differential analyser (DDA)
-function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
+function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
   toff = x1 - c.plotOriginX
   px1 = toff / c.plotWidth * c.pixelWidth
   toff = x2 - c.plotOriginX
@@ -108,8 +108,8 @@ function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F, colo
   incY = dy / nsteps
   curX = px1
   curY = py1
-  fpw = convert(FloatingPoint, c.pixelWidth)
-  fph = convert(FloatingPoint, c.pixelHeight)
+  fpw = convert((@compat AbstractFloat), c.pixelWidth)
+  fph = convert((@compat AbstractFloat), c.pixelHeight)
   setPixel!(c, safeFloor(curX), safeFloor(curY), color)
   for i = 1:nsteps
     curX += incX
@@ -119,7 +119,7 @@ function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F, colo
   c
 end
 
-function drawLine!{F<:FloatingPoint}(c::Canvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
+function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
   drawLine!(c, x1, y1, x2, y2, color)
 end
 

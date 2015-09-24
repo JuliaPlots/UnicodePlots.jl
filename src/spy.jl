@@ -14,8 +14,8 @@ function spy(A::AbstractArray;
                          plotHeight = float(nrow) + 1)
   plot = Plot(canvas; showLabels = labels, title = title, args...)
   setPoint!(plot,
-            convert(Vector{FloatingPoint}, cols),
-            nrow + 1 - convert(Vector{FloatingPoint}, rows),
+            convert(Vector{(@compat AbstractFloat)}, cols),
+            nrow + 1 - convert(Vector{(@compat AbstractFloat)}, rows),
             color)
   annotate!(plot, :l, 1, "1")
   annotate!(plot, :l, height, string(nrow))
