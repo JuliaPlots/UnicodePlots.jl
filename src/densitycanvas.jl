@@ -1,8 +1,8 @@
 denSigns = [" ", "░", "▒", "▓", "█"]
 
 type DensityCanvas <: Canvas
-  grid::Array{Uint,2}
-  colors::Array{Uint8,2}
+  grid::Array{(@compat UInt),2}
+  colors::Array{(@compat UInt8),2}
   pixelWidth::Int
   pixelHeight::Int
   plotOriginX::FloatingPoint

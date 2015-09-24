@@ -91,7 +91,7 @@ borderMap[:dotted]=borderDotted
 
 const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
 
-const colorEncode = Dict{Symbol,Uint8}()
+const colorEncode = Dict{Symbol,(@compat UInt8)}()
 colorEncode[:white]=0b000
 colorEncode[:blue]=0b001
 colorEncode[:red]=0b010
@@ -99,7 +99,7 @@ colorEncode[:magenta]=0b011
 colorEncode[:yellow]=0b100
 colorEncode[:green]=0b101
 colorEncode[:cyan]=0b110
-const colorDecode = Dict{Uint8,Symbol}()
+const colorDecode = Dict{(@compat UInt8),Symbol}()
 for k in keys(colorEncode)
   v = colorEncode[k]
   colorDecode[v]=k
@@ -111,7 +111,7 @@ colorDecode[0b111]=:white
 # ░▒▓█
 # ⬛
 
-function printColor(color::Uint8, io::IO, args...)
+function printColor(color::(@compat UInt8), io::IO, args...)
   #if isa(io, Base.TTY)
     col = colorDecode[color]
     str = string(args...)

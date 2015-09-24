@@ -10,7 +10,7 @@ signs = ['⠁' '⠂' '⠄' '⡀';
 
 type BrailleCanvas <: Canvas
   grid::Array{Char,2}
-  colors::Array{Uint8,2}
+  colors::Array{(@compat UInt8),2}
   pixelWidth::Int
   pixelHeight::Int
   plotOriginX::FloatingPoint
@@ -55,7 +55,7 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   if VERSION < v"0.4-"
     c.grid[charX,charY] = c.grid[charX,charY] | signs[charXOff, charYOff]
   else
-    c.grid[charX,charY] = Char(Uint64(c.grid[charX,charY]) | Uint64(signs[charXOff, charYOff]))
+    c.grid[charX,charY] = Char((@compat UInt64)(c.grid[charX,charY]) | (@compat UInt64)(signs[charXOff, charYOff]))
   end
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   c
