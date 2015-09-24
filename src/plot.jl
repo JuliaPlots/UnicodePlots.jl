@@ -1,37 +1,37 @@
 
 type Plot{T<:GraphicsArea}
   graphics::T
-  title::String
-  xlabel::String
-  ylabel::String
+  title::(@compat AbstractString)
+  xlabel::(@compat AbstractString)
+  ylabel::(@compat AbstractString)
   margin::Int
   padding::Int
   border::Symbol
-  leftLabels::Dict{Int,String}
+  leftLabels::Dict{Int,(@compat AbstractString)}
   leftColors::Dict{Int,Symbol}
-  rightLabels::Dict{Int,String}
+  rightLabels::Dict{Int,(@compat AbstractString)}
   rightColors::Dict{Int,Symbol}
-  decorations::Dict{Symbol,String}
+  decorations::Dict{Symbol,(@compat AbstractString)}
   decoColors::Dict{Symbol,Symbol}
   showLabels::Bool
   autocolor::Int
 end
 
 function Plot{T<:GraphicsArea}(graphics::T;
-                               title::String = "",
-                               xlabel::String = "",
-                               ylabel::String = "",
+                               title::(@compat AbstractString) = "",
+                               xlabel::(@compat AbstractString) = "",
+                               ylabel::(@compat AbstractString) = "",
                                margin::Int = 3,
                                padding::Int = 1,
                                border::Symbol = :solid,
                                showLabels = true)
   rows = nrows(graphics)
   cols = ncols(graphics)
-  leftLabels = Dict{Int,String}()
+  leftLabels = Dict{Int,(@compat AbstractString)}()
   leftColors = Dict{Int,Symbol}()
-  rightLabels = Dict{Int,String}()
+  rightLabels = Dict{Int,(@compat AbstractString)}()
   rightColors = Dict{Int,Symbol}()
-  decorations = Dict{Symbol,String}()
+  decorations = Dict{Symbol,(@compat AbstractString)}()
   decoColors = Dict{Symbol,Symbol}()
   Plot{T}(graphics, title, xlabel, ylabel,
           margin, padding, border,
@@ -49,7 +49,7 @@ function title{T<:GraphicsArea}(plot::Plot{T})
   plot.title
 end
 
-function title!{T<:GraphicsArea}(plot::Plot{T}, title::String)
+function title!{T<:GraphicsArea}(plot::Plot{T}, title::(@compat AbstractString))
   plot.title = title
   plot
 end
@@ -58,7 +58,7 @@ function xlabel{T<:GraphicsArea}(plot::Plot{T})
   plot.xlabel
 end
 
-function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)
+function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::(@compat AbstractString))
   plot.xlabel = xlabel
   plot
 end
@@ -67,12 +67,12 @@ function ylabel{T<:GraphicsArea}(plot::Plot{T})
   plot.ylabel
 end
 
-function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::String)
+function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::(@compat AbstractString))
   plot.ylabel = ylabel
   plot
 end
 
-function autoAnnotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String, color::Symbol=:white)
+function autoAnnotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::(@compat AbstractString), color::Symbol=:white)
   for row = 1:nrows(plot.graphics)
     if where == :l
       if(!haskey(plot.leftLabels, row) || plot.leftLabels[row] == "")
@@ -93,18 +93,18 @@ function autoAnnotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::Str
   plot
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::(@compat AbstractString), color::Symbol=:white)
   where == :t || where == :b || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
   plot.decorations[where] = value
   plot.decoColors[where] = color
   plot
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String; color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::(@compat AbstractString); color::Symbol=:white)
   annotate!(plot, where, value, color)
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::String, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::(@compat AbstractString), color::Symbol=:white)
   if where == :l
     plot.leftLabels[row] = value
     plot.leftColors[row] = color
@@ -117,7 +117,7 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, valu
   plot
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::String; color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::(@compat AbstractString); color::Symbol=:white)
   annotate!(plot, where, row, value, color)
 end
 
@@ -136,7 +136,7 @@ function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
   plot
 end
 
-function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
+function drawTitle(io::IO, padding::(@compat AbstractString), title::(@compat AbstractString); plotWidth::Int=0)
   if title != ""
     offset = safeRound(plotWidth / 2 - length(title) / 2)
     offset = offset > 0 ? offset: 0
@@ -145,12 +145,12 @@ function drawTitle(io::IO, padding::String, title::String; plotWidth::Int=0)
   end
 end
 
-function drawBorderTop(io::IO, padding::String, length::Int, border = :solid)
+function drawBorderTop(io::IO, padding::(@compat AbstractString), length::Int, border = :solid)
   b = borderMap[border]
   border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
-function drawBorderBottom(io::IO, padding::String, length::Int, border = :solid)
+function drawBorderBottom(io::IO, padding::(@compat AbstractString), length::Int, border = :solid)
   b = borderMap[border]
   border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end

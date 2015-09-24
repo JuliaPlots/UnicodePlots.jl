@@ -2,7 +2,7 @@
 # code by IainNZ
 function histogram(x, bins::Int=5; args...)
   edges, counts = hist(x, bins)
-  labels = String[]
+  labels = (@compat AbstractString)[]
   binwidth = edges.step / edges.divisor
   for i in 1:length(counts)
 		val = floatRoundLog10(edges[i])

@@ -23,22 +23,22 @@ function safeCeil(num)
   end
 end
 
-ceilNegLog10{F<:FloatingPoint}(x::F) = safeCeil(-log10(x))
-roundNegLog10{F<:FloatingPoint}(x::F) = safeRound(-log10(x))
-roundUpToTick{F<:FloatingPoint,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
-roundDownToTick{F<:FloatingPoint,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
-floatRoundLog10{F<:FloatingPoint,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceilNegLog10(m)+1) : -round(-x, ceilNegLog10(m)+1))
-floatRoundLog10{F<:FloatingPoint}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
+ceilNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeCeil(-log10(x))
+roundNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeRound(-log10(x))
+roundUpToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
+roundDownToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
+floatRoundLog10{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceilNegLog10(m)+1) : -round(-x, ceilNegLog10(m)+1))
+floatRoundLog10{F<:(@compat AbstractFloat)}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
 
-function plottingRange{F<:FloatingPoint,R<:FloatingPoint}(xmin::F, xmax::R)
+function plottingRange{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xmin::F, xmax::R)
   diffX = xmax - xmin
   xmax = roundUpToTick(xmax, diffX)
   xmin = roundDownToTick(xmin, diffX)
   xmin, xmax
 end
 
-const borderMap = Dict{Symbol,Dict{Symbol,String}}()
-const borderSolid = Dict{Symbol,String}()
+const borderMap = Dict{Symbol,Dict{Symbol,(@compat AbstractString)}}()
+const borderSolid = Dict{Symbol,(@compat AbstractString)}()
 borderSolid[:tl]="┌"
 borderSolid[:tr]="┐"
 borderSolid[:bl]="└"
@@ -47,7 +47,7 @@ borderSolid[:t]="─"
 borderSolid[:l]="│"
 borderSolid[:b]="─"
 borderSolid[:r]="│"
-const borderBold = Dict{Symbol,String}()
+const borderBold = Dict{Symbol,(@compat AbstractString)}()
 borderBold[:tl]="┏"
 borderBold[:tr]="┓"
 borderBold[:bl]="┗"
@@ -56,7 +56,7 @@ borderBold[:t]="━"
 borderBold[:l]="┃"
 borderBold[:b]="━"
 borderBold[:r]="┃"
-const borderNone = Dict{Symbol,String}()
+const borderNone = Dict{Symbol,(@compat AbstractString)}()
 borderNone[:tl]=" "
 borderNone[:tr]=" "
 borderNone[:bl]=" "
@@ -65,7 +65,7 @@ borderNone[:t]=" "
 borderNone[:l]=" "
 borderNone[:b]=" "
 borderNone[:r]=" "
-const borderDashed = Dict{Symbol,String}()
+const borderDashed = Dict{Symbol,(@compat AbstractString)}()
 borderDashed[:tl]="┌"
 borderDashed[:tr]="┐"
 borderDashed[:bl]="└"
@@ -74,7 +74,7 @@ borderDashed[:t]="╌"
 borderDashed[:l]="│"
 borderDashed[:b]="╌"
 borderDashed[:r]="│"
-const borderDotted = Dict{Symbol,String}()
+const borderDotted = Dict{Symbol,(@compat AbstractString)}()
 borderDotted[:tl]="⡤"
 borderDotted[:tr]="⢤"
 borderDotted[:bl]="⠓"
@@ -91,7 +91,7 @@ borderMap[:dotted]=borderDotted
 
 const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
 
-const colorEncode = Dict{Symbol,Uint8}()
+const colorEncode = Dict{Symbol,(@compat UInt8)}()
 colorEncode[:white]=0b000
 colorEncode[:blue]=0b001
 colorEncode[:red]=0b010
@@ -99,7 +99,7 @@ colorEncode[:magenta]=0b011
 colorEncode[:yellow]=0b100
 colorEncode[:green]=0b101
 colorEncode[:cyan]=0b110
-const colorDecode = Dict{Uint8,Symbol}()
+const colorDecode = Dict{(@compat UInt8),Symbol}()
 for k in keys(colorEncode)
   v = colorEncode[k]
   colorDecode[v]=k
@@ -111,7 +111,7 @@ colorDecode[0b111]=:white
 # ░▒▓█
 # ⬛
 
-function printColor(color::Uint8, io::IO, args...)
+function printColor(color::(@compat UInt8), io::IO, args...)
   #if isa(io, Base.TTY)
     col = colorDecode[color]
     str = string(args...)

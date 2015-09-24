@@ -4,7 +4,7 @@ type BarplotGraphics{R<:Real} <: GraphicsArea
   charWidth::Int
   maxFreq::R
   maxFreqLen::R
-  symb::String
+  symb::(@compat AbstractString)
 
   function BarplotGraphics(bars::Vector{R},
                            charWidth::Int,
@@ -56,9 +56,9 @@ function printRow(io::IO, c::BarplotGraphics, row::Int)
   print(io, pad)
 end
 
-function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
+function barplot{T<:(@compat AbstractString),N<:Real}(text::Vector{T}, heights::Vector{N};
                                     border = :solid,
-                                    title::String = "",
+                                    title::(@compat AbstractString) = "",
                                     margin::Int = 3,
                                     padding::Int = 1,
                                     color::Symbol = :blue,
@@ -79,7 +79,7 @@ function barplot{T<:String,N<:Real}(text::Vector{T}, heights::Vector{N};
   newPlot
 end
 
-function barplot!{C<:BarplotGraphics,T<:String,N<:Real}(plot::Plot{C},
+function barplot!{C<:BarplotGraphics,T<:(@compat AbstractString),N<:Real}(plot::Plot{C},
                                                         text::Vector{T},
                                                         heights::Vector{N};
                                                         args...)
