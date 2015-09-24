@@ -1,5 +1,5 @@
 
-myDict=Dict{String, Int}()
+myDict=Dict{(@compat AbstractString), Int}()
 myDict["Hi"] = 37
 myDict["ho"] = 23
 print(barplot(myDict))

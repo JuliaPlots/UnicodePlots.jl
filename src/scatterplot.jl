@@ -4,7 +4,7 @@ function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F}
                                             height::Int = 10,
                                             margin::Int = 3,
                                             padding::Int = 1,
-                                            title::String = "",
+                                            title::(@compat AbstractString) = "",
                                             border::Symbol = :solid,
                                             labels::Bool = true,
                                             xlim::Vector = [0.,0.],
@@ -67,7 +67,7 @@ end
 
 function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
                                                  color::Symbol = :auto,
-                                                 name::String = "",
+                                                 name::(@compat AbstractString) = "",
                                                  args...)
   X = convert(Vector{(@compat AbstractFloat)},X)
   Y = convert(Vector{(@compat AbstractFloat)},Y)
@@ -78,7 +78,7 @@ end
 
 function scatterplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
                                       color::Symbol=:auto,
-                                      name::String = "",
+                                      name::(@compat AbstractString) = "",
                                       args...)
   X = convert(Vector{(@compat AbstractFloat)},X)
   Y = convert(Vector{(@compat AbstractFloat)},Y)
@@ -90,7 +90,7 @@ end
 
 function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
                                               color::Symbol=:auto,
-                                              name::String = "",
+                                              name::(@compat AbstractString) = "",
                                               args...)
   X = convert(Vector{(@compat AbstractFloat)},X)
   Y = convert(Vector{(@compat AbstractFloat)},Y)
@@ -101,7 +101,7 @@ end
 
 function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
                                    color::Symbol=:auto,
-                                   name::String = "",
+                                   name::(@compat AbstractString) = "",
                                    args...)
   X = convert(Vector{(@compat AbstractFloat)},X)
   Y = convert(Vector{(@compat AbstractFloat)},Y)
@@ -122,7 +122,7 @@ function lineplot(Y::Function, x::Range; args...)
 end
 
 function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVector{R};
-                                      name::String = "",
+                                      name::(@compat AbstractString) = "",
                                       args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   name = name == "" ? string(Y, "(x)") : name
@@ -130,7 +130,7 @@ function lineplot!{T<:Canvas,R<:Real}(plot::Plot{T}, Y::Function, X::AbstractVec
 end
 
 function lineplot{R<:Real}(Y::Function, X::Vector{R};
-                           name::String = "",
+                           name::(@compat AbstractString) = "",
                            args...)
   y = convert(Vector{Float64}, [Y(i) for i in X])
   name = name == "" ? string(Y, "(x)") : name

@@ -3,7 +3,7 @@ function createDensityWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector
                                                height::Int = 20,
                                                margin::Int = 3,
                                                padding::Int = 1,
-                                               title::String = "",
+                                               title::(@compat AbstractString) = "",
                                                border::Symbol = :solid,
                                                labels::Bool = true,
                                                xlim::Vector = [0.,0.],

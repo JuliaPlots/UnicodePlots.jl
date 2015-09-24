@@ -5,7 +5,7 @@ function spy(A::AbstractArray;
              height::Int = 20,
              color = :green,
              labels::Bool = true,
-             title::String = "Sparsity Pattern",
+             title::(@compat AbstractString) = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)

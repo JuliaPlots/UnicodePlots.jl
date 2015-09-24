@@ -37,8 +37,8 @@ function plottingRange{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xm
   xmin, xmax
 end
 
-const borderMap = Dict{Symbol,Dict{Symbol,String}}()
-const borderSolid = Dict{Symbol,String}()
+const borderMap = Dict{Symbol,Dict{Symbol,(@compat AbstractString)}}()
+const borderSolid = Dict{Symbol,(@compat AbstractString)}()
 borderSolid[:tl]="┌"
 borderSolid[:tr]="┐"
 borderSolid[:bl]="└"
@@ -47,7 +47,7 @@ borderSolid[:t]="─"
 borderSolid[:l]="│"
 borderSolid[:b]="─"
 borderSolid[:r]="│"
-const borderBold = Dict{Symbol,String}()
+const borderBold = Dict{Symbol,(@compat AbstractString)}()
 borderBold[:tl]="┏"
 borderBold[:tr]="┓"
 borderBold[:bl]="┗"
@@ -56,7 +56,7 @@ borderBold[:t]="━"
 borderBold[:l]="┃"
 borderBold[:b]="━"
 borderBold[:r]="┃"
-const borderNone = Dict{Symbol,String}()
+const borderNone = Dict{Symbol,(@compat AbstractString)}()
 borderNone[:tl]=" "
 borderNone[:tr]=" "
 borderNone[:bl]=" "
@@ -65,7 +65,7 @@ borderNone[:t]=" "
 borderNone[:l]=" "
 borderNone[:b]=" "
 borderNone[:r]=" "
-const borderDashed = Dict{Symbol,String}()
+const borderDashed = Dict{Symbol,(@compat AbstractString)}()
 borderDashed[:tl]="┌"
 borderDashed[:tr]="┐"
 borderDashed[:bl]="└"
@@ -74,7 +74,7 @@ borderDashed[:t]="╌"
 borderDashed[:l]="│"
 borderDashed[:b]="╌"
 borderDashed[:r]="│"
-const borderDotted = Dict{Symbol,String}()
+const borderDotted = Dict{Symbol,(@compat AbstractString)}()
 borderDotted[:tl]="⡤"
 borderDotted[:tr]="⢤"
 borderDotted[:bl]="⠓"
