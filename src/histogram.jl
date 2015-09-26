@@ -1,6 +1,6 @@
 
 # code by IainNZ
-function histogram(x, bins::Int=5; args...)
+function histogram(x, bins::Int=sturges(length(x)); args...)
   edges, counts = hist(x, bins)
   labels = (@compat AbstractString)[]
   binwidth = edges.step / edges.divisor
@@ -11,6 +11,9 @@ function histogram(x, bins::Int=5; args...)
   barplot(labels, counts; symb="▇", args...)
 end
 
-function histogram(x; bins::Int=5, args...)
+function histogram(x; bins::Int=sturges(length(x)), args...)
   histogram(x, bins; args...)
 end
+
+# Sturges' rule
+sturges(n) = n == 0 ? 1 : ceil(Int, log2(n) + 1)
