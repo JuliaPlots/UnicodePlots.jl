@@ -164,6 +164,8 @@ annotate!(myPlot, :bl, "Hello")
 annotate!(myPlot, :b, "how are")
 annotate!(myPlot, :br, "you?")
 print(myPlot)
+lineplot!(myPlot, 1, .5)
+print(myPlot)
 
 print(histogram(rand(1000), bins=10, title="Histogram"))
 

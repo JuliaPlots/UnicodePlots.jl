@@ -111,6 +111,14 @@ function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
   drawLine!(newPlot, X, Y, color)
 end
 
+function lineplot!{T<:Canvas}(plot::Plot{T}, intercept::Real, slope::Real; args...)
+  xmin = plot.graphics.plotOriginX
+  xmax = plot.graphics.plotOriginX + plot.graphics.plotWidth
+  ymin = plot.graphics.plotOriginY
+  ymax = plot.graphics.plotOriginY + plot.graphics.plotHeight
+  lineplot!(plot, [xmin, xmax], [intercept + xmin*slope, intercept + xmax*slope]; args...)
+end
+
 function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, x::Range; args...)
   X = collect(x)
   lineplot!(plot, Y, X; args...)
