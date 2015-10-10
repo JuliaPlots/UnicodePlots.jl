@@ -26,7 +26,7 @@ function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F}
     minX = t / 2
     maxX = t + t / 2
   end
-  minX, maxX = plottingRange(minX, maxX)
+  minX, maxX = xlim == [0.,0.] ? plottingRange(minX, maxX) : plottingRangeNarrow(minX, maxX)
   minY = float(minimum(ylim))
   maxY = float(maximum(ylim))
   if minY == 0. && maxY == 0.
@@ -39,7 +39,7 @@ function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F}
     minY = t / 2
     maxY = t + t / 2
   end
-  minY, maxY = plottingRange(minY, maxY)
+  minY, maxY = ylim == [0.,0.] ? plottingRange(minY, maxY) : plottingRangeNarrow(minY, maxY)
   plotOriginX = minX; plotWidth = maxX - plotOriginX
   plotOriginY = minY; plotHeight = maxY - plotOriginY
 

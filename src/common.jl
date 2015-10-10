@@ -27,6 +27,8 @@ ceilNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeCeil(-log10(x))
 roundNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeRound(-log10(x))
 roundUpToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
 roundDownToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
+roundUpToSubTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)+1) : -floor(-x, ceilNegLog10(m)+1))
+roundDownToSubTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)+1) : -ceil(-x, ceilNegLog10(m)+1))
 floatRoundLog10{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceilNegLog10(m)+1) : -round(-x, ceilNegLog10(m)+1))
 floatRoundLog10{F<:(@compat AbstractFloat)}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
 
@@ -34,6 +36,13 @@ function plottingRange{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xm
   diffX = xmax - xmin
   xmax = roundUpToTick(xmax, diffX)
   xmin = roundDownToTick(xmin, diffX)
+  xmin, xmax
+end
+
+function plottingRangeNarrow{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xmin::F, xmax::R)
+  diffX = xmax - xmin
+  xmax = roundUpToSubTick(xmax, diffX)
+  xmin = roundDownToSubTick(xmin, diffX)
   xmin, xmax
 end
 
