@@ -1,7 +1,7 @@
 
 function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F};
                                             width::Int = 40,
-                                            height::Int = 10,
+                                            height::Int = 15,
                                             margin::Int = 3,
                                             padding::Int = 1,
                                             title::(@compat AbstractString) = "",
