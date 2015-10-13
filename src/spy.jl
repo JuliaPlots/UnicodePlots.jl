@@ -7,23 +7,64 @@ function spy(A::AbstractArray;
              labels::Bool = true,
              margin::Int = 3,
              padding::Int = 1,
+             maxwidth::Int = 70,
+             maxheight::Int = 50,
              title::(@compat AbstractString) = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
-  min_canheight = safeCeil(nrow / 4)
-  min_canwidth = safeCeil(ncol / 2)
-  min_plotheight = min_canheight + 6
-  min_plotwidth = min_canwidth + margin + padding + 2 + length(string(ncol))
+  min_canvheight = safeCeil(nrow / 4)
+  min_canvwidth = safeCeil(ncol / 2)
+  min_plotheight = min_canvheight + 6
+  min_plotwidth = min_canvwidth + margin + padding + 2 + length(string(ncol))
   autosized = false
+
+  # Check if the size of the plot should be derived from the matrix
+  # Note: if both width and height are 0, it means that there are no
+  #       constraints and the plot should resemble the structure of 
+  #       the matrix as close as possible
   if width == 0 && height == 0
+    # If julia is interactive, then try to fit the terminal
     if isinteractive()
       term_height, term_width = Base.tty_size()
       if min_plotheight <= term_height - 2 && min_plotwidth <= term_width
-        height = min_canheight
-        width = min_canwidth
+        height = min_canvheight
+        width = min_canvwidth
         autosized = true
       end
+    end
+    # If the interactive code did not take care of this then try
+    # to plot the matrix in the correct aspect ratio (within specified bounds) 
+    if !autosized
+      aspect_ratio = min_canvwidth / min_canvheight
+      if min_canvheight > min_canvwidth 
+        # long matrix (according to pixel density)
+        height = min_canvheight
+        width = height * aspect_ratio
+        if width > maxwidth
+          width = maxwidth
+          height = width / aspect_ratio
+        end
+        if height > maxheight
+          height = maxheight
+          width = min(height * aspect_ratio, maxwidth)
+        end
+      else
+        # wide matrix
+        width = min_canvwidth
+        height = width / aspect_ratio
+        if height > maxheight
+          height = maxheight
+          width = height * aspect_ratio
+        end
+        if width > maxwidth
+          width = maxwidth
+          height = min(width / aspect_ratio, maxheight)
+        end
+      end
+      autosized = true
+      width = int(width)
+      height = int(height)
     end
   end
   if width == 0 && height == 0 && autosized == false
