@@ -8,16 +8,16 @@ function spy(A::AbstractArray;
              margin::Int = 3,
              padding::Int = 1,
              maxwidth::Int = 70,
-             maxheight::Int = 50,
+             maxheight::Int = 40,
              title::(@compat AbstractString) = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
   min_canvheight = safeCeil(nrow / 4)
   min_canvwidth = safeCeil(ncol / 2)
+  aspect_ratio = min_canvwidth / min_canvheight
   min_plotheight = min_canvheight + 6
   min_plotwidth = min_canvwidth + margin + padding + 2 + length(string(ncol))
-  autosized = false
 
   # Check if the size of the plot should be derived from the matrix
   # Note: if both width and height are 0, it means that there are no
@@ -25,6 +25,7 @@ function spy(A::AbstractArray;
   #       the matrix as close as possible
   if width == 0 && height == 0
     # If julia is interactive, then try to fit the terminal
+    autosized = false
     if isinteractive()
       term_height, term_width = Base.tty_size()
       if min_plotheight <= term_height - 2 && min_plotwidth <= term_width
@@ -36,7 +37,6 @@ function spy(A::AbstractArray;
     # If the interactive code did not take care of this then try
     # to plot the matrix in the correct aspect ratio (within specified bounds) 
     if !autosized
-      aspect_ratio = min_canvwidth / min_canvheight
       if min_canvheight > min_canvwidth 
         # long matrix (according to pixel density)
         height = min_canvheight
@@ -63,14 +63,18 @@ function spy(A::AbstractArray;
         end
       end
       autosized = true
-      width = int(width)
-      height = int(height)
     end
   end
-  if width == 0 && height == 0 && autosized == false
+  if width == 0 && height > 0
+    width = min(height * aspect_ratio, maxwidth)
+  elseif width > 0 && height == 0
+    height = min(width / aspect_ratio, maxheight)
+  elseif width == 0 && height == 0
     width = 40
     height = 20
   end
+  width = int(width)
+  height = int(height)
   canvas = BrailleCanvas(width, height,
                          plotWidth = float(ncol) + 1,
                          plotHeight = float(nrow) + 1)
