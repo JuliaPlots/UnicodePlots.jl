@@ -62,6 +62,11 @@ function createPlotWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F}
       setPoint!(newPlot, i, 0., :white)
     end
   end
+  if minX < 0 < maxX
+    for i in linspace(minY, maxY, height*4)
+      setPoint!(newPlot, 0., i, :white)
+    end
+  end
   newPlot
 end
 
