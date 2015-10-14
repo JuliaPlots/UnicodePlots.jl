@@ -17,7 +17,7 @@ function spy(A::AbstractArray;
   min_canvwidth = safeCeil(ncol / 2)
   aspect_ratio = min_canvwidth / min_canvheight
   min_plotheight = min_canvheight + 6
-  min_plotwidth = min_canvwidth + margin + padding + 2 + length(string(ncol))
+  min_plotwidth = min_canvwidth + margin + padding + 2 + length(string(ncol)) + 3
 
   # Check if the size of the plot should be derived from the matrix
   # Note: if both width and height are 0, it means that there are no
@@ -101,6 +101,8 @@ function spy(A::AbstractArray;
               convert(Vector{(@compat AbstractFloat)}, neg_cols),
               nrow + 1 - convert(Vector{(@compat AbstractFloat)}, neg_rows),
               :blue)
+    annotate!(plot, :r, 1, "> 0", :red)
+    annotate!(plot, :r, 2, "< 0", :blue)
   end
   annotate!(plot, :l, 1, "1")
   annotate!(plot, :l, height, string(nrow))
