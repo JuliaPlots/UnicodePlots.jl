@@ -76,7 +76,7 @@ myPlot = lineplot([cos, sin], -π/2, 2π)
 You can also plot lines by specifying an intercept and slope
 
 ```Julia
-lineplot!(myPlot, -1, .2)
+lineplot!(myPlot, -0.5, .2)
 ```
 ![Lineplot Screenshot3](doc/img/abline.png)
 
