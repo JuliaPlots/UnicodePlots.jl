@@ -69,7 +69,7 @@ lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
 It's also possible to specify a function and a range.
 
 ```Julia
-myPlot = lineplot([sin, cos], 0, 10, xlim = [0, 10], ylim = [-1, 1])
+myPlot = lineplot([cos, sin], -π/2, 2π)
 ```
 ![Lineplot Screenshot2](doc/img/sin.png)
 
@@ -109,7 +109,7 @@ histogram(rand(1000), bins=10, title="Histogram")
 #### Sparsity Pattern
 
 ```Julia
-spy(sprand(100, 100, .15))
+spy(sprandn(50, 120, .05))
 ```
 ![Spy Screenshot](doc/img/spy.png)
 
