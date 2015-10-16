@@ -10,20 +10,20 @@ signs = ['⠁' '⠂' '⠄' '⡀';
 
 type BrailleCanvas <: Canvas
   grid::Array{Char,2}
-  colors::Array{(@compat UInt8),2}
+  colors::Array{UInt8,2}
   pixelWidth::Int
   pixelHeight::Int
-  plotOriginX::(@compat AbstractFloat)
-  plotOriginY::(@compat AbstractFloat)
-  plotWidth::(@compat AbstractFloat)
-  plotHeight::(@compat AbstractFloat)
+  plotOriginX::Float64
+  plotOriginY::Float64
+  plotWidth::Float64
+  plotHeight::Float64
 end
 
 function BrailleCanvas(charWidth::Int, charHeight::Int;
-                       plotOriginX::(@compat AbstractFloat) = 0.,
-                       plotOriginY::(@compat AbstractFloat) = 0.,
-                       plotWidth::(@compat AbstractFloat) = 1.,
-                       plotHeight::(@compat AbstractFloat) = 1.)
+                       plotOriginX::Float64 = 0.,
+                       plotOriginY::Float64 = 0.,
+                       plotWidth::Float64 = 1.,
+                       plotHeight::Float64 = 1.)
   charWidth = max(charWidth, 5)
   charHeight = max(charHeight, 2)
   pixelWidth = charWidth * 2
@@ -52,11 +52,7 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   end
   charY = safeFloor(pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % 4) + 1
-  if VERSION < v"0.4-"
-    c.grid[charX,charY] = c.grid[charX,charY] | signs[charXOff, charYOff]
-  else
-    c.grid[charX,charY] = Char((@compat UInt64)(c.grid[charX,charY]) | (@compat UInt64)(signs[charXOff, charYOff]))
-  end
+  c.grid[charX,charY] = Char(UInt64(c.grid[charX,charY]) | UInt64(signs[charXOff, charYOff]))
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   c
 end
@@ -65,7 +61,7 @@ function setPixel!(c::Canvas, pixelX::Int, pixelY::Int; color::Symbol=:white)
   setPixel!(c, pixelX, pixelY, color)
 end
 
-function setPoint!(c::Canvas, plotX::(@compat AbstractFloat), plotY::(@compat AbstractFloat), color::Symbol)
+function setPoint!(c::Canvas, plotX::AbstractFloat, plotY::AbstractFloat, color::Symbol)
   c.plotOriginX <= plotX < c.plotOriginX + c.plotWidth || return nothing
   c.plotOriginY <= plotY < c.plotOriginY + c.plotHeight || return nothing
   plotXOffset = plotX - c.plotOriginX
@@ -75,7 +71,7 @@ function setPoint!(c::Canvas, plotX::(@compat AbstractFloat), plotY::(@compat Ab
   setPixel!(c, safeFloor(pixelX), safeFloor(pixelY), color)
 end
 
-function setPoint!(c::Canvas, plotX::(@compat AbstractFloat), plotY::(@compat AbstractFloat); color::Symbol=:white)
+function setPoint!(c::Canvas, plotX::AbstractFloat, plotY::AbstractFloat; color::Symbol=:white)
   setPoint!(c, plotX, plotY, color)
 end
 
@@ -92,7 +88,7 @@ function setPoint!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color
 end
 
 # Implementation of the digital differential analyser (DDA)
-function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
+function drawLine!{F<:AbstractFloat}(c::Canvas, x1::F, y1::F, x2::F, y2::F, color::Symbol)
   toff = x1 - c.plotOriginX
   px1 = toff / c.plotWidth * c.pixelWidth
   toff = x2 - c.plotOriginX
@@ -108,8 +104,8 @@ function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y
   incY = dy / nsteps
   curX = px1
   curY = py1
-  fpw = convert((@compat AbstractFloat), c.pixelWidth)
-  fph = convert((@compat AbstractFloat), c.pixelHeight)
+  fpw = convert(AbstractFloat, c.pixelWidth)
+  fph = convert(AbstractFloat, c.pixelHeight)
   setPixel!(c, safeFloor(curX), safeFloor(curY), color)
   for i = 1:nsteps
     curX += incX
@@ -119,7 +115,7 @@ function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y
   c
 end
 
-function drawLine!{F<:(@compat AbstractFloat)}(c::Canvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
+function drawLine!{F<:AbstractFloat}(c::Canvas, x1::F, y1::F, x2::F, y2::F; color::Symbol=:white)
   drawLine!(c, x1, y1, x2, y2, color)
 end
 

@@ -3,13 +3,13 @@
 function spy(A::AbstractArray;
              width::Int = 0,
              height::Int = 0,
-             color = :automatic,
+             color::Symbol = :automatic,
              labels::Bool = true,
              margin::Int = 3,
              padding::Int = 1,
              maxwidth::Int = 0,
              maxheight::Int = 0,
-             title::(@compat AbstractString) = "Sparsity Pattern",
+             title::AbstractString = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
@@ -73,18 +73,18 @@ function spy(A::AbstractArray;
     width = 40
     height = 20
   end
-  width = int(width)
-  height = int(height)
+  width = round(Int, width)
+  height = round(Int, height)
   canvas = BrailleCanvas(width, height,
-                         plotWidth = float(ncol) + 1,
-                         plotHeight = float(nrow) + 1)
+                         plotWidth = Float64(ncol) + 1,
+                         plotHeight = Float64(nrow) + 1)
   plot = Plot(canvas; showLabels = labels, title = title, margin = margin, padding = padding, args...)
   height = nrows(plot.graphics)
   width = ncols(plot.graphics)
   plot = if color != :automatic
     setPoint!(plot,
-              convert(Vector{(@compat AbstractFloat)}, cols),
-              nrow + 1 - convert(Vector{(@compat AbstractFloat)}, rows),
+              convert(Vector{Float64}, cols),
+              nrow + 1 - convert(Vector{Float64}, rows),
               color)
   else
     pos_idx = vals .> 0
@@ -94,12 +94,12 @@ function spy(A::AbstractArray;
     neg_cols = cols[neg_idx]
     neg_rows = rows[neg_idx]
     setPoint!(plot,
-              convert(Vector{(@compat AbstractFloat)}, pos_cols),
-              nrow + 1 - convert(Vector{(@compat AbstractFloat)}, pos_rows),
+              convert(Vector{Float64}, pos_cols),
+              nrow + 1 - convert(Vector{Float64}, pos_rows),
               :red)
     setPoint!(plot,
-              convert(Vector{(@compat AbstractFloat)}, neg_cols),
-              nrow + 1 - convert(Vector{(@compat AbstractFloat)}, neg_rows),
+              convert(Vector{AbstractFloat}, neg_cols),
+              nrow + 1 - convert(Vector{Float64}, neg_rows),
               :blue)
     annotate!(plot, :r, 1, "> 0", :red)
     annotate!(plot, :r, 2, "< 0", :blue)

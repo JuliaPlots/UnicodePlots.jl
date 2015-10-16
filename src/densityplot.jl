@@ -1,9 +1,9 @@
-function createDensityWindow{F<:(@compat AbstractFloat)}(X::Vector{F}, Y::Vector{F};
+function createDensityWindow{F<:AbstractFloat}(X::Vector{F}, Y::Vector{F};
                                                width::Int = 40,
                                                height::Int = 20,
                                                margin::Int = 3,
                                                padding::Int = 1,
-                                               title::(@compat AbstractString) = "",
+                                               title::AbstractString = "",
                                                border::Symbol = :solid,
                                                labels::Bool = true,
                                                xlim::Vector = [0.,0.],
@@ -50,8 +50,8 @@ end
 function densityplot{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R};
                                       color::Symbol = :white,
                                       args...)
-  X = convert(Vector{(@compat AbstractFloat)},X)
-  Y = convert(Vector{(@compat AbstractFloat)},Y)
+  X = convert(Vector{AbstractFloat},X)
+  Y = convert(Vector{AbstractFloat},Y)
   minX = minimum(X); minY = minimum(Y)
   maxX = maximum(X); maxY = maximum(Y)
   newPlot = createDensityWindow(X, Y; args...)
@@ -63,7 +63,7 @@ function densityplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T},
                                                  Y::Vector{R};
                                                  color::Symbol = :white,
                                                  args...)
-  X = convert(Vector{(@compat AbstractFloat)},X)
-  Y = convert(Vector{(@compat AbstractFloat)},Y)
+  X = convert(Vector{AbstractFloat},X)
+  Y = convert(Vector{AbstractFloat},Y)
   setPoint!(plot, X, Y, color)
 end

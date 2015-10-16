@@ -1,22 +1,22 @@
 denSigns = [" ", "░", "▒", "▓", "█"]
 
 type DensityCanvas <: Canvas
-  grid::Array{(@compat UInt),2}
-  colors::Array{(@compat UInt8),2}
+  grid::Array{UInt,2}
+  colors::Array{UInt8,2}
   pixelWidth::Int
   pixelHeight::Int
-  plotOriginX::(@compat AbstractFloat)
-  plotOriginY::(@compat AbstractFloat)
-  plotWidth::(@compat AbstractFloat)
-  plotHeight::(@compat AbstractFloat)
-  maxDensity::(@compat AbstractFloat)
+  plotOriginX::Float64
+  plotOriginY::Float64
+  plotWidth::Float64
+  plotHeight::Float64
+  maxDensity::Float64
 end
 
 function DensityCanvas(charWidth::Int, charHeight::Int;
-                       plotOriginX::(@compat AbstractFloat) = 0.,
-                       plotOriginY::(@compat AbstractFloat) = 0.,
-                       plotWidth::(@compat AbstractFloat) = 1.,
-                       plotHeight::(@compat AbstractFloat) = 1.)
+                       plotOriginX::Float64 = 0.,
+                       plotOriginY::Float64 = 0.,
+                       plotWidth::Float64 = 1.,
+                       plotHeight::Float64 = 1.)
   charWidth = max(charWidth, 5)
   charHeight = max(charHeight, 5)
   pixelWidth = charWidth

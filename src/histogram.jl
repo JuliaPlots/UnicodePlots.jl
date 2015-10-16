@@ -2,7 +2,7 @@
 # code by IainNZ
 function histogram(x, bins::Int=sturges(length(x)); args...)
   edges, counts = hist(x, bins)
-  labels = (@compat AbstractString)[]
+  labels = UTF8String[]
   binwidth = edges.step / edges.divisor
   for i in 1:length(counts)
 		val = floatRoundLog10(edges[i])

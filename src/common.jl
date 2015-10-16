@@ -23,31 +23,31 @@ function safeCeil(num)
   end
 end
 
-ceilNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeCeil(-log10(x))
-roundNegLog10{F<:(@compat AbstractFloat)}(x::F) = safeRound(-log10(x))
-roundUpToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
-roundDownToTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
-roundUpToSubTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)+1) : -floor(-x, ceilNegLog10(m)+1))
-roundDownToSubTick{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)+1) : -ceil(-x, ceilNegLog10(m)+1))
-floatRoundLog10{F<:(@compat AbstractFloat),R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceilNegLog10(m)+1) : -round(-x, ceilNegLog10(m)+1))
-floatRoundLog10{F<:(@compat AbstractFloat)}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
+ceilNegLog10{F<:AbstractFloat}(x::F) = safeCeil(-log10(x))
+roundNegLog10{F<:AbstractFloat}(x::F) = safeRound(-log10(x))
+roundUpToTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
+roundDownToTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
+roundUpToSubTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)+1) : -floor(-x, ceilNegLog10(m)+1))
+roundDownToSubTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)+1) : -ceil(-x, ceilNegLog10(m)+1))
+floatRoundLog10{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceilNegLog10(m)+1) : -round(-x, ceilNegLog10(m)+1))
+floatRoundLog10{F<:AbstractFloat}(x::F) = x > 0 ? floatRoundLog10(x,x): floatRoundLog10(x,-x)
 
-function plottingRange{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xmin::F, xmax::R)
+function plottingRange{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R)
   diffX = xmax - xmin
   xmax = roundUpToTick(xmax, diffX)
   xmin = roundDownToTick(xmin, diffX)
   xmin, xmax
 end
 
-function plottingRangeNarrow{F<:(@compat AbstractFloat),R<:(@compat AbstractFloat)}(xmin::F, xmax::R)
+function plottingRangeNarrow{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R)
   diffX = xmax - xmin
   xmax = roundUpToSubTick(xmax, diffX)
   xmin = roundDownToSubTick(xmin, diffX)
   xmin, xmax
 end
 
-const borderMap = Dict{Symbol,Dict{Symbol,(@compat AbstractString)}}()
-const borderSolid = Dict{Symbol,(@compat AbstractString)}()
+const borderMap = Dict{Symbol,Dict{Symbol,UTF8String}}()
+const borderSolid = Dict{Symbol,UTF8String}()
 borderSolid[:tl]="┌"
 borderSolid[:tr]="┐"
 borderSolid[:bl]="└"
@@ -56,7 +56,7 @@ borderSolid[:t]="─"
 borderSolid[:l]="│"
 borderSolid[:b]="─"
 borderSolid[:r]="│"
-const borderBold = Dict{Symbol,(@compat AbstractString)}()
+const borderBold = Dict{Symbol,UTF8String}()
 borderBold[:tl]="┏"
 borderBold[:tr]="┓"
 borderBold[:bl]="┗"
@@ -65,7 +65,7 @@ borderBold[:t]="━"
 borderBold[:l]="┃"
 borderBold[:b]="━"
 borderBold[:r]="┃"
-const borderNone = Dict{Symbol,(@compat AbstractString)}()
+const borderNone = Dict{Symbol,UTF8String}()
 borderNone[:tl]=" "
 borderNone[:tr]=" "
 borderNone[:bl]=" "
@@ -74,7 +74,7 @@ borderNone[:t]=" "
 borderNone[:l]=" "
 borderNone[:b]=" "
 borderNone[:r]=" "
-const borderDashed = Dict{Symbol,(@compat AbstractString)}()
+const borderDashed = Dict{Symbol,UTF8String}()
 borderDashed[:tl]="┌"
 borderDashed[:tr]="┐"
 borderDashed[:bl]="└"
@@ -83,7 +83,7 @@ borderDashed[:t]="╌"
 borderDashed[:l]="│"
 borderDashed[:b]="╌"
 borderDashed[:r]="│"
-const borderDotted = Dict{Symbol,(@compat AbstractString)}()
+const borderDotted = Dict{Symbol,UTF8String}()
 borderDotted[:tl]="⡤"
 borderDotted[:tr]="⢤"
 borderDotted[:bl]="⠓"
@@ -100,7 +100,7 @@ borderMap[:dotted]=borderDotted
 
 const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
 
-const colorEncode = Dict{Symbol,(@compat UInt8)}()
+const colorEncode = Dict{Symbol,UInt8}()
 colorEncode[:white]=0b000
 colorEncode[:blue]=0b001
 colorEncode[:red]=0b010
@@ -108,7 +108,7 @@ colorEncode[:magenta]=0b011
 colorEncode[:yellow]=0b100
 colorEncode[:green]=0b101
 colorEncode[:cyan]=0b110
-const colorDecode = Dict{(@compat UInt8),Symbol}()
+const colorDecode = Dict{UInt8,Symbol}()
 for k in keys(colorEncode)
   v = colorEncode[k]
   colorDecode[v]=k
@@ -120,7 +120,7 @@ colorDecode[0b111]=:white
 # ░▒▓█
 # ⬛
 
-function printColor(color::(@compat UInt8), io::IO, args...)
+function printColor(color::UInt8, io::IO, args...)
   #if isa(io, Base.TTY)
     col = colorDecode[color]
     str = string(args...)
