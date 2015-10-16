@@ -4,7 +4,7 @@ Advanced Unicode plotting library designed for use in Julia's REPL.
 
 ## Installation
 
-There are no dependencies on other packages but Compat. Developed for Julia v0.3 and v0.4
+There are no dependencies on other packages. Developed for Julia v0.3 and v0.4
 
 [![Package Evaluator v3](http://pkg.julialang.org/badges/UnicodePlots_0.3.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.3)
 [![Package Evaluator v4](http://pkg.julialang.org/badges/UnicodePlots_0.4.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.4)
