@@ -7,8 +7,8 @@ function spy(A::AbstractArray;
              labels::Bool = true,
              margin::Int = 3,
              padding::Int = 1,
-             maxwidth::Int = 70,
-             maxheight::Int = 40,
+             maxwidth::Int = 0,
+             maxheight::Int = 0,
              title::(@compat AbstractString) = "Sparsity Pattern",
              args...)
   rows, cols, vals = findnz(A)
@@ -16,53 +16,53 @@ function spy(A::AbstractArray;
   min_canvheight = safeCeil(nrow / 4)
   min_canvwidth = safeCeil(ncol / 2)
   aspect_ratio = min_canvwidth / min_canvheight
-  min_plotheight = min_canvheight + 6
-  min_plotwidth = min_canvwidth + margin + padding + 2 + length(string(ncol)) + 3
+  height_diff = 9
+  width_diff = margin + padding + length(string(ncol)) + 6
+  min_plotheight = min_canvheight + height_diff
+  min_plotwidth = min_canvwidth + width_diff
+
+  # if no size bounds ares specified and the session is in an
+  # interactive terminal then use the size of the REPL
+  if isinteractive()
+    term_height, term_width = Base.tty_size()
+    maxheight = maxheight > 0 ? maxheight : term_height - height_diff
+    maxwidth = maxwidth > 0 ? maxwidth : term_width - width_diff
+  else
+    maxheight = maxheight > 0 ? maxheight : 40
+    maxwidth = maxwidth > 0 ? maxwidth : 70
+  end
 
   # Check if the size of the plot should be derived from the matrix
   # Note: if both width and height are 0, it means that there are no
   #       constraints and the plot should resemble the structure of 
   #       the matrix as close as possible
   if width == 0 && height == 0
-    # If julia is interactive, then try to fit the terminal
-    autosized = false
-    if isinteractive()
-      term_height, term_width = Base.tty_size()
-      if min_plotheight <= term_height - 2 && min_plotwidth <= term_width
-        height = min_canvheight
-        width = min_canvwidth
-        autosized = true
-      end
-    end
     # If the interactive code did not take care of this then try
-    # to plot the matrix in the correct aspect ratio (within specified bounds) 
-    if !autosized
-      if min_canvheight > min_canvwidth 
-        # long matrix (according to pixel density)
-        height = min_canvheight
-        width = height * aspect_ratio
-        if width > maxwidth
-          width = maxwidth
-          height = width / aspect_ratio
-        end
-        if height > maxheight
-          height = maxheight
-          width = min(height * aspect_ratio, maxwidth)
-        end
-      else
-        # wide matrix
-        width = min_canvwidth
+    # to plot the matrix in the correct aspect ratio (within specified bounds)
+    if min_canvheight > min_canvwidth 
+      # long matrix (according to pixel density)
+      height = min_canvheight
+      width = height * aspect_ratio
+      if width > maxwidth
+        width = maxwidth
         height = width / aspect_ratio
-        if height > maxheight
-          height = maxheight
-          width = height * aspect_ratio
-        end
-        if width > maxwidth
-          width = maxwidth
-          height = min(width / aspect_ratio, maxheight)
-        end
       end
-      autosized = true
+      if height > maxheight
+        height = maxheight
+        width = min(height * aspect_ratio, maxwidth)
+      end
+    else
+      # wide matrix
+      width = min_canvwidth
+      height = width / aspect_ratio
+      if height > maxheight
+        height = maxheight
+        width = height * aspect_ratio
+      end
+      if width > maxwidth
+        width = maxwidth
+        height = min(width / aspect_ratio, maxheight)
+      end
     end
   end
   if width == 0 && height > 0
