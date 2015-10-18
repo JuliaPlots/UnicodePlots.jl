@@ -164,7 +164,7 @@ function show(io::IO, p::Plot)
   maxLen = p.showLabels && !isempty(p.leftLabels) ? maximum([length(string(l)) for l in values(p.leftLabels)]) : 0
   maxLenR = p.showLabels && !isempty(p.rightLabels) ? maximum([length(string(l)) for l in values(p.rightLabels)]) : 0
   if p.showLabels && p.ylabel != ""
-    maxLen += length(p.ylabel) + p.padding
+    maxLen += length(p.ylabel) + 1
   end
 
   # offset where the plot (incl border) begins

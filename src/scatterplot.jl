@@ -158,10 +158,22 @@ function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, startx::Real, endx::Re
   lineplot!(plot, Y, X; args...)
 end
 
+function lineplot(Y::Function; args...)
+  lineplot(Y, -10, 10; args...)
+end
+
+function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function; args...)
+  lineplot!(plot, Y, plot.graphics.plotOriginX, plot.graphics.plotOriginX + plot.graphics.plotWidth; args...)
+end
+
 function lineplot(Y::Function, startx::Real, endx::Real; width::Int = 40, args...)
   diff = abs(endx - startx)
   X = collect(startx:(diff/(3*width)):endx)
   lineplot(Y, X; width = width, args...)
+end
+
+function lineplot(Y::AbstractVector{Function}; args...)
+  lineplot(Y, -10, 10; args...)
 end
 
 function lineplot(Y::AbstractVector{Function}, startx::Real, endx::Real; args...)
