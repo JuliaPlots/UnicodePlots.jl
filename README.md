@@ -102,7 +102,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "M
 #### Histogram
 
 ```Julia
-histogram(rand(1000), bins=10, title="Histogram")
+histogram(randn(1000), bins=15, title="Histogram")
 ```
 ![Histogram Screenshot](doc/img/hist.png)
 
