@@ -55,7 +55,7 @@ lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color=:yellow, name="other line")
 #### Scatterplot
 
 ```Julia
-scatterplot([1, 2, 4.8], [9, -5, 3], title = "My Scatterplot", color = :red)
+scatterplot(randn(50), randn(50), title = "My Scatterplot", color = :red)
 ```
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
