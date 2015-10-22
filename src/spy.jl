@@ -69,9 +69,6 @@ function spy(A::AbstractArray;
     width = min(height * aspect_ratio, maxwidth)
   elseif width > 0 && height == 0
     height = min(width / aspect_ratio, maxheight)
-  elseif width == 0 && height == 0
-    width = 40
-    height = 20
   end
   width = round(Int, width)
   height = round(Int, height)
