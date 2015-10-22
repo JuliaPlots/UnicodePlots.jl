@@ -36,20 +36,20 @@ function createPlotWindow{F<:AbstractFloat}(X::Vector{F}, Y::Vector{F};
   diffY = maxY - minY
   if diffY == 0
     t = minY
-    minY = t / 2
-    maxY = t + t / 2
+    minY = t - 1
+    maxY = t + 1
   end
   minY, maxY = ylim == [0.,0.] ? plottingRange(minY, maxY) : plottingRangeNarrow(minY, maxY)
-  plotOriginX = minX; plotWidth = maxX - plotOriginX
-  plotOriginY = minY; plotHeight = maxY - plotOriginY
-  plotWidth = plotWidth == 0. ? 1. : plotWidth
-  plotHeight = plotHeight == 0. ? 1. : plotHeight
+  plotOriginX = minX
+  plotOriginY = minY
+  plotWidth = maxX - plotOriginX
+  plotHeight = maxY - plotOriginY
 
   canvas = BrailleCanvas(width, height,
                          plotOriginX = plotOriginX, plotOriginY = plotOriginY,
                          plotWidth = plotWidth, plotHeight = plotHeight)
-  newPlot = Plot(canvas, title=title, margin=margin,
-                 padding=padding, border=border, showLabels=labels)
+  newPlot = Plot(canvas, title = title, margin = margin,
+                 padding = padding, border = border, showLabels = labels)
 
   minXString=string(isinteger(minX) ? safeRound(minX) : minX)
   maxXString=string(isinteger(maxX) ? safeRound(maxX) : maxX)
