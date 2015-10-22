@@ -4,6 +4,7 @@ myDict["Hi"] = 37
 myDict["ho"] = 23
 print(barplot(myDict))
 myPlot=barplot(["Please","don't","crash","my","friend"], [10,24,30,13,7])
+barplot!(myPlot, "and", 5)
 print(myPlot)
 barplot!(myPlot, ["just", "dont", "!"], [2, 49, 15])
 @test_throws DimensionMismatch barplot!(myPlot, ["just", "dont", "!"], [2, 49])
@@ -65,11 +66,22 @@ y = [1,2, -1, 4]
 print(scatterplot(x, y))
 x = [1.,2, 3, 7]
 y = [1,2, -1, 4]
-print(scatterplot(x, y))
+myplot = scatterplot(x, y)
+scatterplot!(myplot, x, y)
+print(myplot)
 print(scatterplot(x*.001+1.1, y))
 print(lineplot(x, y*20+1000))
 print(lineplot(x+1000, -y))
 
+myplot = lineplot(1:10, collect(1:10))
+myplot = lineplot(collect(1:10), 1:10)
+myplot = lineplot(1:10, 1:10)
+lineplot!(myplot, collect(1:10), 1:10)
+lineplot!(myplot, 1:10, collect(1:10))
+lineplot!(myplot, 1:10, 1:10)
+print(myplot)
+print(lineplot([sin, cos]))
+print(lineplot(sin))
 print(lineplot(sin, 1:.5:10))
 print(lineplot(sin, 1:.5:10, labels = false))
 print(lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4]))
@@ -109,6 +121,8 @@ for i in 1:10
 end
 print(scatterplot([1],[1]))
 @test_throws ArgumentError annotate!(myPlot, :bl, 5, ":l  5", :red)
+autoAnnotate!(myPlot, :l, ":l auto", :red)
+@test_throws ArgumentError autoAnnotate!(myPlot, :d, ":l auto", :red)
 annotate!(myPlot, :l, 5, ":l  5", :red)
 annotate!(myPlot, :r, 5, "5  :r", color=:red)
 annotate!(myPlot, :bl, ":bl", :blue)
@@ -118,6 +132,7 @@ annotate!(myPlot, :tl, ":tl", :cyan)
 annotate!(myPlot, :tr, ":tr")
 annotate!(myPlot, :t, ":t", :yellow)
 drawLine!(myPlot, 0., 1., 1., 0., :blue)
+drawLine!(myPlot, 0., 1., 1., 0., color=:blue)
 setPoint!(myPlot, rand(10), rand(10))
 setPixel!(myPlot, 1, 1)
 setPixel!(myPlot, 1, 1, :green)
@@ -168,15 +183,20 @@ lineplot!(myPlot, 1, .5)
 print(myPlot)
 
 print(histogram(rand(1000), bins=10, title="Histogram"))
+print(histogram(rand(1000), title="Histogram"))
 
-print(spy(sprand(100,100,.15)))
-print(spy(full(sprand(100,100,.15))))
+print(spy(sprand(10,10,.15)))
+print(spy(sprand(10,10,.15), color=:green))
+print(spy(sprand(1000,10,.01), color=:green))
+print(spy(sprand(10,1000,.01), color=:green))
+print(spy(full(sprand(10,100,.15))))
 
 x1, y1 = rand(500)*10, rand(500)*10
 x2, y2 = rand(1000)*5+1, rand(1000)*5+1
-canvas = BrailleCanvas(40, 20,
+canvas = BrailleCanvas(40, 10,
                        plotOriginX = 0., plotOriginY = 0.,
                        plotWidth = 10., plotHeight = 10.)
+setPoint!(canvas, x1, y1, color = :red)
 setPoint!(canvas, x1, y1, :red)
 setPoint!(canvas, x2, y2, :blue)
 show(canvas)

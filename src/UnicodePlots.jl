@@ -22,6 +22,7 @@ export
     title, title!,
     xlabel, xlabel!,
     ylabel, ylabel!,
+    autoAnnotate!,
     annotate!,
 
     barplot, barplot!,
