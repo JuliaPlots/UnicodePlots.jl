@@ -42,6 +42,8 @@ function createPlotWindow{F<:AbstractFloat}(X::Vector{F}, Y::Vector{F};
   minY, maxY = ylim == [0.,0.] ? plottingRange(minY, maxY) : plottingRangeNarrow(minY, maxY)
   plotOriginX = minX; plotWidth = maxX - plotOriginX
   plotOriginY = minY; plotHeight = maxY - plotOriginY
+  plotWidth = plotWidth == 0. ? 1. : plotWidth
+  plotHeight = plotHeight == 0. ? 1. : plotHeight
 
   canvas = BrailleCanvas(width, height,
                          plotOriginX = plotOriginX, plotOriginY = plotOriginY,

@@ -138,7 +138,7 @@ end
 
 function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int=0)
   if title != ""
-    offset = safeRound(plotWidth / 2 - length(title) / 2)
+    offset = round(Int, plotWidth / 2 - length(title) / 2, RoundNearestTiesUp)
     offset = offset > 0 ? offset: 0
     tpad = repeat(spceStr, offset)
     print_with_color(:white, io, padding, tpad, title, "\n")
@@ -202,7 +202,7 @@ function show(io::IO, p::Plot)
   print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
 
   # compute position of ylabel
-  ylabRow = safeFloor(nrows(c) / 2)
+  ylabRow = round(nrows(c) / 2, RoundNearestTiesUp)
 
   # plot all rows
   for row in 1:nrows(c)
