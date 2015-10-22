@@ -1,18 +1,36 @@
 isdefined(Base, :__precompile__) && __precompile__()
 module UnicodePlots
 
-export Canvas, BrailleCanvas, BarplotCanvas, DensityCanvas
-export setPixel!, setPoint!, drawLine!, addRow!
-export printRow, nrows, ncols
+export
 
-export Plot
-export title, xlabel, ylabel
-export annotate!, title!, xlabel!, ylabel!
+    GraphicsArea,
+      Canvas,
+        BrailleCanvas,
+        DensityCanvas,
+      BarplotGraphics,
 
-export barplot, lineplot, scatterplot, stairs, histogram, densityplot
-export barplot!, lineplot!, scatterplot!, stairs!, densityplot!
+    printRow,
+    nrows,
+    ncols,
 
-export spy
+    setPixel!,
+    setPoint!,
+    drawLine!,
+    addRow!,
+
+    Plot,
+    title, title!,
+    xlabel, xlabel!,
+    ylabel, ylabel!,
+    annotate!,
+
+    barplot, barplot!,
+    lineplot, lineplot!,
+    scatterplot, scatterplot!,
+    stairs, stairs!,
+    histogram,
+    densityplot, densityplot!,
+    spy
 
 include("common.jl")
 include("canvas.jl")

@@ -36,10 +36,10 @@ function createDensityWindow{F<:AbstractFloat}(X::Vector{F}, Y::Vector{F};
   newPlot = Plot(canvas, title=title, margin=margin,
                  padding=padding, border=border, showLabels=labels)
 
-  minXString=string(isinteger(minX) ? safeRound(minX) : minX)
-  maxXString=string(isinteger(maxX) ? safeRound(maxX) : maxX)
-  minYString=string(isinteger(minY) ? safeRound(minY) : minY)
-  maxYString=string(isinteger(maxY) ? safeRound(maxY) : maxY)
+  minXString=string(isinteger(minX) ? round(Int, minX, RoundNearestTiesUp) : minX)
+  maxXString=string(isinteger(maxX) ? round(Int, maxX, RoundNearestTiesUp) : maxX)
+  minYString=string(isinteger(minY) ? round(Int, minY, RoundNearestTiesUp) : minY)
+  maxYString=string(isinteger(maxY) ? round(Int, maxY, RoundNearestTiesUp) : maxY)
   annotate!(newPlot, :l, 1, maxYString)
   annotate!(newPlot, :l, height, minYString)
   annotate!(newPlot, :bl, minXString)

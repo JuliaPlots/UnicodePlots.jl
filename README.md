@@ -165,7 +165,7 @@ All plots support a common set of named parameters
 
 - `border::Symbol = :solid`:
 
-    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, and `:none`.
+    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
   ```Julia
   lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:bold)

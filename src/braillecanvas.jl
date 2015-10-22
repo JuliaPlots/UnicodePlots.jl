@@ -45,12 +45,12 @@ function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   pixelY = pixelY < c.pixelHeight ? pixelY: pixelY - 1
   cw, ch = size(c.grid)
   tmp = pixelX / c.pixelWidth * cw
-  charX = safeFloor(tmp) + 1
+  charX = floor(Int, tmp) + 1
   charXOff = (pixelX % 2) + 1
-  if charX < safeRound(tmp) + 1 && charXOff == 1
+  if charX < round(Int, tmp, RoundNearestTiesUp) + 1 && charXOff == 1
     charX = charX + 1
   end
-  charY = safeFloor(pixelY / c.pixelHeight * ch) + 1
+  charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % 4) + 1
   c.grid[charX,charY] = Char(UInt64(c.grid[charX,charY]) | UInt64(signs[charXOff, charYOff]))
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
@@ -68,7 +68,7 @@ function setPoint!(c::Canvas, plotX::AbstractFloat, plotY::AbstractFloat, color:
   pixelX = plotXOffset / c.plotWidth * c.pixelWidth
   plotYOffset = plotY - c.plotOriginY
   pixelY = c.pixelHeight - plotYOffset / c.plotHeight * c.pixelHeight
-  setPixel!(c, safeFloor(pixelX), safeFloor(pixelY), color)
+  setPixel!(c, floor(Int, pixelX), floor(Int, pixelY), color)
 end
 
 function setPoint!(c::Canvas, plotX::AbstractFloat, plotY::AbstractFloat; color::Symbol=:white)
@@ -106,11 +106,11 @@ function drawLine!{F<:AbstractFloat}(c::Canvas, x1::F, y1::F, x2::F, y2::F, colo
   curY = py1
   fpw = convert(AbstractFloat, c.pixelWidth)
   fph = convert(AbstractFloat, c.pixelHeight)
-  setPixel!(c, safeFloor(curX), safeFloor(curY), color)
+  setPixel!(c, floor(Int, curX), floor(Int, curY), color)
   for i = 1:nsteps
     curX += incX
     curY += incY
-    setPixel!(c, safeFloor(curX), safeFloor(curY), color)
+    setPixel!(c, floor(Int, curX), floor(Int, curY), color)
   end
   c
 end

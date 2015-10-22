@@ -190,7 +190,7 @@ function show(io::IO, p::Plot)
       topMidLen = length(topMidStr)
       topRightLen = length(topRightStr)
       print_with_color(topLeftCol, io, borderPadding, topLeftStr)
-      cnt = safeRound(borderLength / 2 - topMidLen / 2 - topLeftLen)
+      cnt = round(Int, borderLength / 2 - topMidLen / 2 - topLeftLen, RoundNearestTiesUp)
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print_with_color(topMidCol, io, pad, topMidStr)
       cnt = borderLength - topRightLen - topLeftLen - topMidLen + 2 - cnt
@@ -256,7 +256,7 @@ function show(io::IO, p::Plot)
       botMidLen = length(botMidStr)
       botRightLen = length(botRightStr)
       print_with_color(botLeftCol, io, borderPadding, botLeftStr)
-      cnt = safeRound(borderLength / 2 - botMidLen / 2 - botLeftLen)
+      cnt = round(Int, borderLength / 2 - botMidLen / 2 - botLeftLen, RoundNearestTiesUp)
       pad = cnt > 0 ? repeat(spceStr, cnt) : ""
       print_with_color(botMidCol, io, pad, botMidStr)
       cnt = borderLength - botRightLen - botLeftLen - botMidLen + 2 - cnt

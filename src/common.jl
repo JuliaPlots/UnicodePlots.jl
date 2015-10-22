@@ -1,30 +1,6 @@
 
-function safeRound(num)
-  if VERSION < v"0.4-"
-    iround(num)
-  else
-    round(Integer,num)
-  end
-end
-
-function safeFloor(num)
-  if VERSION < v"0.4-"
-    ifloor(num)
-  else
-    floor(Integer,num)
-  end
-end
-
-function safeCeil(num)
-  if VERSION < v"0.4-"
-    iceil(num)
-  else
-    ceil(Integer,num)
-  end
-end
-
-ceilNegLog10{F<:AbstractFloat}(x::F) = safeCeil(-log10(x))
-roundNegLog10{F<:AbstractFloat}(x::F) = safeRound(-log10(x))
+ceilNegLog10{F<:AbstractFloat}(x::F) = ceil(Integer, -log10(x))
+roundNegLog10{F<:AbstractFloat}(x::F) = round(Integer, -log10(x), RoundNearestTiesUp)
 roundUpToTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
 roundDownToTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceilNegLog10(m)) : -ceil(-x, ceilNegLog10(m)))
 roundUpToSubTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)+1) : -floor(-x, ceilNegLog10(m)+1))
@@ -92,11 +68,21 @@ borderDotted[:t]="⠤"
 borderDotted[:l]="⡇"
 borderDotted[:b]="⠒"
 borderDotted[:r]="⢸"
+const borderAscii = Dict{Symbol,UTF8String}()
+borderAscii[:tl]="+"
+borderAscii[:tr]="+"
+borderAscii[:bl]="+"
+borderAscii[:br]="+"
+borderAscii[:t]="-"
+borderAscii[:l]="|"
+borderAscii[:b]="-"
+borderAscii[:r]="|"
 borderMap[:solid]=borderSolid
 borderMap[:bold]=borderBold
 borderMap[:none]=borderNone
 borderMap[:dashed]=borderDashed
 borderMap[:dotted]=borderDotted
+borderMap[:ascii]=borderAscii
 
 const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
 
@@ -115,17 +101,13 @@ for k in keys(colorEncode)
 end
 colorDecode[0b111]=:white
 
+function printColor(color::UInt8, io::IO, args...)
+  col = colorDecode[color]
+  str = string(args...)
+  print_with_color(col, io, str)
+end
+
 # ▖▗▘▙▚▛▜▝▞▟
 # ▁▂▃▄▅▆▇█
 # ░▒▓█
 # ⬛
-
-function printColor(color::UInt8, io::IO, args...)
-  #if isa(io, Base.TTY)
-    col = colorDecode[color]
-    str = string(args...)
-    print_with_color(col, io, str)
-  #else
-  #  print(io, args...)
-  #end
-end

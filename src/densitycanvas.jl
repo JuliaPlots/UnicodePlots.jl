@@ -42,7 +42,7 @@ function printRow(io::IO, c::DensityCanvas, row::Int)
     #if c.grid[x,y] == 0
     #  printColor(c.colors[x,y], io, " ")
     #else
-      denIndex = safeRound(c.grid[x,y] * valScale) + 1
+      denIndex = round(Int, c.grid[x,y] * valScale, RoundNearestTiesUp) + 1
       printColor(c.colors[x,y], io, denSigns[denIndex])
     #end
   end
@@ -55,8 +55,8 @@ function setPixel!(c::DensityCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   pixelY = pixelY < c.pixelHeight ? pixelY: pixelY - 1
   cw, ch = size(c.grid)
   tmp = pixelX / c.pixelWidth * cw
-  charX = safeFloor(tmp) + 1
-  charY = safeFloor(pixelY / c.pixelHeight * ch) + 1
+  charX = floor(Int, tmp) + 1
+  charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   c.grid[charX,charY] += 1
   c.maxDensity = max(c.maxDensity, c.grid[charX,charY])
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]

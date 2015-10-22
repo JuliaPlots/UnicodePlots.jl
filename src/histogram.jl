@@ -1,6 +1,6 @@
 
 # code by IainNZ
-function histogram(x, bins::Int=sturges(length(x)); args...)
+function histogram(x, bins::Int = sturges(length(x)); args...)
   edges, counts = hist(x, bins)
   labels = UTF8String[]
   binwidth = edges.step / edges.divisor
@@ -11,7 +11,7 @@ function histogram(x, bins::Int=sturges(length(x)); args...)
   barplot(labels, counts; symb="▇", args...)
 end
 
-function histogram(x; bins::Int=sturges(length(x)), args...)
+function histogram(x; bins::Int = sturges(length(x)), args...)
   histogram(x, bins; args...)
 end
 
