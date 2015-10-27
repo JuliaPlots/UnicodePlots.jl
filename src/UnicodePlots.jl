@@ -9,7 +9,7 @@ export
         DensityCanvas,
       BarplotGraphics,
 
-    printRow,
+    printrow,
     nrows,
     ncols,
 
@@ -22,7 +22,6 @@ export
     title, title!,
     xlabel, xlabel!,
     ylabel, ylabel!,
-    autoAnnotate!,
     annotate!,
 
     barplot, barplot!,
@@ -35,13 +34,17 @@ export
 
 include("common.jl")
 include("canvas.jl")
-include("braillecanvas.jl")
-include("densitycanvas.jl")
+include("graphics/braillecanvas.jl")
+include("graphics/densitycanvas.jl")
+include("graphics/bargraphics.jl")
 include("plot.jl")
-include("barplot.jl")
-include("histogram.jl")
-include("scatterplot.jl")
-include("densityplot.jl")
-include("spy.jl")
+include("interface/barplot.jl")
+include("interface/histogram.jl")
+include("interface/scatterplot.jl")
+include("interface/lineplot.jl")
+include("interface/stairs.jl")
+include("interface/densityplot.jl")
+include("interface/spy.jl")
+include("deprecated.jl")
 
 end

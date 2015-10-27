@@ -1,4 +1,4 @@
-denSigns = [" ", "░", "▒", "▓", "█"]
+const den_signs = [" ", "░", "▒", "▓", "█"]
 
 type DensityCanvas <: Canvas
   grid::Array{UInt,2}
@@ -12,6 +12,12 @@ type DensityCanvas <: Canvas
   maxDensity::Float64
 end
 
+x_pixel_per_char(::Type{DensityCanvas}) = 1
+y_pixel_per_char(::Type{DensityCanvas}) = 2
+
+nrows(c::DensityCanvas) = size(c.grid, 2)
+ncols(c::DensityCanvas) = size(c.grid, 1)
+
 function DensityCanvas(charWidth::Int, charHeight::Int;
                        plotOriginX::Float64 = 0.,
                        plotOriginY::Float64 = 0.,
@@ -19,8 +25,8 @@ function DensityCanvas(charWidth::Int, charHeight::Int;
                        plotHeight::Float64 = 1.)
   charWidth = max(charWidth, 5)
   charHeight = max(charHeight, 5)
-  pixelWidth = charWidth
-  pixelHeight = charHeight * 2
+  pixelWidth = charWidth * x_pixel_per_char(DensityCanvas)
+  pixelHeight = charHeight * y_pixel_per_char(DensityCanvas)
   plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
   plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
   grid = fill(0, charWidth, charHeight)
@@ -32,33 +38,28 @@ function DensityCanvas(charWidth::Int, charHeight::Int;
                 1)
 end
 
-function printRow(io::IO, c::DensityCanvas, row::Int)
-  nunrows = nrows(c)
-  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = row
-  denSignCount = length(denSigns)
-  valScale = (denSignCount - 1) / c.maxDensity
-  for x in 1:ncols(c)
-    #if c.grid[x,y] == 0
-    #  printColor(c.colors[x,y], io, " ")
-    #else
-      denIndex = round(Int, c.grid[x,y] * valScale, RoundNearestTiesUp) + 1
-      printColor(c.colors[x,y], io, denSigns[denIndex])
-    #end
-  end
-end
-
 function setPixel!(c::DensityCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   0 <= pixelX <= c.pixelWidth || return nothing
   0 <= pixelY <= c.pixelHeight || return nothing
-  pixelX = pixelX < c.pixelWidth ? pixelX: pixelX - 1
-  pixelY = pixelY < c.pixelHeight ? pixelY: pixelY - 1
+  pixelX = pixelX < c.pixelWidth ? pixelX : pixelX - 1
+  pixelY = pixelY < c.pixelHeight ? pixelY : pixelY - 1
   cw, ch = size(c.grid)
-  tmp = pixelX / c.pixelWidth * cw
-  charX = floor(Int, tmp) + 1
+  charX = floor(Int, pixelX / c.pixelWidth * cw) + 1
   charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   c.grid[charX,charY] += 1
   c.maxDensity = max(c.maxDensity, c.grid[charX,charY])
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   c
+end
+
+function printrow(io::IO, c::DensityCanvas, row::Int)
+  nunrows = nrows(c)
+  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+  y = row
+  denSignCount = length(den_signs)
+  valScale = (denSignCount - 1) / c.maxDensity
+  for x in 1:ncols(c)
+    denIndex = round(Int, c.grid[x,y] * valScale, RoundNearestTiesUp) + 1
+    printColor(c.colors[x,y], io, den_signs[denIndex])
+  end
 end

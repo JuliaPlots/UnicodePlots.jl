@@ -1,14 +1,13 @@
-
 # code by IainNZ
-function histogram(x, bins::Int = sturges(length(x)); args...)
+function histogram(x, bins::Int; symb = "▇", args...)
   edges, counts = hist(x, bins)
-  labels = UTF8String[]
+  labels = Array(UTF8String, length(counts))
   binwidth = edges.step / edges.divisor
-  for i in 1:length(counts)
+  @inbounds for i in 1:length(counts)
 		val = floatRoundLog10(edges[i])
-    push!(labels, string("(", val, ",", floatRoundLog10(val+binwidth), "]"))
+    labels[i] = string("(", val, ",", floatRoundLog10(val+binwidth), "]")
   end
-  barplot(labels, counts; symb="▇", args...)
+  barplot(labels, counts; symb = symb, args...)
 end
 
 function histogram(x; bins::Int = sturges(length(x)), args...)

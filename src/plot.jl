@@ -1,4 +1,3 @@
-
 type Plot{T<:GraphicsArea}
   graphics::T
   title::UTF8String
@@ -17,14 +16,15 @@ type Plot{T<:GraphicsArea}
   autocolor::Int
 end
 
-function Plot{T<:GraphicsArea}(graphics::T;
-                               title::AbstractString = "",
-                               xlabel::AbstractString = "",
-                               ylabel::AbstractString = "",
-                               margin::Int = 3,
-                               padding::Int = 1,
-                               border::Symbol = :solid,
-                               showLabels = true)
+function Plot{T<:GraphicsArea}(
+    graphics::T;
+    title::AbstractString = "",
+    xlabel::AbstractString = "",
+    ylabel::AbstractString = "",
+    margin::Int = 3,
+    padding::Int = 1,
+    border::Symbol = :solid,
+    showLabels = true)
   rows = nrows(graphics)
   cols = ncols(graphics)
   leftLabels = Dict{Int,UTF8String}()
@@ -37,6 +37,60 @@ function Plot{T<:GraphicsArea}(graphics::T;
           margin, padding, border,
           leftLabels, leftColors, rightLabels, rightColors,
           decorations, decoColors, showLabels, 0)
+end
+
+function Plot{C<:Canvas, F<:AbstractFloat}(
+    X::Vector{F}, Y::Vector{F}, ::Type{C} = BrailleCanvas;
+    width::Int = 40,
+    height::Int = 15,
+    margin::Int = 3,
+    padding::Int = 1,
+    grid::Bool = true,
+    title::AbstractString = "",
+    border::Symbol = :solid,
+    labels::Bool = true,
+    xlim::Vector = [0.,0.],
+    ylim::Vector = [0.,0.])
+  length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
+  margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
+  length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+  width = max(width, 5)
+  height = max(height, 2)
+
+  minX, maxX = extend_limits(X, xlim)
+  minY, maxY = extend_limits(Y, ylim)
+  plotOriginX = minX
+  plotOriginY = minY
+  plotWidth = maxX - plotOriginX
+  plotHeight = maxY - plotOriginY
+
+  canvas = C(width, height,
+             plotOriginX = plotOriginX, plotOriginY = plotOriginY,
+             plotWidth = plotWidth, plotHeight = plotHeight)
+  newPlot = Plot(canvas, title = title, margin = margin,
+                 padding = padding, border = border, showLabels = labels)
+
+  minXString = string(isinteger(minX) ? round(Int, minX, RoundNearestTiesUp) : minX)
+  maxXString = string(isinteger(maxX) ? round(Int, maxX, RoundNearestTiesUp) : maxX)
+  minYString = string(isinteger(minY) ? round(Int, minY, RoundNearestTiesUp) : minY)
+  maxYString = string(isinteger(maxY) ? round(Int, maxY, RoundNearestTiesUp) : maxY)
+  annotate!(newPlot, :l, 1, maxYString)
+  annotate!(newPlot, :l, height, minYString)
+  annotate!(newPlot, :bl, minXString)
+  annotate!(newPlot, :br, maxXString)
+  if grid
+    if minY < 0 < maxY
+      for i in linspace(minX, maxX, width * x_pixel_per_char(typeof(canvas)))
+        setPoint!(newPlot, i, 0., :white)
+      end
+    end
+    if minX < 0 < maxX
+      for i in linspace(minY, maxY, height * y_pixel_per_char(typeof(canvas)))
+        setPoint!(newPlot, 0., i, :white)
+      end
+    end
+  end
+  newPlot
 end
 
 function nextColor!{T<:GraphicsArea}(plot::Plot{T})
@@ -72,32 +126,29 @@ function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::AbstractString)
   plot
 end
 
-function autoAnnotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol=:white)
-  for row = 1:nrows(plot.graphics)
-    if where == :l
-      if(!haskey(plot.leftLabels, row) || plot.leftLabels[row] == "")
-        plot.leftLabels[row] = value
-        plot.leftColors[row] = color
-        return plot
-      end
-    elseif where == :r
-      if(!haskey(plot.rightLabels, row) || plot.rightLabels[row] == "")
-        plot.rightLabels[row] = value
-        plot.rightColors[row] = color
-        return plot
-      end
-    else
-      throw(ArgumentError("Unknown location: try one of these :l :r"))
-    end
-  end
-  plot
-end
-
 function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol=:white)
-  where == :t || where == :b || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
-  plot.decorations[where] = value
-  plot.decoColors[where] = color
-  plot
+  where == :t || where == :b || where == :l || where == :r || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
+  if where == :l || where == :r
+    for row = 1:nrows(plot.graphics)
+      if where == :l
+        if(!haskey(plot.leftLabels, row) || plot.leftLabels[row] == "")
+          plot.leftLabels[row] = value
+          plot.leftColors[row] = color
+          return plot
+        end
+      elseif where == :r
+        if(!haskey(plot.rightLabels, row) || plot.rightLabels[row] == "")
+          plot.rightLabels[row] = value
+          plot.rightColors[row] = color
+          return plot
+        end
+      end
+    end
+  else
+    plot.decorations[where] = value
+    plot.decoColors[where] = color
+    return plot    
+  end  
 end
 
 function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString; color::Symbol=:white)
@@ -136,7 +187,7 @@ function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
   plot
 end
 
-function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int=0)
+function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int = 0)
   if title != ""
     offset = round(Int, plotWidth / 2 - length(title) / 2, RoundNearestTiesUp)
     offset = offset > 0 ? offset: 0
@@ -230,7 +281,7 @@ function show(io::IO, p::Plot)
     # print left border
     print(io, plotPadding, b[:l])
     # print canvas row
-    printRow(io, c, row)
+    printrow(io, c, row)
     #print right label and padding
     print(io, b[:r])
     if p.showLabels

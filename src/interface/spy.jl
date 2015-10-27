@@ -1,4 +1,3 @@
-
 # code by dpo
 function spy(A::AbstractArray;
              width::Int = 0,

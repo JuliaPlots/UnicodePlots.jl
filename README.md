@@ -47,7 +47,7 @@ myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title="My Plot", name="my line")
 Every plot has a mutating variant that ends with a exclamation mark.
 
 ```Julia
-lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color=:yellow, name="other line")
+lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color = :yellow, name = "other line")
 ```
 
 ![Basic Canvas](doc/img/hello_world2.png)
@@ -188,33 +188,45 @@ All plots support a common set of named parameters
   ```
     ![Labels Screenshot](doc/img/labels.png)
 
+- `grid::Bool = true`:
+
+    Can be used to hide the gridlines at the origin
+
 - `color::Symbol = :blue`:
 
     Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+
+- `canvas::Type = BrailleCanvas`:
+
+    The type of canvas that should be used to for drawing (see section "Low-level Interface")
+
+- `symb::AbstractString = "▪"`:
+
+    Barplot only. Specifies the character that should be used to render the bars
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
 
 ### Methods
 
-- `title!{T<:GraphicsArea}(plot::Plot{T}, title::String)`
+- `title!(plot::Plot, title::String)`
 
     - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
 
-- `xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)`
+- `xlabel!(plot::Plot, xlabel::String)`
 
     - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
 
-- `ylabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::String)`
+- `ylabel!(plot::Plot, xlabel::String)`
 
     - `ylabel` the string to display on the far left of the plot window.
 
 The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
-- `annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::String)`
+- `annotate!(plot::Plot, where::Symbol, value::String)`
 
     - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right)
 
-- `annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::String)`
+- `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
 
     - `where` can be any of: `:l` (left), `:r` (right)
 
@@ -240,7 +252,7 @@ setPixel!(canvas, 5, 8, :red)               # pixel space
 
 ![Basic Canvas](doc/img/canvas.png)
 
-You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printRow` to embed the canvas anywhere you wish. For example, `printRow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
+You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
 As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
 
@@ -259,10 +271,7 @@ At the moment there are few types of Canvas implemented:
 
 ## Todo
 
-- [x] Ability to specify `xlim` and `ylim`
-- [x] Better automatic labels
 - [ ] Animated plots using cursor movement
-- [ ] Animated sparklines using cursor movement
 - [ ] 4x4-block-canavs as preparation for histograms
 - [ ] Add heatmaps and hinton diagrams
 - [ ] Boxplots in some form

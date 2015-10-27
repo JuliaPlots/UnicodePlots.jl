@@ -1,61 +1,3 @@
-type BarplotGraphics{R<:Real} <: GraphicsArea
-  bars::Vector{R}
-  color::Symbol
-  charWidth::Int
-  maxFreq::R
-  maxFreqLen::R
-  symb::AbstractString
-
-  function BarplotGraphics(bars::Vector{R},
-                           charWidth::Int,
-                           color::Symbol = :blue,
-                           symb = "▪")
-    charWidth = max(charWidth, 5)
-    maxFreq = maximum(bars)
-    maxFreqLen = length(string(maxFreq))
-    new(bars, color, charWidth, maxFreq, maxFreqLen, symb)
-  end
-end
-
-function BarplotGraphics{R<:Real}(bars::Vector{R},
-                                  charWidth::Int;
-                                  color::Symbol = :blue,
-                                  symb = "▪")
-  BarplotGraphics{R}(bars, charWidth, color, symb)
-end
-
-function addRow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
-  append!(c.bars, bars)
-  c.maxFreq = maximum(c.bars)
-  c.maxFreqLen = length(string(c.maxFreq))
-  c
-end
-
-function addRow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
-  push!(c.bars, bar)
-  c.maxFreq = max(c.maxFreq, bar)
-  c.maxFreqLen = length(string(c.maxFreq))
-  c
-end
-
-nrows(c::BarplotGraphics) = length(c.bars)
-ncols(c::BarplotGraphics) = c.charWidth
-
-function printRow(io::IO, c::BarplotGraphics, row::Int)
-  numrows = nrows(c)
-  0 < row <= numrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  bar = c.bars[row]
-  maxBarWidth = max(c.charWidth - 2 - c.maxFreqLen, 1)
-  barLen = c.maxFreq > 0 ? round(Int, bar / c.maxFreq * maxBarWidth, RoundNearestTiesUp): 0
-  barStr = c.maxFreq > 0 ? repeat(c.symb, barLen): ""
-  barLbl = string(bar)
-  print_with_color(c.color, io, barStr)
-  print_with_color(:white, io, spceStr, barLbl)
-  panLen = max(maxBarWidth + 1 + c.maxFreqLen - barLen - length(barLbl), 0)
-  pad = repeat(spceStr, round(Int, panLen))
-  print(io, pad)
-end
-
 function barplot{T<:AbstractString,N<:Real}(
     text::Vector{T}, heights::Vector{N};
     border = :solid,
@@ -72,8 +14,8 @@ function barplot{T<:AbstractString,N<:Real}(
   width = max(width, 5)
 
   area = BarplotGraphics(heights, width, color = color, symb = symb)
-  newPlot = Plot(area, title=title, margin=margin,
-                 padding=padding, border=border, showLabels=labels)
+  newPlot = Plot(area, title = title, margin = margin,
+                 padding = padding, border = border, showLabels = labels)
   for i in 1:length(text)
     annotate!(newPlot, :l, i, text[i])
   end

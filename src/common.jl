@@ -22,6 +22,21 @@ function plottingRangeNarrow{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R
   xmin, xmax
 end
 
+function extend_limits(vec, limits)
+  mi = float(minimum(limits))
+  ma = float(maximum(limits))
+  if mi == 0. && ma == 0.
+    mi = minimum(vec)
+    ma = maximum(vec)
+  end
+  diff = ma - mi
+  if diff == 0
+    ma = mi + mi / 2
+    mi = mi / 2
+  end
+  (limits == [0.,0.]) ? plottingRangeNarrow(mi, ma) : plottingRangeNarrow(mi, ma)
+end
+
 const borderMap = Dict{Symbol,Dict{Symbol,UTF8String}}()
 const borderSolid = Dict{Symbol,UTF8String}()
 borderSolid[:tl]="┌"
