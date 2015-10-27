@@ -39,7 +39,7 @@ There are a couple of ways to generate typical plots without much verbosity. Her
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
-myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title="My Plot", name="my line")
+myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line")
 ```
 
 ![Basic Canvas](doc/img/hello_world.png)
@@ -102,7 +102,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "M
 #### Histogram
 
 ```Julia
-histogram(randn(1000), bins=15, title="Histogram")
+histogram(randn(1000), bins = 15, title = "Histogram")
 ```
 ![Histogram Screenshot](doc/img/hist.png)
 
@@ -243,11 +243,11 @@ Here is a simple example:
 ```Julia
 canvas = BrailleCanvas(40, 10, # number of columns and rows (characters)
                        plotOriginX = 0., plotOriginY = 0., # position in virtual space
-                       plotWidth = 1., plotHeight = 1.) # size of the virtual space
-lines!(canvas, 0., 0., 1., 1., :blue)    # virtual space
+                       plotWidth = 1., plotHeight = 1.)    # size of the virtual space
+lines!(canvas, 0., 0., 1., 1., :blue)     # virtual space
 points!(canvas, rand(50), rand(50), :red) # virtual space
-lines!(canvas, 0., 1., .5, 0., :yellow)  # virtual space
-pixel!(canvas, 5, 8, :red)               # pixel space
+lines!(canvas, 0., 1., .5, 0., :yellow)   # virtual space
+pixel!(canvas, 5, 8, :red)                # pixel space
 ```
 
 ![Basic Canvas](doc/img/canvas.png)
