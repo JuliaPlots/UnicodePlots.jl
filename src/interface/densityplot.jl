@@ -7,7 +7,7 @@ function densityplot{F<:Real,R<:Real}(
   minX = minimum(X); minY = minimum(Y)
   maxX = maximum(X); maxY = maximum(Y)
   newPlot = Plot(X, Y, DensityCanvas; grid = false, args...)
-  setPoint!(newPlot, X, Y, color)
+  points!(newPlot, X, Y, color)
 end
 
 function densityplot!{T<:Canvas,F<:Real,R<:Real}(
@@ -16,5 +16,5 @@ function densityplot!{T<:Canvas,F<:Real,R<:Real}(
     args...)
   X = convert(Vector{Float64}, x)
   Y = convert(Vector{Float64}, y)
-  setPoint!(plot, X, Y, color)
+  points!(plot, X, Y, color)
 end

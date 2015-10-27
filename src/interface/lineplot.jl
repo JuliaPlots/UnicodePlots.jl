@@ -8,7 +8,7 @@ function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
   newPlot = Plot(X, Y, canvas; args...)
   color = color == :auto ? nextColor!(newPlot) : color
   name == "" || annotate!(newPlot, :r, name, color)
-  drawLine!(newPlot, X, Y, color)
+  lines!(newPlot, X, Y, color)
 end
 
 function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
@@ -19,7 +19,7 @@ function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F
   Y = convert(Vector{Float64},Y)
   color = color == :auto ? nextColor!(plot) : color
   name == "" || annotate!(plot, :r, name, color)
-  drawLine!(plot, X, Y, color)
+  lines!(plot, X, Y, color)
 end
 
 function lineplot!{T<:Canvas}(plot::Plot{T}, intercept::Real, slope::Real; args...)

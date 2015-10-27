@@ -81,12 +81,12 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
   if grid
     if minY < 0 < maxY
       for i in linspace(minX, maxX, width * x_pixel_per_char(typeof(canvas)))
-        setPoint!(newPlot, i, 0., :white)
+        points!(newPlot, i, 0., :white)
       end
     end
     if minX < 0 < maxX
       for i in linspace(minY, maxY, height * y_pixel_per_char(typeof(canvas)))
-        setPoint!(newPlot, 0., i, :white)
+        points!(newPlot, 0., i, :white)
       end
     end
   end
@@ -172,18 +172,18 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, valu
   annotate!(plot, where, row, value, color)
 end
 
-function drawLine!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  drawLine!(plot.graphics, args...; vars...)
+function lines!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  lines!(plot.graphics, args...; vars...)
   plot
 end
 
-function setPixel!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  setPixel!(plot.graphics, args...; vars...)
+function pixel!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  pixel!(plot.graphics, args...; vars...)
   plot
 end
 
-function setPoint!{T<:Canvas}(plot::Plot{T}, args...; vars...)
-  setPoint!(plot.graphics, args...; vars...)
+function points!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+  points!(plot.graphics, args...; vars...)
   plot
 end
 

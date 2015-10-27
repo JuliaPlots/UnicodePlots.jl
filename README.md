@@ -244,10 +244,10 @@ Here is a simple example:
 canvas = BrailleCanvas(40, 10, # number of columns and rows (characters)
                        plotOriginX = 0., plotOriginY = 0., # position in virtual space
                        plotWidth = 1., plotHeight = 1.) # size of the virtual space
-drawLine!(canvas, 0., 0., 1., 1., :blue)    # virtual space
-setPoint!(canvas, rand(50), rand(50), :red) # virtual space
-drawLine!(canvas, 0., 1., .5, 0., :yellow)  # virtual space
-setPixel!(canvas, 5, 8, :red)               # pixel space
+lines!(canvas, 0., 0., 1., 1., :blue)    # virtual space
+points!(canvas, rand(50), rand(50), :red) # virtual space
+lines!(canvas, 0., 1., .5, 0., :yellow)  # virtual space
+pixel!(canvas, 5, 8, :red)               # pixel space
 ```
 
 ![Basic Canvas](doc/img/canvas.png)
@@ -267,7 +267,7 @@ At the moment there are few types of Canvas implemented:
     Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 
   - **BarplotGraphics**:
-    This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addRow!` which allows the user to add additional bars to the graphics object
+    This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object
 
 ## Todo
 

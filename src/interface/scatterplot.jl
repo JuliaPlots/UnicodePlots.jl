@@ -9,7 +9,7 @@ function scatterplot{F<:Real,R<:Real}(
   newPlot = Plot(X, Y, canvas; args...)
   color = (color == :auto) ? nextColor!(newPlot) : color
   name == "" || annotate!(newPlot, :r, name, color)
-  setPoint!(newPlot, X, Y, color)
+  points!(newPlot, X, Y, color)
 end
 
 function scatterplot!{T<:Canvas,F<:Real,R<:Real}(
@@ -21,5 +21,5 @@ function scatterplot!{T<:Canvas,F<:Real,R<:Real}(
   Y = convert(Vector{Float64}, y)
   color = (color == :auto) ? nextColor!(plot) : color
   name == "" || annotate!(plot, :r, name, color)
-  setPoint!(plot, X, Y, color)
+  points!(plot, X, Y, color)
 end

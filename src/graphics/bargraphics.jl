@@ -27,14 +27,14 @@ function BarplotGraphics{R<:Real}(bars::Vector{R},
   BarplotGraphics{R}(bars, charWidth, color, symb)
 end
 
-function addRow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
+function addrow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
   append!(c.bars, bars)
   c.maxFreq = maximum(c.bars)
   c.maxFreqLen = length(string(c.maxFreq))
   c
 end
 
-function addRow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
+function addrow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
   push!(c.bars, bar)
   c.maxFreq = max(c.maxFreq, bar)
   c.maxFreqLen = length(string(c.maxFreq))

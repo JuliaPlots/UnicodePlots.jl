@@ -37,7 +37,7 @@ function BrailleCanvas(charWidth::Int, charHeight::Int;
                 plotWidth, plotHeight)
 end
 
-function setPixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
+function pixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   0 <= pixelX <= c.pixelWidth || return nothing
   0 <= pixelY <= c.pixelHeight || return nothing
   pixelX = pixelX < c.pixelWidth ? pixelX: pixelX - 1

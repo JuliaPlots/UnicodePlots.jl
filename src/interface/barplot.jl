@@ -30,7 +30,7 @@ function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
   length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
   !isempty(text)|| throw(ArgumentError("Can't append empty array to barplot"))
   curIdx = nrows(plot.graphics)
-  addRow!(plot.graphics, heights)
+  addrow!(plot.graphics, heights)
   for i = 1:length(heights)
     annotate!(plot, :l, curIdx + i, text[i])
   end
@@ -44,7 +44,7 @@ function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
     args...)
   text == "" && throw(ArgumentError("Can't append empty array to barplot"))
   curIdx = nrows(plot.graphics)
-  addRow!(plot.graphics, heights)
+  addrow!(plot.graphics, heights)
   annotate!(plot, :l, curIdx + 1, text)
   plot
 end

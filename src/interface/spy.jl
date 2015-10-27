@@ -78,10 +78,10 @@ function spy(A::AbstractArray;
   height = nrows(plot.graphics)
   width = ncols(plot.graphics)
   plot = if color != :automatic
-    setPoint!(plot,
-              convert(Vector{Float64}, cols),
-              nrow + 1 - convert(Vector{Float64}, rows),
-              color)
+    points!(plot,
+            convert(Vector{Float64}, cols),
+            nrow + 1 - convert(Vector{Float64}, rows),
+            color)
   else
     pos_idx = vals .> 0
     neg_idx = !pos_idx
@@ -89,14 +89,14 @@ function spy(A::AbstractArray;
     pos_rows = rows[pos_idx]
     neg_cols = cols[neg_idx]
     neg_rows = rows[neg_idx]
-    setPoint!(plot,
-              convert(Vector{Float64}, pos_cols),
-              nrow + 1 - convert(Vector{Float64}, pos_rows),
-              :red)
-    setPoint!(plot,
-              convert(Vector{AbstractFloat}, neg_cols),
-              nrow + 1 - convert(Vector{Float64}, neg_rows),
-              :blue)
+    points!(plot,
+            convert(Vector{Float64}, pos_cols),
+            nrow + 1 - convert(Vector{Float64}, pos_rows),
+            :red)
+    points!(plot,
+            convert(Vector{AbstractFloat}, neg_cols),
+            nrow + 1 - convert(Vector{Float64}, neg_rows),
+            :blue)
     annotate!(plot, :r, 1, "> 0", :red)
     annotate!(plot, :r, 2, "< 0", :blue)
   end

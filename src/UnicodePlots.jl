@@ -13,10 +13,10 @@ export
     nrows,
     ncols,
 
-    setPixel!,
-    setPoint!,
-    drawLine!,
-    addRow!,
+    pixel!,
+    points!,
+    lines!,
+    addrow!,
 
     Plot,
     title, title!,
