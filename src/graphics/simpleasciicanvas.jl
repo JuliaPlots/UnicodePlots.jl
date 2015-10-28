@@ -1,14 +1,10 @@
-const simple_ascii_signs = [0b100 0b010 0b001]
+const simple_ascii_signs = [0b10 0b01]
 
-const simple_ascii_decode = Array(Char, 8)
-simple_ascii_decode[0b000 + 1] = ' '
-simple_ascii_decode[0b001 + 1] = '.'
-simple_ascii_decode[0b010 + 1] = '-'
-simple_ascii_decode[0b011 + 1] = ','
-simple_ascii_decode[0b100 + 1] = '`'
-simple_ascii_decode[0b101 + 1] = ':'
-simple_ascii_decode[0b110 + 1] = '\''
-simple_ascii_decode[0b111 + 1] = '|'
+const simple_ascii_decode = Array(Char, 5)
+simple_ascii_decode[0b00 + 1] = ' '
+simple_ascii_decode[0b01 + 1] = '.'
+simple_ascii_decode[0b10 + 1] = '\''
+simple_ascii_decode[0b11 + 1] = ':'
 
 type SimpleAsciiCanvas <: Canvas
   grid::Array{UInt8,2}
@@ -22,7 +18,7 @@ type SimpleAsciiCanvas <: Canvas
 end
 
 x_pixel_per_char(::Type{SimpleAsciiCanvas}) = 1
-y_pixel_per_char(::Type{SimpleAsciiCanvas}) = 3
+y_pixel_per_char(::Type{SimpleAsciiCanvas}) = 2
 
 nrows(c::SimpleAsciiCanvas) = size(c.grid, 2)
 ncols(c::SimpleAsciiCanvas) = size(c.grid, 1)
