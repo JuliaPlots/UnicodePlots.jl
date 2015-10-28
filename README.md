@@ -275,6 +275,9 @@ At the moment there are few types of Canvas implemented:
   - **BlockCanvas**:
     This type of canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
 
+  - **AsciiCanvas**:
+    This type of canvas only uses standard ASCII character for drawing. Naturally it doesn't look as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+
   - **DensityCanvas**:
     Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 
