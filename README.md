@@ -100,6 +100,9 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 ```
 ![Barplot Screenshot](doc/img/barplot.png)
 
+_Note_: You can use the keyword argument `symb` to specify the character that should
+be used to plot the bars. For example `symb = "#"`
+
 #### Staircase plot
 
 ```Julia
