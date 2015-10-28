@@ -8,6 +8,7 @@ export
         BrailleCanvas,
         DensityCanvas,
         BlockCanvas,
+        AsciiCanvas,
       BarplotGraphics,
 
     printrow,
@@ -38,6 +39,7 @@ include("canvas.jl")
 include("graphics/braillecanvas.jl")
 include("graphics/densitycanvas.jl")
 include("graphics/blockcanvas.jl")
+include("graphics/asciicanvas.jl")
 include("graphics/bargraphics.jl")
 include("plot.jl")
 include("interface/barplot.jl")

@@ -44,6 +44,15 @@ myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my lin
 
 ![Basic Canvas](doc/img/hello_world.png)
 
+There are also other types of `Canvas` (see section "Low-level Interface") available.
+In some situations, such as printing to a file, using `AsciiCanvas` or `BlockCanvas` might lead to better results.
+
+```Julia
+lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line", canvas = AsciiCanvas, border = :ascii)
+```
+
+![Basic Canvas](doc/img/ascii.png)
+
 Every plot has a mutating variant that ends with a exclamation mark.
 
 ```Julia

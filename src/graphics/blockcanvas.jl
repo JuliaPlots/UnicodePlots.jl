@@ -69,7 +69,7 @@ function pixel!(c::BlockCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   end
   charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % y_pixel_per_char(BlockCanvas)) + 1
-  c.grid[charX,charY] = c.grid[charX,charY] |block_signs[charXOff, charYOff]
+  c.grid[charX,charY] = c.grid[charX,charY] | block_signs[charXOff, charYOff]
   c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
   c
 end

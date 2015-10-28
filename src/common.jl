@@ -121,7 +121,5 @@ function printColor(color::UInt8, io::IO, args...)
   print_with_color(col, io, str)
 end
 
-# ▖▗▘▙▚▛▜▝▞▟
 # ▁▂▃▄▅▆▇█
-# ░▒▓█
 # ⬛
