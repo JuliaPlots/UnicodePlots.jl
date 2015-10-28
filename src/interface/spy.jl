@@ -1,5 +1,5 @@
 # code by dpo
-function spy(A::AbstractArray;
+function spy{T<:Canvas}(A::AbstractArray;
              width::Int = 0,
              height::Int = 0,
              color::Symbol = :automatic,
@@ -9,6 +9,7 @@ function spy(A::AbstractArray;
              maxwidth::Int = 0,
              maxheight::Int = 0,
              title::AbstractString = "Sparsity Pattern",
+             canvas::Type{T} = BrailleCanvas,
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
@@ -71,10 +72,10 @@ function spy(A::AbstractArray;
   end
   width = round(Int, width)
   height = round(Int, height)
-  canvas = BrailleCanvas(width, height,
-                         plotWidth = Float64(ncol) + 1,
-                         plotHeight = Float64(nrow) + 1)
-  plot = Plot(canvas; showLabels = labels, title = title, margin = margin, padding = padding, args...)
+  can = T(width, height,
+          plotWidth = Float64(ncol) + 1,
+          plotHeight = Float64(nrow) + 1)
+  plot = Plot(can; showLabels = labels, title = title, margin = margin, padding = padding, args...)
   height = nrows(plot.graphics)
   width = ncols(plot.graphics)
   plot = if color != :automatic
