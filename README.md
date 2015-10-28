@@ -44,8 +44,8 @@ myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my lin
 
 ![Basic Canvas](doc/img/hello_world.png)
 
-There are also other types of `Canvas` (see section "Low-level Interface") available.
-In some situations, such as printing to a file, using `AsciiCanvas` or `BlockCanvas` might lead to better results.
+There are also other types of `Canvas` available (see section "Low-level Interface").
+In some situations, such as printing to a file, using `AsciiCanvas`, `SimpleAsciiCanvas` or `BlockCanvas` might lead to better results.
 
 ```Julia
 lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line", canvas = AsciiCanvas, border = :ascii)
@@ -275,8 +275,8 @@ At the moment there are few types of Canvas implemented:
   - **BlockCanvas**:
     This type of canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
 
-  - **AsciiCanvas**:
-    This type of canvas only uses standard ASCII character for drawing. Naturally it doesn't look as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+  - **AsciiCanvas** and **SimpleAsciiCanvas**:
+    This type of canvas only utilizes ASCII character for drawing. Naturally, it doesn't look as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
   - **DensityCanvas**:
     Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.

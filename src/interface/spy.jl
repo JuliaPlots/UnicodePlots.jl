@@ -13,8 +13,8 @@ function spy{T<:Canvas}(A::AbstractArray;
              args...)
   rows, cols, vals = findnz(A)
   nrow, ncol = size(A)
-  min_canvheight = ceil(Int, nrow / 4)
-  min_canvwidth = ceil(Int, ncol / 2)
+  min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
+  min_canvwidth = ceil(Int, ncol / x_pixel_per_char(T))
   aspect_ratio = min_canvwidth / min_canvheight
   height_diff = 9
   width_diff = margin + padding + length(string(ncol)) + 6
