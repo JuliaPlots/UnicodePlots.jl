@@ -66,6 +66,9 @@ y = [1,2, -1, 4]
 print(scatterplot(x, y))
 x = [1.,2, 3, 7]
 y = [1,2, -1, 4]
+myplot = scatterplot(x)
+scatterplot!(myplot, y)
+print(myplot)
 myplot = scatterplot(x, y)
 scatterplot!(myplot, x, y)
 print(myplot)
@@ -73,6 +76,8 @@ print(scatterplot(x*.001+1.1, y))
 print(lineplot(x, y*20+1000))
 print(lineplot(x+1000, -y))
 
+myplot = lineplot(collect(1:10))
+lineplot!(myplot, collect(1:10))
 myplot = lineplot(1:10, collect(1:10))
 myplot = lineplot(collect(1:10), 1:10)
 myplot = lineplot(1:10, 1:10)

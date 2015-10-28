@@ -104,6 +104,14 @@ function lineplot{F<:Real}(X::AbstractVector{F}, Y::Range; args...)
   lineplot(X, collect(Y); args...)
 end
 
+function lineplot(X::AbstractVector; args...)
+  lineplot(1:length(X), X; args...)
+end
+
+function lineplot!{T<:Canvas}(plot::Plot{T}, X::AbstractVector; args...)
+  lineplot!(plot, 1:length(X), X; args...)
+end
+
 function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Range{F}, Y::Range{R}; args...)
   lineplot!(plot, collect(X), collect(Y); args...)
 end
