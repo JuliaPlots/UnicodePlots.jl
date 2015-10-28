@@ -1,28 +1,23 @@
 const block_signs = [0b1000 0b0010;
                      0b0100 0b0001]
 
-const block_encode = Dict{Char,UInt8}()
-block_encode[' ']=0b0000
-block_encode['▗']=0b0001
-block_encode['▖']=0b0010
-block_encode['▄']=0b0011
-block_encode['▝']=0b0100
-block_encode['▐']=0b0101
-block_encode['▞']=0b0110
-block_encode['▟']=0b0111
-block_encode['▘']=0b1000
-block_encode['▚']=0b1001
-block_encode['▌']=0b1010
-block_encode['▙']=0b1011
-block_encode['▀']=0b1100
-block_encode['▜']=0b1101
-block_encode['▛']=0b1110
-block_encode['█']=0b1111
 const block_decode = Array(Char, 16)
-for k in keys(block_encode)
-  v = Int(block_encode[k])
-  block_decode[v + 1] = k
-end
+block_decode[0b0000 + 1] = ' '
+block_decode[0b0001 + 1] = '▗'
+block_decode[0b0010 + 1] = '▖'
+block_decode[0b0011 + 1] = '▄'
+block_decode[0b0100 + 1] = '▝'
+block_decode[0b0101 + 1] = '▐'
+block_decode[0b0110 + 1] = '▞'
+block_decode[0b0111 + 1] = '▟'
+block_decode[0b1000 + 1] = '▘'
+block_decode[0b1001 + 1] = '▚'
+block_decode[0b1010 + 1] = '▌'
+block_decode[0b1011 + 1] = '▙'
+block_decode[0b1100 + 1] = '▀'
+block_decode[0b1101 + 1] = '▜'
+block_decode[0b1110 + 1] = '▛'
+block_decode[0b1111 + 1] = '█'
 
 type BlockCanvas <: Canvas
   grid::Array{UInt8,2}
