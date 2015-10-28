@@ -263,6 +263,9 @@ At the moment there are few types of Canvas implemented:
   - **BrailleCanvas**:
     This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 
+  - **BlockCanvas**:
+    This type of canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
+
   - **DensityCanvas**:
     Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 
@@ -272,7 +275,7 @@ At the moment there are few types of Canvas implemented:
 ## Todo
 
 - [ ] Animated plots using cursor movement
-- [ ] 4x4-block-canavs as preparation for histograms
+- [x] 4x4-block-canavs as preparation for histograms
 - [ ] Add heatmaps and hinton diagrams
 - [ ] Boxplots in some form
 

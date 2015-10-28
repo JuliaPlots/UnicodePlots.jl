@@ -7,6 +7,7 @@ export
       Canvas,
         BrailleCanvas,
         DensityCanvas,
+        BlockCanvas,
       BarplotGraphics,
 
     printrow,
@@ -36,6 +37,7 @@ include("common.jl")
 include("canvas.jl")
 include("graphics/braillecanvas.jl")
 include("graphics/densitycanvas.jl")
+include("graphics/blockcanvas.jl")
 include("graphics/bargraphics.jl")
 include("plot.jl")
 include("interface/barplot.jl")

@@ -88,6 +88,7 @@ print(lineplot(sin, [1., 1.5, 2, 2.5, 3, 3.5, 4]))
 print(lineplot(sin, [1, 2, 3, 4]))
 print(lineplot(sin, 1, 4))
 print(lineplot([sin, cos], 1, 4))
+print(lineplot([sin, cos], 1, 4, canvas = BlockCanvas))
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]

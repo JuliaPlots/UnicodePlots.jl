@@ -1,4 +1,3 @@
-
 ceilNegLog10{F<:AbstractFloat}(x::F) = ceil(Integer, -log10(x))
 roundNegLog10{F<:AbstractFloat}(x::F) = round(Integer, -log10(x), RoundNearestTiesUp)
 roundUpToTick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceilNegLog10(m)) : -floor(-x, ceilNegLog10(m)))
