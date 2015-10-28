@@ -44,7 +44,7 @@ myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my lin
 
 ![Basic Canvas](doc/img/hello_world.png)
 
-There are also other types of `Canvas` available (see section "Low-level Interface").
+There are other types of `Canvas` available (see section "Low-level Interface").
 In some situations, such as printing to a file, using `AsciiCanvas`, `SimpleAsciiCanvas` or `BlockCanvas` might lead to better results.
 
 ```Julia
@@ -213,7 +213,7 @@ All plots support a common set of named parameters
 
     Barplot only. Specifies the character that should be used to render the bars
 
-_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border=:dotted`.
+_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border = :ascii` and `canvas = AsciiCanvas`.
 
 ### Methods
 
@@ -233,7 +233,7 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 - `annotate!(plot::Plot, where::Symbol, value::String)`
 
-    - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right)
+    - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
 
 - `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
 
@@ -267,19 +267,19 @@ As you can see, one issue that arises when multiple pixel are represented by one
 
 ![Blending Colors](doc/img/braille.png)
 
-At the moment there are few types of Canvas implemented:
+At the moment there are the following types of Canvas implemented:
 
   - **BrailleCanvas**:
     This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 
   - **BlockCanvas**:
-    This type of canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
+    This canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
 
   - **AsciiCanvas** and **SimpleAsciiCanvas**:
-    This type of canvas only utilizes ASCII character for drawing. Naturally, it doesn't look as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+    These two canvas utilizes only standard ASCII character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
   - **DensityCanvas**:
-    Unlike the BrailleCanvas the density canvas does not simple mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+    Unlike the BrailleCanvas, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 
   - **BarplotGraphics**:
     This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object
@@ -287,7 +287,6 @@ At the moment there are few types of Canvas implemented:
 ## Todo
 
 - [ ] Animated plots using cursor movement
-- [x] 4x4-block-canavs as preparation for histograms
 - [ ] Add heatmaps and hinton diagrams
 - [ ] Boxplots in some form
 
