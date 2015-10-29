@@ -45,7 +45,7 @@ myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my lin
 ![Basic Canvas](doc/img/hello_world.png)
 
 There are other types of `Canvas` available (see section "Low-level Interface").
-In some situations, such as printing to a file, using `AsciiCanvas`, `SimpleAsciiCanvas` or `BlockCanvas` might lead to better results.
+In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results.
 
 ```Julia
 lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line", canvas = AsciiCanvas, border = :ascii)
@@ -278,7 +278,7 @@ At the moment there are the following types of Canvas implemented:
   - **BlockCanvas**:
     This canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
 
-  - **AsciiCanvas** and **SimpleAsciiCanvas**:
+  - **AsciiCanvas** and **DotCanvas**:
     These two canvas utilizes only standard ASCII character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
   - **DensityCanvas**:
