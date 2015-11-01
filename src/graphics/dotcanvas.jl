@@ -1,12 +1,10 @@
 const dot_signs = [0b10 0b01]
 
-@inline function init_dot_canvas()
-  global const dot_decode = Array(Char, 5)
-  dot_decode[0b00 + 1] = ' '
-  dot_decode[0b01 + 1] = '.'
-  dot_decode[0b10 + 1] = '\''
-  dot_decode[0b11 + 1] = ':'
-end
+const dot_decode = Array(Char, 5)
+dot_decode[0b00 + 1] = ' '
+dot_decode[0b01 + 1] = '.'
+dot_decode[0b10 + 1] = '\''
+dot_decode[0b11 + 1] = ':'
 
 type DotCanvas <: Canvas
   grid::Array{UInt8,2}
