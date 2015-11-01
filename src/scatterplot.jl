@@ -113,6 +113,15 @@ function lineplot{R<:Real,S<:Real}(Y::Function, startx::R, endx::S, step::Real =
   lineplot(X, y; args...)
 end
 
+function lineplot{D<:TimeType,R<:Real}(X::AbstractVector{D}, Y::AbstractVector{R}; color::Symbol=:blue, args...)
+  d = convert(Vector{FloatingPoint},X)
+  Y = convert(Vector{FloatingPoint},Y)
+  newPlot = createPlotWindow(d, Y; args...)
+  drawLine!(newPlot, d, Y, color)
+  annotate!(newPlot, :bl, string(first(X)))
+  annotate!(newPlot, :br, string(last(X)))
+end
+
 function computeStairLines{F<:Real,R<:Real}(X::Vector{F}, Y::Vector{R}, style::Symbol)
   if style == :post
     xVec = zeros(length(X) * 2 - 1)
