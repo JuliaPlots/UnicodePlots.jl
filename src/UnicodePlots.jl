@@ -43,6 +43,7 @@ include("graphics/blockcanvas.jl")
 include("graphics/asciicanvas.jl")
 include("graphics/dotcanvas.jl")
 include("graphics/bargraphics.jl")
+include("init.jl")
 include("plot.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
@@ -52,5 +53,9 @@ include("interface/stairs.jl")
 include("interface/densityplot.jl")
 include("interface/spy.jl")
 include("deprecated.jl")
+
+if VERSION >= v"0.4.0-dev+5512"
+  include("precompile.jl")
+end
 
 end

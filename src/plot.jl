@@ -196,12 +196,12 @@ function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotW
   end
 end
 
-function drawBorderTop(io::IO, padding::AbstractString, length::Int, border = :solid)
+function drawBorderTop(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = borderMap[border]
   border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
-function drawBorderBottom(io::IO, padding::AbstractString, length::Int, border = :solid)
+function drawBorderBottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = borderMap[border]
   border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
