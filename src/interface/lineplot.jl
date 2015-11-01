@@ -123,3 +123,10 @@ end
 function lineplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::Range; args...)
   lineplot!(plot, X, collect(Y); args...)
 end
+
+function lineplot{D<:TimeType,R<:Real}(X::AbstractVector{D}, Y::AbstractVector{R}; args...)
+  d = convert(Vector{FloatingPoint},X)
+  newPlot = lineplot(d, Y; args...)
+  annotate!(newPlot, :bl, string(first(X)))
+  annotate!(newPlot, :br, string(last(X)))
+end
