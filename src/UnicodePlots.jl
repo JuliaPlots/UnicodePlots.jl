@@ -1,6 +1,8 @@
 isdefined(Base, :__precompile__) && __precompile__()
 module UnicodePlots
 
+using Base.Dates
+
 export Canvas, BrailleCanvas, BarplotCanvas, DensityCanvas
 export setPixel!, setPoint!, drawLine!, addRow!
 export printRow, nrows, ncols

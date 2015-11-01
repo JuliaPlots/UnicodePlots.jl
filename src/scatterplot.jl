@@ -1,4 +1,3 @@
-
 function createPlotWindow{F<:FloatingPoint}(X::Vector{F}, Y::Vector{F};
                                             width::Int = 40,
                                             height::Int = 10,
@@ -99,16 +98,18 @@ function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F
   drawLine!(plot, X, Y, color)
 end
 
-function lineplot{F<:Real,R<:Real}(X::AbstractVector{F}, Y::AbstractVector{R};
-                                   color::Symbol=:auto,
-                                   name::String = "",
-                                   args...)
-  X = convert(Vector{FloatingPoint},X)
-  Y = convert(Vector{FloatingPoint},Y)
-  newPlot = createPlotWindow(X, Y; args...)
+function lineplot{T<:TimeType,R<:Real}(X::AbstractVector{T}, Y::AbstractVector{R};
+                                       color::Symbol=:auto,
+                                       name::String = "",
+                                       args...)
+  T = convert(Vector{FloatingPoint},X)
+  V = convert(Vector{FloatingPoint},Y)
+  newPlot = createPlotWindow(T, V; args...)
   color = color == :auto ? nextColor!(newPlot) : color
   name == "" || autoAnnotate!(newPlot, :r, name, color)
-  drawLine!(newPlot, X, Y, color)
+  drawLine!(newPlot, T, V, color)
+  annotate!(newPlot, :bl, string(first(X)))
+  annotate!(newPlot, :br, string(last(X)))
 end
 
 function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function, x::Range; args...)
