@@ -198,12 +198,12 @@ end
 
 function drawBorderTop(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = borderMap[border]
-  border == :none || print(io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+  border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function drawBorderBottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = borderMap[border]
-  border == :none || print(io, padding, b[:bl], repeat(b[:b], length), b[:br])
+  border == :none || print_with_color(:white, io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 function show(io::IO, p::Plot)
@@ -279,11 +279,11 @@ function show(io::IO, p::Plot)
       print_with_color(tleftCol, io, tleftLabel)
     end
     # print left border
-    print(io, plotPadding, b[:l])
+    print_with_color(:white, io, plotPadding, b[:l])
     # print canvas row
     printrow(io, c, row)
     #print right label and padding
-    print(io, b[:r])
+    print_with_color(:white, io, b[:r])
     if p.showLabels
       print(io, plotPadding)
       print_with_color(tRightCol, io, tRightLabel)
