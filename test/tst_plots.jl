@@ -228,3 +228,7 @@ print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum
 
 x = rand(100) * 1000; y = rand(100) * 1000
 print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum(y)]))
+
+d = collect(Date(2000,1,1):Date(2000,1,31))
+v = collect(linspace(20, 200, 31))
+print(lineplot(d,v, height = 5))

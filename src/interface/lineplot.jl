@@ -125,7 +125,7 @@ function lineplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::Ra
 end
 
 function lineplot{D<:TimeType,R<:Real}(X::AbstractVector{D}, Y::AbstractVector{R}; args...)
-  d = convert(Vector{FloatingPoint},X)
+  d = convert(Vector{Float64}, X)
   newPlot = lineplot(d, Y; args...)
   annotate!(newPlot, :bl, string(first(X)))
   annotate!(newPlot, :br, string(last(X)))
