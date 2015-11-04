@@ -30,8 +30,8 @@ function extend_limits(vec, limits)
   end
   diff = ma - mi
   if diff == 0
-    ma = mi + mi / 2
-    mi = mi / 2
+    ma = mi + 1
+    mi = mi - 1
   end
   (limits == [0.,0.]) ? plottingRangeNarrow(mi, ma) : plottingRangeNarrow(mi, ma)
 end
