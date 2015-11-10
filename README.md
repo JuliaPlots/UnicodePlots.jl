@@ -193,7 +193,7 @@ All plots support a common set of named parameters
 
 - `labels::Bool = true`:
 
-    Can be used to hide the labels.
+    Can be used to hide the labels by setting `labels=false`.
 
   ```Julia
   lineplot(sin, 1:.5:20, labels=false)
