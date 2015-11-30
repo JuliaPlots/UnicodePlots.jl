@@ -1,3 +1,96 @@
+"""
+`scatterplot(x, y; nargs...)` → `Plot`
+
+Description
+============
+
+Draws the given points on a new canvas.
+It uses the first parameter `x`,
+which should be a vector or range to denote
+the horisontal position of each point,
+and the second parameter `y`,
+which should also be a vector or range,
+as their vertical position.
+This means that the two vectors have to have the same length.
+
+Usage
+======
+
+    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, margin = 3, padding = 1, color = :blue, labels = true)
+
+Arguments
+==========
+
+- **`x`** : The horizontal dimension for each point.
+
+- **`y`** : The vertical dimension for each point.
+
+- **`title`** : Text to display on the top of the plot.
+
+- **`name`** : Annotation of the current drawing to displayed on the right
+
+- **`width`** : Number of characters per row that should be used for plotting.
+
+- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
+
+- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+
+- **`xlim`** : Plotting range for the x coordinate
+
+- **`ylim`** : Plotting range for the y coordinate
+
+- **`margin`** : Number of empty characters to the left of the whole plot.
+
+- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
+
+- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+
+- **`labels`** : Can be used to hide the labels by setting `labels=false`.
+
+- **`canvas`** : The type of canvas that should be used for drawing.
+
+- **`grid`** : Can be used to hide the gridlines at the origin
+
+Returns
+========
+
+A plot object of type `Plot{T<:Canvas}`
+
+Author(s)
+==========
+
+- Christof Stocker (Github: https://github.com/Evizero)
+
+Examples
+=========
+
+    julia> scatterplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line")
+
+                          My Plot
+         ┌────────────────────────────────────────┐
+       9 │⠀⠀⠀⠀⠀⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠉⠢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ my line
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀⠈⠢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⠀⠈⠢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠈⠢⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⢄⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⢄⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠤⡀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠢⡀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⡸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         │⠀⠀⠀⠀⠀⡇⠀⠀⢀⣀⡠⠤⠔⠒⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       1 │⣀⣀⡠⠤⠔⡗⠊⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+         └────────────────────────────────────────┘
+         -1                                       7
+
+See also
+=========
+
+`Plot`, `lineplot`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+"""
 function scatterplot{F<:Real,R<:Real}(
     x::AbstractVector{F}, y::AbstractVector{R};
     color::Symbol = :auto,

@@ -154,7 +154,7 @@ All plots support a common set of named parameters
     ```
     ![Width Screenshot](doc/img/width.png)
 
-- `height::Int = 10`:
+- `height::Int = 20`:
 
     Number of rows that should be used for plotting. Not applicable to `barplot`.
 
