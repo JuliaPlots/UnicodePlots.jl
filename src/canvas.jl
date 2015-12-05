@@ -59,6 +59,14 @@ end
 
 # Implementation of the digital differential analyser (DDA)
 function lines!(c::Canvas, x1::Real, y1::Real, x2::Real, y2::Real, color::Symbol)
+  if (x1 < c.plotOriginX && x2 < c.plotOriginX) ||
+      (x1 > c.plotOriginX + c.plotWidth && x2 > c.plotOriginX + c.plotWidth)
+    return c
+  end
+  if (y1 < c.plotOriginY && y2 < c.plotOriginY) ||
+      (y1 > c.plotOriginY + c.plotHeight && y2 > c.plotOriginY + c.plotHeight)
+    return c
+  end
   toff = x1 - c.plotOriginX
   px1 = toff / c.plotWidth * c.pixelWidth
   toff = x2 - c.plotOriginX
