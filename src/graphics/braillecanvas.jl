@@ -12,6 +12,13 @@ type BrailleCanvas <: Canvas
   plotHeight::Float64
 end
 
+pixel_width(c::BrailleCanvas) = c.pixelWidth
+pixel_height(c::BrailleCanvas) = c.pixelHeight
+width(c::BrailleCanvas) = c.plotWidth
+height(c::BrailleCanvas) = c.plotHeight
+origin_x(c::BrailleCanvas) = c.plotOriginX
+origin_y(c::BrailleCanvas) = c.plotOriginY
+
 x_pixel_per_char(::Type{BrailleCanvas}) = 2
 y_pixel_per_char(::Type{BrailleCanvas}) = 4
 

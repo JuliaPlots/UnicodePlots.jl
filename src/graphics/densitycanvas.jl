@@ -12,6 +12,13 @@ type DensityCanvas <: Canvas
   maxDensity::Float64
 end
 
+pixel_width(c::DensityCanvas) = c.pixelWidth
+pixel_height(c::DensityCanvas) = c.pixelHeight
+width(c::DensityCanvas) = c.plotWidth
+height(c::DensityCanvas) = c.plotHeight
+origin_x(c::DensityCanvas) = c.plotOriginX
+origin_y(c::DensityCanvas) = c.plotOriginY
+
 x_pixel_per_char(::Type{DensityCanvas}) = 1
 y_pixel_per_char(::Type{DensityCanvas}) = 2
 

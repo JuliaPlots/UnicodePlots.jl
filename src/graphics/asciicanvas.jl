@@ -101,6 +101,13 @@ type AsciiCanvas <: Canvas
   plotHeight::Float64
 end
 
+pixel_width(c::AsciiCanvas) = c.pixelWidth
+pixel_height(c::AsciiCanvas) = c.pixelHeight
+width(c::AsciiCanvas) = c.plotWidth
+height(c::AsciiCanvas) = c.plotHeight
+origin_x(c::AsciiCanvas) = c.plotOriginX
+origin_y(c::AsciiCanvas) = c.plotOriginY
+
 x_pixel_per_char(::Type{AsciiCanvas}) = 3
 y_pixel_per_char(::Type{AsciiCanvas}) = 3
 

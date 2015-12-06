@@ -17,6 +17,13 @@ type DotCanvas <: Canvas
   plotHeight::Float64
 end
 
+pixel_width(c::DotCanvas) = c.pixelWidth
+pixel_height(c::DotCanvas) = c.pixelHeight
+width(c::DotCanvas) = c.plotWidth
+height(c::DotCanvas) = c.plotHeight
+origin_x(c::DotCanvas) = c.plotOriginX
+origin_y(c::DotCanvas) = c.plotOriginY
+
 x_pixel_per_char(::Type{DotCanvas}) = 1
 y_pixel_per_char(::Type{DotCanvas}) = 2
 

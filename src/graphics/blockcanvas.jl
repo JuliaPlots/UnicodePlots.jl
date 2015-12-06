@@ -30,6 +30,13 @@ type BlockCanvas <: Canvas
   plotHeight::Float64
 end
 
+pixel_width(c::BlockCanvas) = c.pixelWidth
+pixel_height(c::BlockCanvas) = c.pixelHeight
+width(c::BlockCanvas) = c.plotWidth
+height(c::BlockCanvas) = c.plotHeight
+origin_x(c::BlockCanvas) = c.plotOriginX
+origin_y(c::BlockCanvas) = c.plotOriginY
+
 x_pixel_per_char(::Type{BlockCanvas}) = 2
 y_pixel_per_char(::Type{BlockCanvas}) = 2
 

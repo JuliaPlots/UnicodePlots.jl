@@ -187,7 +187,7 @@ function points!{T<:Canvas}(plot::Plot{T}, args...; vars...)
   plot
 end
 
-function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int = 0)
+function print_title(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int = 0)
   if title != ""
     offset = round(Int, plotWidth / 2 - length(title) / 2, RoundNearestTiesUp)
     offset = offset > 0 ? offset: 0
@@ -196,17 +196,17 @@ function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotW
   end
 end
 
-function drawBorderTop(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
+function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = bordermap[border]
   border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
-function drawBorderBottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
+function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
   b = bordermap[border]
   border == :none || print_with_color(:white, io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
-function show(io::IO, p::Plot)
+function Base.show(io::IO, p::Plot)
   b = bordermap[p.border]
   c = p.graphics
   borderLength = ncols(c)
@@ -228,7 +228,7 @@ function show(io::IO, p::Plot)
   borderPadding = repeat(" ", plotOffset)
 
   # plot the title and the top border
-  drawTitle(io, borderPadding, p.title, plotWidth = borderLength)
+  print_title(io, borderPadding, p.title, plotWidth = borderLength)
   if p.showLabels
     topLeftStr = haskey(p.decorations, :tl) ? p.decorations[:tl] : ""
     topLeftCol = haskey(p.decoColors, :tl) ? p.decoColors[:tl] : :white
@@ -249,7 +249,7 @@ function show(io::IO, p::Plot)
       print_with_color(topRightCol, io, pad, topRightStr, "\n")
     end
   end
-  drawBorderTop(io, borderPadding, borderLength, p.border)
+  print_border_top(io, borderPadding, borderLength, p.border)
   print(io, repeat(" ", maxLenR), plotPadding, "\n")
 
   # compute position of ylabel
@@ -293,7 +293,7 @@ function show(io::IO, p::Plot)
   end
 
   # draw bottom border and bottom labels
-  drawBorderBottom(io, borderPadding, borderLength, p.border)
+  print_border_bottom(io, borderPadding, borderLength, p.border)
   print(io, repeat(" ", maxLenR), plotPadding, "\n")
   if p.showLabels
     botLeftStr = haskey(p.decorations, :bl) ? p.decorations[:bl] : ""
@@ -314,7 +314,7 @@ function show(io::IO, p::Plot)
       pad = cnt > 0 ? repeat(" ", cnt) : ""
       print_with_color(botRightCol, io, pad, botRightStr, "\n")
     end
-    # abuse the drawtitle function to print the xlabel. maybe refactor this
-    drawTitle(io, borderPadding, p.xlabel, plotWidth = borderLength)
+    # abuse the print_title function to print the xlabel. maybe refactor this
+    print_title(io, borderPadding, p.xlabel, plotWidth = borderLength)
   end
 end
