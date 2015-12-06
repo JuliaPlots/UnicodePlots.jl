@@ -191,7 +191,7 @@ function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotW
   if title != ""
     offset = round(Int, plotWidth / 2 - length(title) / 2, RoundNearestTiesUp)
     offset = offset > 0 ? offset: 0
-    tpad = repeat(spceStr, offset)
+    tpad = repeat(" ", offset)
     print_with_color(:white, io, padding, tpad, title, "\n")
   end
 end
@@ -222,10 +222,10 @@ function show(io::IO, p::Plot)
   plotOffset = maxLen + p.margin + p.padding
 
   # padding-string from left to border
-  plotPadding = repeat(spceStr, p.padding)
+  plotPadding = repeat(" ", p.padding)
 
   # padding-string between labels and border
-  borderPadding = repeat(spceStr, plotOffset)
+  borderPadding = repeat(" ", plotOffset)
 
   # plot the title and the top border
   drawTitle(io, borderPadding, p.title, plotWidth = borderLength)
@@ -242,15 +242,15 @@ function show(io::IO, p::Plot)
       topRightLen = length(topRightStr)
       print_with_color(topLeftCol, io, borderPadding, topLeftStr)
       cnt = round(Int, borderLength / 2 - topMidLen / 2 - topLeftLen, RoundNearestTiesUp)
-      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      pad = cnt > 0 ? repeat(" ", cnt) : ""
       print_with_color(topMidCol, io, pad, topMidStr)
       cnt = borderLength - topRightLen - topLeftLen - topMidLen + 2 - cnt
-      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      pad = cnt > 0 ? repeat(" ", cnt) : ""
       print_with_color(topRightCol, io, pad, topRightStr, "\n")
     end
   end
   drawBorderTop(io, borderPadding, borderLength, p.border)
-  print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
+  print(io, repeat(" ", maxLenR), plotPadding, "\n")
 
   # compute position of ylabel
   ylabRow = round(nrows(c) / 2, RoundNearestTiesUp)
@@ -265,15 +265,15 @@ function show(io::IO, p::Plot)
     tLen = length(tleftLabel)
     tLenR = length(tRightLabel)
     # print left annotations
-    print(io, repeat(spceStr, p.margin))
+    print(io, repeat(" ", p.margin))
     if p.showLabels
       if row == ylabRow
         # print ylabel
         print_with_color(:white, io, p.ylabel)
-        print(io, repeat(spceStr, maxLen - length(p.ylabel) - tLen))
+        print(io, repeat(" ", maxLen - length(p.ylabel) - tLen))
       else
         # print padding to fill ylabel length
-        print(io, repeat(spceStr, maxLen - tLen))
+        print(io, repeat(" ", maxLen - tLen))
       end
       # print the left annotation
       print_with_color(tleftCol, io, tleftLabel)
@@ -287,14 +287,14 @@ function show(io::IO, p::Plot)
     if p.showLabels
       print(io, plotPadding)
       print_with_color(tRightCol, io, tRightLabel)
-      print(io, repeat(spceStr, maxLenR - tLenR))
+      print(io, repeat(" ", maxLenR - tLenR))
     end
     print(io, "\n")
   end
 
   # draw bottom border and bottom labels
   drawBorderBottom(io, borderPadding, borderLength, p.border)
-  print(io, repeat(spceStr, maxLenR), plotPadding, "\n")
+  print(io, repeat(" ", maxLenR), plotPadding, "\n")
   if p.showLabels
     botLeftStr = haskey(p.decorations, :bl) ? p.decorations[:bl] : ""
     botLeftCol = haskey(p.decoColors, :bl) ? p.decoColors[:bl] : :white
@@ -308,10 +308,10 @@ function show(io::IO, p::Plot)
       botRightLen = length(botRightStr)
       print_with_color(botLeftCol, io, borderPadding, botLeftStr)
       cnt = round(Int, borderLength / 2 - botMidLen / 2 - botLeftLen, RoundNearestTiesUp)
-      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      pad = cnt > 0 ? repeat(" ", cnt) : ""
       print_with_color(botMidCol, io, pad, botMidStr)
       cnt = borderLength - botRightLen - botLeftLen - botMidLen + 2 - cnt
-      pad = cnt > 0 ? repeat(spceStr, cnt) : ""
+      pad = cnt > 0 ? repeat(" ", cnt) : ""
       print_with_color(botRightCol, io, pad, botRightStr, "\n")
     end
     # abuse the drawtitle function to print the xlabel. maybe refactor this

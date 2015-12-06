@@ -1,8 +1,6 @@
 import Base.show
 import Base.print
 
-const spceStr = " " #string(spce)
-
 abstract GraphicsArea
 abstract Canvas <: GraphicsArea
 

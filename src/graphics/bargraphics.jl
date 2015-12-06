@@ -50,8 +50,8 @@ function printrow(io::IO, c::BarplotGraphics, row::Int)
   barStr = c.maxFreq > 0 ? repeat(c.symb, barLen): ""
   barLbl = string(bar)
   print_with_color(c.color, io, barStr)
-  print_with_color(:white, io, spceStr, barLbl)
+  print_with_color(:white, io, " ", barLbl)
   panLen = max(maxBarWidth + 1 + c.maxFreqLen - barLen - length(barLbl), 0)
-  pad = repeat(spceStr, round(Int, panLen))
+  pad = repeat(" ", round(Int, panLen))
   print(io, pad)
 end
