@@ -47,6 +47,7 @@ export
 
 include("common.jl")
 include("canvas.jl")
+include("graphics/lookupcanvas.jl")
 include("graphics/braillecanvas.jl")
 include("graphics/densitycanvas.jl")
 include("graphics/blockcanvas.jl")

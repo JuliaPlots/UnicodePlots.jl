@@ -23,10 +23,10 @@ function lineplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::AbstractVector{F
 end
 
 function lineplot!{T<:Canvas}(plot::Plot{T}, intercept::Real, slope::Real; args...)
-  xmin = plot.graphics.plotOriginX
-  xmax = plot.graphics.plotOriginX + plot.graphics.plotWidth
-  ymin = plot.graphics.plotOriginY
-  ymax = plot.graphics.plotOriginY + plot.graphics.plotHeight
+  xmin = origin_x(plot.graphics)
+  xmax = origin_x(plot.graphics) + width(plot.graphics)
+  ymin = origin_y(plot.graphics)
+  ymax = origin_y(plot.graphics) + height(plot.graphics)
   lineplot!(plot, [xmin, xmax], [intercept + xmin*slope, intercept + xmax*slope]; args...)
 end
 
@@ -69,7 +69,7 @@ function lineplot(Y::Function; args...)
 end
 
 function lineplot!{T<:Canvas}(plot::Plot{T}, Y::Function; args...)
-  lineplot!(plot, Y, plot.graphics.plotOriginX, plot.graphics.plotOriginX + plot.graphics.plotWidth; args...)
+  lineplot!(plot, Y, origin_x(plot.graphics), origin_x(plot.graphics) + width(plot.graphics); args...)
 end
 
 function lineplot(Y::Function, startx::Real, endx::Real; width::Int = 40, args...)

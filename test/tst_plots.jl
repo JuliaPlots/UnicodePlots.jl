@@ -110,8 +110,8 @@ print(stairs(x, y))
 #@time lineplot(x, y)
 
 canvas = BrailleCanvas(40, 10, # number of columns and rows
-                       plotOriginX = 0., plotOriginY = 0., # position in virtual space
-                       plotWidth = 1., plotHeight = 1.) # size of the virtual space
+                       origin_x = 0., origin_y = 0., # position in virtual space
+                       width = 1., height = 1.) # size of the virtual space
 lines!(canvas, 0., 0., 1., 1., :blue)
 points!(canvas, rand(50), rand(50), :red)
 points!(canvas, rand(50), rand(50), color = :red)
@@ -210,8 +210,8 @@ print(spy(full(sprand(10,100,.15))))
 x1, y1 = rand(500)*10, rand(500)*10
 x2, y2 = rand(1000)*5+1, rand(1000)*5+1
 canvas = BrailleCanvas(40, 10,
-                       plotOriginX = 0., plotOriginY = 0.,
-                       plotWidth = 10., plotHeight = 10.)
+                       origin_x = 0., origin_y = 0.,
+                       width = 10., height = 10.)
 points!(canvas, x1, y1, color = :red)
 points!(canvas, x1, y1, :red)
 points!(canvas, x2, y2, :blue)

@@ -4,63 +4,62 @@ const braille_signs = ['⠁' '⠂' '⠄' '⡀';
 type BrailleCanvas <: Canvas
   grid::Array{Char,2}
   colors::Array{UInt8,2}
-  pixelWidth::Int
-  pixelHeight::Int
-  plotOriginX::Float64
-  plotOriginY::Float64
-  plotWidth::Float64
-  plotHeight::Float64
+  pixel_width::Int
+  pixel_height::Int
+  origin_x::Float64
+  origin_y::Float64
+  width::Float64
+  height::Float64
 end
 
-pixel_width(c::BrailleCanvas) = c.pixelWidth
-pixel_height(c::BrailleCanvas) = c.pixelHeight
-width(c::BrailleCanvas) = c.plotWidth
-height(c::BrailleCanvas) = c.plotHeight
-origin_x(c::BrailleCanvas) = c.plotOriginX
-origin_y(c::BrailleCanvas) = c.plotOriginY
+@inline pixel_width(c::BrailleCanvas) = c.pixel_width
+@inline pixel_height(c::BrailleCanvas) = c.pixel_height
+@inline origin_x(c::BrailleCanvas) = c.origin_x
+@inline origin_y(c::BrailleCanvas) = c.origin_y
+@inline width(c::BrailleCanvas) = c.width
+@inline height(c::BrailleCanvas) = c.height
+@inline nrows(c::BrailleCanvas) = size(c.grid, 2)
+@inline ncols(c::BrailleCanvas) = size(c.grid, 1)
 
-x_pixel_per_char(::Type{BrailleCanvas}) = 2
-y_pixel_per_char(::Type{BrailleCanvas}) = 4
+@inline x_pixel_per_char(::Type{BrailleCanvas}) = 2
+@inline y_pixel_per_char(::Type{BrailleCanvas}) = 4
 
-nrows(c::BrailleCanvas) = size(c.grid, 2)
-ncols(c::BrailleCanvas) = size(c.grid, 1)
-
-function BrailleCanvas(charWidth::Int, charHeight::Int;
-                       plotOriginX::Float64 = 0.,
-                       plotOriginY::Float64 = 0.,
-                       plotWidth::Float64 = 1.,
-                       plotHeight::Float64 = 1.)
-  charWidth = max(charWidth, 5)
-  charHeight = max(charHeight, 2)
-  pixelWidth = charWidth * x_pixel_per_char(BrailleCanvas)
-  pixelHeight = charHeight * y_pixel_per_char(BrailleCanvas)
-  plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
-  plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
-  grid = fill(Char(0x2800), charWidth, charHeight)
-  colors = fill(0x00, charWidth, charHeight)
-  BrailleCanvas(grid, colors,
-                pixelWidth, pixelHeight,
-                plotOriginX, plotOriginY,
-                plotWidth, plotHeight)
+function BrailleCanvas(char_width::Int, char_height::Int;
+                       origin_x::Real = 0.,
+                       origin_y::Real = 0.,
+                       width::Real  = 1.,
+                       height::Real = 1.)
+    char_width = max(char_width, 5)
+    char_height = max(char_height, 2)
+    pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
+    pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
+    width > 0 || throw(ArgumentError("Width has to be positive"))
+    height > 0 || throw(ArgumentError("Height has to be positive"))
+    grid = fill(Char(0x2800), char_width, char_height)
+    colors = fill(0x00, char_width, char_height)
+    BrailleCanvas(grid, colors,
+                  pixel_width, pixel_height,
+                  Float64(origin_x), Float64(origin_y),
+                  Float64(width), Float64(height))
 end
 
-function pixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
-  0 <= pixelX <= c.pixelWidth || return nothing
-  0 <= pixelY <= c.pixelHeight || return nothing
-  pixelX = pixelX < c.pixelWidth ? pixelX: pixelX - 1
-  pixelY = pixelY < c.pixelHeight ? pixelY: pixelY - 1
-  cw, ch = size(c.grid)
-  tmp = pixelX / c.pixelWidth * cw
-  charX = floor(Int, tmp) + 1
-  charXOff = (pixelX % 2) + 1
-  if charX < round(Int, tmp, RoundNearestTiesUp) + 1 && charXOff == 1
-    charX = charX + 1
-  end
-  charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
-  charYOff = (pixelY % 4) + 1
-  c.grid[charX,charY] = Char(UInt64(c.grid[charX,charY]) | UInt64(braille_signs[charXOff, charYOff]))
-  c.colors[charX,charY] = c.colors[charX,charY] | color_encode[color]
-  c
+function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
+    0 <= pixel_x <= c.pixel_width || return c
+    0 <= pixel_y <= c.pixel_height || return c
+    pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
+    pixel_y = pixel_y < c.pixel_height ? pixel_y : pixel_y - 1
+    cw, ch = size(c.grid)
+    tmp = pixel_x / c.pixel_width * cw
+    char_x = floor(Int, tmp) + 1
+    char_x_off = (pixel_x % 2) + 1
+    if char_x < round(Int, tmp, RoundNearestTiesUp) + 1 && char_x_off == 1
+        char_x = char_x + 1
+    end
+    char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
+    char_y_off = (pixel_y % 4) + 1
+    c.grid[char_x,char_y] = Char(UInt64(c.grid[char_x,char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
+    c.colors[char_x,char_y] = c.colors[char_x,char_y] | color_encode[color]
+    c
 end
 
 function printrow(io::IO, c::BrailleCanvas, row::Int)

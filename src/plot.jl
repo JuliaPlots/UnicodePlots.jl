@@ -59,14 +59,14 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
 
   minX, maxX = extend_limits(X, xlim)
   minY, maxY = extend_limits(Y, ylim)
-  plotOriginX = minX
-  plotOriginY = minY
-  plotWidth = maxX - plotOriginX
-  plotHeight = maxY - plotOriginY
+  origin_x = minX
+  origin_y = minY
+  p_width = maxX - origin_x
+  p_height = maxY - origin_y
 
   canvas = C(width, height,
-             plotOriginX = plotOriginX, plotOriginY = plotOriginY,
-             plotWidth = plotWidth, plotHeight = plotHeight)
+             origin_x = origin_x, origin_y = origin_y,
+             width = p_width, height = p_height)
   newPlot = Plot(canvas, title = title, margin = margin,
                  padding = padding, border = border, showLabels = labels)
 
@@ -187,9 +187,9 @@ function points!{T<:Canvas}(plot::Plot{T}, args...; vars...)
   plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; plotWidth::Int = 0)
+function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0)
   if title != ""
-    offset = round(Int, plotWidth / 2 - length(title) / 2, RoundNearestTiesUp)
+    offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     offset = offset > 0 ? offset: 0
     tpad = repeat(" ", offset)
     print_with_color(:white, io, padding, tpad, title, "\n")
@@ -228,7 +228,7 @@ function Base.show(io::IO, p::Plot)
   borderPadding = repeat(" ", plotOffset)
 
   # plot the title and the top border
-  print_title(io, borderPadding, p.title, plotWidth = borderLength)
+  print_title(io, borderPadding, p.title, p_width = borderLength)
   if p.showLabels
     topLeftStr = haskey(p.decorations, :tl) ? p.decorations[:tl] : ""
     topLeftCol = haskey(p.decoColors, :tl) ? p.decoColors[:tl] : :white
@@ -315,6 +315,6 @@ function Base.show(io::IO, p::Plot)
       print_with_color(botRightCol, io, pad, botRightStr, "\n")
     end
     # abuse the print_title function to print the xlabel. maybe refactor this
-    print_title(io, borderPadding, p.xlabel, plotWidth = borderLength)
+    print_title(io, borderPadding, p.xlabel, p_width = borderLength)
   end
 end

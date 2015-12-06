@@ -77,86 +77,36 @@ ascii_lookup[0b110_011_110] = '}'
 
 ascii_decode[0b1] = ' '
 for i in 1:511
-  min_dist = typemax(Int)
-  min_char = ' '
-  for (k, v) in ascii_lookup
-    cur_dist = count_ones(UInt16(i) $ k)
-    if cur_dist < min_dist
-      min_dist = cur_dist
-      min_char = v
+    min_dist = typemax(Int)
+    min_char = ' '
+    for (k, v) in ascii_lookup
+        cur_dist = count_ones(UInt16(i) $ k)
+        if cur_dist < min_dist
+            min_dist = cur_dist
+            min_char = v
+        end
     end
-  end
-  min_char
-  ascii_decode[i + 1] = min_char
+    min_char
+    ascii_decode[i + 1] = min_char
 end
 
-type AsciiCanvas <: Canvas
-  grid::Array{UInt16,2}
-  colors::Array{UInt8,2}
-  pixelWidth::Int
-  pixelHeight::Int
-  plotOriginX::Float64
-  plotOriginY::Float64
-  plotWidth::Float64
-  plotHeight::Float64
+type AsciiCanvas <: LookupCanvas
+    grid::Array{UInt16,2}
+    colors::Array{UInt8,2}
+    pixel_width::Int
+    pixel_height::Int
+    origin_x::Float64
+    origin_y::Float64
+    width::Float64
+    height::Float64
 end
 
-pixel_width(c::AsciiCanvas) = c.pixelWidth
-pixel_height(c::AsciiCanvas) = c.pixelHeight
-width(c::AsciiCanvas) = c.plotWidth
-height(c::AsciiCanvas) = c.plotHeight
-origin_x(c::AsciiCanvas) = c.plotOriginX
-origin_y(c::AsciiCanvas) = c.plotOriginY
+@inline x_pixel_per_char(::Type{AsciiCanvas}) = 3
+@inline y_pixel_per_char(::Type{AsciiCanvas}) = 3
 
-x_pixel_per_char(::Type{AsciiCanvas}) = 3
-y_pixel_per_char(::Type{AsciiCanvas}) = 3
+@inline lookup_encode(c::AsciiCanvas) = ascii_signs
+@inline lookup_decode(c::AsciiCanvas) = ascii_decode
 
-nrows(c::AsciiCanvas) = size(c.grid, 2)
-ncols(c::AsciiCanvas) = size(c.grid, 1)
-
-function AsciiCanvas(charWidth::Int, charHeight::Int;
-                     plotOriginX::Float64 = 0.,
-                     plotOriginY::Float64 = 0.,
-                     plotWidth::Float64 = 1.,
-                     plotHeight::Float64 = 1.)
-  charWidth = max(charWidth, 5)
-  charHeight = max(charHeight, 2)
-  pixelWidth = charWidth * x_pixel_per_char(AsciiCanvas)
-  pixelHeight = charHeight * y_pixel_per_char(AsciiCanvas)
-  plotWidth > 0 || throw(ArgumentError("Width has to be positive"))
-  plotHeight > 0 || throw(ArgumentError("Height has to be positive"))
-  grid = fill(0x00, charWidth, charHeight)
-  colors = fill(0x00, charWidth, charHeight)
-  AsciiCanvas(grid, colors,
-              pixelWidth, pixelHeight,
-              plotOriginX, plotOriginY,
-              plotWidth, plotHeight)
-end
-
-function pixel!(c::AsciiCanvas, pixelX::Int, pixelY::Int, color::Symbol)
-  0 <= pixelX <= c.pixelWidth || return nothing
-  0 <= pixelY <= c.pixelHeight || return nothing
-  pixelX = pixelX < c.pixelWidth ? pixelX: pixelX - 1
-  pixelY = pixelY < c.pixelHeight ? pixelY: pixelY - 1
-  cw, ch = size(c.grid)
-  tmp = pixelX / c.pixelWidth * cw
-  charX = floor(Int, tmp) + 1
-  charXOff = (pixelX % x_pixel_per_char(AsciiCanvas)) + 1
-  if charX < round(Int, tmp, RoundNearestTiesUp) + 1 && charXOff == 1
-    charX = charX + 1
-  end
-  charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
-  charYOff = (pixelY % y_pixel_per_char(AsciiCanvas)) + 1
-  c.grid[charX,charY] = c.grid[charX,charY] | ascii_signs[charXOff, charYOff]
-  c.colors[charX,charY] = c.colors[charX,charY] | color_encode[color]
-  c
-end
-
-function printrow(io::IO, c::AsciiCanvas, row::Int)
-    nunrows = nrows(c)
-    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-    y = row
-    for x in 1:ncols(c)
-        print_color(c.colors[x,y], io, ascii_decode[c.grid[x,y] + 1])
-    end
+@inline function AsciiCanvas(args...; nargs...)
+    CreateLookupCanvas(AsciiCanvas, args...; nargs...)
 end

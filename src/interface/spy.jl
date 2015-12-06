@@ -34,12 +34,12 @@ function spy{T<:Canvas}(A::AbstractArray;
 
   # Check if the size of the plot should be derived from the matrix
   # Note: if both width and height are 0, it means that there are no
-  #       constraints and the plot should resemble the structure of 
+  #       constraints and the plot should resemble the structure of
   #       the matrix as close as possible
   if width == 0 && height == 0
     # If the interactive code did not take care of this then try
     # to plot the matrix in the correct aspect ratio (within specified bounds)
-    if min_canvheight > min_canvwidth 
+    if min_canvheight > min_canvwidth
       # long matrix (according to pixel density)
       height = min_canvheight
       width = height * aspect_ratio
@@ -73,8 +73,8 @@ function spy{T<:Canvas}(A::AbstractArray;
   width = round(Int, width)
   height = round(Int, height)
   can = T(width, height,
-          plotWidth = Float64(ncol) + 1,
-          plotHeight = Float64(nrow) + 1)
+          width = Float64(ncol) + 1,
+          height = Float64(nrow) + 1)
   plot = Plot(can; showLabels = labels, title = title, margin = margin, padding = padding, args...)
   height = nrows(plot.graphics)
   width = ncols(plot.graphics)
