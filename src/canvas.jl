@@ -14,7 +14,7 @@ function print(io::IO, c::GraphicsArea)
 end
 
 function show(io::IO, c::GraphicsArea)
-  b = borderDashed
+  b = border_dashed
   borderLength = ncols(c)
   drawBorderTop(io, "", borderLength, :solid)
   print(io, "\n")

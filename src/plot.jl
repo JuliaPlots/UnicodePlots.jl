@@ -147,8 +147,8 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::Abstrac
   else
     plot.decorations[where] = value
     plot.decoColors[where] = color
-    return plot    
-  end  
+    return plot
+  end
 end
 
 function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString; color::Symbol=:white)
@@ -197,17 +197,17 @@ function drawTitle(io::IO, padding::AbstractString, title::AbstractString; plotW
 end
 
 function drawBorderTop(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
-  b = borderMap[border]
+  b = bordermap[border]
   border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function drawBorderBottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
-  b = borderMap[border]
+  b = bordermap[border]
   border == :none || print_with_color(:white, io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 function show(io::IO, p::Plot)
-  b = borderMap[p.border]
+  b = bordermap[p.border]
   c = p.graphics
   borderLength = ncols(c)
 
@@ -318,5 +318,3 @@ function show(io::IO, p::Plot)
     drawTitle(io, borderPadding, p.xlabel, plotWidth = borderLength)
   end
 end
-
-
