@@ -254,8 +254,8 @@ Here is a simple example:
 
 ```Julia
 canvas = BrailleCanvas(40, 10, # number of columns and rows (characters)
-                       plotOriginX = 0., plotOriginY = 0., # position in virtual space
-                       plotWidth = 1., plotHeight = 1.)    # size of the virtual space
+                       origin_x = 0., origin_y = 0., # position in virtual space
+                       width = 1., height = 1.)    # size of the virtual space
 lines!(canvas, 0., 0., 1., 1., :blue)     # virtual space
 points!(canvas, rand(50), rand(50), :red) # virtual space
 lines!(canvas, 0., 1., .5, 0., :yellow)   # virtual space
