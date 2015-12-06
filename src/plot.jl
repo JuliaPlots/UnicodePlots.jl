@@ -94,8 +94,8 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
 end
 
 function nextColor!{T<:GraphicsArea}(plot::Plot{T})
-  curColor = autoColors[plot.autocolor+1]
-  plot.autocolor = ((plot.autocolor + 1) % length(autoColors))
+  curColor = color_cycle[plot.autocolor + 1]
+  plot.autocolor = ((plot.autocolor + 1) % length(color_cycle))
   curColor
 end
 

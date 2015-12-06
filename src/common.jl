@@ -98,27 +98,24 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const autoColors = [:blue, :red, :yellow, :magenta, :green, :cyan]
-const colorEncode = Dict{Symbol,UInt8}()
-const colorDecode = Dict{UInt8,Symbol}()
-colorEncode[:white]=0b000
-colorEncode[:blue]=0b001
-colorEncode[:red]=0b010
-colorEncode[:magenta]=0b011
-colorEncode[:yellow]=0b100
-colorEncode[:green]=0b101
-colorEncode[:cyan]=0b110
-for k in keys(colorEncode)
-    v = colorEncode[k]
-    colorDecode[v]=k
+const color_cycle = [:blue, :red, :yellow, :magenta, :green, :cyan]
+const color_encode = Dict{Symbol,UInt8}()
+const color_decode = Dict{UInt8,Symbol}()
+color_encode[:white]   = 0b000
+color_encode[:blue]    = 0b001
+color_encode[:red]     = 0b010
+color_encode[:magenta] = 0b011
+color_encode[:yellow]  = 0b100
+color_encode[:green]   = 0b101
+color_encode[:cyan]    = 0b110
+for k in keys(color_encode)
+    v = color_encode[k]
+    color_decode[v] = k
 end
-colorDecode[0b111]=:white
+color_decode[0b111] = :white
 
-function printColor(color::UInt8, io::IO, args...)
-    col = colorDecode[color]
+@inline function print_color(color::UInt8, io::IO, args...)
+    col = color_decode[color]
     str = string(args...)
     print_with_color(col, io, str)
 end
-
-# ▁▂▃▄▅▆▇█
-# ⬛

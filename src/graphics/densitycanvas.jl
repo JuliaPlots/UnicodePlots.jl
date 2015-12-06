@@ -48,18 +48,18 @@ function pixel!(c::DensityCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   c.grid[charX,charY] += 1
   c.maxDensity = max(c.maxDensity, c.grid[charX,charY])
-  c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
+  c.colors[charX,charY] = c.colors[charX,charY] | color_encode[color]
   c
 end
 
 function printrow(io::IO, c::DensityCanvas, row::Int)
-  nunrows = nrows(c)
-  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = row
-  denSignCount = length(den_signs)
-  valScale = (denSignCount - 1) / c.maxDensity
-  for x in 1:ncols(c)
-    denIndex = round(Int, c.grid[x,y] * valScale, RoundNearestTiesUp) + 1
-    printColor(c.colors[x,y], io, den_signs[denIndex])
-  end
+    nunrows = nrows(c)
+    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    y = row
+    den_sign_count = length(den_signs)
+    val_scale = (den_sign_count - 1) / c.maxDensity
+    for x in 1:ncols(c)
+        den_index = round(Int, c.grid[x,y] * val_scale, RoundNearestTiesUp) + 1
+        print_color(c.colors[x,y], io, den_signs[den_index])
+    end
 end

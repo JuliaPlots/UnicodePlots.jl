@@ -57,15 +57,15 @@ function pixel!(c::DotCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % y_pixel_per_char(DotCanvas)) + 1
   c.grid[charX,charY] = c.grid[charX,charY] | dot_signs[charXOff, charYOff]
-  c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
+  c.colors[charX,charY] = c.colors[charX,charY] | color_encode[color]
   c
 end
 
 function printrow(io::IO, c::DotCanvas, row::Int)
-  nunrows = nrows(c)
-  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = row
-  for x in 1:ncols(c)
-    printColor(c.colors[x,y], io, dot_decode[c.grid[x,y] + 1])
-  end
+    nunrows = nrows(c)
+    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    y = row
+    for x in 1:ncols(c)
+        print_color(c.colors[x,y], io, dot_decode[c.grid[x,y] + 1])
+    end
 end

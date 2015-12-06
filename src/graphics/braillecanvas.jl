@@ -52,15 +52,15 @@ function pixel!(c::BrailleCanvas, pixelX::Int, pixelY::Int, color::Symbol)
   charY = floor(Int, pixelY / c.pixelHeight * ch) + 1
   charYOff = (pixelY % 4) + 1
   c.grid[charX,charY] = Char(UInt64(c.grid[charX,charY]) | UInt64(braille_signs[charXOff, charYOff]))
-  c.colors[charX,charY] = c.colors[charX,charY] | colorEncode[color]
+  c.colors[charX,charY] = c.colors[charX,charY] | color_encode[color]
   c
 end
 
 function printrow(io::IO, c::BrailleCanvas, row::Int)
-  nunrows = nrows(c)
-  0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  y = row
-  for x in 1:ncols(c)
-    printColor(c.colors[x,y], io, c.grid[x,y])
-  end
+    nunrows = nrows(c)
+    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    y = row
+    for x in 1:ncols(c)
+        print_color(c.colors[x,y], io, c.grid[x,y])
+    end
 end
