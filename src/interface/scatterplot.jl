@@ -16,7 +16,7 @@ This means that the two vectors have to have the same length.
 Usage
 ======
 
-    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, margin = 3, padding = 1, color = :blue, labels = true, canvas = BrailleCanvas, grid = true)
+    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :blue, labels = true, canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
@@ -35,9 +35,9 @@ Arguments
 
 - **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
-- **`xlim`** : Plotting range for the x coordinate
+- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
 
-- **`ylim`** : Plotting range for the y coordinate
+- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
 
 - **`margin`** : Number of empty characters to the left of the whole plot.
 
