@@ -5,8 +5,8 @@ Description
 ============
 
 Plots the sparsity pattern for the given matrix `A`.
-This means that a scatterplot is drawn that resembles the matrix,
-where only the pixel for non-zero elements of the matrix are set.
+This means that a scatterplot that resembles the matrix is drawn,
+in which only the pixel for non-zero elements of the matrix are set.
 
 If the parameters `width` and `height` are not explicitly specified,
 then the function will attempt to preserve the aspect ratio of the matrix,
@@ -16,7 +16,7 @@ specified by `maxwidth` and `maxheight`
 Usage
 ======
 
-    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", name = "", width = 0, height = 0, border = :solid, margin = 3, padding = 1, color = :automatic, labels = true, canvas = BrailleCanvas)
+    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", width = 0, height = 0, border = :solid, margin = 3, padding = 1, color = :automatic, labels = true, canvas = BrailleCanvas)
 
 Arguments
 ==========
@@ -28,8 +28,6 @@ Arguments
 - **`maxheight`** : Maximal number of rows that should be used for plotting.
 
 - **`title`** : Text to display on the top of the plot.
-
-- **`name`** : Annotation of the current drawing to displayed on the right
 
 - **`width`** : Number of characters per row that should be used for plotting. `0` stands for automatic
 
