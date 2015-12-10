@@ -5,11 +5,11 @@ Description
 ============
 
 Draws the given points on a new canvas.
-It uses the first parameter `x`,
-which should be a vector or range to denote
-the horisontal position of each point,
-and the second parameter `y`,
-which should also be a vector or range,
+It uses the first parameter `x`
+(which should be a vector or range) to denote
+the horizontal position of each point,
+and the second parameter `y`
+(which should also be a vector or range)
 as their vertical position.
 This means that the two vectors have to have the same length.
 
