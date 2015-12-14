@@ -16,7 +16,7 @@ This means that the two vectors have to have the same length.
 Usage
 ======
 
-    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :blue, labels = true, canvas = BrailleCanvas, grid = true)
+    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :auto, labels = true, canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
