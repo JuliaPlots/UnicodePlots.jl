@@ -165,7 +165,7 @@ function spy{T<:Canvas}(
             width  = Float64(ncol) + 1,
             height = Float64(nrow) + 1)
     plot = Plot(can;
-                showLabels = labels, title = title,
+                show_labels = labels, title = title,
                 margin = margin, padding = padding, args...)
     height = nrows(plot.graphics)
     width = ncols(plot.graphics)
