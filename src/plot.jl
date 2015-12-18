@@ -1,3 +1,45 @@
+"""
+`Plot(graphics; nargs...)` → `Plot`
+
+Description
+============
+
+
+
+Usage
+======
+
+    Plot(graphics, title = "", xlabel = "", ylabel = "", margin = 3, padding = 1, border = :solid, show_labels = true)
+
+Arguments
+==========
+
+- **`graphics`** :
+
+- **`xlabel`** :
+
+- **`ylabel`** :
+
+- **`title`** : Text to display on the top of the plot.
+
+- **`margin`** : Number of empty characters to the left of the whole plot.
+
+- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
+
+- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+
+- **`show_labels`** : Can be used to hide the labels by setting `labels=false`.
+
+Author(s)
+==========
+
+- Christof Stocker (Github: https://github.com/Evizero)
+
+see also
+=========
+
+`scatterplot`, `lineplot`, `BarplotGraphics`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+"""
 type Plot{T<:GraphicsArea}
     graphics::T
     title::UTF8String
@@ -24,7 +66,7 @@ function Plot{T<:GraphicsArea}(
         margin::Int = 3,
         padding::Int = 1,
         border::Symbol = :solid,
-        show_labels = true)
+        labels = true)
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,UTF8String}()
@@ -36,7 +78,7 @@ function Plot{T<:GraphicsArea}(
     Plot{T}(graphics, title, xlabel, ylabel,
             margin, padding, border,
             labels_left, colors_left, labels_right, colors_right,
-            decorations, colors_deco, show_labels, 0)
+            decorations, colors_deco, labels, 0)
 end
 
 function Plot{C<:Canvas, F<:AbstractFloat}(
@@ -68,7 +110,7 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
                origin_x = origin_x, origin_y = origin_y,
                width = p_width, height = p_height)
     new_plot = Plot(canvas, title = title, margin = margin,
-                    padding = padding, border = border, show_labels = labels)
+                    padding = padding, border = border, labels = labels)
 
     min_x_str = string(isinteger(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
     max_x_str = string(isinteger(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
