@@ -4,31 +4,51 @@
 Description
 ============
 
-
+Decoration for objects that are `GraphicsArea` (or `Canvas`).
+It is used to surround the inner `GraphicsArea` object with
+additional information such as a title, border, and axis labels.
 
 Usage
 ======
 
-    Plot(graphics, title = "", xlabel = "", ylabel = "", margin = 3, padding = 1, border = :solid, show_labels = true)
+    Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
+
+    Plot(x, y, canvastype; title = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true, grid = true)
 
 Arguments
 ==========
 
-- **`graphics`** :
+- **`graphics`** : The `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate
 
-- **`xlabel`** :
+- **`x`** : The horizontal dimension for each point.
 
-- **`ylabel`** :
+- **`y`** : The vertical dimension for each point.
+
+- **`canvastype`** : The type of canvas that should be used for drawing.
 
 - **`title`** : Text to display on the top of the plot.
+
+- **`xlabel`** : Text to display on the x axis of the plot
+
+- **`ylabel`** : Text to display on the y axis of the plot
+
+- **`width`** : Number of characters per row that should be used for plotting.
+
+- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
+
+- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+
+- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
+
+- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
 
 - **`margin`** : Number of empty characters to the left of the whole plot.
 
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+- **`labels`** : Can be used to hide the labels by setting `labels=false`.
 
-- **`show_labels`** : Can be used to hide the labels by setting `labels=false`.
+- **`grid`** : Can be used to hide the gridlines at the origin
 
 Author(s)
 ==========
@@ -63,9 +83,9 @@ function Plot{T<:GraphicsArea}(
         title::AbstractString = "",
         xlabel::AbstractString = "",
         ylabel::AbstractString = "",
+        border::Symbol = :solid,
         margin::Int = 3,
         padding::Int = 1,
-        border::Symbol = :solid,
         labels = true)
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -83,16 +103,16 @@ end
 
 function Plot{C<:Canvas, F<:AbstractFloat}(
         X::Vector{F}, Y::Vector{F}, ::Type{C} = BrailleCanvas;
+        title::AbstractString = "",
         width::Int = 40,
         height::Int = 15,
+        border::Symbol = :solid,
+        xlim::Vector = [0.,0.],
+        ylim::Vector = [0.,0.],
         margin::Int = 3,
         padding::Int = 1,
-        grid::Bool = true,
-        title::AbstractString = "",
-        border::Symbol = :solid,
         labels::Bool = true,
-        xlim::Vector = [0.,0.],
-        ylim::Vector = [0.,0.])
+        grid::Bool = true)
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
