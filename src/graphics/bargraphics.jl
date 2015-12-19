@@ -1,57 +1,59 @@
 type BarplotGraphics{R<:Real} <: GraphicsArea
-  bars::Vector{R}
-  color::Symbol
-  charWidth::Int
-  maxFreq::R
-  maxFreqLen::R
-  symb::AbstractString
+    bars::Vector{R}
+    color::Symbol
+    width::Int
+    max_freq::R
+    max_len::R
+    symb::AbstractString
 
-  function BarplotGraphics(bars::Vector{R},
-                           charWidth::Int,
-                           color::Symbol,
-                           symb)
-    charWidth = max(charWidth, 5)
-    maxFreq = maximum(bars)
-    maxFreqLen = length(string(maxFreq))
-    new(bars, color, charWidth, maxFreq, maxFreqLen, symb)
-  end
+    function BarplotGraphics(
+            bars::Vector{R},
+            width::Int,
+            color::Symbol,
+            symb)
+        width = max(width, 5)
+        max_freq = maximum(bars)
+        max_len = length(string(max_freq))
+        new(bars, color, width, max_freq, max_len, symb)
+    end
 end
 
 nrows(c::BarplotGraphics) = length(c.bars)
-ncols(c::BarplotGraphics) = c.charWidth
+ncols(c::BarplotGraphics) = c.width
 
-function BarplotGraphics{R<:Real}(bars::Vector{R},
-                                  charWidth::Int;
-                                  color::Symbol = :blue,
-                                  symb = "▪")
-  BarplotGraphics{R}(bars, charWidth, color, symb)
+function BarplotGraphics{R<:Real}(
+        bars::Vector{R},
+        width::Int;
+        color::Symbol = :blue,
+        symb = "▪")
+    BarplotGraphics{R}(bars, width, color, symb)
 end
 
 function addrow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
-  append!(c.bars, bars)
-  c.maxFreq = maximum(c.bars)
-  c.maxFreqLen = length(string(c.maxFreq))
-  c
+    append!(c.bars, bars)
+    c.max_freq = maximum(c.bars)
+    c.max_len = length(string(c.max_freq))
+    c
 end
 
 function addrow!{R<:Real}(c::BarplotGraphics{R}, bar::R)
-  push!(c.bars, bar)
-  c.maxFreq = max(c.maxFreq, bar)
-  c.maxFreqLen = length(string(c.maxFreq))
-  c
+    push!(c.bars, bar)
+    c.max_freq = max(c.max_freq, bar)
+    c.max_len = length(string(c.max_freq))
+    c
 end
 
 function printrow(io::IO, c::BarplotGraphics, row::Int)
-  numrows = nrows(c)
-  0 < row <= numrows || throw(ArgumentError("Argument row out of bounds: $row"))
-  bar = c.bars[row]
-  maxBarWidth = max(c.charWidth - 2 - c.maxFreqLen, 1)
-  barLen = c.maxFreq > 0 ? round(Int, bar / c.maxFreq * maxBarWidth, RoundNearestTiesUp): 0
-  barStr = c.maxFreq > 0 ? repeat(c.symb, barLen): ""
-  barLbl = string(bar)
-  print_with_color(c.color, io, barStr)
-  print_with_color(:white, io, " ", barLbl)
-  panLen = max(maxBarWidth + 1 + c.maxFreqLen - barLen - length(barLbl), 0)
-  pad = repeat(" ", round(Int, panLen))
-  print(io, pad)
+    numrows = nrows(c)
+    0 < row <= numrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    bar = c.bars[row]
+    max_bar_width = max(c.width - 2 - c.max_len, 1)
+    bar_len = c.max_freq > 0 ? round(Int, bar/c.max_freq * max_bar_width, RoundNearestTiesUp): 0
+    bar_str = c.max_freq > 0 ? repeat(c.symb, bar_len): ""
+    bar_lbl = string(bar)
+    print_with_color(c.color, io, bar_str)
+    print_with_color(:white, io, " ", bar_lbl)
+    pan_len = max(max_bar_width + 1 + c.max_len - bar_len - length(bar_lbl), 0)
+    pad = repeat(" ", round(Int, pan_len))
+    print(io, pad)
 end
