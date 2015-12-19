@@ -107,6 +107,6 @@ end
 @inline lookup_encode(c::AsciiCanvas) = ascii_signs
 @inline lookup_decode(c::AsciiCanvas) = ascii_decode
 
-@inline function AsciiCanvas(args...; nargs...)
+function AsciiCanvas(args...; nargs...)
     CreateLookupCanvas(AsciiCanvas, args...; nargs...)
 end
