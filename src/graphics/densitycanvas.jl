@@ -1,15 +1,15 @@
 const den_signs = [" ", "░", "▒", "▓", "█"]
 
 type DensityCanvas <: Canvas
-  grid::Array{UInt,2}
-  colors::Array{UInt8,2}
-  pixel_width::Int
-  pixel_height::Int
-  origin_x::Float64
-  origin_y::Float64
-  width::Float64
-  height::Float64
-  max_density::Float64
+    grid::Array{UInt,2}
+    colors::Array{UInt8,2}
+    pixel_width::Int
+    pixel_height::Int
+    origin_x::Float64
+    origin_y::Float64
+    width::Float64
+    height::Float64
+    max_density::Float64
 end
 
 @inline pixel_width(c::DensityCanvas) = c.pixel_width

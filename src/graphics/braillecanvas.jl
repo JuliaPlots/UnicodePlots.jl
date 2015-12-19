@@ -2,14 +2,14 @@ const braille_signs = ['⠁' '⠂' '⠄' '⡀';
                        '⠈' '⠐' '⠠' '⢀']
 
 type BrailleCanvas <: Canvas
-  grid::Array{Char,2}
-  colors::Array{UInt8,2}
-  pixel_width::Int
-  pixel_height::Int
-  origin_x::Float64
-  origin_y::Float64
-  width::Float64
-  height::Float64
+    grid::Array{Char,2}
+    colors::Array{UInt8,2}
+    pixel_width::Int
+    pixel_height::Int
+    origin_x::Float64
+    origin_y::Float64
+    width::Float64
+    height::Float64
 end
 
 @inline pixel_width(c::BrailleCanvas) = c.pixel_width

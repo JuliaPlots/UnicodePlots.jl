@@ -92,12 +92,12 @@ function barplot{T<:AbstractString,N<:Real}(
     width = max(width, 5)
 
     area = BarplotGraphics(heights, width, color = color, symb = symb)
-    newPlot = Plot(area, title = title, margin = margin,
+    new_plot = Plot(area, title = title, margin = margin,
                    padding = padding, border = border, labels = labels)
     for i in 1:length(text)
-        annotate!(newPlot, :l, i, text[i])
+        annotate!(new_plot, :l, i, text[i])
     end
-    newPlot
+    new_plot
 end
 
 

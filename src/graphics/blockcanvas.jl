@@ -36,6 +36,6 @@ end
 @inline lookup_encode(c::BlockCanvas) = block_signs
 @inline lookup_decode(c::BlockCanvas) = block_decode
 
-@inline function BlockCanvas(args...; nargs...)
+function BlockCanvas(args...; nargs...)
     CreateLookupCanvas(BlockCanvas, args...; nargs...)
 end

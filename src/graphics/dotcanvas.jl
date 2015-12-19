@@ -7,14 +7,14 @@ dot_decode[0b10 + 1] = '\''
 dot_decode[0b11 + 1] = ':'
 
 type DotCanvas <: LookupCanvas
-  grid::Array{UInt8,2}
-  colors::Array{UInt8,2}
-  pixel_width::Int
-  pixel_height::Int
-  origin_x::Float64
-  origin_y::Float64
-  width::Float64
-  height::Float64
+    grid::Array{UInt8,2}
+    colors::Array{UInt8,2}
+    pixel_width::Int
+    pixel_height::Int
+    origin_x::Float64
+    origin_y::Float64
+    width::Float64
+    height::Float64
 end
 
 @inline x_pixel_per_char(::Type{DotCanvas}) = 1
@@ -23,6 +23,6 @@ end
 @inline lookup_encode(c::DotCanvas) = dot_signs
 @inline lookup_decode(c::DotCanvas) = dot_decode
 
-@inline function DotCanvas(args...; nargs...)
+function DotCanvas(args...; nargs...)
     CreateLookupCanvas(DotCanvas, args...; nargs...)
 end

@@ -6,13 +6,13 @@ using Base.Dates
 export
 
     GraphicsArea,
-      Canvas,
-        BrailleCanvas,
-        DensityCanvas,
-        BlockCanvas,
-        AsciiCanvas,
-        DotCanvas,
-      BarplotGraphics,
+        Canvas,
+            BrailleCanvas,
+            DensityCanvas,
+            BlockCanvas,
+            AsciiCanvas,
+            DotCanvas,
+        BarplotGraphics,
 
     pixel_width,
     pixel_height,
