@@ -50,6 +50,19 @@ Arguments
 
 - **`grid`** : Can be used to hide the gridlines at the origin
 
+Methods
+========
+
+- `title!(plot::Plot, title::String)`
+
+- `xlabel!(plot::Plot, xlabel::String)`
+
+- `ylabel!(plot::Plot, xlabel::String)`
+
+- `annotate!(plot::Plot, where::Symbol, value::String)`
+
+- `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
+
 Author(s)
 ==========
 
