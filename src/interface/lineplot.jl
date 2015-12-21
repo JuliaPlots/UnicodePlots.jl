@@ -98,14 +98,14 @@ See also
 `Plot`, `scatter`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
 function lineplot{F<:Real, R<:Real}(
-        X::AbstractVector{F},
-        Y::AbstractVector{R};
+        x::AbstractVector{F},
+        y::AbstractVector{R};
         color::Symbol = :auto,
         name::AbstractString = "",
         canvas::Type = BrailleCanvas,
         args...)
-    X = convert(Vector{Float64},X)
-    Y = convert(Vector{Float64},Y)
+    X = convert(Vector{Float64},x)
+    Y = convert(Vector{Float64},y)
     new_plot = Plot(X, Y, canvas; args...)
     color = color == :auto ? next_color!(new_plot) : color
     name == "" || annotate!(new_plot, :r, name, color)
@@ -114,13 +114,13 @@ end
 
 function lineplot!{T<:Canvas, F<:Real, R<:Real}(
         plot::Plot{T},
-        X::AbstractVector{F},
-        Y::AbstractVector{R};
+        x::AbstractVector{F},
+        y::AbstractVector{R};
         color::Symbol = :auto,
         name::AbstractString = "",
         args...)
-    X = convert(Vector{Float64},X)
-    Y = convert(Vector{Float64},Y)
+    X = convert(Vector{Float64},x)
+    Y = convert(Vector{Float64},y)
     color = color == :auto ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, name, color)
     lines!(plot, X, Y, color)
