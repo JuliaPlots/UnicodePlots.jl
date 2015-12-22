@@ -1,6 +1,14 @@
 const braille_signs = ['⠁' '⠂' '⠄' '⡀';
                        '⠈' '⠐' '⠠' '⢀']
 
+"""
+The type of canvas with the highest resolution
+for Unicode-based plotting.
+It essentially uses the Unicode characters of
+the Braille symbols to represent individual pixel.
+This effectively turns every character into 8 pixels
+that can individually be manipulated using binary operations.
+"""
 type BrailleCanvas <: Canvas
     grid::Array{Char,2}
     colors::Array{UInt8,2}
