@@ -4,7 +4,7 @@ const braille_signs = ['⠁' '⠂' '⠄' '⡀';
 """
 The type of canvas with the highest resolution
 for Unicode-based plotting.
-It essentially uses the Unicode characters of
+It uses the Unicode characters for
 the Braille symbols to represent individual pixel.
 This effectively turns every character into 8 pixels
 that can individually be manipulated using binary operations.
