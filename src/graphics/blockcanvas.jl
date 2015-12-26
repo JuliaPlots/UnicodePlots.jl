@@ -19,6 +19,15 @@ block_decode[0b1101 + 1] = '▜'
 block_decode[0b1110 + 1] = '▛'
 block_decode[0b1111 + 1] = '█'
 
+"""
+The `BlockCanvas` is also Unicode-based.
+It has half the resolution of the `BrailleCanvas`.
+In contrast to BrailleCanvas, the pixels don't
+have visible spacing between them.
+This canvas effectively turns every character
+into 4 pixels that can individually be manipulated
+using binary operations.
+"""
 type BlockCanvas <: LookupCanvas
     grid::Array{UInt8,2}
     colors::Array{UInt8,2}
