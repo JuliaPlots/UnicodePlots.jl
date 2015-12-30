@@ -174,10 +174,23 @@ function next_color!{T<:GraphicsArea}(plot::Plot{T})
     cur_color
 end
 
+"""
+`title(plot) →  UTF8String`
+
+Returns the current title of the given plot.
+Alternatively, the title can be changed with `title!`.
+"""
 function title{T<:GraphicsArea}(plot::Plot{T})
     plot.title
 end
 
+"""
+`title!(plot, newtitle) →  Plot`
+
+Sets a new title for the given plot.
+Alternatively, the current title can be
+queried using `title`.
+"""
 function title!{T<:GraphicsArea}(plot::Plot{T}, title::AbstractString)
     plot.title = title
     plot
