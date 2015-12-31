@@ -196,10 +196,23 @@ function title!{T<:GraphicsArea}(plot::Plot{T}, title::AbstractString)
     plot
 end
 
+"""
+`xlabel(plot) →  UTF8String`
+
+Returns the current label for the x-axis.
+Alternatively, the x-label can be changed with `xlabel!`
+"""
 function xlabel{T<:GraphicsArea}(plot::Plot{T})
     plot.xlabel
 end
 
+"""
+`xlabel!(plot, newlabel) →  Plot`
+
+Sets a new x-label for the given plot.
+Alternatively, the current label can be
+queried using `xlabel`
+"""
 function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::AbstractString)
     plot.xlabel = xlabel
     plot
