@@ -218,10 +218,23 @@ function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::AbstractString)
     plot
 end
 
+"""
+`ylabel(plot) →  UTF8String`
+
+Returns the current label for the y-axis.
+Alternatively, the y-label can be changed with `ylabel!`
+"""
 function ylabel{T<:GraphicsArea}(plot::Plot{T})
     plot.ylabel
 end
 
+"""
+`ylabel!(plot, newlabel) →  Plot`
+
+Sets a new y-label for the given plot.
+Alternatively, the current label can be
+queried using `ylabel`
+"""
 function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::AbstractString)
     plot.ylabel = ylabel
     plot
