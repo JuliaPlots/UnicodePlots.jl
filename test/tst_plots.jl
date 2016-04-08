@@ -196,6 +196,7 @@ print(myPlot)
 
 print(histogram(rand(1000), bins=10, title="Histogram"))
 print(histogram(rand(1000), title="Histogram"))
+print(histogram(rand(1000)*0.001, title="Histogram"))
 print(histogram(rand(800) * 10000 - 115000, title="Histogram"))
 
 print(spy(sprand(10,10,.15)))
