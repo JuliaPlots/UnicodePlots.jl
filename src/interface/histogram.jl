@@ -84,8 +84,8 @@ function histogram(v, bins::Int; symb = "▇", args...)
     labels = Array(UTF8String, length(counts))
     binwidth = edges.step / edges.divisor
     @inbounds for i in 1:length(counts)
-        val = float_round_log10(edges[i])
-        labels[i] = string("(", val, ",", float_round_log10(val+binwidth), "]")
+        val = float_round_log10(edges[i], edges.step)
+        labels[i] = string("(", val, ",", float_round_log10(val+binwidth, edges.step), "]")
     end
     barplot(labels, counts; symb = symb, args...)
 end
