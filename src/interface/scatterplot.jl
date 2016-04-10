@@ -97,8 +97,8 @@ function scatterplot{F<:Real,R<:Real}(
         name::AbstractString = "",
         canvas::Type = BrailleCanvas,
         args...)
-    X = convert(Vector{Float64}, x)
-    Y = convert(Vector{Float64}, y)
+    X = convert(Vector{Float64}, collect(x))
+    Y = convert(Vector{Float64}, collect(y))
     new_plot = Plot(X, Y, canvas; args...)
     color = (color == :auto) ? next_color!(new_plot) : color
     name == "" || annotate!(new_plot, :r, name, color)
@@ -110,23 +110,11 @@ function scatterplot!{T<:Canvas,F<:Real,R<:Real}(
         color::Symbol = :auto,
         name::AbstractString = "",
         args...)
-    X = convert(Vector{Float64}, x)
-    Y = convert(Vector{Float64}, y)
+    X = convert(Vector{Float64}, collect(x))
+    Y = convert(Vector{Float64}, collect(y))
     color = (color == :auto) ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, name, color)
     points!(plot, X, Y, color)
-end
-
-function scatterplot{F<:Real,R<:Real}(X::Range{F}, Y::Range{R}; args...)
-    scatterplot(collect(X), collect(Y); args...)
-end
-
-function scatterplot{F<:Real}(X::Range, Y::AbstractVector{F}; args...)
-    scatterplot(collect(X), Y; args...)
-end
-
-function scatterplot{F<:Real}(X::AbstractVector{F}, Y::Range; args...)
-    scatterplot(X, collect(Y); args...)
 end
 
 function scatterplot(X::AbstractVector; args...)
@@ -137,14 +125,3 @@ function scatterplot!{T<:Canvas}(plot::Plot{T}, X::AbstractVector; args...)
     scatterplot!(plot, 1:length(X), X; args...)
 end
 
-function scatterplot!{T<:Canvas,F<:Real,R<:Real}(plot::Plot{T}, X::Range{F}, Y::Range{R}; args...)
-    scatterplot!(plot, collect(X), collect(Y); args...)
-end
-
-function scatterplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::Range, Y::AbstractVector{F}; args...)
-    scatterplot!(plot, collect(X), Y; args...)
-end
-
-function scatterplot!{T<:Canvas,F<:Real}(plot::Plot{T}, X::AbstractVector{F}, Y::Range; args...)
-    scatterplot!(plot, X, collect(Y); args...)
-end

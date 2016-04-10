@@ -64,8 +64,4 @@ include("interface/densityplot.jl")
 include("interface/spy.jl")
 include("deprecated.jl")
 
-if VERSION >= v"0.4.0-dev+5512"
-  include("precompile.jl")
-end
-
 end

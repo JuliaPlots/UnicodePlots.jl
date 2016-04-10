@@ -338,7 +338,7 @@ function print_border_bottom(io::IO, padding::AbstractString, length::Int, borde
 end
 
 function Base.show(io::IO, p::Plot)
-    b = bordermap[p.border]
+    b = UnicodePlots.bordermap[p.border]
     c = p.graphics
     border_length = ncols(c)
 
