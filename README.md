@@ -1,5 +1,6 @@
 # UnicodePlots
 
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 [![Package Evaluator v3](http://pkg.julialang.org/badges/UnicodePlots_0.3.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.3)
 [![Package Evaluator v4](http://pkg.julialang.org/badges/UnicodePlots_0.4.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.4)
