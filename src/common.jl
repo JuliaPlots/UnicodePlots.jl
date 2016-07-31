@@ -1,5 +1,7 @@
-ceil_neg_log10{F<:AbstractFloat}(x::F) = ceil(Integer, -log10(x))
-round_neg_log10{F<:AbstractFloat}(x::F) = round(Integer, -log10(x), RoundNearestTiesUp)
+roundable{T<:Number}(num::T) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+
+ceil_neg_log10{F<:AbstractFloat}(x::F) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+round_neg_log10{F<:AbstractFloat}(x::F) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
 round_up_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)) : -floor(-x, ceil_neg_log10(m)))
 round_down_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)) : -ceil(-x, ceil_neg_log10(m)))
 round_up_subtick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)+1) : -floor(-x, ceil_neg_log10(m)+1))

@@ -234,3 +234,7 @@ print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum
 d = collect(Date(2000,1,1):Date(2000,1,31))
 v = collect(linspace(20, 200, 31))
 print(lineplot(d,v, height = 5))
+
+miny = -1.2796649117521434e218
+maxy = -miny
+println(scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy],title="Don't you crash on me!"))
