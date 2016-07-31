@@ -145,10 +145,10 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
     new_plot = Plot(canvas, title = title, margin = margin,
                     padding = padding, border = border, labels = labels)
 
-    min_x_str = string(isinteger(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
-    max_x_str = string(isinteger(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
-    min_y_str = string(isinteger(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
-    max_y_str = string(isinteger(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
+    min_x_str = string(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
+    max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
+    min_y_str = string(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
+    max_y_str = string(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
     annotate!(new_plot, :l, 1, max_y_str)
     annotate!(new_plot, :l, height, min_y_str)
     annotate!(new_plot, :bl, min_x_str)
