@@ -257,7 +257,7 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color_override::Symbol=:white; color::Symbol = color_override)
     where == :t || where == :b || where == :l || where == :r || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
     if where == :l || where == :r
         for row = 1:nrows(plot.graphics)
@@ -282,11 +282,7 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::Abstrac
     end
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString; color::Symbol=:white)
-    annotate!(plot, where, value, color)
-end
-
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString, color_override::Symbol=:white; color::Symbol = color_override)
     if where == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = color
@@ -297,10 +293,6 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, valu
         throw(ArgumentError("Unknown location: try one of these :l :r"))
     end
     plot
-end
-
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString; color::Symbol=:white)
-    annotate!(plot, where, row, value, color)
 end
 
 function lines!{T<:Canvas}(plot::Plot{T}, args...; vars...)

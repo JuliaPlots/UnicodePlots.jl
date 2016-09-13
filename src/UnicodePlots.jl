@@ -2,6 +2,7 @@ isdefined(Base, :__precompile__) && __precompile__()
 module UnicodePlots
 
 using Base.Dates
+import Compat: UTF8String
 
 export
 
