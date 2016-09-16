@@ -38,13 +38,13 @@ function extend_limits(vec, limits)
     (limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : plotting_range_narrow(mi, ma)
 end
 
-const bordermap = Dict{Symbol,Dict{Symbol,UTF8String}}()
-const border_solid  = Dict{Symbol,UTF8String}()
-const border_bold   = Dict{Symbol,UTF8String}()
-const border_none   = Dict{Symbol,UTF8String}()
-const border_dashed = Dict{Symbol,UTF8String}()
-const border_dotted = Dict{Symbol,UTF8String}()
-const border_ascii  = Dict{Symbol,UTF8String}()
+const bordermap = Dict{Symbol,Dict{Symbol,String}}()
+const border_solid  = Dict{Symbol,String}()
+const border_bold   = Dict{Symbol,String}()
+const border_none   = Dict{Symbol,String}()
+const border_dashed = Dict{Symbol,String}()
+const border_dotted = Dict{Symbol,String}()
+const border_ascii  = Dict{Symbol,String}()
 border_solid[:tl] = "┌"
 border_solid[:tr] = "┐"
 border_solid[:bl] = "└"

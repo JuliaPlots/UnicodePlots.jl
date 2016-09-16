@@ -75,17 +75,17 @@ see also
 """
 type Plot{T<:GraphicsArea}
     graphics::T
-    title::UTF8String
-    xlabel::UTF8String
-    ylabel::UTF8String
+    title::String
+    xlabel::String
+    ylabel::String
     margin::Int
     padding::Int
     border::Symbol
-    labels_left::Dict{Int,UTF8String}
+    labels_left::Dict{Int,String}
     colors_left::Dict{Int,Symbol}
-    labels_right::Dict{Int,UTF8String}
+    labels_right::Dict{Int,String}
     colors_right::Dict{Int,Symbol}
-    decorations::Dict{Symbol,UTF8String}
+    decorations::Dict{Symbol,String}
     colors_deco::Dict{Symbol,Symbol}
     show_labels::Bool
     autocolor::Int
@@ -102,11 +102,11 @@ function Plot{T<:GraphicsArea}(
         labels = true)
     rows = nrows(graphics)
     cols = ncols(graphics)
-    labels_left = Dict{Int,UTF8String}()
+    labels_left = Dict{Int,String}()
     colors_left = Dict{Int,Symbol}()
-    labels_right = Dict{Int,UTF8String}()
+    labels_right = Dict{Int,String}()
     colors_right = Dict{Int,Symbol}()
-    decorations = Dict{Symbol,UTF8String}()
+    decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,Symbol}()
     Plot{T}(graphics, title, xlabel, ylabel,
             margin, padding, border,
@@ -175,7 +175,7 @@ function next_color!{T<:GraphicsArea}(plot::Plot{T})
 end
 
 """
-`title(plot) →  UTF8String`
+`title(plot) →  String`
 
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
@@ -197,7 +197,7 @@ function title!{T<:GraphicsArea}(plot::Plot{T}, title::AbstractString)
 end
 
 """
-`xlabel(plot) →  UTF8String`
+`xlabel(plot) →  String`
 
 Returns the current label for the x-axis.
 Alternatively, the x-label can be changed with `xlabel!`
@@ -219,7 +219,7 @@ function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::AbstractString)
 end
 
 """
-`ylabel(plot) →  UTF8String`
+`ylabel(plot) →  String`
 
 Returns the current label for the y-axis.
 Alternatively, the y-label can be changed with `ylabel!`
@@ -257,7 +257,7 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol)
     where == :t || where == :b || where == :l || where == :r || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
     if where == :l || where == :r
         for row = 1:nrows(plot.graphics)
@@ -286,7 +286,7 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::Abstrac
     annotate!(plot, where, value, color)
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString, color::Symbol=:white)
+function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString, color::Symbol)
     if where == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = color

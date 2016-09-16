@@ -80,8 +80,9 @@ See also
 `hist`, `Plot`, `barplot`, `BarplotGraphics`
 """
 function histogram(v, bins::Int; symb = "▇", args...)
-    edges, counts = hist(v, bins)
-    labels = Array(UTF8String, length(counts))
+    result = fit(Histogram, v; nbins = bins)
+    edges, counts = result.edges[1], result.weights
+    labels = Array(String, length(counts))
     binwidth = edges.step / edges.divisor
     @inbounds for i in 1:length(counts)
         val = float_round_log10(edges[i], binwidth)
