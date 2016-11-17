@@ -113,7 +113,7 @@ function spy{T<:Canvas}(
     # if no size bounds ares specified and the session is in an
     # interactive terminal then use the size of the REPL
     if isinteractive()
-        term_height, term_width = Base.tty_size()
+        term_height, term_width = Base.displaysize()
         maxheight = maxheight > 0 ? maxheight : term_height - height_diff
         maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
     else
