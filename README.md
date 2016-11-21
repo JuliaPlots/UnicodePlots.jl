@@ -11,7 +11,7 @@ Advanced Unicode plotting library designed for use in Julia's REPL.
 [![Package Evaluator v4](http://pkg.julialang.org/badges/UnicodePlots_0.4.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.4)
 [![Package Evaluator v5](http://pkg.julialang.org/badges/UnicodePlots_0.5.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.5)
 
-There are no dependencies on other packages.
+To install UnicodePlots, start up Julia and type the following code-snipped into the REPL. It makes use of the native Julia package manger.
 
 ```Julia
 Pkg.add("UnicodePlots")
