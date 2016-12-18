@@ -36,13 +36,25 @@ Examples
 `julia> stemplot(rand(1:80,20))`
 
 TODO
+
+TODO
+====
+
+- Improve "decimal point message"
+- Add unicode line to replace "|"
+- Add tests to make plot more robust
+- Decide if we want expanded stemplots or collapsed stemplot or allow user to choose.
+- Test negative values
+- Test different scales eg, decimals, large numbers, negative ect.
+- Padding: I notices that the "-" shifted values over a little. 
+
 """
-function stemplot(data)
+function stemplot(v)
 	println("The decimal point is 1 digit(s) to the right of the | \n")
 	# get the left most integer and the remainders, aka leaves.
 	# also infer scale of values from median of vector.
-	k = floor(Int64,log10(median(data)))
-	(left_int,leaf) = divrem(sort(data),10^k)
+	k = floor(Int64,log10(median(v)))
+	(left_int,leaf) = divrem(sort(v),10^k)
 	i = left_int[end]
 	stem = []
 	# Create a range of values for stem. This is so we don't miss
@@ -60,12 +72,14 @@ function stemplot(data)
 	dict = Dict(i => f(i) for i in stem)
 	[dict[i] for i in stem]
 	# Print the results as a stem leaf plot
-	for i in stem
+	i = stem[end]
+	while i <= stem[1]
 		if isempty(dict[i])
 			println(i, "|", "")
 		else
 			println(i, "|", dict[i])
 		end
+		i += 1
 	end
 end
 
