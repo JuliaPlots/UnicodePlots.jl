@@ -1,5 +1,5 @@
 """
-`stemplot(v)`->` Plot`
+`stemplot(v; nargs...)`->` Plot`
 
 Description
 ===========
@@ -11,10 +11,17 @@ Usage
 
 `stemplot(v)`
 
+function stemplot(
+                  v::Vector,
+                  symbol::AbstractString, 
+                  expand::Bool)
 Arguments
 =========
 
 -**`v`** : Vector for which the stem leaf plot should be computed
+-**`symbol`: Symbol for break between stem and leaf. default = "|"
+-**`expand`**: Bool for expanded (true) plot or collapsed (false). default = true
+-**`color`**: Set color of plot. default = white TODO
 
 Results
 =======
@@ -33,53 +40,64 @@ Author(s)
 Examples
 ========
 
-`julia> stemplot(rand(1:80,20))`
+`stemplot(rand(1:200,80))
 
 TODO
 
 TODO
 ====
 
-- Improve "decimal point message"
-- Add unicode line to replace "|"
 - Add tests to make plot more robust
-- Decide if we want expanded stemplots or collapsed stemplot or allow user to choose.
 - Test negative values
 - Test different scales eg, decimals, large numbers, negative ect.
-- Padding: I notices that the "-" shifted values over a little. 
+- Left Justify: I noticed that the "-" and multi-digits  shifted values over a little. 
+- Remove brackets around leaves.
 
 """
-function stemplot(v)
-	println("The decimal point is 1 digit(s) to the right of the | \n")
-	# get the left most integer and the remainders, aka leaves.
-	# also infer scale of values from median of vector.
-	k = floor(Int64,log10(median(v)))
-	(left_int,leaf) = divrem(sort(v),10^k)
-	i = left_int[end]
-	stem = []
-	# Create a range of values for stem. This is so we don't miss
-	# empty sets.
-	while i >= left_int[1]
-		push!(stem,i)
-		i -= 1
-	end
-	# generator function to be used in the Dict. Looks up the leaf corresponding to the stem
-	function f(i)
-		index = find(left_int .== i)
-		leaf[index]
-	end
-	# Dict where key == stem and value == leaves. 
-	dict = Dict(i => f(i) for i in stem)
-	[dict[i] for i in stem]
-	# Print the results as a stem leaf plot
-	i = stem[end]
-	while i <= stem[1]
-		if isempty(dict[i])
-			println(i, "|", "")
-		else
-			println(i, "|", dict[i])
-		end
-		i += 1
-	end
+function stemplot(
+                  v::Vector;
+                  symbol::AbstractString="|", 
+                  )
+    (left_int,leaf) = divrem(sort(v),10)
+    i = left_int[end]
+    stem = []
+    # Create a range of values for stem. This is so we don't miss
+    # empty sets.
+    while i >= left_int[1]
+        push!(stem,i)
+        i -= 1
+    end
+    # generator function to be used in the Dict. Looks up the leaf corresponding to the stem
+    function f(i)
+        index = find(left_int .== i)
+        leaf[index]
+    end
+    # Dict where key == stem and value == leaves. 
+    dict = Dict(i => f(i) for i in stem)
+    [dict[i] for i in stem]
+    # Print the results as a stem leaf plot
+    println("\n")
+    pad = "  "
+    i = stem[end]
+    while i <= stem[1]
+        if isempty(dict[i])
+            println(pad, i, lpad(symbol,2), "")
+        else
+            println(pad, i, lpad(symbol,2),dict[i])
+        end
+        i += 1
+    end
+    # Find a non empty stem-leaf pair to use for the key 
+    #is_stemleaf = false
+    i=1
+    while i == 1
+        key_stem = rand(stem)
+        if isempty(dict[key_stem]) == false
+            key_leaf = dict[key_stem][1]
+            println("\n",pad,"key: $key_stem$symbol$key_leaf = $key_stem$key_leaf ")
+            i=0
+        else
+            i=1
+        end
+    end
 end
-
