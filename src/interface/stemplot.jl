@@ -40,64 +40,60 @@ Author(s)
 Examples
 ========
 
-`stemplot(rand(1:200,80))
-
-TODO
+`stemplot(rand(1:200,80))`
 
 TODO
 ====
 
 - Add tests to make plot more robust
-- Test negative values
+- Test negative values for key. key: -5|-2 = -5-2 :(
+- Test key: 0|4 = 04 :(
 - Test different scales eg, decimals, large numbers, negative ect.
-- Left Justify: I noticed that the "-" and multi-digits  shifted values over a little. 
+- Left Justify: If possible the separator symbole should be at least 6 cols from edge of terminal. 
 - Remove brackets around leaves.
 
 """
 function stemplot(
                   v::Vector;
-                  symbol::AbstractString="|", 
+                  divider::AbstractString="|", 
                   )
-    (left_int,leaf) = divrem(sort(v),10)
-    i = left_int[end]
-    stem = []
-    # Create a range of values for stem. This is so we don't miss
-    # empty sets.
-    while i >= left_int[1]
-        push!(stem,i)
-        i -= 1
-    end
-    # generator function to be used in the Dict. Looks up the leaf corresponding to the stem
-    function f(i)
-        index = find(left_int .== i)
-        leaf[index]
-    end
-    # Dict where key == stem and value == leaves. 
-    dict = Dict(i => f(i) for i in stem)
-    [dict[i] for i in stem]
-    # Print the results as a stem leaf plot
-    println("\n")
-    pad = "  "
-    i = stem[end]
-    while i <= stem[1]
-        if isempty(dict[i])
-            println(pad, i, lpad(symbol,2), "")
-        else
-            println(pad, i, lpad(symbol,2),dict[i])
-        end
-        i += 1
-    end
-    # Find a non empty stem-leaf pair to use for the key 
-    #is_stemleaf = false
-    i=1
-    while i == 1
-        key_stem = rand(stem)
-        if isempty(dict[key_stem]) == false
-            key_leaf = dict[key_stem][1]
-            println("\n",pad,"key: $key_stem$symbol$key_leaf = $key_stem$key_leaf ")
-            i=0
-        else
-            i=1
-        end
-    end
+    left_ints,leaves = divrem(sort(v),10)
+
+	# Create range of values for stems. This is so the empty sets are not missed
+	stems = collect(minimum(left_ints) : maximum(left_ints)) 
+	
+	# Get the leaves associated with a given stem
+	getleaves(stem) = leaves[left_ints .== stem]
+
+	# Dict mapping stems to leaves
+	dict = Dict(stem => getleaves(stem) for stem in stems)
+	
+	# Prep and print stemplot
+	# Set pad
+	pad = "  "
+	# width needed for proper formating of stem-to-divider
+	max_stem_width = length(string(maximum(stems)))
+	println()
+	for stem in stems
+		stemleaves = dict[stem]
+		# print the stem and divider
+		print(pad, rpad(stem, max_stem_width + 1), divider)
+		# if leaves exist print them without dict brackets
+		if !isempty(stemleaves)
+			print(string(stemleaves)[2:(end-1)])
+		end
+		println()
+	end
+	println()
+	
+	# Get and print key
+	# Get index of last stem
+	key_stem_index = findlast(s -> !isempty(getleaves(stem)),stems)
+	# If a key_stem exsits
+	if key_stem_index > 0
+		key_stem = stems[key_stem_index]
+		# Print first leaf in stem
+		key_leaf = dict[key_stem][1]
+		println("\n",pad, "key: $(key_stem)$(divider)$(key_leaf) = $(key_stem)$(key_leaf)")
+	end
 end
