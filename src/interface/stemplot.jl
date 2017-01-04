@@ -14,7 +14,7 @@ Usage
 function stemplot(
                   v::Vector,
                   symbol::AbstractString, 
-                  expand::Bool)
+                  scale::Int64)
 Arguments
 =========
 
@@ -42,22 +42,23 @@ Examples
 
 `stemplot(rand(1:200,80))`
 
+`stemplot(randn(50),scale = 1)`
+
 TODO
 ====
 
-- Add tests to make plot more robust
 - Test negative values for key. key: -5|-2 = -5-2 :(
 - Test key: 0|4 = 04 :(
 - Test different scales eg, decimals, large numbers, negative ect.
-- Left Justify: If possible the separator symbole should be at least 6 cols from edge of terminal. 
-- Remove brackets around leaves.
-
+- Deal with the case of negative 0
 """
 function stemplot(
                   v::Vector;
                   divider::AbstractString="|", 
+				  scale=10
                   )
-    left_ints,leaves = divrem(sort(v),10)
+	left_ints,leaves = divrem(sort(v),scale)
+	leaves = trunc(Int, leaves)
 
 	# Create range of values for stems. This is so the empty sets are not missed
 	stems = collect(minimum(left_ints) : maximum(left_ints)) 
