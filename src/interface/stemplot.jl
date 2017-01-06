@@ -47,7 +47,6 @@ Examples
 TODO
 ====
 
-- Test negative values for key. key: -5|-2 = -5-2 :(
 - Test key: 0|4 = 04 :(
 - Test different scales eg, decimals, large numbers, negative ect.
 - Deal with the case of negative 0
@@ -93,8 +92,8 @@ function stemplot(
 	# If a key_stem exsits
 	if key_stem_index > 0
 		key_stem = stems[key_stem_index]
-		# Print first leaf in stem
-		key_leaf = dict[key_stem][1]
+		# Print first leaf in stem and remove negative on leaf, if leaf is negative.
+		key_leaf = norm(dict[key_stem][1])
 		println("\n",pad, "key: $(key_stem)$(divider)$(key_leaf) = $(key_stem)$(key_leaf)")
 	end
 end
