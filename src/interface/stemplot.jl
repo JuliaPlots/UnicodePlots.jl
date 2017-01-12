@@ -44,12 +44,14 @@ Examples
 
 `stemplot(randn(50),scale = 1)`
 
+
 TODO
 ====
 
-- Test key: 0|4 = 04 :(
+- Test key: 0|4 = 04 :( Should be 0.4
 - Test different scales eg, decimals, large numbers, negative ect.
-- Deal with the case of negative 0
+- When negative values exist create -0
+- Include a description for where the decimal is.
 """
 function stemplot(
                   v::Vector;
@@ -72,15 +74,16 @@ function stemplot(
 	# Set pad
 	pad = "  "
 	# width needed for proper formating of stem-to-divider
-	max_stem_width = length(string(maximum(stems)))
+	max_stem_width = length(string(maximum(round(Int64,stems))))
 	println()
 	for stem in stems
 		stemleaves = dict[stem]
 		# print the stem and divider
-		print(pad, rpad(stem, max_stem_width + 1), divider)
+		print(pad, rpad(round(Int64,stem), max_stem_width + 1), divider)
 		# if leaves exist print them without dict brackets
 		if !isempty(stemleaves)
-			print(string(stemleaves)[2:(end-1)])
+			leaf_string = string(stemleaves)[2:(end-1)]
+			print(replace(leaf_string,",",""))
 		end
 		println()
 	end
