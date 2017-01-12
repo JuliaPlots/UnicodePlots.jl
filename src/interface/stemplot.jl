@@ -83,7 +83,7 @@ function stemplot(
 		# if leaves exist print them without dict brackets
 		if !isempty(stemleaves)
 			leaf_string = string(stemleaves)[2:(end-1)]
-			print(replace(leaf_string,",",""))
+			print(replace(leaf_string,r"[,-]",""))
 		end
 		println()
 	end
