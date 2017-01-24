@@ -38,6 +38,7 @@ There are a couple of ways to generate typical plots without much verbosity. Her
   - Histogram (horizontal)
   - Sparsity Pattern
   - Density Plot
+  - Stem Plot
 
 Here is a quick hello world example of a typical use-case:
 
@@ -135,6 +136,12 @@ myPlot = densityplot(randn(1000), randn(1000), color = :blue)
 densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
 ```
 ![Density Screenshot](doc/img/density.png)
+
+#### Stem Plot
+
+```Julia
+stemplot(randn(50),scale = 1)
+```
 
 ### Options
 
