@@ -57,6 +57,7 @@ function stemplot(
                   divider::AbstractString="|", 
 				  scale=10
                   )
+	v = convert(Array{AbstractFloat,1}, v)
 	left_ints,leaves = divrem(sort(v),scale)
 	leaves_of_zero_left_ints = leaves[left_ints .==0]
 	neg_zero_leaves = leaves_of_zero_left_ints[leaves_of_zero_left_ints.<0] 
@@ -83,12 +84,12 @@ function stemplot(
 	dict[0] = pos_zero_leaves
 
 	# Handle -0 stems and associated leaves
-	if any(leaves_of_zero_left_ints .< 0)
-		dict[-0] = neg_zero_leaves
+	if any(leaves_of_zero_left_ints .< 0.0)
+		dict[-0.0] = neg_zero_leaves
 		# Delete negative values in dictionary with 0.0 as stem
 
 		# add -0.0 dict with values
-		push!(stems, -0)
+		push!(stems, -0.0)
 		sort!(stems)
 	end
 
