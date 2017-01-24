@@ -44,13 +44,8 @@ Examples
 
 `stemplot(randn(50),scale = 1)`
 
+`stemplot(rand(1:59, 200),divider = ":")`
 
-TODO
-====
-
-- Test key: 0|4 = 04 :( Should be 0.4
-- Test different scales eg, decimals, large numbers, negative ect.
-- Include a description for where the decimal is.
 """
 function stemplot(
                   v::Vector;
@@ -95,13 +90,15 @@ function stemplot(
 	# Prep and print stemplot
 	# Set pad
 	pad = "  "
+	one_space = " "
 	# width needed for proper formating of stem-to-divider
 	max_stem_width = length(string(maximum(round(Int64,stems))))
 	println()
 	for stem in stems
 		stemleaves = dict[stem]
 		# print the stem and divider
-		print(pad, rpad(round(Int64,stem), max_stem_width + 1), divider, " ")
+		each_stem_width = length(string(round(Int64,stem)))
+		print(pad, one_space^(max_stem_width+1-each_stem_width), rpad(round(Int64,stem), 1), divider, " ")
 		# if leaves exist print them without dict brackets
 		if !isempty(stemleaves)
 			leaf_string = string(stemleaves)[2:(end-1)]
@@ -109,7 +106,6 @@ function stemplot(
 		end
 		println()
 	end
-	println()
 	
 	# Get and print key
 	# Get index of last stem
@@ -119,6 +115,12 @@ function stemplot(
 		key_stem = trunc(Int,stems[key_stem_index])
 		# Print first leaf in stem and remove negative on leaf, if leaf is negative.
 		key_leaf = norm(dict[key_stem][1])
-		println("\n",pad, "key: $(key_stem)$(divider)$(key_leaf) = $(key_stem)$(key_leaf)")
+		key_value = (key_stem+key_leaf)*scale
+		println("\n",pad, "Key: $(key_stem)$(divider)$(key_leaf) = $(key_value)")
+
+		# Description of where the decimal is
+		ndigits = abs(trunc(Int,log10(scale)))
+		println(pad,"Description: The decimal is $(ndigits) digit(s) to the left of $(divider)")
+
 	end
 end
