@@ -40,11 +40,16 @@ Author(s)
 Examples
 ========
 
-`stemplot(rand(1:200,80))`
+`stemplot(rand(1:100,80))`
+
+`stemplot(rand(-100:100,300))`
 
 `stemplot(randn(50),scale = 1)`
 
+`stemplot(randn(50),scale = .1)`
+
 `stemplot(rand(1:59, 200),divider = ":")`
+
 
 """
 function stemplot(
@@ -79,11 +84,11 @@ function stemplot(
 
 	# Handle -0 stems and associated leaves
 	if any(leaves_of_zero_left_ints .< 0)
-		dict[-0.0] = neg_zero_leaves
+		dict[-0] = neg_zero_leaves
 		# Delete negative values in dictionary with 0.0 as stem
 
 		# add -0.0 dict with values
-		push!(stems, -0.0)
+		push!(stems, -0)
 		sort!(stems)
 	end
 
@@ -98,7 +103,7 @@ function stemplot(
 		stemleaves = dict[stem]
 		# print the stem and divider
 		each_stem_width = length(string(round(Int64,stem)))
-		print(pad, one_space^(max_stem_width+1-each_stem_width), rpad(round(Int64,stem), 1), divider, " ")
+		print(pad, one_space^(max_stem_width+2-each_stem_width), rpad(round(Int64,stem), 1), divider, " ")
 		# if leaves exist print them without dict brackets
 		if !isempty(stemleaves)
 			leaf_string = string(stemleaves)[2:(end-1)]
@@ -115,12 +120,13 @@ function stemplot(
 		key_stem = trunc(Int,stems[key_stem_index])
 		# Print first leaf in stem and remove negative on leaf, if leaf is negative.
 		key_leaf = norm(dict[key_stem][1])
-		key_value = (key_stem+key_leaf)*scale
+		key_value = round(key_stem*scale+key_leaf,1)
 		println("\n",pad, "Key: $(key_stem)$(divider)$(key_leaf) = $(key_value)")
 
 		# Description of where the decimal is
 		ndigits = abs(trunc(Int,log10(scale)))
-		println(pad,"Description: The decimal is $(ndigits) digit(s) to the left of $(divider)")
+		right_or_left = ifelse(trunc(Int,log10(scale)) < 0, "left", "right")
+		println(pad,"Description: The decimal is $(ndigits) digit(s) to the $(right_or_left) of $(divider)")
 
 	end
 end
