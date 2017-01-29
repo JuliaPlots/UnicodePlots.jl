@@ -13,7 +13,7 @@ Usage
 
 function stemplot(
                   v::Vector,
-                  symbol::AbstractString, 
+                  symbol::AbstractString,
                   scale::Int64)
 
 Arguments
@@ -23,12 +23,12 @@ Arguments
 
 -**`divider`**: Symbol for break between stem and leaf. Default = "|"
 
--**`scale`**: Set scale of plot. Default = 10.  
+-**`scale`**: Set scale of plot. Default = 10. Scale is changed via orders of magnitude common values are ".1","1"."10".
 
 Results
 =======
 
-A plot of object type 
+A plot of object type
 
 TODO
 
@@ -62,25 +62,25 @@ See Also
 """
 function stemplot(
                   v::Vector;
-                  divider::AbstractString="|", 
-				  scale=10
+                  divider::AbstractString="|",
+                  scale=10
                   )
     v = convert(Array{AbstractFloat,1}, v)
     left_ints,leaves = divrem(sort(v),scale)
     leaves_of_zero_left_ints = leaves[left_ints .==0]
-    neg_zero_leaves = leaves_of_zero_left_ints[leaves_of_zero_left_ints.<0] 
+    neg_zero_leaves = leaves_of_zero_left_ints[leaves_of_zero_left_ints.<0]
     pos_zero_leaves = leaves_of_zero_left_ints[leaves_of_zero_left_ints.>=0]
     
-    # Delete pos_zero_leaves that are equal to neg_zero_leaves  
+    # Delete pos_zero_leaves that are equal to neg_zero_leaves
     deleteat!(pos_zero_leaves, findin(pos_zero_leaves, neg_zero_leaves))
     
-    # Truncate values, so trailing decimals do not show	
-    leaves = trunc(Int,leaves)
-    neg_zero_leaves = trunc(Int,neg_zero_leaves)  
-    pos_zero_leaves = trunc(Int,pos_zero_leaves)  
+    # Truncate values, so trailing decimals do not show
+    leaves = trunc(Int,leaves*10)
+    neg_zero_leaves = trunc(Int,neg_zero_leaves*10)
+    pos_zero_leaves = trunc(Int,pos_zero_leaves*10)
 
     # Create range of values for stems. This is so the empty sets are not missed
-    stems = collect(minimum(left_ints) : maximum(left_ints)) 
+    stems = collect(minimum(left_ints) : maximum(left_ints))
     
     # Get the leaves associated with a given stem
     getleaves(stem) = leaves[left_ints .== stem]
@@ -128,7 +128,11 @@ function stemplot(
         key_stem = trunc(Int,stems[key_stem_index])
         # Print first leaf in stem and remove negative on leaf, if leaf is negative.
         key_leaf = norm(dict[key_stem][1])
-        key_value = round(key_stem*scale+key_leaf,1)
+        if scale == 1
+            key_value = round(key_stem*scale+key_leaf*.1,1)
+        else
+            key_value = round(key_stem*scale+key_leaf,1)
+        end
         println("\n",pad, "Key: $(key_stem)$(divider)$(key_leaf) = $(key_value)")
 
         # Description of where the decimal is
