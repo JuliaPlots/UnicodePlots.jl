@@ -240,7 +240,6 @@ miny = -1.2796649117521434e218
 maxy = -miny
 println(scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy],title="Don't you crash on me!"))
 
-include("../src/interface/stemplot.jl")
 stemplot(rand(1:100,80))
 stemplot(rand(-100:100,300))
 stemplot(randn(50),scale = 1)
