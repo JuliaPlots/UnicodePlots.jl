@@ -133,11 +133,11 @@ function stemplot(
         else
             key_value = round(key_stem*scale+key_leaf,1)
         end
-        println("\n",pad, "Key: $(key_stem)$(divider)$(key_leaf) = $(key_value)")
+        # println("\n",pad, "Key: $(key_stem)$(divider)$(key_leaf) = $(key_value)")
 
         # Description of where the decimal is
         ndigits = abs(trunc(Int,log10(scale)))
         right_or_left = ifelse(trunc(Int,log10(scale)) < 0, "left", "right")
-        println(pad,"Description: The decimal is $(ndigits) digit(s) to the $(right_or_left) of $(divider)")
+        println("\n",pad,"Description: The decimal is $(ndigits) digit(s) to the $(right_or_left) of $(divider)")
     end
 end
