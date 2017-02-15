@@ -176,7 +176,7 @@ function spy{T<:Canvas}(
                 color)
     else
         pos_idx = vals .> 0
-        neg_idx = !pos_idx
+        neg_idx = (!).(pos_idx)
         pos_cols = cols[pos_idx]
         pos_rows = rows[pos_idx]
         neg_cols = cols[neg_idx]

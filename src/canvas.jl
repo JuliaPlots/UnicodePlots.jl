@@ -1,5 +1,5 @@
-abstract GraphicsArea
-abstract Canvas <: GraphicsArea
+@compat abstract type GraphicsArea end
+@compat abstract type Canvas <: GraphicsArea end
 
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))

@@ -3,7 +3,7 @@ const ascii_signs = [0b100_000_000 0b000_100_000 0b000_000_100;
                      0b001_000_000 0b000_001_000 0b000_000_001]
 
 const ascii_lookup = Dict{UInt16,Char}()
-const ascii_decode = Array(Char, 512)
+const ascii_decode = Vector{Char}(512)
 ascii_lookup[0b101_000_000] = '"'
 ascii_lookup[0b111_111_111] = '@'
 ascii_lookup[0b011_110_011] = '$'
