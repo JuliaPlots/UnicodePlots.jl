@@ -289,7 +289,7 @@ function lineplot{D<:TimeType, R<:Real}(
         X::AbstractVector{D},
         Y::AbstractVector{R};
         args...)
-    d = convert(Vector{Float64}, X)
+    d = convert(Vector{Float64}, Dates.value.(X))
     new_plot = lineplot(d, Y; args...)
     annotate!(new_plot, :bl, string(first(X)))
     annotate!(new_plot, :br, string(last(X)))

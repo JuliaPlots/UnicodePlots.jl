@@ -1,4 +1,4 @@
-abstract LookupCanvas <: Canvas
+@compat abstract type LookupCanvas <: Canvas end
 
 lookup_encode(::LookupCanvas) = error()
 lookup_decode(::LookupCanvas) = error()

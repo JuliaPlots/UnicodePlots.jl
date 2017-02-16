@@ -1,7 +1,8 @@
-isdefined(Base, :__precompile__) && __precompile__()
+__precompile__()
 module UnicodePlots
 
 using Base.Dates
+using Compat
 import StatsBase: Histogram, fit
 
 export

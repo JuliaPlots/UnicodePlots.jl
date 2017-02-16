@@ -1,3 +1,5 @@
+if VERSION < v"0.6-"
+    _type_string = """
 type BarplotGraphics{R<:Real} <: GraphicsArea
     bars::Vector{R}
     color::Symbol
@@ -17,6 +19,31 @@ type BarplotGraphics{R<:Real} <: GraphicsArea
         new(bars, color, width, max_freq, max_len, symb)
     end
 end
+"""
+else
+    _type_string = """
+type BarplotGraphics{R<:Real} <: GraphicsArea
+    bars::Vector{R}
+    color::Symbol
+    width::Int
+    max_freq::R
+    max_len::R
+    symb::AbstractString
+
+    function BarplotGraphics{R}(
+            bars::Vector{R},
+            width::Int,
+            color::Symbol,
+            symb) where R
+        width = max(width, 5)
+        max_freq = maximum(bars)
+        max_len = length(string(max_freq))
+        new(bars, color, width, max_freq, max_len, symb)
+    end
+end
+"""
+end
+include_string(_type_string)
 
 nrows(c::BarplotGraphics) = length(c.bars)
 ncols(c::BarplotGraphics) = c.width
