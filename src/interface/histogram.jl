@@ -80,7 +80,7 @@ See also
 `hist`, `Plot`, `barplot`, `BarplotGraphics`
 """
 function histogram(v, bins::Int; symb = "▇", args...)
-    result = fit(Histogram, v; nbins = bins)
+    result = fit(Histogram, v; nbins = bins, closed=:right)
     edges, counts = result.edges[1], result.weights
     labels = Vector{String}(length(counts))
     @static if VERSION < v"0.6.0-dev.2390"
