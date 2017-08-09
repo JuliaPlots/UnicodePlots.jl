@@ -6,7 +6,7 @@ round_up_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil
 round_down_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)) : -ceil(-x, ceil_neg_log10(m)))
 round_up_subtick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)+1) : -floor(-x, ceil_neg_log10(m)+1))
 round_down_subtick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)+1) : -ceil(-x, ceil_neg_log10(m)+1))
-float_round_log10{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceil_neg_log10(m)+1)::Float64 : -round(-x, ceil_neg_log10(m)+1)::Float64)
+float_round_log10{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceil_neg_log10(m)+1)::F : -round(-x, ceil_neg_log10(m)+1)::F)
 float_round_log10{F<:AbstractFloat}(x::F) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
 function plotting_range{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R)
