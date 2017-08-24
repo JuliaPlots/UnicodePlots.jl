@@ -45,7 +45,8 @@ export
     stairs, stairs!,
     histogram,
     densityplot, densityplot!,
-    spy
+    spy,
+    stemplot
 
 include("common.jl")
 include("canvas.jl")
@@ -64,6 +65,7 @@ include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")
 include("interface/spy.jl")
+include("interface/stemplot.jl")
 include("deprecated.jl")
 
 end
