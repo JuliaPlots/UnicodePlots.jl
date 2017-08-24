@@ -1,10 +1,12 @@
-type Stemplot
+struct Stemplot
     left_ints::Vector{AbstractFloat}
     leaves::Vector{AbstractFloat}
 
     function Stemplot{T<:Real}(v::AbstractVector{T}; scale=10)
         v = convert(Vector{AbstractFloat}, v)
-        left_ints, leaves = divrem(v, scale)
+        divop = divrem.(v, scale)
+        left_ints = [x[1] for x in divop]
+        leaves = [x[2] for x in divop]
         left_ints[(left_ints .== 0) .& (sign.(leaves) .== -1)] = -0.00
         new(left_ints, leaves)
     end
@@ -13,13 +15,13 @@ end
 function getstems(left_ints::Vector{AbstractFloat}; trim::Bool=false)
     # Stem range => sorted hexadecimal
     stemrng= minimum(left_ints):maximum(left_ints)
-    stems = trim ? sort(unique(left_ints)) : sort(unique(vcat(stemrng, left_ints)))
+    stems = trim ? sort(unique(left_ints)) : stemrng
     stems = num2hex.(stems); left_ints = num2hex.(left_ints)
     return stems, left_ints
 end
 
 stemplot_getlabel(s) = s == num2hex(-0.) ? "-0" : string(Int(hex2num(s)))
-stemplot_getleaf(s, l_i, lv) = join(string.( sort(abs.(trunc(Int, lv[l_i .== s]))) ))
+stemplot_getleaf(s, l_i, lv) = join(string.( sort(abs.(trunc.(Int, lv[l_i .== s]))) ))
 
 """
 `stemplot(v; nargs...)`→` Plot`
@@ -171,7 +173,7 @@ function stemplot(plt::Stemplot;
     println("The decimal is $(ndigits) digit(s) to the $(right_or_left) of $(divider)")
 end
 
-# back to back 
+# back to back
 function stemplot(plt1::Stemplot, plt2::Stemplot;
     scale=10,
     divider::AbstractString="|",

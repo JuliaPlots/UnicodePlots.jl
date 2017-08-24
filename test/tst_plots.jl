@@ -240,3 +240,8 @@ print(lineplot(d,v, height = 5))
 miny = -1.2796649117521434e218
 maxy = -miny
 println(scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy],title="Don't you crash on me!"))
+
+
+stemplot(x)
+stemplot(x, y)
+stemplot(x, y, scale=100, trim=true, divider="░", padchar=" ")
