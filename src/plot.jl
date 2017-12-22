@@ -115,13 +115,13 @@ function Plot{T<:GraphicsArea}(
 end
 
 function Plot{C<:Canvas, F<:AbstractFloat}(
-        X::Vector{F}, Y::Vector{F}, ::Type{C} = BrailleCanvas;
+        X::AbstractVector{F}, Y::AbstractVector{F}, ::Type{C} = BrailleCanvas;
         title::AbstractString = "",
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
-        xlim::Vector = [0.,0.],
-        ylim::Vector = [0.,0.],
+        xlim::AbstractVector = [0.,0.],
+        ylim::AbstractVector = [0.,0.],
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,

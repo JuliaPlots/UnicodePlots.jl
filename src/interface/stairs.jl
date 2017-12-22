@@ -96,7 +96,7 @@ See also
 `Plot`, `lineplot`, `scatterplot`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
 function stairs{F<:Real,R<:Real}(
-        X::Vector{F}, Y::Vector{R};
+        X::AbstractVector{F}, Y::AbstractVector{R};
         style::Symbol = :post,
         args...)
     x_vex, y_vex = compute_stair_lines(X, Y, style)

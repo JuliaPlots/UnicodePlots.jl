@@ -168,7 +168,7 @@ end
 
 function lineplot{R<:Real}(
         Y::Function,
-        X::Vector{R};
+        X::AbstractVector{R};
         name::AbstractString = "",
         args...)
     y = convert(Vector{Float64}, [Y(i) for i in X])
