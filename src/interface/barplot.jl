@@ -77,7 +77,7 @@ See also
 `Plot`, `histogram`, `BarplotGraphics`
 """
 function barplot{T<:AbstractString,N<:Real}(
-        text::Vector{T}, heights::Vector{N};
+        text::AbstractVector{T}, heights::AbstractVector{N};
         border = :solid,
         title::AbstractString = "",
         margin::Int = 3,
@@ -111,8 +111,8 @@ See `barplot` for more information.
 """
 function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
         plot::Plot{C},
-        text::Vector{T},
-        heights::Vector{N};
+        text::AbstractVector{T},
+        heights::AbstractVector{N};
         args...)
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     !isempty(text)|| throw(ArgumentError("Can't append empty array to barplot"))
@@ -140,7 +140,7 @@ function barplot{T,N<:Real}(dict::Dict{T,N}; args...)
     barplot(collect(keys(dict)), collect(values(dict)); args...)
 end
 
-function barplot{T,N<:Real}(labels::Vector{T}, heights::Vector{N}; args...)
+function barplot{T,N<:Real}(labels::AbstractVector{T}, heights::AbstractVector{N}; args...)
     labels_str = map(string, labels)
     barplot(labels_str, heights; args...)
 end

@@ -44,7 +44,7 @@ function points!(c::Canvas, plot_x::Real, plot_y::Real; color::Symbol = :white)
     points!(c, plot_x, plot_y, color)
 end
 
-function points!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
+function points!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color)
@@ -52,7 +52,7 @@ function points!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::
     c
 end
 
-function points!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color::Symbol = :white)
+function points!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol = :white)
     points!(c, X, Y, color)
 end
 
@@ -96,7 +96,7 @@ function lines!(c::Canvas, x1::Real, y1::Real, x2::Real, y2::Real; color::Symbol
     lines!(c, x1, y1, x2, y2, color)
 end
 
-function lines!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::Symbol)
+function lines!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:(length(X)-1)
         lines!(c, X[i], Y[i], X[i+1], Y[i+1], color)
@@ -104,6 +104,6 @@ function lines!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}, color::S
     c
 end
 
-function lines!{F<:Real,R<:Real}(c::Canvas, X::Vector{F}, Y::Vector{R}; color::Symbol = :white)
+function lines!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol = :white)
     lines!(c, X, Y, color)
 end

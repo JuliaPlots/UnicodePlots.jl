@@ -88,8 +88,8 @@ See also
 `Plot`, `scatterplot`, `DensityCanvas`
 """
 function densityplot{F<:Real,R<:Real}(
-        x::Vector{F},
-        y::Vector{R};
+        x::AbstractVector{F},
+        y::AbstractVector{R};
         color::Symbol = :white,
         args...)
     X = convert(Vector{Float64}, x)
@@ -100,8 +100,8 @@ end
 
 function densityplot!{T<:Canvas,F<:Real,R<:Real}(
         plot::Plot{T},
-        x::Vector{F},
-        y::Vector{R};
+        x::AbstractVector{F},
+        y::AbstractVector{R};
         color::Symbol = :white,
         args...)
     X = convert(Vector{Float64}, x)

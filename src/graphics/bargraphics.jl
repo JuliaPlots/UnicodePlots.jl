@@ -7,7 +7,7 @@ type BarplotGraphics{R<:Real} <: GraphicsArea
     symb::AbstractString
 
     function (::Type{BarplotGraphics{R}}){R}(
-            bars::Vector{R},
+            bars::AbstractVector{R},
             width::Int,
             color::Symbol,
             symb)
@@ -22,14 +22,14 @@ nrows(c::BarplotGraphics) = length(c.bars)
 ncols(c::BarplotGraphics) = c.width
 
 function BarplotGraphics{R<:Real}(
-        bars::Vector{R},
+        bars::AbstractVector{R},
         width::Int;
         color::Symbol = :blue,
         symb = "▪")
     BarplotGraphics{R}(bars, width, color, symb)
 end
 
-function addrow!{R<:Real}(c::BarplotGraphics{R}, bars::Vector{R})
+function addrow!{R<:Real}(c::BarplotGraphics{R}, bars::AbstractVector{R})
     append!(c.bars, bars)
     c.max_freq = maximum(c.bars)
     c.max_len = length(string(c.max_freq))
