@@ -95,25 +95,25 @@ See also
 
 `Plot`, `lineplot`, `scatterplot`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
-function stairs{F<:Real,R<:Real}(
-        X::AbstractVector{F}, Y::AbstractVector{R};
+function stairs(
+        X::AbstractVector, Y::AbstractVector;
         style::Symbol = :post,
-        args...)
+        kw...)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
-    lineplot(x_vex, y_vex; args...)
+    lineplot(x_vex, y_vex; kw...)
 end
 
-function stairs!{T<:Canvas,F<:Real,R<:Real}(
-        plot::Plot{T}, X::AbstractVector{F}, Y::AbstractVector{R};
+function stairs!(
+        plot::Plot{<:Canvas}, X::AbstractVector, Y::AbstractVector;
         style::Symbol = :post,
-        args...)
+        kw...)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
-    lineplot!(plot, x_vex, y_vex; args...)
+    lineplot!(plot, x_vex, y_vex; kw...)
 end
 
-function compute_stair_lines{F<:Real,R<:Real}(
-        X::AbstractVector{F},
-        Y::AbstractVector{R},
+function compute_stair_lines(
+        X::AbstractVector{<:Number},
+        Y::AbstractVector{<:Number},
         style::Symbol)
     if style == :post
         x_vex = zeros(length(X) * 2 - 1)

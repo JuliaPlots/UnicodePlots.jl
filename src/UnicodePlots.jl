@@ -64,6 +64,5 @@ include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")
 include("interface/spy.jl")
-include("deprecated.jl")
 
 end

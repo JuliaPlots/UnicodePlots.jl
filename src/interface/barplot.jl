@@ -76,8 +76,9 @@ See also
 
 `Plot`, `histogram`, `BarplotGraphics`
 """
-function barplot{T<:AbstractString,N<:Real}(
-        text::AbstractVector{T}, heights::AbstractVector{N};
+function barplot(
+        text::AbstractVector{<:AbstractString},
+        heights::AbstractVector{<:Number};
         border = :solid,
         title::AbstractString = "",
         margin::Int = 3,
@@ -109,11 +110,11 @@ the existing plot to draw on.
 
 See `barplot` for more information.
 """
-function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
-        plot::Plot{C},
-        text::AbstractVector{T},
-        heights::AbstractVector{N};
-        args...)
+function barplot!(
+        plot::Plot{<:BarplotGraphics},
+        text::AbstractVector{<:AbstractString},
+        heights::AbstractVector{<:Number};
+        kw...)
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     !isempty(text)|| throw(ArgumentError("Can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
@@ -124,11 +125,11 @@ function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
     plot
 end
 
-function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
-        plot::Plot{C},
-        text::T,
-        heights::N;
-        args...)
+function barplot!(
+        plot::Plot{<:BarplotGraphics},
+        text::AbstractString,
+        heights::Number;
+        kw...)
     text == "" && throw(ArgumentError("Can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights)
@@ -136,11 +137,11 @@ function barplot!{C<:BarplotGraphics,T<:AbstractString,N<:Real}(
     plot
 end
 
-function barplot{T,N<:Real}(dict::Dict{T,N}; args...)
-    barplot(collect(keys(dict)), collect(values(dict)); args...)
+function barplot(dict::Dict{T,N}; kw...) where {T, N <: Number}
+    barplot(collect(keys(dict)), collect(values(dict)); kw...)
 end
 
-function barplot{T,N<:Real}(labels::AbstractVector{T}, heights::AbstractVector{N}; args...)
+function barplot(labels::AbstractVector{T}, heights::AbstractVector{N}; kw...) where {T, N <: Number}
     labels_str = map(string, labels)
-    barplot(labels_str, heights; args...)
+    barplot(labels_str, heights; kw...)
 end

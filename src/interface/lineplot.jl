@@ -97,28 +97,28 @@ See also
 
 `Plot`, `scatter`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
-function lineplot{F<:Real, R<:Real}(
-        x::AbstractVector{F},
-        y::AbstractVector{R};
+function lineplot(
+        x::AbstractVector{<:Number},
+        y::AbstractVector{<:Number};
         color::Symbol = :auto,
         name::AbstractString = "",
         canvas::Type = BrailleCanvas,
-        args...)
+        kw...)
     X = convert(Vector{Float64},x)
     Y = convert(Vector{Float64},y)
-    new_plot = Plot(X, Y, canvas; args...)
+    new_plot = Plot(X, Y, canvas; kw...)
     color = color == :auto ? next_color!(new_plot) : color
     name == "" || annotate!(new_plot, :r, name, color)
     lines!(new_plot, X, Y, color)
 end
 
-function lineplot!{T<:Canvas, F<:Real, R<:Real}(
-        plot::Plot{T},
-        x::AbstractVector{F},
-        y::AbstractVector{R};
+function lineplot!(
+        plot::Plot{<:Canvas},
+        x::AbstractVector{<:Number},
+        y::AbstractVector{<:Number};
         color::Symbol = :auto,
         name::AbstractString = "",
-        args...)
+        kw...)
     X = convert(Vector{Float64},x)
     Y = convert(Vector{Float64},y)
     color = color == :auto ? next_color!(plot) : color
@@ -126,171 +126,171 @@ function lineplot!{T<:Canvas, F<:Real, R<:Real}(
     lines!(plot, X, Y, color)
 end
 
-function lineplot!{T<:Canvas}(
-        plot::Plot{T},
-        intercept::Real,
-        slope::Real;
-        args...)
+function lineplot!(
+        plot::Plot{<:Canvas},
+        intercept::Number,
+        slope::Number;
+        kw...)
     xmin = origin_x(plot.graphics)
     xmax = origin_x(plot.graphics) + width(plot.graphics)
     ymin = origin_y(plot.graphics)
     ymax = origin_y(plot.graphics) + height(plot.graphics)
-    lineplot!(plot, [xmin, xmax], [intercept + xmin*slope, intercept + xmax*slope]; args...)
+    lineplot!(plot, [xmin, xmax], [intercept + xmin*slope, intercept + xmax*slope]; kw...)
 end
 
-function lineplot!{T<:Canvas}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         Y::Function,
         x::Range;
-        args...)
+        kw...)
     X = collect(x)
-    lineplot!(plot, Y, X; args...)
+    lineplot!(plot, Y, X; kw...)
 end
 
 function lineplot(
         Y::Function,
         x::Range;
-        args...)
+        kw...)
     X = collect(x)
-    lineplot(Y, X; args...)
+    lineplot(Y, X; kw...)
 end
 
-function lineplot!{T<:Canvas, R<:Real}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         Y::Function,
-        X::AbstractVector{R};
+        X::AbstractVector{<:Number};
         name::AbstractString = "",
-        args...)
+        kw...)
     y = convert(Vector{Float64}, [Y(i) for i in X])
     name = name == "" ? string(Y, "(x)") : name
-    lineplot!(plot, X, y; name = name, args...)
+    lineplot!(plot, X, y; name = name, kw...)
 end
 
-function lineplot{R<:Real}(
+function lineplot(
         Y::Function,
-        X::AbstractVector{R};
+        X::AbstractVector{<:Number};
         name::AbstractString = "",
-        args...)
+        kw...)
     y = convert(Vector{Float64}, [Y(i) for i in X])
     name = name == "" ? string(Y, "(x)") : name
-    new_plot = lineplot(X, y; name = name, args...)
+    new_plot = lineplot(X, y; name = name, kw...)
     xlabel!(new_plot, "x")
     ylabel!(new_plot, "f(x)")
 end
 
-function lineplot!{T<:Canvas}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         Y::Function,
-        startx::Real,
-        endx::Real;
-        args...)
+        startx::Number,
+        endx::Number;
+        kw...)
     diff = abs(endx - startx)
     X = collect(startx:(diff/(3*ncols(plot.graphics))):endx)
-    lineplot!(plot, Y, X; args...)
+    lineplot!(plot, Y, X; kw...)
 end
 
-function lineplot(Y::Function; args...)
-    lineplot(Y, -10, 10; args...)
+function lineplot(Y::Function; kw...)
+    lineplot(Y, -10, 10; kw...)
 end
 
-function lineplot!{T<:Canvas}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         Y::Function;
-        args...)
-    lineplot!(plot, Y, origin_x(plot.graphics), origin_x(plot.graphics) + width(plot.graphics); args...)
+        kw...)
+    lineplot!(plot, Y, origin_x(plot.graphics), origin_x(plot.graphics) + width(plot.graphics); kw...)
 end
 
 function lineplot(
         Y::Function,
-        startx::Real,
-        endx::Real;
+        startx::Number,
+        endx::Number;
         width::Int = 40,
-        args...)
+        kw...)
     diff = abs(endx - startx)
     X = collect(startx:(diff/(3*width)):endx)
-    lineplot(Y, X; width = width, args...)
+    lineplot(Y, X; width = width, kw...)
 end
 
-function lineplot(Y::AbstractVector{Function}; args...)
-    lineplot(Y, -10, 10; args...)
+function lineplot(Y::AbstractVector{<:Function}; kw...)
+    lineplot(Y, -10, 10; kw...)
 end
 
 function lineplot(
-        Y::AbstractVector{Function},
-        startx::Real,
-        endx::Real;
-        args...)
+        Y::AbstractVector{<:Function},
+        startx::Number,
+        endx::Number;
+        kw...)
     n = length(Y)
     @assert n > 0
-    new_plot = lineplot(Y[1], startx, endx; args...)
+    new_plot = lineplot(Y[1], startx, endx; kw...)
     for i = 2:n
-        lineplot!(new_plot, Y[i], startx, endx; args...)
+        lineplot!(new_plot, Y[i], startx, endx; kw...)
     end
     new_plot
 end
 
-function lineplot{F<:Real, R<:Real}(
-        X::Range{F},
-        Y::Range{R};
-        args...)
-    lineplot(collect(X), collect(Y); args...)
+function lineplot(
+        X::Range{<:Number},
+        Y::Range{<:Number};
+        kw...)
+    lineplot(collect(X), collect(Y); kw...)
 end
 
-function lineplot{F<:Real}(
+function lineplot(
         X::Range,
-        Y::AbstractVector{F};
-        args...)
-    lineplot(collect(X), Y; args...)
+        Y::AbstractVector{<:Number};
+        kw...)
+    lineplot(collect(X), Y; kw...)
 end
 
-function lineplot{F<:Real}(
-        X::AbstractVector{F},
+function lineplot(
+        X::AbstractVector{<:Number},
         Y::Range;
-        args...)
-    lineplot(X, collect(Y); args...)
+        kw...)
+    lineplot(X, collect(Y); kw...)
 end
 
-function lineplot(X::AbstractVector; args...)
-    lineplot(1:length(X), X; args...)
+function lineplot(X::AbstractVector; kw...)
+    lineplot(1:length(X), X; kw...)
 end
 
-function lineplot!{T<:Canvas}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         X::AbstractVector;
-        args...)
-    lineplot!(plot, 1:length(X), X; args...)
+        kw...)
+    lineplot!(plot, 1:length(X), X; kw...)
 end
 
-function lineplot!{T<:Canvas, F<:Real, R<:Real}(
-        plot::Plot{T},
-        X::Range{F},
-        Y::Range{R};
-        args...)
-    lineplot!(plot, collect(X), collect(Y); args...)
+function lineplot!(
+        plot::Plot{<:Canvas},
+        X::Range{<:Number},
+        Y::Range{<:Number};
+        kw...)
+    lineplot!(plot, collect(X), collect(Y); kw...)
 end
 
-function lineplot!{T<:Canvas, F<:Real}(
-        plot::Plot{T},
+function lineplot!(
+        plot::Plot{<:Canvas},
         X::Range,
-        Y::AbstractVector{F};
-        args...)
-    lineplot!(plot, collect(X), Y; args...)
+        Y::AbstractVector{<:Number};
+        kw...)
+    lineplot!(plot, collect(X), Y; kw...)
 end
 
-function lineplot!{T<:Canvas, F<:Real}(
-        plot::Plot{T},
-        X::AbstractVector{F},
+function lineplot!(
+        plot::Plot{<:Canvas},
+        X::AbstractVector{<:Number},
         Y::Range;
-        args...)
-    lineplot!(plot, X, collect(Y); args...)
+        kw...)
+    lineplot!(plot, X, collect(Y); kw...)
 end
 
-function lineplot{D<:TimeType, R<:Real}(
-        X::AbstractVector{D},
-        Y::AbstractVector{R};
-        args...)
+function lineplot(
+        X::AbstractVector{<:TimeType},
+        Y::AbstractVector{<:Number};
+        kw...)
     d = convert(Vector{Float64}, Dates.value.(X))
-    new_plot = lineplot(d, Y; args...)
+    new_plot = lineplot(d, Y; kw...)
     annotate!(new_plot, :bl, string(first(X)))
     annotate!(new_plot, :br, string(last(X)))
 end

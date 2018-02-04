@@ -28,7 +28,7 @@ This canvas effectively turns every character
 into 4 pixels that can individually be manipulated
 using binary operations.
 """
-type BlockCanvas <: LookupCanvas
+struct BlockCanvas <: LookupCanvas
     grid::Array{UInt8,2}
     colors::Array{UInt8,2}
     pixel_width::Int

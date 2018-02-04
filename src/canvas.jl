@@ -1,5 +1,5 @@
-@compat abstract type GraphicsArea end
-@compat abstract type Canvas <: GraphicsArea end
+abstract type GraphicsArea end
+abstract type Canvas <: GraphicsArea end
 
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
@@ -30,7 +30,7 @@ function pixel!(c::Canvas, pixel_x::Int, pixel_y::Int; color::Symbol = :white)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
-function points!(c::Canvas, plot_x::Real, plot_y::Real, color::Symbol)
+function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Symbol)
     origin_x(c) <= plot_x < origin_x(c) + width(c) || return c
     origin_y(c) <= plot_y < origin_y(c) + height(c) || return c
     plot_offset_x = plot_x - origin_x(c)
@@ -40,11 +40,11 @@ function points!(c::Canvas, plot_x::Real, plot_y::Real, color::Symbol)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, plot_x::Real, plot_y::Real; color::Symbol = :white)
+function points!(c::Canvas, plot_x::Number, plot_y::Number; color::Symbol = :white)
     points!(c, plot_x, plot_y, color)
 end
 
-function points!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}, color::Symbol)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color)
@@ -52,12 +52,12 @@ function points!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVe
     c
 end
 
-function points!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol = :white)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :white)
     points!(c, X, Y, color)
 end
 
 # Implementation of the digital differential analyser (DDA)
-function lines!(c::Canvas, x1::Real, y1::Real, x2::Real, y2::Real, color::Symbol)
+function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::Symbol)
     if (x1 < origin_x(c) && x2 < origin_x(c)) ||
         (x1 > origin_x(c) + width(c) && x2 > origin_x(c) + width(c))
         return c
@@ -92,11 +92,11 @@ function lines!(c::Canvas, x1::Real, y1::Real, x2::Real, y2::Real, color::Symbol
     c
 end
 
-function lines!(c::Canvas, x1::Real, y1::Real, x2::Real, y2::Real; color::Symbol = :white)
+function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::Symbol = :white)
     lines!(c, x1, y1, x2, y2, color)
 end
 
-function lines!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}, color::Symbol)
+function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:(length(X)-1)
         lines!(c, X[i], Y[i], X[i+1], Y[i+1], color)
@@ -104,6 +104,6 @@ function lines!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVec
     c
 end
 
-function lines!{F<:Real,R<:Real}(c::Canvas, X::AbstractVector{F}, Y::AbstractVector{R}; color::Symbol = :white)
+function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :white)
     lines!(c, X, Y, color)
 end

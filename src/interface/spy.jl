@@ -87,7 +87,7 @@ See also
 
 `Plot`, `scatterplot`, `BrailleCanvas`, `BlockCanvas`, `DotCanvas`
 """
-function spy{T<:Canvas}(
+function spy(
         A::AbstractMatrix;
         maxwidth::Int  = 0,
         maxheight::Int = 0,
@@ -99,7 +99,7 @@ function spy{T<:Canvas}(
         color::Symbol = :automatic,
         labels::Bool = true,
         canvas::Type{T} = BrailleCanvas,
-        args...)
+        kw...) where {T <: Canvas}
     rows, cols, vals = findnz(A)
     nrow, ncol = size(A)
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
@@ -166,7 +166,7 @@ function spy{T<:Canvas}(
             height = Float64(nrow) + 1)
     plot = Plot(can;
                 labels = labels, title = title,
-                margin = margin, padding = padding, args...)
+                margin = margin, padding = padding, kw...)
     height = nrows(plot.graphics)
     width = ncols(plot.graphics)
     plot = if color != :automatic

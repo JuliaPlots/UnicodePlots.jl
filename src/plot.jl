@@ -73,7 +73,7 @@ see also
 
 `scatterplot`, `lineplot`, `BarplotGraphics`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
-type Plot{T<:GraphicsArea}
+mutable struct Plot{T<:GraphicsArea}
     graphics::T
     title::String
     xlabel::String
@@ -114,7 +114,7 @@ function Plot{T<:GraphicsArea}(
             decorations, colors_deco, labels, 0)
 end
 
-function Plot{C<:Canvas, F<:AbstractFloat}(
+function Plot(
         X::AbstractVector{F}, Y::AbstractVector{F}, ::Type{C} = BrailleCanvas;
         title::AbstractString = "",
         width::Int = 40,
@@ -125,7 +125,7 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
-        grid::Bool = true)
+        grid::Bool = true) where {C<:Canvas, F<:AbstractFloat}
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -168,7 +168,7 @@ function Plot{C<:Canvas, F<:AbstractFloat}(
     new_plot
 end
 
-function next_color!{T<:GraphicsArea}(plot::Plot{T})
+function next_color!(plot::Plot{<:GraphicsArea})
     cur_color = color_cycle[plot.autocolor + 1]
     plot.autocolor = ((plot.autocolor + 1) % length(color_cycle))
     cur_color
@@ -180,7 +180,7 @@ end
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
 """
-function title{T<:GraphicsArea}(plot::Plot{T})
+function title(plot::Plot)
     plot.title
 end
 
@@ -191,7 +191,7 @@ Sets a new title for the given plot.
 Alternatively, the current title can be
 queried using `title`.
 """
-function title!{T<:GraphicsArea}(plot::Plot{T}, title::AbstractString)
+function title!(plot::Plot, title::AbstractString)
     plot.title = title
     plot
 end
@@ -202,7 +202,7 @@ end
 Returns the current label for the x-axis.
 Alternatively, the x-label can be changed with `xlabel!`
 """
-function xlabel{T<:GraphicsArea}(plot::Plot{T})
+function xlabel(plot::Plot)
     plot.xlabel
 end
 
@@ -213,7 +213,7 @@ Sets a new x-label for the given plot.
 Alternatively, the current label can be
 queried using `xlabel`
 """
-function xlabel!{T<:GraphicsArea}(plot::Plot{T}, xlabel::AbstractString)
+function xlabel!(plot::Plot, xlabel::AbstractString)
     plot.xlabel = xlabel
     plot
 end
@@ -224,7 +224,7 @@ end
 Returns the current label for the y-axis.
 Alternatively, the y-label can be changed with `ylabel!`
 """
-function ylabel{T<:GraphicsArea}(plot::Plot{T})
+function ylabel(plot::Plot)
     plot.ylabel
 end
 
@@ -235,7 +235,7 @@ Sets a new y-label for the given plot.
 Alternatively, the current label can be
 queried using `ylabel`
 """
-function ylabel!{T<:GraphicsArea}(plot::Plot{T}, ylabel::AbstractString)
+function ylabel!(plot::Plot, ylabel::AbstractString)
     plot.ylabel = ylabel
     plot
 end
@@ -257,17 +257,17 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString, color::Symbol)
-    where == :t || where == :b || where == :l || where == :r || where == :tl || where == :tr || where == :bl || where == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
-    if where == :l || where == :r
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol)
+    loc == :t || loc == :b || loc == :l || loc == :r || loc == :tl || loc == :tr || loc == :bl || loc == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
+    if loc == :l || loc == :r
         for row = 1:nrows(plot.graphics)
-            if where == :l
+            if loc == :l
                 if(!haskey(plot.labels_left, row) || plot.labels_left[row] == "")
                     plot.labels_left[row] = value
                     plot.colors_left[row] = color
                     return plot
                 end
-            elseif where == :r
+            elseif loc == :r
                 if(!haskey(plot.labels_right, row) || plot.labels_right[row] == "")
                     plot.labels_right[row] = value
                     plot.colors_right[row] = color
@@ -276,21 +276,21 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::Abstrac
             end
         end
     else
-        plot.decorations[where] = value
-        plot.colors_deco[where] = color
+        plot.decorations[loc] = value
+        plot.colors_deco[loc] = color
         return plot
     end
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, value::AbstractString; color::Symbol=:white)
-    annotate!(plot, where, value, color)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:white)
+    annotate!(plot, loc, value, color)
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString, color::Symbol)
-    if where == :l
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::Symbol)
+    if loc == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = color
-    elseif where == :r
+    elseif loc == :r
         plot.labels_right[row] = value
         plot.colors_right[row] = color
     else
@@ -299,21 +299,21 @@ function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, valu
     plot
 end
 
-function annotate!{T<:GraphicsArea}(plot::Plot{T}, where::Symbol, row::Int, value::AbstractString; color::Symbol=:white)
-    annotate!(plot, where, row, value, color)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:white)
+    annotate!(plot, loc, row, value, color)
 end
 
-function lines!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+function lines!(plot::Plot{<:Canvas}, args...; vars...)
     lines!(plot.graphics, args...; vars...)
     plot
 end
 
-function pixel!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+function pixel!(plot::Plot{<:Canvas}, args...; vars...)
     pixel!(plot.graphics, args...; vars...)
     plot
 end
 
-function points!{T<:Canvas}(plot::Plot{T}, args...; vars...)
+function points!(plot::Plot{<:Canvas}, args...; vars...)
     points!(plot.graphics, args...; vars...)
     plot
 end
