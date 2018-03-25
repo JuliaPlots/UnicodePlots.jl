@@ -1,22 +1,22 @@
-roundable{T<:Number}(num::T) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 
-ceil_neg_log10{F<:AbstractFloat}(x::F) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_neg_log10{F<:AbstractFloat}(x::F) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
-round_up_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)) : -floor(-x, ceil_neg_log10(m)))
-round_down_tick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)) : -ceil(-x, ceil_neg_log10(m)))
-round_up_subtick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)+1) : -floor(-x, ceil_neg_log10(m)+1))
-round_down_subtick{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)+1) : -ceil(-x, ceil_neg_log10(m)+1))
-float_round_log10{F<:AbstractFloat,R<:Real}(x::F,m::R) = x == 0. ? 0.: (x > 0 ? round(x, ceil_neg_log10(m)+1)::F : -round(-x, ceil_neg_log10(m)+1)::F)
-float_round_log10{F<:AbstractFloat}(x::F) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
+ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+round_neg_log10(x) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
+round_up_tick(x,m) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)) : -floor(-x, ceil_neg_log10(m)))
+round_down_tick(x,m) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)) : -ceil(-x, ceil_neg_log10(m)))
+round_up_subtick(x,m) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)+1) : -floor(-x, ceil_neg_log10(m)+1))
+round_down_subtick(x,m) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)+1) : -ceil(-x, ceil_neg_log10(m)+1))
+float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, ceil_neg_log10(m)+1)::F : -round(-x, ceil_neg_log10(m)+1)::F)
+float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
-function plotting_range{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R)
+function plotting_range(xmin, xmax)
     diffX = xmax - xmin
     xmax = round_up_tick(xmax, diffX)
     xmin = round_down_tick(xmin, diffX)
     xmin, xmax
 end
 
-function plotting_range_narrow{F<:AbstractFloat,R<:AbstractFloat}(xmin::F, xmax::R)
+function plotting_range_narrow(xmin, xmax)
     diffX = xmax - xmin
     xmax = round_up_subtick(xmax, diffX)
     xmin = round_down_subtick(xmin, diffX)
@@ -116,7 +116,7 @@ for k in keys(color_encode)
 end
 color_decode[0b111] = :white
 
-@inline function print_color(color::UInt8, io::IO, args...)
+function print_color(color::UInt8, io::IO, args...)
     col = color_decode[color]
     str = string(args...)
     print_with_color(col, io, str)

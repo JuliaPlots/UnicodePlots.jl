@@ -87,23 +87,23 @@ See also
 
 `Plot`, `scatterplot`, `DensityCanvas`
 """
-function densityplot{F<:Real,R<:Real}(
-        x::AbstractVector{F},
-        y::AbstractVector{R};
+function densityplot(
+        x::AbstractVector,
+        y::AbstractVector;
         color::Symbol = :white,
-        args...)
+        kw...)
     X = convert(Vector{Float64}, x)
     Y = convert(Vector{Float64}, y)
-    new_plot = Plot(X, Y, DensityCanvas; grid = false, args...)
+    new_plot = Plot(X, Y, DensityCanvas; grid = false, kw...)
     points!(new_plot, X, Y, color)
 end
 
-function densityplot!{T<:Canvas,F<:Real,R<:Real}(
-        plot::Plot{T},
-        x::AbstractVector{F},
-        y::AbstractVector{R};
+function densityplot!(
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector;
         color::Symbol = :white,
-        args...)
+        kw...)
     X = convert(Vector{Float64}, x)
     Y = convert(Vector{Float64}, y)
     points!(plot, X, Y, color)

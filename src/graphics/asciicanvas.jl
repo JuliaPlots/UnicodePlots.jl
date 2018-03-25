@@ -108,7 +108,7 @@ with `lineplot`.
 For `scatterplot` we suggest to use the `DotCanvas`
 instead.
 """
-type AsciiCanvas <: LookupCanvas
+struct AsciiCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{UInt8,2}
     pixel_width::Int

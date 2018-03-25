@@ -91,25 +91,25 @@ See also
 
 `Plot`, `lineplot`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
 """
-function scatterplot{F<:Real,R<:Real}(
-        x::AbstractVector{F}, y::AbstractVector{R};
+function scatterplot(
+        x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
         color::Symbol = :auto,
         name::AbstractString = "",
         canvas::Type = BrailleCanvas,
-        args...)
+        kw...)
     X = convert(Vector{Float64}, collect(x))
     Y = convert(Vector{Float64}, collect(y))
-    new_plot = Plot(X, Y, canvas; args...)
+    new_plot = Plot(X, Y, canvas; kw...)
     color = (color == :auto) ? next_color!(new_plot) : color
     name == "" || annotate!(new_plot, :r, name, color)
     points!(new_plot, X, Y, color)
 end
 
-function scatterplot!{T<:Canvas,F<:Real,R<:Real}(
-        plot::Plot{T}, x::AbstractVector{F}, y::AbstractVector{R};
+function scatterplot!(
+        plot::Plot{<:Canvas}, x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
         color::Symbol = :auto,
         name::AbstractString = "",
-        args...)
+        kw...)
     X = convert(Vector{Float64}, collect(x))
     Y = convert(Vector{Float64}, collect(y))
     color = (color == :auto) ? next_color!(plot) : color
@@ -117,11 +117,11 @@ function scatterplot!{T<:Canvas,F<:Real,R<:Real}(
     points!(plot, X, Y, color)
 end
 
-function scatterplot(X::AbstractVector; args...)
-    scatterplot(1:length(X), X; args...)
+function scatterplot(X::AbstractVector; kw...)
+    scatterplot(1:length(X), X; kw...)
 end
 
-function scatterplot!{T<:Canvas}(plot::Plot{T}, X::AbstractVector; args...)
-    scatterplot!(plot, 1:length(X), X; args...)
+function scatterplot!(plot::Plot{<:Canvas}, X::AbstractVector; kw...)
+    scatterplot!(plot, 1:length(X), X; kw...)
 end
 

@@ -9,7 +9,7 @@ the Braille symbols to represent individual pixel.
 This effectively turns every character into 8 pixels
 that can individually be manipulated using binary operations.
 """
-type BrailleCanvas <: Canvas
+struct BrailleCanvas <: Canvas
     grid::Array{Char,2}
     colors::Array{UInt8,2}
     pixel_width::Int
@@ -33,16 +33,16 @@ end
 @inline y_pixel_per_char(::Type{BrailleCanvas}) = 4
 
 function BrailleCanvas(char_width::Int, char_height::Int;
-                       origin_x::Real = 0.,
-                       origin_y::Real = 0.,
-                       width::Real  = 1.,
-                       height::Real = 1.)
+                       origin_x::Number = 0.,
+                       origin_y::Number = 0.,
+                       width::Number  = 1.,
+                       height::Number = 1.)
+    width > 0 || throw(ArgumentError("width has to be positive"))
+    height > 0 || throw(ArgumentError("height has to be positive"))
     char_width = max(char_width, 5)
     char_height = max(char_height, 2)
     pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
-    width > 0 || throw(ArgumentError("Width has to be positive"))
-    height > 0 || throw(ArgumentError("Height has to be positive"))
     grid = fill(Char(0x2800), char_width, char_height)
     colors = fill(0x00, char_width, char_height)
     BrailleCanvas(grid, colors,
@@ -52,7 +52,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
 end
 
 function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
-    0 <= pixel_x <= c.pixel_width || return c
+    0 <= pixel_x <= c.pixel_width  || return c
     0 <= pixel_y <= c.pixel_height || return c
     pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
     pixel_y = pixel_y < c.pixel_height ? pixel_y : pixel_y - 1
@@ -71,8 +71,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
 end
 
 function printrow(io::IO, c::BrailleCanvas, row::Int)
-    nunrows = nrows(c)
-    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
         print_color(c.colors[x,y], io, c.grid[x,y])

@@ -9,7 +9,7 @@ drawn in that character. Together with a variable
 that keeps track of the maximum frequency,
 the canvas can thus draw the density of datapoints.
 """
-type DensityCanvas <: Canvas
+mutable struct DensityCanvas <: Canvas
     grid::Array{UInt,2}
     colors::Array{UInt8,2}
     pixel_width::Int
@@ -34,16 +34,16 @@ end
 @inline y_pixel_per_char(::Type{DensityCanvas}) = 2
 
 function DensityCanvas(char_width::Int, char_height::Int;
-                       origin_x::Real = 0.,
-                       origin_y::Real = 0.,
-                       width::Real = 1.,
-                       height::Real = 1.)
+                       origin_x::Number = 0.,
+                       origin_y::Number = 0.,
+                       width::Number = 1.,
+                       height::Number = 1.)
+    width > 0 || throw(ArgumentError("width has to be positive"))
+    height > 0 || throw(ArgumentError("height has to be positive"))
     char_width = max(char_width, 5)
     char_height = max(char_height, 5)
     pixel_width = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
-    width > 0 || throw(ArgumentError("width has to be positive"))
-    height > 0 || throw(ArgumentError("height has to be positive"))
     grid = fill(0, char_width, char_height)
     colors = fill(0x00, char_width, char_height)
     DensityCanvas(grid, colors,
@@ -68,8 +68,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
 end
 
 function printrow(io::IO, c::DensityCanvas, row::Int)
-    nunrows = nrows(c)
-    0 < row <= nunrows || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     den_sign_count = length(den_signs)
     val_scale = (den_sign_count - 1) / c.max_density
