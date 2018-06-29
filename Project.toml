@@ -1,6 +1,0 @@
-name = "UnicodePlots"
-uuid = "b8865327-cd53-5732-bb35-84acbb429228"
-[deps]
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
