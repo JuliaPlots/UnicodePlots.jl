@@ -1,6 +1,6 @@
 using UnicodePlots
 using Test
-import SparseArrays: sprand
+import Compat.SparseArrays: sprand
 import Dates: Date, Day
 
 # write your own tests here

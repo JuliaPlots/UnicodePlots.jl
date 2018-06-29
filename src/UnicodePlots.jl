@@ -3,7 +3,8 @@ module UnicodePlots
 
 using Dates
 import StatsBase: Histogram, fit
-import SparseArrays: findnz
+import Compat
+import Compat.SparseArrays: findnz
 
 export
 
