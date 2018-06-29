@@ -1,6 +1,6 @@
 const dot_signs = [0b10 0b01]
 
-const dot_decode = Array{Char}(5)
+const dot_decode = Array{Char}(undef, 5)
 dot_decode[0b00 + 1] = ' '
 dot_decode[0b01 + 1] = '.'
 dot_decode[0b10 + 1] = '\''

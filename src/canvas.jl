@@ -76,7 +76,7 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     py2 = pixel_height(c) - toff / height(c) * pixel_height(c)
     dx = px2 - px1
     dy = py2 - py1
-    nsteps = abs(dx) > abs(dy) ? abs(dx): abs(dy)
+    nsteps = abs(dx) > abs(dy) ? abs(dx) : abs(dy)
     inc_x = dx / nsteps
     inc_y = dy / nsteps
     cur_x = px1

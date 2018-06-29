@@ -91,7 +91,7 @@ mutable struct Plot{T<:GraphicsArea}
     autocolor::Int
 end
 
-function Plot{T<:GraphicsArea}(
+function Plot(
         graphics::T;
         title::AbstractString = "",
         xlabel::AbstractString = "",
@@ -99,7 +99,7 @@ function Plot{T<:GraphicsArea}(
         border::Symbol = :solid,
         margin::Int = 3,
         padding::Int = 1,
-        labels = true)
+        labels = true) where T<:GraphicsArea
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
@@ -155,12 +155,12 @@ function Plot(
     annotate!(new_plot, :br, max_x_str)
     if grid
         if min_y < 0 < max_y
-            for i in linspace(min_x, max_x, width * x_pixel_per_char(typeof(canvas)))
+            for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
                 points!(new_plot, i, 0., :white)
             end
         end
         if min_x < 0 < max_x
-            for i in linspace(min_y, max_y, height * y_pixel_per_char(typeof(canvas)))
+            for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
                 points!(new_plot, 0., i, :white)
             end
         end
@@ -321,7 +321,7 @@ end
 function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
-        offset = offset > 0 ? offset: 0
+        offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
         print_with_color(:white, io, padding, tpad, title, "\n")
     end
