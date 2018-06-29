@@ -1,7 +1,7 @@
 __precompile__()
 module UnicodePlots
 
-using Base.Dates
+using Dates
 using Compat
 import StatsBase: Histogram, fit
 

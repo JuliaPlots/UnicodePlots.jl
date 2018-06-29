@@ -125,7 +125,7 @@ lines!(canvas, 0., 0., 1., 1., color = :blue)
 lines!(canvas, .3, .7, 1., 0., :red)
 lines!(canvas, 0., 2., .5, 0., :yellow)
 print(canvas)
-show(STDOUT, canvas)
+show(stdout, canvas)
 myPlot = Plot(canvas, title="testtitle")
 annotate!(myPlot, :l, ":l auto", :red)
 for i in 1:10
@@ -162,7 +162,7 @@ ylab = "ylabel!(plot, text)"
 ylabel!(myPlot, ylab)
 @test ylabel(myPlot) == ylab
 
-show(STDOUT, myPlot)
+show(stdout, myPlot)
 
 x = [1,2, 4, 7, 8]
 y = [1,3, 4, 2, 7]
@@ -234,7 +234,7 @@ x = rand(100) * 1000; y = rand(100) * 1000
 print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum(y)]))
 
 d = collect(Date(2000,1,1):Date(2000,1,31))
-v = collect(linspace(20, 200, 31))
+v = collect(range(20, stop=200, length=31))
 print(lineplot(d,v, height = 5))
 
 miny = -1.2796649117521434e218
