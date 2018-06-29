@@ -1,3 +1,4 @@
 julia 0.7.0-alpha
 StatsBase 0.23.0
 Dates
+Compat
