@@ -82,8 +82,8 @@ See also
 function histogram(v, bins::Int; symb = "▇", args...)
     result = fit(Histogram, v; nbins = bins, closed=:right)
     edges, counts = result.edges[1], result.weights
-    labels = Vector{String}(length(counts))
-    binwidth = edges.step.hi
+    labels = Vector{String}(undef, length(counts))
+    binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
     @inbounds for i in 1:length(counts)
         val = float_round_log10(edges[i], binwidth)
         labels[i] = string("(", val, ",", float_round_log10(val+binwidth, binwidth), "]")

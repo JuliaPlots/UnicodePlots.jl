@@ -2,8 +2,8 @@ __precompile__()
 module UnicodePlots
 
 using Dates
-using Compat
 import StatsBase: Histogram, fit
+import SparseArrays: findnz
 
 export
 

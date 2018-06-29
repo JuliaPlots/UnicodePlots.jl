@@ -50,8 +50,8 @@ function printrow(io::IO, c::BarplotGraphics, row::Int)
     bar_len = c.max_freq > 0 ? round(Int, bar/c.max_freq * max_bar_width, RoundNearestTiesUp) : 0
     bar_str = c.max_freq > 0 ? repeat(c.symb, bar_len) : ""
     bar_lbl = string(bar)
-    print_with_color(c.color, io, bar_str)
-    print_with_color(:white, io, " ", bar_lbl)
+    printstyled(io, bar_str; color = c.color)
+    printstyled(io, " ", bar_lbl; color = :white)
     pan_len = max(max_bar_width + 1 + c.max_len - bar_len - length(bar_lbl), 0)
     pad = repeat(" ", round(Int, pan_len))
     print(io, pad)

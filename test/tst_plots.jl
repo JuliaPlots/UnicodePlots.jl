@@ -72,9 +72,9 @@ print(myplot)
 myplot = scatterplot(x, y)
 scatterplot!(myplot, x, y)
 print(myplot)
-print(scatterplot(x*.001+1.1, y))
-print(lineplot(x, y*20+1000))
-print(lineplot(x+1000, -y))
+print(scatterplot(x*.001 .+ 1.1, y))
+print(lineplot(x, y*20 .+ 1000))
+print(lineplot(x .+ 1000, -y))
 
 myplot = lineplot(collect(1:10))
 lineplot!(myplot, collect(1:10))
@@ -170,7 +170,7 @@ myPlot = stairs(x, y, style=:pre)
 print(myPlot)
 myPlot = stairs(x, y)
 print(myPlot)
-stairs!(myPlot, x- .2, y + 1.5)
+stairs!(myPlot, x .- .2, y .+ 1.5)
 print(myPlot)
 
 @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1., 2.])
@@ -198,7 +198,7 @@ print(histogram(randn(1000), bins=10, title="Histogram"))
 print(histogram(rand(1000), bins=5, title="Histogram"))
 print(histogram(rand(1000), title="Histogram"))
 print(histogram(rand(1000)*0.001, title="Histogram"))
-print(histogram(rand(800) * 10000 - 115000, title="Histogram"))
+print(histogram(rand(800) * 10000 .- 115000, title="Histogram"))
 print(histogram([0.1f0, 0.1f0, 0f0]))
 
 print(spy(sprand(10,10,.15)))
@@ -209,10 +209,10 @@ print(spy(sprand(2000,200,.01), color=:green))
 print(spy(sprand(200,2000,.01), color=:green))
 print(spy(sprand(1000,10,.01), color=:green))
 print(spy(sprand(10,1000,.01), color=:green))
-print(spy(full(sprand(10,100,.15))))
+print(spy(Matrix(sprand(10,100,.15))))
 
 x1, y1 = rand(500)*10, rand(500)*10
-x2, y2 = rand(1000)*5+1, rand(1000)*5+1
+x2, y2 = rand(1000)*5 .+ 1, rand(1000)*5 .+ 1
 canvas = BrailleCanvas(40, 10,
                        origin_x = 0., origin_y = 0.,
                        width = 10., height = 10.)
@@ -224,7 +224,7 @@ myPlot = densityplot(x1,y1, color = :red)
 points!(myPlot, x2, y2, :blue)
 show(myPlot)
 myPlot = densityplot(randn(1000), randn(1000), color = :blue)
-densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
+densityplot!(myPlot, randn(1000) .+ 2, randn(1000) .+ 2, color = :red)
 print(myPlot)
 
 x = rand(100); y = rand(100)
@@ -233,7 +233,7 @@ print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum
 x = rand(100) * 1000; y = rand(100) * 1000
 print(scatterplot(x, y, xlim=[minimum(x), maximum(x)], ylim=[minimum(y), maximum(y)]))
 
-d = collect(Date(2000,1,1):Date(2000,1,31))
+d = collect(Date(2000,1,1):Day(1):Date(2000,1,31))
 v = collect(range(20, stop=200, length=31))
 print(lineplot(d,v, height = 5))
 

@@ -119,5 +119,5 @@ color_decode[0b111] = :white
 function print_color(color::UInt8, io::IO, args...)
     col = color_decode[color]
     str = string(args...)
-    print_with_color(col, io, str)
+    printstyled(io, str; color = col)
 end
