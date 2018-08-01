@@ -1,3 +1,4 @@
+using SparseArrays
 
 myDict=Dict{AbstractString, Int}()
 myDict["Hi"] = 37

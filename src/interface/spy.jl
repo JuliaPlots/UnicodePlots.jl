@@ -100,7 +100,7 @@ function spy(
         labels::Bool = true,
         canvas::Type{T} = BrailleCanvas,
         kw...) where {T <: Canvas}
-    rows, cols, vals = findnz(A)
+    rows, cols, vals = _findnz(A)
     nrow, ncol = size(A)
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
     min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
@@ -199,3 +199,10 @@ function spy(
     xlabel!(plot, string("nz = ", length(vals)))
     return plot
 end
+
+function _findnz(A::AbstractMatrix)
+    I = findall(!iszero, A)
+    (getindex.(I, 1), getindex.(I, 2), A[I])
+end
+
+_findnz(A::AbstractSparseMatrix) = findnz(A)
