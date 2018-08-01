@@ -141,7 +141,7 @@ end
 function lineplot!(
         plot::Plot{<:Canvas},
         Y::Function,
-        x::Range;
+        x::AbstractRange;
         kw...)
     X = collect(x)
     lineplot!(plot, Y, X; kw...)
@@ -149,7 +149,7 @@ end
 
 function lineplot(
         Y::Function,
-        x::Range;
+        x::AbstractRange;
         kw...)
     X = collect(x)
     lineplot(Y, X; kw...)
@@ -230,14 +230,14 @@ function lineplot(
 end
 
 function lineplot(
-        X::Range{<:Number},
-        Y::Range{<:Number};
+        X::AbstractRange{<:Number},
+        Y::AbstractRange{<:Number};
         kw...)
     lineplot(collect(X), collect(Y); kw...)
 end
 
 function lineplot(
-        X::Range,
+        X::AbstractRange,
         Y::AbstractVector{<:Number};
         kw...)
     lineplot(collect(X), Y; kw...)
@@ -245,7 +245,7 @@ end
 
 function lineplot(
         X::AbstractVector{<:Number},
-        Y::Range;
+        Y::AbstractRange;
         kw...)
     lineplot(X, collect(Y); kw...)
 end
@@ -263,15 +263,15 @@ end
 
 function lineplot!(
         plot::Plot{<:Canvas},
-        X::Range{<:Number},
-        Y::Range{<:Number};
+        X::AbstractRange{<:Number},
+        Y::AbstractRange{<:Number};
         kw...)
     lineplot!(plot, collect(X), collect(Y); kw...)
 end
 
 function lineplot!(
         plot::Plot{<:Canvas},
-        X::Range,
+        X::AbstractRange,
         Y::AbstractVector{<:Number};
         kw...)
     lineplot!(plot, collect(X), Y; kw...)
@@ -280,7 +280,7 @@ end
 function lineplot!(
         plot::Plot{<:Canvas},
         X::AbstractVector{<:Number},
-        Y::Range;
+        Y::AbstractRange;
         kw...)
     lineplot!(plot, X, collect(Y); kw...)
 end

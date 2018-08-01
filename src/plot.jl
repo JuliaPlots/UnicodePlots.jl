@@ -91,7 +91,7 @@ mutable struct Plot{T<:GraphicsArea}
     autocolor::Int
 end
 
-function Plot{T<:GraphicsArea}(
+function Plot(
         graphics::T;
         title::AbstractString = "",
         xlabel::AbstractString = "",
@@ -99,7 +99,7 @@ function Plot{T<:GraphicsArea}(
         border::Symbol = :solid,
         margin::Int = 3,
         padding::Int = 1,
-        labels = true)
+        labels = true) where T<:GraphicsArea
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
@@ -155,12 +155,12 @@ function Plot(
     annotate!(new_plot, :br, max_x_str)
     if grid
         if min_y < 0 < max_y
-            for i in linspace(min_x, max_x, width * x_pixel_per_char(typeof(canvas)))
+            for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
                 points!(new_plot, i, 0., :white)
             end
         end
         if min_x < 0 < max_x
-            for i in linspace(min_y, max_y, height * y_pixel_per_char(typeof(canvas)))
+            for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
                 points!(new_plot, 0., i, :white)
             end
         end
@@ -321,20 +321,20 @@ end
 function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
-        offset = offset > 0 ? offset: 0
+        offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
-        print_with_color(:white, io, padding, tpad, title, "\n")
+        printstyled(io, padding, tpad, title, "\n"; color = :white)
     end
 end
 
 function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
     b = bordermap[border]
-    border == :none || print_with_color(:white, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+    border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = :white)
 end
 
 function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
     b = bordermap[border]
-    border == :none || print_with_color(:white, io, padding, b[:bl], repeat(b[:b], length), b[:br])
+    border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = :white)
 end
 
 function Base.show(io::IO, p::Plot)
@@ -371,13 +371,13 @@ function Base.show(io::IO, p::Plot)
             topleft_len  = length(topleft_str)
             topmid_len   = length(topmid_str)
             topright_len = length(topright_str)
-            print_with_color(topleft_col, io, border_padding, topleft_str)
+            printstyled(io, border_padding, topleft_str; color = topleft_col)
             cnt = round(Int, border_length / 2 - topmid_len / 2 - topleft_len, RoundNearestTiesUp)
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_with_color(topmid_col, io, pad, topmid_str)
+            printstyled(io, pad, topmid_str; color = topmid_col)
             cnt = border_length - topright_len - topleft_len - topmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_with_color(topright_col, io, pad, topright_str, "\n")
+            printstyled(io, pad, topright_str, "\n"; color = topright_col)
         end
     end
     print_border_top(io, border_padding, border_length, p.border)
@@ -400,24 +400,24 @@ function Base.show(io::IO, p::Plot)
         if p.show_labels
             if row == ylabRow
                 # print ylabel
-                print_with_color(:white, io, p.ylabel)
+                printstyled(io, p.ylabel; color = :white)
                 print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
                 print(io, repeat(" ", max_len_l - left_len))
             end
             # print the left annotation
-            print_with_color(left_col, io, left_str)
+            printstyled(io, left_str; color = left_col)
         end
         # print left border
-        print_with_color(:white, io, plot_padding, b[:l])
+        printstyled(io, plot_padding, b[:l]; color = :white)
         # print canvas row
         printrow(io, c, row)
         #print right label and padding
-        print_with_color(:white, io, b[:r])
+        printstyled(io, b[:r]; color = :white)
         if p.show_labels
             print(io, plot_padding)
-            print_with_color(right_col, io, right_str)
+            printstyled(io, right_str; color = right_col)
             print(io, repeat(" ", max_len_r - right_len))
         end
         print(io, "\n")
@@ -437,13 +437,13 @@ function Base.show(io::IO, p::Plot)
             botleft_len  = length(botleft_str)
             botmid_len   = length(botmid_str)
             botright_len = length(botright_str)
-            print_with_color(botleft_col, io, border_padding, botleft_str)
+            printstyled(io, border_padding, botleft_str; color = botleft_col)
             cnt = round(Int, border_length / 2 - botmid_len / 2 - botleft_len, RoundNearestTiesUp)
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_with_color(botmid_col, io, pad, botmid_str)
+            printstyled(io, pad, botmid_str; color = botmid_col)
             cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_with_color(botright_col, io, pad, botright_str, "\n")
+            printstyled(io, pad, botright_str, "\n"; color = botright_col)
         end
         # abuse the print_title function to print the xlabel. maybe refactor this
         print_title(io, border_padding, p.xlabel, p_width = border_length)

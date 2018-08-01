@@ -172,7 +172,7 @@ function spy(
     plot = if color != :automatic
         points!(plot,
                 convert(Vector{Float64}, cols),
-                nrow + 1 - convert(Vector{Float64}, rows),
+                nrow + 1 .- convert(Vector{Float64}, rows),
                 color)
     else
         pos_idx = vals .> 0
@@ -183,11 +183,11 @@ function spy(
         neg_rows = rows[neg_idx]
         points!(plot,
                 convert(Vector{Float64}, pos_cols),
-                nrow + 1 - convert(Vector{Float64}, pos_rows),
+                nrow + 1 .- convert(Vector{Float64}, pos_rows),
                 :red)
         points!(plot,
                 convert(Vector{AbstractFloat}, neg_cols),
-                nrow + 1 - convert(Vector{Float64}, neg_rows),
+                nrow + 1 .- convert(Vector{Float64}, neg_rows),
                 :blue)
         annotate!(plot, :r, 1, "> 0", :red)
         annotate!(plot, :r, 2, "< 0", :blue)

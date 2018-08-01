@@ -2,11 +2,11 @@ roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 
 ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
 round_neg_log10(x) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
-round_up_tick(x,m) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)) : -floor(-x, ceil_neg_log10(m)))
-round_down_tick(x,m) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)) : -ceil(-x, ceil_neg_log10(m)))
-round_up_subtick(x,m) = x == 0. ? 0.: (x > 0 ? ceil(x, ceil_neg_log10(m)+1) : -floor(-x, ceil_neg_log10(m)+1))
-round_down_subtick(x,m) = x == 0. ? 0.: (x > 0 ? floor(x, ceil_neg_log10(m)+1) : -ceil(-x, ceil_neg_log10(m)+1))
-float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, ceil_neg_log10(m)+1)::F : -round(-x, ceil_neg_log10(m)+1)::F)
+round_up_tick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
+round_down_tick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
+round_up_subtick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
+round_down_subtick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
+float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
 float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
 function plotting_range(xmin, xmax)
@@ -119,5 +119,5 @@ color_decode[0b111] = :white
 function print_color(color::UInt8, io::IO, args...)
     col = color_decode[color]
     str = string(args...)
-    print_with_color(col, io, str)
+    printstyled(io, str; color = col)
 end
