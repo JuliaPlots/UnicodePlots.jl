@@ -86,13 +86,14 @@ function barplot(
         color::Symbol = :blue,
         width::Int = 40,
         labels::Bool = true,
-        symb = "▪")
+        symb = "▪",
+        transform::Function=identity)
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
     width = max(width, 5)
 
-    area = BarplotGraphics(heights, width, color = color, symb = symb)
+    area = barplotgraphics(heights, width, transform=transform, color=color, symb=symb)
     new_plot = Plot(area, title = title, margin = margin,
                    padding = padding, border = border, labels = labels)
     for i in 1:length(text)

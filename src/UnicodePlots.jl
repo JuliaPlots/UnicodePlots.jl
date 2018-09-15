@@ -13,7 +13,10 @@ export
             BlockCanvas,
             AsciiCanvas,
             DotCanvas,
-        BarplotGraphics,
+        BarplotGraphicsArea,
+            BarplotGraphics,
+            BarplotTransform,
+            barplotgraphics,
 
     pixel_width,
     pixel_height,
