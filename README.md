@@ -134,7 +134,7 @@ spy(sprandn(50, 120, .05))
 
 ```Julia
 myPlot = densityplot(randn(1000), randn(1000), color = :blue)
-densityplot!(myPlot, randn(1000) + 2, randn(1000) + 2, color = :red)
+densityplot!(myPlot, randn(1000) .+ 2, randn(1000) .+ 2, color = :red)
 ```
 ![Density Screenshot](doc/img/density.png)
 
