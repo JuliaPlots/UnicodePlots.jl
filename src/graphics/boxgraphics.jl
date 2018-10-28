@@ -41,8 +41,19 @@ function BoxplotGraphics(
         width::Int;
         color::Symbol = :blue,
         left::R,
-        right::R) where {R <: Number}
+        right::R,
+        labels::AbstractVector{<:AbstractString} = []) where {R <: Number}
     BoxplotGraphics{R}(data, width, color, left, right)
+end
+
+function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R <: Number}
+    append!(c.data, [FiveNumberSummary(
+        min(data...),
+        percentile(data, 25),
+        percentile(data, 50),
+        percentile(data, 75),
+        max(data...)
+    )])
 end
 
 function printrow(io::IO, c::BoxplotGraphics, row::Int)
@@ -51,7 +62,7 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
 
     transform = value -> Int(round((value - c.left)/(c.right - c.left) * c.width))
 
-    seriesRow = Int(row-1 % 3) + 1
+    seriesRow = Int((row-1) % 3) + 1
 
     minChar = ['│', '├' , '│'][seriesRow]
     lineChar = [' ', '─' , ' '][seriesRow]

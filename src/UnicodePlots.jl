@@ -46,7 +46,7 @@ export
     histogram,
     densityplot, densityplot!,
     spy,
-    boxplot
+    boxplot, boxplot!
 
 include("common.jl")
 include("canvas.jl")
