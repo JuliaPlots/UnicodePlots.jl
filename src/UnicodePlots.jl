@@ -14,6 +14,7 @@ export
             AsciiCanvas,
             DotCanvas,
         BarplotGraphics,
+        BoxplotGraphics,
 
     pixel_width,
     pixel_height,
@@ -44,7 +45,8 @@ export
     stairs, stairs!,
     histogram,
     densityplot, densityplot!,
-    spy
+    spy,
+    boxplot
 
 include("common.jl")
 include("canvas.jl")
@@ -55,6 +57,7 @@ include("graphics/blockcanvas.jl")
 include("graphics/asciicanvas.jl")
 include("graphics/dotcanvas.jl")
 include("graphics/bargraphics.jl")
+include("graphics/boxgraphics.jl")
 include("plot.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
@@ -63,5 +66,6 @@ include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")
 include("interface/spy.jl")
+include("interface/boxplot.jl")
 
 end
