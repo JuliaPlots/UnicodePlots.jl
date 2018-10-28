@@ -17,7 +17,7 @@ and the keys, which have to be strings, will be used as the labels.
 Usage
 ======
 
-    boxplot(data; labels = ["" for _ in 1:size(data, 1)], border = :solid, title = "",
+    boxplot(data; labels = [" " for _ in 1:size(data, 1)], border = :solid, title = "",
             margin = 3, padding = 1, color = :blue, width = 40,
             left=minimum(map(minimum, data)) - 1, right=maximum(map(maximum, data)) + 1)
 
@@ -84,7 +84,7 @@ See also
 """
 function boxplot(
         data::AbstractVector;
-        labels::AbstractVector{<:AbstractString} = ["" for _ in 1:size(data, 1)],
+        labels::AbstractVector{<:AbstractString} = [" " for _ in 1:size(data, 1)],
         border = :solid,
         title::AbstractString = "",
         margin::Int = 3,
