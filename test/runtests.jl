@@ -1,7 +1,8 @@
-using UnicodePlots
-using Test
+using UnicodePlots, ReferenceTests, Test
 using SparseArrays: sprand
+using Random: seed!
 import Dates: Date, Day
+using ReferenceTests: BeforeAfterFull
 
-# write your own tests here
-include("tst_plots.jl")
+include("tst_canvas.jl")
+#include("old_tests.jl")
