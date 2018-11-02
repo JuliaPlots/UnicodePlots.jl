@@ -24,11 +24,11 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
         width = max(width, 10)
         new{R}(
             [FiveNumberSummary(
-                min(data...),
+                minimum(data),
                 percentile(data, 25),
                 percentile(data, 50),
                 percentile(data, 75),
-                max(data...)
+                maximum(data)
             )], color, width, left, right)
     end
 end
@@ -48,11 +48,11 @@ end
 
 function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R <: Number}
     append!(c.data, [FiveNumberSummary(
-        min(data...),
+        minimum(data),
         percentile(data, 25),
         percentile(data, 50),
         percentile(data, 75),
-        max(data...)
+        maximum(data)
     )])
 end
 

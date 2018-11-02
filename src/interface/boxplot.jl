@@ -27,16 +27,16 @@ Arguments
 ==========
 
 - **`data`** : The data the box plot is based on. A vector of vectors, with each
-inner vector representing a data series. Choose a vector of vectors over a matrix
-to allow series of different lengths.
+  inner vector representing a data series. Choose a vector of vectors over a matrix
+  to allow series of different lengths.
 
 - **`labels`** : A list of labels for the data series. Must be the same length as the number of series.
 
 - **`dictionary`** : A dictonary in which the keys will be used as `labels`
-and the values will be utilized as `data`.
+  and the values will be utilized as `data`.
 
 - **`border`** : The style of the bounding box of the plot.
-Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+  Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
 - **`title`** : Text to display on the top of the plot.
 
@@ -45,8 +45,8 @@ Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
 - **`color`** : Colour of the drawing. Can be any of `:black`, `:blue`, `:cyan`,
-`:green`, `:magenta`, `:red`, `:yellow`, `:white`, or a light version of the above (`:light_colour`).
-By default no colouring is applied.
+  `:green`, `:magenta`, `:red`, `:yellow`, `:white`, or a light version of the above (`:light_colour`).
+  By default no colouring is applied.
 
 - **`width`** : Number of characters per row that should be used for plotting.
 
@@ -115,10 +115,9 @@ function boxplot(
     annotate!(new_plot, :b, string((left + right) / 2))
     annotate!(new_plot, :br, string(right))
 
-    for label in labels
-        annotate!(new_plot, :l, "   ")
-        annotate!(new_plot, :l, label)
-        annotate!(new_plot, :l, "   ")
+    for (i, label) in enumerate(labels)
+        # Find end of last 3-line region, then add 2 for centre of current
+        annotate!(new_plot, :l, (i-1)*3+2, label)
     end
 
     new_plot
@@ -148,9 +147,8 @@ function boxplot!(
 
     addseries!(plot.graphics, data)
 
-    annotate!(plot, :l, "   ")
-    annotate!(plot, :l, label)
-    annotate!(plot, :l, "   ")
+    # Find end of last 3-line region, then add 2 for centre of current
+    annotate!(plot, :l, (length(plot.graphics.data)-1)*3+2, label)
 
     annotate!(plot, :bl, string(plot.graphics.left))
     annotate!(plot, :b, string((plot.graphics.left + plot.graphics.right) / 2))

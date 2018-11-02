@@ -250,7 +250,7 @@ print(boxplot([1,2,3,4,5], right=15, title="Resize properly"))
 print(boxplot([1,2,3,4,5], right=20, title="Resize properly"))
 
 
-plot = boxplot([[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series")
+plot = boxplot([[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", labels=["one", "two"])
 print(plot)
 
 print(boxplot!(plot, [-1,2,3,4,11], label="One more"))
