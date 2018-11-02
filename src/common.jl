@@ -13,29 +13,28 @@ function plotting_range(xmin, xmax)
     diffX = xmax - xmin
     xmax = round_up_tick(xmax, diffX)
     xmin = round_down_tick(xmin, diffX)
-    xmin, xmax
+    Float64(xmin), Float64(xmax)
 end
 
 function plotting_range_narrow(xmin, xmax)
     diffX = xmax - xmin
     xmax = round_up_subtick(xmax, diffX)
     xmin = round_down_subtick(xmin, diffX)
-    xmin, xmax
+    Float64(xmin), Float64(xmax)
 end
 
 function extend_limits(vec, limits)
-    mi = float(minimum(limits))
-    ma = float(maximum(limits))
+    mi, ma = map(Float64, extrema(limits))
     if mi == 0. && ma == 0.
-        mi = minimum(vec)
-        ma = maximum(vec)
+        mi, ma = map(Float64, extrema(vec))
     end
     diff = ma - mi
     if diff == 0
         ma = mi + 1
         mi = mi - 1
     end
-    (limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : plotting_range_narrow(mi, ma)
+    #(limits == [0.,0.]) ? plotting_range(mi, ma) : plotting_range_narrow(mi, ma)
+    plotting_range_narrow(mi, ma)
 end
 
 const bordermap = Dict{Symbol,Dict{Symbol,String}}()
@@ -100,16 +99,16 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const color_cycle = [:blue, :red, :yellow, :magenta, :green, :cyan]
+const color_cycle = [:blue, :red, :green, :magenta, :yellow, :cyan]
 const color_encode = Dict{Symbol,UInt8}()
 const color_decode = Dict{UInt8,Symbol}()
 color_encode[:white]   = 0b000
 color_encode[:blue]    = 0b001
 color_encode[:red]     = 0b010
 color_encode[:magenta] = 0b011
-color_encode[:yellow]  = 0b100
-color_encode[:green]   = 0b101
-color_encode[:cyan]    = 0b110
+color_encode[:green]   = 0b100
+color_encode[:cyan]    = 0b101
+color_encode[:yellow]  = 0b110
 for k in keys(color_encode)
     v = color_encode[k]
     color_decode[v] = k

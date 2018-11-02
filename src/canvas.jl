@@ -8,7 +8,7 @@ pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 function Base.print(io::IO, c::GraphicsArea)
     for row in 1:nrows(c)
         printrow(io, c, row)
-        print(io, "\n")
+        row < nrows(c) && print(io, "\n")
     end
 end
 
@@ -20,13 +20,13 @@ function Base.show(io::IO, c::GraphicsArea)
     for row in 1:nrows(c)
         printstyled(io, b[:l]; color = :white)
         printrow(io, c, row)
-        printstyled(io, b[:r], "\n";color = :white)
+        printstyled(io, b[:r]; color = :white)
+        print(io, "\n")
     end
     print_border_bottom(io, "", border_length, :solid)
-    print(io, "\n")
 end
 
-function pixel!(c::Canvas, pixel_x::Int, pixel_y::Int; color::Symbol = :white)
+function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :white)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
@@ -46,8 +46,8 @@ end
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    for i in 1:length(X)
-        points!(c, X[i], Y[i], color)
+    for I in eachindex(X, Y)
+        points!(c, X[I], Y[I], color)
     end
     c
 end
