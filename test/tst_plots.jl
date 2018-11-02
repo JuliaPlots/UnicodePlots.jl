@@ -241,3 +241,16 @@ print(lineplot(d,v, height = 5))
 miny = -1.2796649117521434e218
 maxy = -miny
 println(scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy],title="Don't you crash on me!"))
+
+print(boxplot([1,2,3,4,5], title="Test", left=-1, right=8, color=:blue, width=40, labels=["series1"]))
+print(boxplot([1,2,3,4,5], right=5, title="Resize properly"))
+print(boxplot([1,2,3,4,5], right=6, title="Resize properly"))
+print(boxplot([1,2,3,4,5], right=10, title="Resize properly"))
+print(boxplot([1,2,3,4,5], right=15, title="Resize properly"))
+print(boxplot([1,2,3,4,5], right=20, title="Resize properly"))
+
+
+plot = boxplot([[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", labels=["one", "two"])
+print(plot)
+
+print(boxplot!(plot, [-1,2,3,4,11], label="One more"))
