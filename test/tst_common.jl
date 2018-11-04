@@ -29,3 +29,10 @@ end
     @test UnicodePlots.plotting_range_narrow(0, 2) === (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 5) === (0.0, 5.0)
 end
+
+@testset "extend_limits" begin
+    @test UnicodePlots.extend_limits([1,2,3,4], [0.1,2]) === (0., 2.)
+    @test UnicodePlots.extend_limits([1,2,3,4], [2,3]) === (2., 3.)
+    @test UnicodePlots.extend_limits([1,2,3,4], [0,0]) === (1., 4.)
+    @test UnicodePlots.extend_limits([1,2,3,4], [1,1]) === (0., 2.)
+end
