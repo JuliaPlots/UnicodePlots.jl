@@ -1,30 +1,8 @@
-abstract type GraphicsArea end
 abstract type Canvas <: GraphicsArea end
 
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
-
-function Base.print(io::IO, c::GraphicsArea)
-    for row in 1:nrows(c)
-        printrow(io, c, row)
-        row < nrows(c) && print(io, "\n")
-    end
-end
-
-function Base.show(io::IO, c::GraphicsArea)
-    b = border_dashed
-    border_length = ncols(c)
-    print_border_top(io, "", border_length, :solid)
-    print(io, "\n")
-    for row in 1:nrows(c)
-        printstyled(io, b[:l]; color = :white)
-        printrow(io, c, row)
-        printstyled(io, b[:r]; color = :white)
-        print(io, "\n")
-    end
-    print_border_bottom(io, "", border_length, :solid)
-end
 
 function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :white)
     pixel!(c, pixel_x, pixel_y, color)

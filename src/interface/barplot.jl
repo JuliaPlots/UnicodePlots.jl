@@ -86,7 +86,7 @@ function barplot(
         color::Symbol = :blue,
         width::Int = 40,
         labels::Bool = true,
-        symb = "▪")
+        symb = "■")
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))

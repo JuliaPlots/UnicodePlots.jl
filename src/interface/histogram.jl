@@ -73,6 +73,7 @@ Examples
         (2.5,3.0] │▇ 4                                     │
         (3.0,3.5] │▇ 5                                     │
                   └────────────────────────────────────────┘
+                                 Frequency
 
 See also
 =========
@@ -88,7 +89,9 @@ function histogram(v, bins::Int; symb = "▇", args...)
         val = float_round_log10(edges[i], binwidth)
         labels[i] = string("(", val, ",", float_round_log10(val+binwidth, binwidth), "]")
     end
-    barplot(labels, counts; symb = symb, args...)
+    plt = barplot(labels, counts; symb = symb, args...)
+    xlabel!(plt, "Frequency")
+    plt
 end
 
 function histogram(v; bins::Int = sturges(length(v)), args...)

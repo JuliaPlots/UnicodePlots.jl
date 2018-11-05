@@ -36,3 +36,24 @@ end
     @test UnicodePlots.extend_limits([1,2,3,4], [0,0]) === (1., 4.)
     @test UnicodePlots.extend_limits([1,2,3,4], [1,1]) === (0., 2.)
 end
+
+@testset "bordermap" begin
+    @test length(keys(UnicodePlots.bordermap)) == 6
+    @test haskey(UnicodePlots.bordermap, :none)
+    @test haskey(UnicodePlots.bordermap, :solid)
+    @test haskey(UnicodePlots.bordermap, :bold)
+    @test haskey(UnicodePlots.bordermap, :dotted)
+    @test haskey(UnicodePlots.bordermap, :dashed)
+    @test haskey(UnicodePlots.bordermap, :ascii)
+    for (k,v) in UnicodePlots.bordermap
+        @test length(keys(v)) == 8
+        @test haskey(v, :tl)
+        @test haskey(v, :tr)
+        @test haskey(v, :bl)
+        @test haskey(v, :br)
+        @test haskey(v, :r)
+        @test haskey(v, :l)
+        @test haskey(v, :t)
+        @test haskey(v, :b)
+    end
+end

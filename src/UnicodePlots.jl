@@ -49,15 +49,19 @@ export
     boxplot, boxplot!
 
 include("common.jl")
-include("canvas.jl")
-include("graphics/lookupcanvas.jl")
-include("graphics/braillecanvas.jl")
-include("graphics/densitycanvas.jl")
-include("graphics/blockcanvas.jl")
-include("graphics/asciicanvas.jl")
-include("graphics/dotcanvas.jl")
+
+include("graphics.jl")
 include("graphics/bargraphics.jl")
 include("graphics/boxgraphics.jl")
+
+include("canvas.jl")
+include("canvas/lookupcanvas.jl")
+include("canvas/braillecanvas.jl")
+include("canvas/densitycanvas.jl")
+include("canvas/blockcanvas.jl")
+include("canvas/asciicanvas.jl")
+include("canvas/dotcanvas.jl")
+
 include("plot.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")

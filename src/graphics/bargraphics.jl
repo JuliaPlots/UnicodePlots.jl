@@ -25,7 +25,7 @@ function BarplotGraphics(
         bars::AbstractVector{R},
         width::Int;
         color::Symbol = :blue,
-        symb::String = "▪") where {R <: Number}
+        symb::String = "■") where {R <: Number}
     BarplotGraphics{R}(bars, width, color, symb)
 end
 
@@ -44,7 +44,7 @@ function addrow!(c::BarplotGraphics{R}, bar::Number) where {R <: Number}
 end
 
 function printrow(io::IO, c::BarplotGraphics, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row <= nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
     max_bar_width = max(c.width - 2 - c.max_len, 1)
     bar_len = c.max_freq > 0 ? round(Int, bar/c.max_freq * max_bar_width, RoundNearestTiesUp) : 0
