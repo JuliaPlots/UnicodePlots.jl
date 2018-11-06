@@ -1,8 +1,8 @@
 module UnicodePlots
 
 using Dates
-import StatsBase: Histogram, fit
-import SparseArrays: AbstractSparseMatrix, findnz
+using StatsBase: Histogram, fit
+using SparseArrays: AbstractSparseMatrix, findnz
 
 export
 

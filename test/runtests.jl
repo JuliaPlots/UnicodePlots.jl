@@ -1,11 +1,12 @@
 using UnicodePlots, ReferenceTests, Test
-using SparseArrays: sprand
-using Random: seed!
-import Dates: Date, Day
 using ReferenceTests: BeforeAfterFull
+using SparseArrays
+using Random: seed!
+using Dates: Date, Day
 
 tests = [
     "tst_common.jl",
+    "tst_graphics.jl",
     "tst_canvas.jl",
     #"old_tests.jl",
 ]
