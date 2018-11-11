@@ -15,7 +15,7 @@ which have to be numeric, will be used as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; border = :solid, title = "", margin = 3, padding = 1, color = :blue, width = 40, labels = true, symb = "▪")
+    barplot(text, heights; border = :solid, title = "", margin = 3, padding = 1, color = :green, width = 40, labels = true, symb = "▪")
 
     barplot(dictionary; nargs...)
 
@@ -38,7 +38,7 @@ Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:green`
 
 - **`width`** : Number of characters per row that should be used for plotting.
 
@@ -83,7 +83,7 @@ function barplot(
         title::AbstractString = "",
         margin::Int = 3,
         padding::Int = 1,
-        color::Symbol = :blue,
+        color::Symbol = :green,
         width::Int = 40,
         labels::Bool = true,
         symb = "■")

@@ -149,10 +149,10 @@ function Plot(
     max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
     min_y_str = string(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
     max_y_str = string(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    annotate!(new_plot, :l, 1, max_y_str)
-    annotate!(new_plot, :l, height, min_y_str)
-    annotate!(new_plot, :bl, min_x_str)
-    annotate!(new_plot, :br, max_x_str)
+    annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
+    annotate!(new_plot, :l, height, min_y_str, color = :light_black)
+    annotate!(new_plot, :bl, min_x_str, color = :light_black)
+    annotate!(new_plot, :br, max_x_str, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -318,21 +318,21 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0)
+function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :white)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
-        printstyled(io, padding, tpad, title, "\n"; color = :white)
+        printstyled(io, padding, tpad, title, "\n"; color = color)
     end
 end
 
-function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :white)
+function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
     b = bordermap[border]
     border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = color)
 end
 
-function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :white)
+function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
     b = bordermap[border]
     border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = color)
 end
@@ -359,14 +359,14 @@ function Base.show(io::IO, p::Plot)
     border_padding = repeat(" ", plot_offset)
 
     # plot the title and the top border
-    print_title(io, border_padding, p.title, p_width = border_length)
+    print_title(io, border_padding, p.title, p_width = border_length, color = :bold)
     if p.show_labels
         topleft_str  = get(p.decorations, :tl, "")
-        topleft_col  = get(p.colors_deco, :tl, :white)
+        topleft_col  = get(p.colors_deco, :tl, :light_black)
         topmid_str   = get(p.decorations, :t, "")
-        topmid_col   = get(p.colors_deco, :t, :white)
+        topmid_col   = get(p.colors_deco, :t, :light_black)
         topright_str = get(p.decorations, :tr, "")
-        topright_col = get(p.colors_deco, :tr, :white)
+        topright_col = get(p.colors_deco, :tr, :light_black)
         if topleft_str != "" || topright_str != "" || topmid_str != ""
             topleft_len  = length(topleft_str)
             topmid_len   = length(topmid_str)
@@ -390,9 +390,9 @@ function Base.show(io::IO, p::Plot)
     for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :white)
+        left_col  = get(p.colors_left,  row, :light_black)
         right_str = get(p.labels_right, row, "")
-        right_col = get(p.colors_right, row, :white)
+        right_col = get(p.colors_right, row, :light_black)
         left_len  = length(left_str)
         right_len = length(right_str)
         # print left annotations
@@ -410,11 +410,11 @@ function Base.show(io::IO, p::Plot)
             printstyled(io, left_str; color = left_col)
         end
         # print left border
-        printstyled(io, plot_padding, b[:l]; color = :white)
+        printstyled(io, plot_padding, b[:l]; color = :light_black)
         # print canvas row
         printrow(io, c, row)
         #print right label and padding
-        printstyled(io, b[:r]; color = :white)
+        printstyled(io, b[:r]; color = :light_black)
         if p.show_labels
             print(io, plot_padding)
             printstyled(io, right_str; color = right_col)
@@ -428,11 +428,11 @@ function Base.show(io::IO, p::Plot)
     print(io, repeat(" ", max_len_r), plot_padding, "\n")
     if p.show_labels
         botleft_str  = get(p.decorations, :bl, "")
-        botleft_col  = get(p.colors_deco, :bl, :white)
+        botleft_col  = get(p.colors_deco, :bl, :light_black)
         botmid_str   = get(p.decorations, :b, "")
-        botmid_col   = get(p.colors_deco, :b, :white)
+        botmid_col   = get(p.colors_deco, :b, :light_black)
         botright_str = get(p.decorations, :br, "")
-        botright_col = get(p.colors_deco, :br, :white)
+        botright_col = get(p.colors_deco, :br, :light_black)
         if botleft_str != "" || botright_str != "" || botmid_str != ""
             botleft_len  = length(botleft_str)
             botmid_len   = length(botmid_str)

@@ -13,7 +13,7 @@ which means that it supports the same parameter arguments.
 Usage
 ======
 
-    histogram(v; bins = sturges(length(v)), symb = "▇", border = :solid, title = "", margin = 3, padding = 1, color = :blue, width = 40, labels = true)
+    histogram(v; bins = sturges(length(v)), symb = "▇", border = :solid, title = "", margin = 3, padding = 1, color = :green, width = 40, labels = true)
 
 Arguments
 ==========
@@ -85,9 +85,33 @@ function histogram(v, bins::Int; symb = "▇", args...)
     edges, counts = result.edges[1], result.weights
     labels = Vector{String}(undef, length(counts))
     binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
-    @inbounds for i in 1:length(counts)
-        val = float_round_log10(edges[i], binwidth)
-        labels[i] = string("(", val, ",", float_round_log10(val+binwidth, binwidth), "]")
+    # compute label padding based on all labels.
+    # this is done to make all decimal points align.
+    pad_left, pad_right = 0, 0
+    for I in eachindex(edges)
+        val1 = float_round_log10(edges[I], binwidth)
+        val2 = float_round_log10(val1+binwidth, binwidth)
+        a1 = Base.alignment(IOBuffer(), val1)
+        a2 = Base.alignment(IOBuffer(), val2)
+        pad_left = max(pad_left, a1[1], a2[1])
+        pad_right = max(pad_right, a1[2], a2[2])
+    end
+    # compute the labels using the computed padding
+    for i in 1:length(counts)
+        val1 = float_round_log10(edges[i], binwidth)
+        val2 = float_round_log10(val1+binwidth, binwidth)
+        a1 = Base.alignment(IOBuffer(), val1)
+        a2 = Base.alignment(IOBuffer(), val2)
+        labels[i] =
+            "(" *
+            repeat(" ", pad_left - a1[1]) *
+            string(val1) *
+            repeat(" ", pad_right - a1[2]) *
+            ", " *
+            repeat(" ", pad_left - a2[1]) *
+            string(val2) *
+            repeat(" ", pad_right - a2[2]) *
+            "]"
     end
     plt = barplot(labels, counts; symb = symb, args...)
     xlabel!(plt, "Frequency")

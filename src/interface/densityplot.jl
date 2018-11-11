@@ -43,7 +43,7 @@ Arguments
 
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:green`
 
 - **`labels`** : Can be used to hide the labels by setting `labels=false`.
 

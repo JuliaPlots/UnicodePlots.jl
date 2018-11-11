@@ -1,34 +1,34 @@
 mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     bars::Vector{R}
     color::Symbol
-    width::Int
+    char_width::Int
     max_freq::R
     max_len::Int
     symb::String
 
     function BarplotGraphics{R}(
             bars::AbstractVector{R},
-            width::Int,
+            char_width::Int,
             color::Symbol,
             symb::String) where R
         @assert length(symb) == 1
-        width = max(width, 10)
+        char_width = max(char_width, 10)
         max_freq = maximum(bars)
         max_len = length(string(max_freq))
-        width = max(width, max_len + 7)
-        new{R}(bars, color, width, max_freq, max_len, symb)
+        char_width = max(char_width, max_len + 7)
+        new{R}(bars, color, char_width, max_freq, max_len, symb)
     end
 end
 
 nrows(g::BarplotGraphics) = length(g.bars)
-ncols(g::BarplotGraphics) = g.width
+ncols(g::BarplotGraphics) = g.char_width
 
 function BarplotGraphics(
         bars::AbstractVector{R},
-        width::Int;
-        color::Symbol = :blue,
+        char_width::Int;
+        color::Symbol = :green,
         symb::String = "■") where {R <: Number}
-    BarplotGraphics{R}(bars, width, color, symb)
+    BarplotGraphics{R}(bars, char_width, color, symb)
 end
 
 function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
@@ -48,7 +48,7 @@ end
 function printrow(io::IO, g::BarplotGraphics, row::Int)
     0 < row <= nrows(g) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = g.bars[row]
-    max_bar_width = max(g.width - 2 - g.max_len, 1)
+    max_bar_width = max(g.char_width - 2 - g.max_len, 1)
     bar_len = g.max_freq > 0 ? round(Int, bar/g.max_freq * max_bar_width, RoundNearestTiesUp) : 0
     bar_str = g.max_freq > 0 ? repeat(g.symb, bar_len) : ""
     bar_lbl = string(bar)
