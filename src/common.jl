@@ -10,16 +10,16 @@ float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? r
 float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
 function plotting_range(xmin, xmax)
-    diffX = xmax - xmin
-    xmax = round_up_tick(xmax, diffX)
-    xmin = round_down_tick(xmin, diffX)
+    diff = xmax - xmin
+    xmax = round_up_tick(xmax, diff)
+    xmin = round_down_tick(xmin, diff)
     Float64(xmin), Float64(xmax)
 end
 
 function plotting_range_narrow(xmin, xmax)
-    diffX = xmax - xmin
-    xmax = round_up_subtick(xmax, diffX)
-    xmin = round_down_subtick(xmin, diffX)
+    diff = xmax - xmin
+    xmax = round_up_subtick(xmax, diff)
+    xmin = round_down_subtick(xmin, diff)
     Float64(xmin), Float64(xmax)
 end
 
@@ -99,7 +99,7 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const color_cycle = [:blue, :red, :green, :magenta, :yellow, :cyan]
+const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
 const color_encode = Dict{Symbol,UInt8}()
 const color_decode = Dict{UInt8,Symbol}()
 color_encode[:white]   = 0b000

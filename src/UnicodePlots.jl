@@ -1,7 +1,7 @@
 module UnicodePlots
 
 using Dates
-using StatsBase: Histogram, fit
+using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 
 export
