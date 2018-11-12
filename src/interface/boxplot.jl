@@ -92,11 +92,11 @@ function boxplot(
         color::Symbol = :green,
         width::Int = 40,
         labels::Bool = true,
-        xlim::AbstractVector = [minimum(map(minimum, data)), maximum(map(maximum, data))])
+        xlim::AbstractVector = [0., 0.])
     length(xlim) == 2 || throw(ArgumentError("xlim must only be vectors of length 2"))
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
-    min_x, max_x = xlim
+    min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(width, 10)
 
     area = BoxplotGraphics(data[1], width, color = color,
@@ -136,11 +136,13 @@ function boxplot!(
         plot::Plot{<:BoxplotGraphics},
         data::AbstractVector{<:Number};
         name = " ",
+        xlim::AbstractVector = [0., 0.],
         kw...)
     !isempty(data)|| throw(ArgumentError("Can't append empty array to boxplot"))
 
-    plot.graphics.min_x = min(plot.graphics.min_x, minimum(data))
-    plot.graphics.max_x = min(plot.graphics.max_x, maximum(data))
+    min_x, max_x = extend_limits(data, xlim)
+    plot.graphics.min_x = min(plot.graphics.min_x, min_x)
+    plot.graphics.max_x = min(plot.graphics.max_x, max_x)
 
     addseries!(plot.graphics, data)
 

@@ -31,7 +31,8 @@ end
 end
 
 @testset "extend_limits" begin
-    @test UnicodePlots.extend_limits([1,2,3,4], [0.1,2]) === (0., 2.)
+    @test UnicodePlots.extend_limits([1,2,3,4], [0.1,2]) === (0.1, 2.)
+    @test UnicodePlots.extend_limits([1,2,3,4], [0,1.1]) === (0., 1.1)
     @test UnicodePlots.extend_limits([1,2,3,4], [2,3]) === (2., 3.)
     @test UnicodePlots.extend_limits([1,2,3,4], [0,0]) === (1., 4.)
     @test UnicodePlots.extend_limits([1,2,3,4], [1,1]) === (0., 2.)
