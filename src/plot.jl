@@ -13,7 +13,7 @@ Usage
 
     Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
 
-    Plot(x, y, canvastype; title = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true, grid = true)
 
 Arguments
 ==========
@@ -100,6 +100,7 @@ function Plot(
         margin::Int = 3,
         padding::Int = 1,
         labels = true) where T<:GraphicsArea
+    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
@@ -117,6 +118,8 @@ end
 function Plot(
         X::AbstractVector{F}, Y::AbstractVector{F}, ::Type{C} = BrailleCanvas;
         title::AbstractString = "",
+        xlabel::AbstractString = "",
+        ylabel::AbstractString = "",
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
@@ -127,7 +130,6 @@ function Plot(
         labels::Bool = true,
         grid::Bool = true) where {C<:Canvas, F<:AbstractFloat}
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
-    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     width = max(width, 5)
     height = max(height, 2)
@@ -143,7 +145,8 @@ function Plot(
                origin_x = origin_x, origin_y = origin_y,
                width = p_width, height = p_height)
     new_plot = Plot(canvas, title = title, margin = margin,
-                    padding = padding, border = border, labels = labels)
+                    padding = padding, border = border, labels = labels,
+                    xlabel = xlabel, ylabel = ylabel)
 
     min_x_str = string(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
     max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
@@ -280,6 +283,7 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol
         plot.colors_deco[loc] = color
         return plot
     end
+    plot
 end
 
 function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:white)
@@ -323,7 +327,7 @@ function print_title(io::IO, padding::AbstractString, title::AbstractString; p_w
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
-        printstyled(io, padding, tpad, title, "\n"; color = color)
+        printstyled(io, padding, tpad, title; color = color)
     end
 end
 
@@ -360,6 +364,7 @@ function Base.show(io::IO, p::Plot)
 
     # plot the title and the top border
     print_title(io, border_padding, p.title, p_width = border_length, color = :bold)
+    p.title != "" && println(io)
     if p.show_labels
         topleft_str  = get(p.decorations, :tl, "")
         topleft_col  = get(p.colors_deco, :tl, :light_black)
@@ -384,7 +389,7 @@ function Base.show(io::IO, p::Plot)
     print(io, repeat(" ", max_len_r), plot_padding, "\n")
 
     # compute position of ylabel
-    ylabRow = round(nrows(c) / 2, RoundNearestTiesUp)
+    y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     # plot all rows
     for row in 1:nrows(c)
@@ -398,7 +403,7 @@ function Base.show(io::IO, p::Plot)
         # print left annotations
         print(io, repeat(" ", p.margin))
         if p.show_labels
-            if row == ylabRow
+            if row == y_lab_row
                 # print ylabel
                 printstyled(io, p.ylabel; color = :white)
                 print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
@@ -425,7 +430,7 @@ function Base.show(io::IO, p::Plot)
 
     # draw bottom border and bottom labels
     print_border_bottom(io, border_padding, border_length, p.border)
-    print(io, repeat(" ", max_len_r), plot_padding, "\n")
+    print(io, repeat(" ", max_len_r), plot_padding)
     if p.show_labels
         botleft_str  = get(p.decorations, :bl, "")
         botleft_col  = get(p.colors_deco, :bl, :light_black)
@@ -434,6 +439,7 @@ function Base.show(io::IO, p::Plot)
         botright_str = get(p.decorations, :br, "")
         botright_col = get(p.colors_deco, :br, :light_black)
         if botleft_str != "" || botright_str != "" || botmid_str != ""
+            println(io)
             botleft_len  = length(botleft_str)
             botmid_len   = length(botmid_str)
             botright_len = length(botright_str)
@@ -443,9 +449,10 @@ function Base.show(io::IO, p::Plot)
             printstyled(io, pad, botmid_str; color = botmid_col)
             cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, botright_str, "\n"; color = botright_col)
+            printstyled(io, pad, botright_str; color = botright_col)
         end
         # abuse the print_title function to print the xlabel. maybe refactor this
+        p.xlabel != "" && println(io)
         print_title(io, border_padding, p.xlabel, p_width = border_length)
     end
 end

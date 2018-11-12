@@ -8,6 +8,8 @@ tests = [
     "tst_common.jl",
     "tst_graphics.jl",
     "tst_canvas.jl",
+    "tst_plot.jl",
+    "tst_barplot.jl",
     #"old_tests.jl",
 ]
 
