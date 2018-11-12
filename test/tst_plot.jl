@@ -95,7 +95,7 @@ end
 @test @inferred(annotate!(p, :tr, ":tr")) === p
 annotate!(p, :bl, ":bl", :blue)
 annotate!(p, :b, ":b", :green)
-annotate!(p, :br, ":br", :magenta)
+annotate!(p, :br, ":br", :white)
 
 @test @inferred(lines!(p, 0., 1., 1., 0., color=:blue)) === p
 @test @inferred(pixel!(p, 10, 1, color = :yellow)) === p

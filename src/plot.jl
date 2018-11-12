@@ -286,7 +286,7 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:white)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:normal)
     annotate!(plot, loc, value, color)
 end
 
@@ -303,7 +303,7 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:white)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:normal)
     annotate!(plot, loc, row, value, color)
 end
 
@@ -322,7 +322,7 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :white)
+function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :normal)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
@@ -405,7 +405,7 @@ function Base.show(io::IO, p::Plot)
         if p.show_labels
             if row == y_lab_row
                 # print ylabel
-                printstyled(io, p.ylabel; color = :white)
+                printstyled(io, p.ylabel; color = :normal)
                 print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length

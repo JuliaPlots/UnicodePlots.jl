@@ -10,7 +10,7 @@ tests = [
     "tst_canvas.jl",
     "tst_plot.jl",
     "tst_barplot.jl",
-    #"old_tests.jl",
+#    "old_tests.jl",
 ]
 
 for test in tests

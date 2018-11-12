@@ -53,7 +53,7 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
     bar_str = g.max_freq > 0 ? repeat(g.symb, bar_len) : ""
     bar_lbl = string(bar)
     printstyled(io, bar_str; color = g.color)
-    printstyled(io, " ", bar_lbl; color = :white)
+    printstyled(io, " ", bar_lbl; color = :normal)
     pan_len = max(max_bar_width + 1 + g.max_len - bar_len - length(bar_lbl), 0)
     pad = repeat(" ", round(Int, pan_len))
     print(io, pad)
