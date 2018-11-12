@@ -1,7 +1,7 @@
 abstract type LookupCanvas <: Canvas end
 
-lookup_encode(::LookupCanvas) = error()
-lookup_decode(::LookupCanvas) = error()
+function lookup_encode end
+function lookup_decode end
 
 @inline pixel_width(c::LookupCanvas) = c.pixel_width
 @inline pixel_height(c::LookupCanvas) = c.pixel_height
