@@ -85,7 +85,7 @@ See also
 function boxplot(
         text::AbstractVector{<:AbstractString},
         data::AbstractVector{<:AbstractArray{<:Number}};
-        border = :solid,
+        border = :corners,
         title::AbstractString = "",
         margin::Int = 3,
         padding::Int = 1,

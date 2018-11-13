@@ -32,7 +32,7 @@ p = @inferred Plot(canvas)
     render = BeforeAfterFull()
 )
 
-for border in (:solid, :corners, :bold, :ascii, :none, :dashed, :dotted)
+for border in (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
     p = @inferred Plot(canvas, border = border)
     @test_reference(
         "references/plot/border_$(string(border)).txt",

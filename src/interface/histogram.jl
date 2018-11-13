@@ -103,15 +103,15 @@ function histogram(v, bins::Int; symb = "▇", args...)
         a1 = Base.alignment(IOBuffer(), val1)
         a2 = Base.alignment(IOBuffer(), val2)
         labels[i] =
-            "(" *
+            "\e[90m(\e[0m" *
             repeat(" ", pad_left - a1[1]) *
             string(val1) *
             repeat(" ", pad_right - a1[2]) *
-            ", " *
+            "\e[90m, \e[0m" *
             repeat(" ", pad_left - a2[1]) *
             string(val2) *
             repeat(" ", pad_right - a2[2]) *
-            "]"
+            "\e[90m]\e[0m"
     end
     plt = barplot(labels, counts; symb = symb, args...)
     xlabel!(plt, "Frequency")

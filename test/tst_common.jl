@@ -39,10 +39,11 @@ end
 end
 
 @testset "bordermap" begin
-    @test length(keys(UnicodePlots.bordermap)) == 7
+    @test length(keys(UnicodePlots.bordermap)) == 8
     @test haskey(UnicodePlots.bordermap, :none)
     @test haskey(UnicodePlots.bordermap, :solid)
     @test haskey(UnicodePlots.bordermap, :corners)
+    @test haskey(UnicodePlots.bordermap, :barplot)
     @test haskey(UnicodePlots.bordermap, :bold)
     @test haskey(UnicodePlots.bordermap, :dotted)
     @test haskey(UnicodePlots.bordermap, :dashed)

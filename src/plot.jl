@@ -341,14 +341,16 @@ function print_border_bottom(io::IO, padding::AbstractString, length::Int, borde
     border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = color)
 end
 
+_nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
+
 function Base.show(io::IO, p::Plot)
     b = UnicodePlots.bordermap[p.border]
     c = p.graphics
     border_length = ncols(c)
 
     # get length of largest strings to the left and right
-    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(string(l)) for l in values(p.labels_left)]) : 0
-    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(string(l)) for l in values(p.labels_right)]) : 0
+    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
+    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(_nocolor_string(l)) for l in values(p.labels_right)]) : 0
     if p.show_labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
@@ -398,8 +400,12 @@ function Base.show(io::IO, p::Plot)
         left_col  = get(p.colors_left,  row, :light_black)
         right_str = get(p.labels_right, row, "")
         right_col = get(p.colors_right, row, :light_black)
-        left_len  = length(left_str)
-        right_len = length(right_str)
+        left_len  = length(_nocolor_string(left_str))
+        right_len = length(_nocolor_string(right_str))
+        if !get(io, :color, false)
+            left_str  = _nocolor_string(left_str)
+            right_str = _nocolor_string(right_str)
+        end
         # print left annotations
         print(io, repeat(" ", p.margin))
         if p.show_labels

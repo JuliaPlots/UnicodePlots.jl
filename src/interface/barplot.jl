@@ -79,7 +79,7 @@ See also
 function barplot(
         text::AbstractVector{<:AbstractString},
         heights::AbstractVector{<:Number};
-        border = :solid,
+        border = :barplot,
         title::AbstractString = "",
         margin::Int = 3,
         padding::Int = 1,
