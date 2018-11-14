@@ -1,3 +1,31 @@
+const DOC_PLOT_PARAMS = """
+- **`border`** : The style of the bounding box of the plot.
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
+  `:ascii`, and `:none`.
+
+- **`title`** : Text to display on the top of the plot.
+
+- **`xlabel`** : Text to display on the x axis of the plot
+
+- **`ylabel`** : Text to display on the y axis of the plot
+
+- **`labels`** : Boolean. Can be used to hide the labels by
+  setting `labels = false`.
+
+- **`margin`** : Number of empty characters to the left of the
+  whole plot.
+
+- **`padding`** : Space of the left and right of the plot between
+  the labels and the canvas.
+
+- **`color`** : Color of the drawing.
+  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
+  `:magenta`, `:white`, `:normal`
+
+- **`width`** : Number of characters per row that should be used
+  for plotting.
+"""
+
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 
 ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))

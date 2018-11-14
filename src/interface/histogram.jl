@@ -10,7 +10,7 @@ parameter `data` can either be a `StatsBase.Histogram`, or some
 fitted automatically.
 
 Note internally that `histogram` is a simply wrapper for
-`barplot`, which means that it supports the same keyword
+[`barplot`](@ref), which means that it supports the same keyword
 arguments.
 
 Usage
@@ -18,7 +18,7 @@ Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; symb = "▇", border = :solid, title = "", margin = 3, padding = 1, color = :green, width = 40, labels = true)
+    histogram(hist; border = :solid, title = "", margin = 3, padding = 1, color = :green, width = 40, labels = true, symb = "▇")
 
 Arguments
 ==========
@@ -31,27 +31,9 @@ Arguments
   left-closed ``[a,b)``; if `:right`, intervals are right-closed
   ``(a,b]``.
 
-- **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
-  `:ascii`, and `:none`.
+- **`hist`** : A fitted `StatsBase.Histogram` that should be plotted.
 
-- **`title`** : Text to display on the top of the plot.
-
-- **`margin`** : Number of empty characters to the left of the
-  whole plot.
-
-- **`padding`** : Space of the left and right of the plot between
-  the labels and the canvas.
-
-- **`color`** : Color of the drawing.
-  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`
-
-- **`width`** : Number of characters per row that should be used
-  for plotting.
-
-- **`labels`** : Boolean. Can be used to hide the labels by
-  setting `labels = false`.
+$DOC_PLOT_PARAMS
 
 - **`symb`** : Specifies the character that should be used to
   render the individual bars.

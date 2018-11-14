@@ -17,42 +17,24 @@ and the keys, which have to be strings, will be used as the labels.
 Usage
 ======
 
-    boxplot(data; labels = [" " for _ in 1:size(data, 1)], border = :solid, title = "",
-            margin = 3, padding = 1, color = :green, width = 40,
-            min_x=minimum(map(minimum, data)) - 1, max_x=maximum(map(maximum, data)) + 1)
+    boxplot([text], data; border = :corners, title = "", xlabel = "", ylabel = "", labels = true, margin = 3, padding = 1, color = :green, width = 40, xlim)
 
     boxplot(dictionary; nargs...)
 
 Arguments
 ==========
 
-- **`data`** : The data the box plot is based on. A vector of vectors, with each
-  inner vector representing a data series. Choose a vector of vectors over a matrix
-  to allow series of different lengths.
+- **`text`** : Optional. The labels/captions of the boxes.
 
-- **`name`** : A list of labels for the data series. Must be the same length as the number of series.
+- **`data`** : The data the box plot is based on. A vector of
+  vectors, with each inner vector representing a data series.
+  Choose a vector of vectors over a matrix to allow series of
+  different lengths.
 
-- **`dictionary`** : A dictonary in which the keys will be used as `labels`
-  and the values will be utilized as `data`.
+- **`dictionary`** : A dictonary in which the keys will be used
+  as `text` and the values will be utilized as `data`.
 
-- **`border`** : The style of the bounding box of the plot.
-  Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`title`** : Text to display on the top of the plot.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`color`** : Colour of the drawing. Can be any of `:black`, `:blue`, `:cyan`,
-  `:green`, `:magenta`, `:red`, `:yellow`, `:white`, or a light version of the above (`:light_colour`).
-  By default no colouring is applied.
-
-- **`width`** : Number of characters per row that should be used for plotting.
-
-- **`min_x`** : The value of the left-hand edge of the plot.
-
-- **`max_x`** : The value of the right-hand edge of the plot.
+$DOC_PLOT_PARAMS
 
 Returns
 ========
@@ -86,15 +68,11 @@ function boxplot(
         text::AbstractVector{<:AbstractString},
         data::AbstractVector{<:AbstractArray{<:Number}};
         border = :corners,
-        title::AbstractString = "",
-        margin::Int = 3,
-        padding::Int = 1,
         color::Symbol = :green,
         width::Int = 40,
-        labels::Bool = true,
-        xlim::AbstractVector = [0., 0.])
+        xlim::AbstractVector = [0., 0.],
+        kw...)
     length(xlim) == 2 || throw(ArgumentError("xlim must only be vectors of length 2"))
-    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(width, 10)
@@ -105,8 +83,7 @@ function boxplot(
         addseries!(area, data[i])
     end
 
-    new_plot = Plot(area, title = title, margin = margin,
-                    labels = labels, padding = padding, border = border)
+    new_plot = Plot(area; border = border, kw...)
 
     mean_x = (min_x + max_x) / 2
     min_x_str = string(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
