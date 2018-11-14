@@ -96,6 +96,30 @@ end
 
 @testset "keyword arguments" begin
     p = @inferred barplot(
+        [:a, :b, :c, :d, :e],
+        [0, 1, 10, 100, 1000],
+        title = "Logscale Plot",
+        xscale = log10,
+    )
+    @test_reference(
+        "references/barplot/log10.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred barplot(
+        [:a, :b, :c, :d, :e],
+        [0, 1, 10, 100, 1000],
+        title = "Logscale Plot",
+        xlabel = "custom label",
+        xscale = log10,
+    )
+    @test_reference(
+        "references/barplot/log10_label.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",

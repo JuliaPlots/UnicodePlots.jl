@@ -128,7 +128,7 @@ function Plot(
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
-        grid::Bool = true) where {C<:Canvas, F<:AbstractFloat}
+        grid::Bool = true) where {C<:Canvas, F<:Number}
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     width = max(width, 5)

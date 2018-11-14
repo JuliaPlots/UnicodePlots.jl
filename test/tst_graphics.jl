@@ -75,6 +75,14 @@
             @io2str(show(IOContext(::IO, :color=>true), g)),
             render = BeforeAfterFull()
         )
+        g = @inferred BarplotGraphics([0, 1, 10, 100, 1000], 20, log10)
+        @test @inferred(nrows(g)) === 5
+        @test @inferred(ncols(g)) === 20
+        @test_reference(
+            "references/graphics/bar_log10.txt",
+            @io2str(show(IOContext(::IO, :color=>true), g)),
+            render = BeforeAfterFull()
+        )
         g = @inferred BarplotGraphics([0, 1, 10], 20, symb="#")
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 20

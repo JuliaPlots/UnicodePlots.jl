@@ -17,7 +17,7 @@ and the keys, which have to be strings, will be used as the labels.
 Usage
 ======
 
-    boxplot([text], data; border = :corners, title = "", xlabel = "", ylabel = "", labels = true, margin = 3, padding = 1, color = :green, width = 40, xlim)
+    boxplot([text], data; title = "", xlabel = "", ylabel = "", labels = true, border = :corners, margin = 3, padding = 1, color = :green, width = 40, xlim)
 
     boxplot(dictionary; nargs...)
 

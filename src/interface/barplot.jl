@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; border = :barplot, title = "", xlabel = "", ylabel = "", labels = true, margin = 3, padding = 1, color = :green, width = 40, symb = "■")
+    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symb = "■")
 
     barplot(dict; kwargs...)
 
@@ -28,6 +28,10 @@ Arguments
 
 - **`dict`** : A dictonary in which the keys will be used
   as `text` and the values will be utilized as `heights`.
+
+- **`xscale`** : Function to transform the bar length before plotting.
+  This effectively scales the x-axis without influencing the captions
+  of the individual bars. e.g. use `xscale = log10` for logscale.
 
 $DOC_PLOT_PARAMS
 
@@ -72,12 +76,14 @@ function barplot(
         color = :green,
         width = 40,
         symb = "■",
+        xscale = identity,
+        xlabel = transform_name(xscale),
         kw...)
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
 
-    area = BarplotGraphics(heights, width, color = color, symb = symb)
-    new_plot = Plot(area; border = border, kw...)
+    area = BarplotGraphics(heights, width, xscale, color = color, symb = symb)
+    new_plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in 1:length(text)
         annotate!(new_plot, :l, i, text[i])
     end

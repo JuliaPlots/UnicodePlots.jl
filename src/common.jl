@@ -1,8 +1,4 @@
 const DOC_PLOT_PARAMS = """
-- **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
-  `:ascii`, and `:none`.
-
 - **`title`** : Text to display on the top of the plot.
 
 - **`xlabel`** : Text to display on the x axis of the plot
@@ -11,6 +7,10 @@ const DOC_PLOT_PARAMS = """
 
 - **`labels`** : Boolean. Can be used to hide the labels by
   setting `labels = false`.
+
+- **`border`** : The style of the bounding box of the plot.
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
+  `:ascii`, and `:none`.
 
 - **`margin`** : Number of empty characters to the left of the
   whole plot.
@@ -25,6 +25,13 @@ const DOC_PLOT_PARAMS = """
 - **`width`** : Number of characters per row that should be used
   for plotting.
 """
+
+transform_name(::typeof(identity), basename = "") = basename
+function transform_name(f, basename = "")
+    fname = string(nameof(f))
+    fname = occursin("#", fname) ? "custom" : fname
+    string(basename, " [", fname, "]")
+end
 
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 

@@ -38,6 +38,18 @@ x = randn(10000)
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    p = @inferred histogram(x, xscale = log10)
+    @test_reference(
+        "references/histogram/log10.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred histogram(x, xlabel = "custom label", xscale = log10)
+    @test_reference(
+        "references/histogram/log10_label.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
 end
 
 @testset "hist params" begin

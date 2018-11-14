@@ -18,7 +18,7 @@ Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; border = :barplot, title = "", xlabel = "", ylabel = "", labels = true, margin = 3, padding = 1, color = :green, width = 40, symb = "▇")
+    histogram(hist; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symb = "▇")
 
 Arguments
 ==========
@@ -32,6 +32,10 @@ Arguments
   ``(a,b]``.
 
 - **`hist`** : A fitted `StatsBase.Histogram` that should be plotted.
+
+- **`xscale`** : Function to transform the bar length before plotting.
+  This effectively scales the x-axis without influencing the captions
+  of the individual bars. e.g. use `xscale = log10` for logscale.
 
 $DOC_PLOT_PARAMS
 
@@ -78,7 +82,12 @@ See also
 
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """
-function histogram(hist::Histogram; symb = "▇", xlabel = "Frequency", kw...)
+function histogram(
+        hist::Histogram;
+        symb = "▇",
+        xscale = identity,
+        xlabel = transform_name(xscale, "Frequency"),
+        kw...)
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
     binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
@@ -112,7 +121,7 @@ function histogram(hist::Histogram; symb = "▇", xlabel = "Frequency", kw...)
             repeat(" ", pad_right - a2[2]) *
             "\e[90m" * r_str * "\e[0m"
     end
-    barplot(labels, counts; symb = symb, xlabel = xlabel, kw...)
+    barplot(labels, counts; symb = symb, xlabel = xlabel, xscale = xscale, kw...)
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
