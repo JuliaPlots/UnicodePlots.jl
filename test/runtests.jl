@@ -1,5 +1,6 @@
 using UnicodePlots, ReferenceTests, Test
 using ReferenceTests: BeforeAfterFull
+using StatsBase
 using SparseArrays
 using Random: seed!
 using Dates: Date, Day
@@ -10,6 +11,7 @@ tests = [
     "tst_canvas.jl",
     "tst_plot.jl",
     "tst_barplot.jl",
+    "tst_histogram.jl",
 #    "old_tests.jl",
 ]
 

@@ -6,7 +6,7 @@ Description
 
 Draws a horizontal histogram of the given `data`. The positional
 parameter `data` can either be a `StatsBase.Histogram`, or some
-`AbstractArray`.  In the later case the `Histogram` will be
+`AbstractArray`. In the later case the `Histogram` will be
 fitted automatically.
 
 Note internally that `histogram` is a simply wrapper for
@@ -18,7 +18,7 @@ Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; border = :solid, title = "", margin = 3, padding = 1, color = :green, width = 40, labels = true, symb = "▇")
+    histogram(hist; border = :barplot, title = "", xlabel = "", ylabel = "", labels = true, margin = 3, padding = 1, color = :green, width = 40, symb = "▇")
 
 Arguments
 ==========
@@ -78,7 +78,7 @@ See also
 
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """
-function histogram(hist::Histogram; symb = "▇", kw...)
+function histogram(hist::Histogram; symb = "▇", xlabel = "Frequency", kw...)
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
     binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
@@ -112,9 +112,7 @@ function histogram(hist::Histogram; symb = "▇", kw...)
             repeat(" ", pad_right - a2[2]) *
             "\e[90m" * r_str * "\e[0m"
     end
-    plt = barplot(labels, counts; symb = symb, kw...)
-    xlabel!(plt, "Frequency")
-    plt
+    barplot(labels, counts; symb = symb, xlabel = xlabel, kw...)
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
@@ -129,4 +127,4 @@ function histogram(x; bins = nothing, closed = :left, kw...)
     histogram(hist; args...)
 end
 
-@deprecate histogram(x::AbstractArray, nbins::Int; kw...) histogram(x; nbins=nbins, kw...)
+@deprecate histogram(x::AbstractArray, nbins::Int; kw...) histogram(x; nbins = nbins, kw...)
