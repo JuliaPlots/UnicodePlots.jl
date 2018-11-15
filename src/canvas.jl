@@ -8,18 +8,18 @@ function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :
     pixel!(c, pixel_x, pixel_y, color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Symbol)
-    origin_x(c) <= plot_x < origin_x(c) + width(c) || return c
-    origin_y(c) <= plot_y < origin_y(c) + height(c) || return c
-    plot_offset_x = plot_x - origin_x(c)
+function points!(c::Canvas, x::Number, y::Number, color::Symbol)
+    origin_x(c) <= x <= origin_x(c) + width(c) || return c
+    origin_y(c) <= y <= origin_y(c) + height(c) || return c
+    plot_offset_x = x - origin_x(c)
     pixel_x = plot_offset_x / width(c) * pixel_width(c)
-    plot_offset_y = plot_y - origin_y(c)
+    plot_offset_y = y - origin_y(c)
     pixel_y = pixel_height(c) - plot_offset_y / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number; color::Symbol = :white)
-    points!(c, plot_x, plot_y, color)
+function points!(c::Canvas, x::Number, y::Number; color::Symbol = :white)
+    points!(c, x, y, color)
 end
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
