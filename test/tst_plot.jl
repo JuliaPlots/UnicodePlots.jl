@@ -121,5 +121,3 @@ ylab = "ylabel!(plot, text)"
     @io2str(show(::IO, p)),
     render = BeforeAfterFull()
 )
-
-canvas = BrailleCanvas(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)

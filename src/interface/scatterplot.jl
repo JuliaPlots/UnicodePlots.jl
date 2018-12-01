@@ -1,5 +1,5 @@
 """
-    scatterplot(x, y; nargs...)
+    scatterplot(x, y; kwargs...)
 
 Description
 ============
@@ -81,34 +81,36 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 See also
 =========
 
-[`Plot`](@ref), [`lineplot`](@ref), [`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref), [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
+[`Plot`](@ref), [`lineplot`](@ref), [`stairs`](@ref),
+[`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function scatterplot(
-        x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
+        x::AbstractVector,
+        y::AbstractVector;
+        canvas::Type = BrailleCanvas,
         color::Symbol = :auto,
         name = "",
-        canvas::Type = BrailleCanvas,
         kw...)
     new_plot = Plot(x, y, canvas; kw...)
-    color = (color == :auto) ? next_color!(new_plot) : color
-    name == "" || annotate!(new_plot, :r, string(name), color)
-    points!(new_plot, x, y, color)
+    scatterplot!(new_plot, x, y; color = color, name = name)
 end
 
-function scatterplot(x::AbstractVector; kw...)
-    scatterplot(axes(x, 1), x; kw...)
+function scatterplot(y::AbstractVector; kw...)
+    scatterplot(axes(y, 1), y; kw...)
 end
 
 function scatterplot!(
-        plot::Plot{<:Canvas}, x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector;
         color::Symbol = :auto,
-        name = "",
-        kw...)
+        name = "")
     color = (color == :auto) ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, string(name), color)
     points!(plot, x, y, color)
 end
 
-function scatterplot!(plot::Plot{<:Canvas}, x::AbstractVector; kw...)
-    scatterplot!(plot, axes(x, 1), x; kw...)
+function scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...)
+    scatterplot!(plot, axes(y, 1), y; kw...)
 end

@@ -132,8 +132,8 @@ function histogram(x; bins = nothing, closed = :left, kw...)
         hargs = filter(p -> p.first == :nbins, kw)
         hist = fit(Histogram, x; closed = closed, hargs...)
     end
-    args = filter(p -> p.first != :nbins, kw)
-    histogram(hist; args...)
+    pargs = filter(p -> p.first != :nbins, kw)
+    histogram(hist; pargs...)
 end
 
 @deprecate histogram(x::AbstractArray, nbins::Int; kw...) histogram(x; nbins = nbins, kw...)

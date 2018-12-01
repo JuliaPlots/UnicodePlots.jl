@@ -46,6 +46,7 @@
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
     @test_throws MethodError barplot!(p, ["zoom"], [90.])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
     @test @inferred(barplot!(p, ["zoom"], [90])) === p
