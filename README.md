@@ -126,6 +126,7 @@ histogram(randn(1000), bins = 15, title = "Histogram")
 #### Sparsity Pattern
 
 ```Julia
+using SparseArrays
 spy(sprandn(50, 120, .05))
 ```
 ![Spy Screenshot](doc/img/spy.png)
