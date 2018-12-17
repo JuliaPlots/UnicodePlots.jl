@@ -26,11 +26,11 @@ function Base.show(io::IO, c::GraphicsArea)
     print(io, "\n")
 end
 
-function pixel!(c::Canvas, pixel_x::Int, pixel_y::Int; color::Symbol = :white)
+function pixel!(c::Canvas, pixel_x::Int, pixel_y::Int; color::Union{Int, Symbol} = :white)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Symbol)
+function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Union{Int, Symbol})
     origin_x(c) <= plot_x < origin_x(c) + width(c) || return c
     origin_y(c) <= plot_y < origin_y(c) + height(c) || return c
     plot_offset_x = plot_x - origin_x(c)
@@ -40,11 +40,11 @@ function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Symbol)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number; color::Symbol = :white)
+function points!(c::Canvas, plot_x::Number, plot_y::Number; color::Union{Int, Symbol} = :white)
     points!(c, plot_x, plot_y, color)
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Union{Int, Symbol})
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color)
@@ -52,7 +52,15 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :white)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::AbstractVector{T}) where {T <: Union{Int, Symbol}}
+    (length(X) == length(color) && length(X) == length(Y)) || throw(DimensionMismatch("X, Y, and color must be the same length"))
+    for i in 1:length(X)
+        points!(c, X[i], Y[i], color[i])
+    end
+    c
+end
+
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Union{Int, Symbol} = :white)
     points!(c, X, Y, color)
 end
 

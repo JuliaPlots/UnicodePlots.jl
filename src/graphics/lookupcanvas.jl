@@ -35,7 +35,7 @@ function CreateLookupCanvas(
       Float64(width), Float64(height))
 end
 
-function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Symbol) where {T <: LookupCanvas}
+function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) where {T <: LookupCanvas}
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
@@ -50,7 +50,7 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Symbol) where {T <: Loo
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
     grid(c)[char_x, char_y] = grid(c)[char_x,char_y] | lookup_encode(c)[char_x_off, char_y_off]
-    colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | color_encode[color]
+    colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | (color isa Symbol ? color_encode[color] : color)
     c
 end
 
