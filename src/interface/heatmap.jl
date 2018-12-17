@@ -632,7 +632,7 @@ function heatmap(z::AbstractMatrix; colormap=:viridis, xscale=1.0, yscale=1.0, k
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas; grid = false, kw...)
     for row = 1:nrows
         Z = heatmapcolor.(z[row, :], minz, maxz, colormap)
-        points!(new_plot, X, repeat([row * yscale], length(X)), Z)
+        points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
     new_plot
 end

@@ -50,8 +50,12 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) whe
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
     grid(c)[char_x, char_y] = grid(c)[char_x,char_y] | lookup_encode(c)[char_x_off, char_y_off]
-    colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | (color isa Symbol ? color_encode[color] : color)
-    c
+    if color isa Symbol
+        colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | color_encode[color]
+    else
+        # don't attempt to blend colors if they have been explicitly specified
+        colors(c)[char_x, char_y] = color
+    end
 end
 
 function printrow(io::IO, c::LookupCanvas, row::Int)

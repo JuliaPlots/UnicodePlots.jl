@@ -121,3 +121,8 @@ function print_color(color::UInt8, io::IO, args...)
     str = string(args...)
     printstyled(io, str; color = col)
 end
+
+function print_true_color(col::UInt8, io::IO, args...)
+    str = string(args...)
+    printstyled(io, str; color = Int(col))
+end

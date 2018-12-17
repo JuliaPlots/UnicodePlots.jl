@@ -24,3 +24,11 @@ end
 function HeatmapCanvas(args...; nargs...)
     CreateLookupCanvas(HeatmapCanvas, args...; nargs...)
 end
+
+function printrow(io::IO, c::HeatmapCanvas, row::Int)
+    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    y = row
+    for x in 1:ncols(c)
+        print_true_color(colors(c)[x,y], io, lookup_decode(c)[grid(c)[x,y] + 1])
+    end
+end
