@@ -254,3 +254,11 @@ plot = boxplot([[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", labels=["
 print(plot)
 
 print(boxplot!(plot, [-1,2,3,4,11], label="One more"))
+
+
+hm = heatmap(randn(100, 100); title="dont crash plz", colormap=:inferno)
+show(hm)
+hm = heatmap(randn(100, 400); title="a heatmap which didn't crash", colormap=:viridis, xscale=0.1, yscale=10.)
+show(hm)
+
+

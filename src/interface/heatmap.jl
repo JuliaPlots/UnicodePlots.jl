@@ -615,8 +615,7 @@ function rgb2terminal(rgb)
     r * 36 + g * 6 + b + 16
 end
 
-function heatmapcolor(z, minz, maxz, colormap)
-    cmap = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
+function heatmapcolor(z, minz, maxz, cmap)
     i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
     rgb = cmap[i + 1]
     rgb2terminal(rgb)
@@ -627,11 +626,12 @@ function heatmap(z::AbstractMatrix; colormap=:viridis, xscale=1.0, yscale=1.0, k
     ncols = size(z, 2)
     maxz = maximum(z)
     minz = minimum(z)
+    cmap = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
     X = (0:(ncols - 1)) .* xscale
     Y = (0:(nrows - 1)) .* yscale
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas; grid = false, kw...)
     for row = 1:nrows
-        Z = heatmapcolor.(z[row, :], minz, maxz, colormap)
+        Z = [heatmapcolor(zi, minz, maxz, cmap) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
     new_plot
