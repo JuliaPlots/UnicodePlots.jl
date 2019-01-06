@@ -6,13 +6,13 @@ using Random: seed!
 using Dates: Date, Day
 
 tests = [
-    "tst_common.jl",
-    "tst_graphics.jl",
-    "tst_canvas.jl",
-    "tst_plot.jl",
-    "tst_barplot.jl",
-    "tst_histogram.jl",
-    "tst_scatterplot.jl",
+#    "tst_common.jl",
+#    "tst_graphics.jl",
+#    "tst_canvas.jl",
+#    "tst_plot.jl",
+#    "tst_barplot.jl",
+#    "tst_histogram.jl",
+#    "tst_scatterplot.jl",
     "tst_lineplot.jl",
 #    "old_tests.jl",
 ]

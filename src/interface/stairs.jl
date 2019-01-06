@@ -21,9 +21,9 @@ Usage
 Arguments
 ==========
 
-- **`x`** : The horizontal dimension for each point.
+- **`x`** : The horizontal position for each point.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
 - **`style`** : Specifies where the transition of the stair takes plays. Can be either `:pre` or `:post`
 

@@ -125,4 +125,19 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    # same but with Char as symb
+    p = @inferred histogram(
+        x,
+        title = "My Histogram",
+        xlabel = "Absolute Frequency",
+        color = :yellow,
+        border = :solid,
+        symb = '=',
+        width = 50
+    )
+    @test_reference(
+        "references/histogram/parameters2.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
 end

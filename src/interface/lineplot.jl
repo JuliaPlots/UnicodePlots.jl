@@ -16,36 +16,38 @@ Usage
 
     lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = [0, 0], ylim = [0, 0], canvas = BrailleCanvas, grid = true)
 
-    lineplot(fun, [start], [end]; kwargs...)
+    lineplot(fun, [start], [stop]; kwargs...)
 
 Arguments
 ==========
 
-- **`x`** : Optional. The horizontal dimension for each point.
+- **`x`** : Optional. The horizontal position for each point.
   Can be a real number or of type `TimeType`.
   If omitted, the axes of `y` will be used as `x`.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`fun`** : A function ``f: R -> R`` that should be drawn from
-  `start` to `end`.
+- **`fun`** : A unary function ``f: R -> R`` that should be
+  evaluated, and drawn as a path from `start` to `stop`
+  (numbers in the domain).
 
-- **`name`** : Annotation of the current drawing to displayed
+- **`name`** : Annotation of the current drawing to be displayed
   on the right.
 
 $DOC_PLOT_PARAMS
 
-- **`height`** : Number of rows that should be used for plotting.
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`xlim`** : Plotting range for the x coordinate.
+- **`xlim`** : Plotting range for the x axis.
   `[0, 0]` stands for automatic.
 
-- **`ylim`** : Plotting range for the y coordinate.
+- **`ylim`** : Plotting range for the y axis.
   `[0, 0]` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
-- **`grid`** : Can be used to hide the grid-lines at the origin.
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Returns
 ========
@@ -126,11 +128,12 @@ end
 function lineplot(
         x::AbstractVector{<:TimeType},
         y::AbstractVector;
+        xlim = [extrema(Dates.value.(x))...],
         kw...)
     d = convert(Vector{Float64}, Dates.value.(x))
-    new_plot = lineplot(d, y; kw...)
-    annotate!(new_plot, :bl, string(first(x)))
-    annotate!(new_plot, :br, string(last(x)))
+    new_plot = lineplot(d, y; xlim = xlim, kw...)
+    annotate!(new_plot, :bl, string(minimum(x)), color = :light_black)
+    annotate!(new_plot, :br, string(maximum(x)), color = :light_black)
 end
 
 function lineplot!(
@@ -217,7 +220,7 @@ function lineplot(
         name = "",
         kw...)
     n = length(F)
-    @assert n > 0
+    n > 0 || throw(ArgumentError("Can not plot empty array of functions"))
     color_is_vec = color isa AbstractVector
     name_is_vec  = name  isa AbstractVector
     color_is_vec && (length(color) == n || throw(DimensionMismatch("\"color\" must be a symbol or same length as the function vector")))

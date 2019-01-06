@@ -58,7 +58,7 @@
     @testset "Constructor parameter" begin
         @test_throws MethodError BarplotGraphics(0:2:10)
         @test_throws ArgumentError BarplotGraphics(Int[], 20)
-        @test_throws AssertionError BarplotGraphics(0:2:10, 30, symb="--")
+        @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symb="--")
         g = @inferred BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) === 2
         @test @inferred(ncols(g)) === 20

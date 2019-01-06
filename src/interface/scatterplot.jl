@@ -20,27 +20,28 @@ Usage
 Arguments
 ==========
 
-- **`x`** : Optional. The horizontal coordinates for each point.
+- **`x`** : Optional. The horizontal position for each point.
   If omitted, the axes of `y` will be used as `x`.
 
-- **`y`** : The vertical coordinates for each point.
+- **`y`** : The vertical position for each point.
 
-- **`name`** : Annotation of the current drawing to displayed
+- **`name`** : Annotation of the current drawing to be displayed
   on the right
 
 $DOC_PLOT_PARAMS
 
-- **`height`** : Number of rows that should be used for plotting.
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`xlim`** : Plotting range for the x coordinate.
+- **`xlim`** : Plotting range for the x axis.
   `[0, 0]` stands for automatic.
 
-- **`ylim`** : Plotting range for the y coordinate.
+- **`ylim`** : Plotting range for the y axis.
   `[0, 0]` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
-- **`grid`** : Can be used to hide the grid-lines at the origin
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Returns
 ========

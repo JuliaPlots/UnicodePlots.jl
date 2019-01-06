@@ -11,14 +11,14 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
             bars::AbstractVector{R},
             char_width::Int,
             color::Symbol,
-            symb::String,
+            symb::Union{Char,String},
             transform) where {R}
-        @assert length(symb) == 1
+        length(symb) == 1 || throw(ArgumentError("The symbol to print has to be a single character, got: \"" * symb * "\""))
         char_width = max(char_width, 10)
         max_freq, i = findmax(transform.(bars))
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
-        new{R}(bars, color, char_width, max_freq, max_len, symb, transform)
+        new{R}(bars, color, char_width, max_freq, max_len, string(symb), transform)
     end
 end
 
@@ -30,7 +30,7 @@ function BarplotGraphics(
         char_width::Int,
         transform = identity;
         color::Symbol = :green,
-        symb::String = "■") where {R <: Number}
+        symb = "■") where {R <: Number}
     BarplotGraphics(bars, char_width, color, symb, transform)
 end
 

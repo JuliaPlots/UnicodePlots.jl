@@ -4,6 +4,11 @@ y = [2, 0, -5, 2, -5]
 @test_throws MethodError scatterplot()
 @test_throws MethodError scatterplot(sin, x)
 @test_throws MethodError scatterplot([sin], x)
+@test_throws DimensionMismatch scatterplot([1,2], [1,2,3])
+@test_throws DimensionMismatch scatterplot([1,2,3], [1,2])
+@test_throws DimensionMismatch scatterplot([1,2,3], 1:2)
+@test_throws DimensionMismatch scatterplot(1:3, [1,2])
+@test_throws DimensionMismatch scatterplot(1:3, 1:2)
 
 @testset "positional types" begin
     for p in (
@@ -47,13 +52,13 @@ y = [2, 0, -5, 2, -5]
         render = BeforeAfterFull()
     )
 
-    p = @inferred(scatterplot(x .* 1e3  .+ 15, y .* 1e-3 .- 15))
+    p = @inferred scatterplot(x .* 1e3  .+ 15, y .* 1e-3 .- 15)
     @test_reference(
         "references/scatterplot/scale1.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    p = @inferred(scatterplot(x .* 1e-3 .+ 15, y .* 1e3  .- 15))
+    p = @inferred scatterplot(x .* 1e-3 .+ 15, y .* 1e3  .- 15)
     @test_reference(
         "references/scatterplot/scale2.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
