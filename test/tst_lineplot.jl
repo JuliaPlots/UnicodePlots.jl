@@ -237,3 +237,65 @@ end
         render = BeforeAfterFull()
     )
 end
+
+@testset "stairs" begin
+    sx = [1, 2, 4, 7, 8]
+    sy = [1, 3, 4, 2, 7]
+
+    p = @inferred stairs(sx, sy, style = :pre)
+    @test p isa Plot
+    @test_reference(
+        "references/lineplot/stairs_pre.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    p = @inferred stairs(sx, sy)
+    @test_reference(
+        "references/lineplot/stairs_post.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred stairs(sx, sy, style = :post)
+    @test_reference(
+        "references/lineplot/stairs_post.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    p = @inferred stairs(sx, sy, title = "Foo", color = :red, xlabel = "x", name = "1")
+    @test @inferred(stairs!(p, sx .- .2, sy .+ 1.5, name = "2")) === p
+    @test_reference(
+        "references/lineplot/stairs_parameters.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    @test @inferred(stairs!(p, sx, sy, name = "3", style = :pre)) === p
+    @test_reference(
+        "references/lineplot/stairs_parameters2.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    # special weird case
+    p = stairs(sx, [1, 3, 4, 2, 7000])
+    @test_reference(
+        "references/lineplot/stairs_edgecase.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    p = stairs(sx, sy, width = 10, padding = 3)
+    annotate!(p, :tl, "Hello")
+    annotate!(p, :t, "how are")
+    annotate!(p, :tr, "you?")
+    annotate!(p, :bl, "Hello")
+    annotate!(p, :b, "how are")
+    annotate!(p, :br, "you?")
+    lineplot!(p, 1, .5)
+    @test_reference(
+        "references/lineplot/squeeze_annotations.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+end
