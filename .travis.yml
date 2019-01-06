@@ -1,16 +1,44 @@
+## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
 os:
   - linux
   - osx
 julia:
-  - 0.7
   - 1.0
   - nightly
 notifications:
   email: false
-# uncomment the following lines to override the default test script.
-script:
-    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-    - julia --check-bounds=yes -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("UnicodePlots"); Pkg.test("UnicodePlots"; coverage=true)'
+git:
+  depth: 99999999
+
+## uncomment the following lines to allow failures on nightly julia
+## (tests will run but not make your overall status red)
+matrix:
+  allow_failures:
+    - julia: nightly
+
+## uncomment and modify the following lines to manually install system packages
+#addons:
+#  apt: # apt-get for linux
+#    packages:
+#    - gfortran
+#before_script: # homebrew for mac
+#  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
+
+#jobs:
+#  include:
+#    - stage: "Documentation"
+#      julia: 1.0
+#      os: linux
+#      script:
+#        - julia --project=docs/ -e 'using Pkg; Pkg.add(PackageSpec(path=pwd())); Pkg.instantiate()'
+#        - julia --project=docs/ docs/make.jl
+#      after_success: skip
+
+## uncomment the following lines to override the default test script
+#script:
+#    - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#    - julia --check-bounds=yes --color=yes -e 'import Pkg; Pkg.clone(pwd()); Pkg.build("UnicodePlots"); Pkg.test("UnicodePlots"; coverage=true)';
+
 after_success:
-    - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
