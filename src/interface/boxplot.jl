@@ -1,18 +1,21 @@
 """
-`boxplot(data; nargs...)` → `Plot`
+    boxplot(data; kwargs...)
 
 Description
 ============
 
 Draws a box-and-whisker plot.
-The first argument specifies the data to plot. This is a vector of vectors, with each
-inner vector representing a data series. We use a vector of vectors over a matrix
-to allow series of different lengths.
-Optionally, a list of text may be provided, with length equal to the number of series.
-Alternatively, one can specify a boxplot using a dictionary.
-In that case, the values, which have to be numeric, will be used as the data series,
-and the keys, which have to be strings, will be used as the labels.
 
+The first argument specifies the data to plot. This is a vector
+of vectors, with each inner vector representing a data series. We
+use a vector of vectors over a matrix to allow series of
+different lengths. Optionally, a list of text may be provided,
+with length equal to the number of series.
+
+Alternatively, one can specify a boxplot using a dictionary. In
+that case, the values, which have to be numeric, will be used as
+the data series, and the keys, which have to be strings, will be
+used as the labels.
 
 Usage
 ======
@@ -49,20 +52,21 @@ Author(s)
 Examples
 =========
 
-    julia> boxplot([1, 2, 3, 7], title = "Test")
-
-                       Test
-     ┌────────────────────────────────────────┐
-     │    │   ┌──┬───────┐              │     │
-     │    ├───┤  │       ├──────────────┤     │
-     │    │   └──┴───────┘              │     │
-     └────────────────────────────────────────┘
-     0                  4.0                   8
+```julia-repl
+julia> boxplot([1, 2, 3, 7], title = "Test")
+                      Test
+    ┌                                        ┐
+     ╷   ┌────┬─────────┐                   ╷
+     ├───┤    │         ├───────────────────┤
+     ╵   └────┴─────────┘                   ╵
+    └                                        ┘
+    1                   4                    7
+```
 
 See also
 =========
 
-`Plot`, `histogram`, `BoxplotGraphics`
+[`Plot`](@ref), [`histogram`](@ref), [`BoxplotGraphics`](@ref)
 """
 function boxplot(
         text::AbstractVector{<:AbstractString},
@@ -117,9 +121,9 @@ function boxplot!(
         kw...)
     !isempty(data)|| throw(ArgumentError("Can't append empty array to boxplot"))
 
-    min_x, max_x = extend_limits(data, xlim)
-    plot.graphics.min_x = min(plot.graphics.min_x, min_x)
-    plot.graphics.max_x = min(plot.graphics.max_x, max_x)
+    #min_x, max_x = extend_limits(data, xlim)
+    #plot.graphics.min_x = max(plot.graphics.min_x, min_x)
+    #plot.graphics.max_x = min(plot.graphics.max_x, max_x)
 
     addseries!(plot.graphics, data)
 
@@ -137,6 +141,10 @@ function boxplot!(
     annotate!(plot, :br, max_x_str)
 
     plot
+end
+
+function boxplot!(plot, name, data::AbstractVector{<:Number}; kw...)
+    boxplot!(plot, data; name = name, kw...)
 end
 
 function boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...)
