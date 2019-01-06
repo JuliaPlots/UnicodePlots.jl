@@ -5,11 +5,12 @@ Description
 ============
 
 Draws a path through the given points on a new canvas.
-It uses the first parameter `x` (which should be some vector) to
-denote the horizontal position of each point, and the second
-parameter `y` (which should also be some vector) as their
-vertical position. This means that the two vectors have to have
-the same length.
+
+The first (optional) vector `x` should contain the horizontal
+positions for all the points along the path. The second vector
+`y` should then contain the corresponding vertical positions
+respectively. This means that the two vectors must be of the same
+length and ordering.
 
 Usage
 ======
@@ -130,7 +131,7 @@ function lineplot(
         y::AbstractVector;
         xlim = [extrema(Dates.value.(x))...],
         kw...)
-    d = convert(Vector{Float64}, Dates.value.(x))
+    d = Dates.value.(x)
     new_plot = lineplot(d, y; xlim = xlim, kw...)
     annotate!(new_plot, :bl, string(minimum(x)), color = :light_black)
     annotate!(new_plot, :br, string(maximum(x)), color = :light_black)
@@ -141,7 +142,7 @@ function lineplot!(
         x::AbstractVector{<:TimeType},
         y::AbstractVector;
         kw...)
-    d = convert(Vector{Float64}, Dates.value.(x))
+    d = Dates.value.(x)
     lineplot!(plot, d, y; kw...)
 end
 
@@ -212,10 +213,28 @@ end
 
 # plotting vector of functions
 
+function lineplot(F::AbstractVector{<:Function}; kw...)
+    lineplot(F, -10, 10; kw...)
+end
+
 function lineplot(
         F::AbstractVector{<:Function},
         startx::Number,
         endx::Number;
+        kw...)
+    _lineplot(F, startx, endx; kw...)
+end
+
+function lineplot(
+        F::AbstractVector{<:Function},
+        x::AbstractVector;
+        kw...)
+    _lineplot(F, x; kw...)
+end
+
+function _lineplot(
+        F::AbstractVector{<:Function},
+        args...;
         color = :auto,
         name = "",
         kw...)
@@ -227,15 +246,11 @@ function lineplot(
     name_is_vec  && (length(name)  == n || throw(DimensionMismatch("\"name\" must be a string or same length as the function vector")))
     tcolor = color_is_vec ? color[1] : color
     tname  = name_is_vec  ? name[1]  : name
-    new_plot = lineplot(F[1], startx, endx; color = tcolor, name = tname, kw...)
+    new_plot = lineplot(F[1], args...; color = tcolor, name = tname, kw...)
     for i = 2:n
         tcolor = color_is_vec ? color[i] : color
         tname  = name_is_vec  ? name[i]  : name
-        lineplot!(new_plot, F[i], startx, endx; color = tcolor, name = tname)
+        lineplot!(new_plot, F[i], args...; color = tcolor, name = tname)
     end
     new_plot
-end
-
-function lineplot(F::AbstractVector{<:Function}; kw...)
-    lineplot(F, -10, 10; kw...)
 end

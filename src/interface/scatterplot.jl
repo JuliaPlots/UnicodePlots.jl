@@ -6,11 +6,11 @@ Description
 
 Draws the given points on a new canvas.
 
-It uses the first parameter `x` (which should be some vector) to
-denote the horizontal position of each point, and the second
-parameter `y` (which should also be some vector) as their
-vertical position. This means that the two vectors have to have
-the same length.
+The first (optional) vector `x` should contain the horizontal
+positions for all the points. The second vector `y` should then
+contain the corresponding vertical positions respectively. This
+means that the two vectors must be of the same length and
+ordering.
 
 Usage
 ======
