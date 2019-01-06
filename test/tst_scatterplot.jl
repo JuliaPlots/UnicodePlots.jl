@@ -123,3 +123,26 @@ end
         render = BeforeAfterFull()
     )
 end
+
+@testset "densityplot" begin
+    seed!(1338)
+    dx, dy = randn(1000), randn(1000)
+
+    p = @inferred densityplot(dx, dy)
+    @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2)) === p
+    @test p isa Plot
+    @test_reference(
+        "references/scatterplot/densityplot.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    p = @inferred densityplot(dx, dy, name = "foo", color = :red, title = "Title", xlabel = "x")
+    @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2, name = "bar")) === p
+    @test p isa Plot
+    @test_reference(
+        "references/scatterplot/densityplot_parameters.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+end

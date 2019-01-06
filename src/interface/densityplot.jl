@@ -1,51 +1,45 @@
 """
-`densityplot(x, y; nargs...)` → `Plot`
+    densityplot(x, y; kwargs...)
 
 Description
 ============
 
 Draws a density plot for the given points.
-It uses the first parameter `x`
-(which should be a vector or range) to denote
-the horizontal position of each point,
-and the second parameter `y`
-(which should also be a vector or range)
-as their vertical position.
-This means that the two vectors have to have the same length.
+
+The first vector `x` should contain the horizontal
+positions for all the points. The second vector `y` should then
+contain the corresponding vertical positions respectively. This
+means that the two vectors must be of the same length and
+ordering.
 
 Usage
 ======
 
-    densityplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :white, labels = true)
+    densityplot(x, y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = [0, 0], ylim = [0, 0], ^grid = false)
 
 Arguments
 ==========
 
-- **`x`** : The horizontal dimension for each point.
+- **`x`** : The horizontal position for each point.
+  If omitted, the axes of `y` will be used as `x`.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`title`** : Text to display on the top of the plot.
+- **`name`** : Annotation of the current drawing to be displayed
+  on the right
 
-- **`name`** : Annotation of the current drawing to displayed on the right
+$DOC_PLOT_PARAMS
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
+- **`xlim`** : Plotting range for the x axis.
+  `[0, 0]` stands for automatic.
 
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+- **`ylim`** : Plotting range for the y axis.
+  `[0, 0]` stands for automatic.
 
-- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:green`
-
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Returns
 ========
@@ -60,51 +54,49 @@ Author(s)
 Examples
 =========
 
-    julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
-
-                         Density Plot
-           ┌────────────────────────────────────────┐
-       2.9 │                    ░                   │
-           │                ░    ░  ░               │
-           │                ░░░  ░ ░ ░      ░       │
-           │             ░░░ ░░▒░▒░░░ ▒ ░           │
-           │          ░░ ░░ ░▒░░▒▒▒▒░░░░░░░         │
-           │         ░░ ░▒░░░░░▓▒▒░▒░▒░▓░▒░░░       │
-           │        ░ ░░░░▓▓▒▓▒▒█▒▓▒▒▓▒▒░▒ ░ ░      │
-           │           ░ ▒▒▒▒▓▓▒▓▓▓▓▒█▒▒░░░░░░ ░    │
-           │     ░   ░░░░░░░▒▒▓░░▓▒█▒▒▓▓▒▒ ░    ░   │
-           │           ░ ░░▒▒░░▒░░▒░░░░ ░░  ░ ░     │
-           │         ░   ░ ░ ░░░░░░ ░░ ░░ ░         │
-           │              ░  ░ ░ ░  ░ ░   ░░░       │
-           │                ░░  ░                   │
-           │                                        │
-      -3.3 │                                        │
-           └────────────────────────────────────────┘
-           -3.4                                   2.9
+```julia-repl
+julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
+                      Density Plot
+        ┌────────────────────────────────────────┐
+    2.9 │                    ░                   │
+        │                ░    ░  ░               │
+        │                ░░░  ░ ░ ░      ░       │
+        │             ░░░ ░░▒░▒░░░ ▒ ░           │
+        │          ░░ ░░ ░▒░░▒▒▒▒░░░░░░░         │
+        │         ░░ ░▒░░░░░▓▒▒░▒░▒░▓░▒░░░       │
+        │        ░ ░░░░▓▓▒▓▒▒█▒▓▒▒▓▒▒░▒ ░ ░      │
+        │           ░ ▒▒▒▒▓▓▒▓▓▓▓▒█▒▒░░░░░░ ░    │
+        │     ░   ░░░░░░░▒▒▓░░▓▒█▒▒▓▓▒▒ ░    ░   │
+        │           ░ ░░▒▒░░▒░░▒░░░░ ░░  ░ ░     │
+        │         ░   ░ ░ ░░░░░░ ░░ ░░ ░         │
+        │              ░  ░ ░ ░  ░ ░   ░░░       │
+        │                ░░  ░                   │
+        │                                        │
+   -3.3 │                                        │
+        └────────────────────────────────────────┘
+        -3.4                                   2.9
+```
 
 See also
 =========
 
-`Plot`, `scatterplot`, `DensityCanvas`
+[`Plot`](@ref), [`scatterplot`](@ref), [`DensityCanvas`](@ref)
 """
 function densityplot(
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :white,
+        color::Symbol = :auto,
+        grid = false,
+        name = "",
         kw...)
-    X = convert(Vector{Float64}, x)
-    Y = convert(Vector{Float64}, y)
-    new_plot = Plot(X, Y, DensityCanvas; grid = false, kw...)
-    points!(new_plot, X, Y, color)
+    new_plot = Plot(x, y, DensityCanvas; grid = grid, kw...)
+    scatterplot!(new_plot, x, y; color = color, name = name)
 end
 
 function densityplot!(
-        plot::Plot{<:Canvas},
+        plot::Plot{<:DensityCanvas},
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :white,
         kw...)
-    X = convert(Vector{Float64}, x)
-    Y = convert(Vector{Float64}, y)
-    points!(plot, X, Y, color)
+    scatterplot!(plot, x, y; kw...)
 end
