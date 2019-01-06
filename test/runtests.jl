@@ -14,6 +14,7 @@ tests = [
     "tst_histogram.jl",
     "tst_scatterplot.jl",
     "tst_lineplot.jl",
+    "tst_spy.jl",
 #    "old_tests.jl",
 ]
 

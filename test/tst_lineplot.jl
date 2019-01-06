@@ -276,6 +276,11 @@ end
         @io2str(show(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    @test_reference(
+        "references/lineplot/stairs_parameters2_nocolor.txt",
+        @io2str(show(IOContext(::IO, :color=>false), p)),
+        render = BeforeAfterFull()
+    )
 
     # special weird case
     p = stairs(sx, [1, 3, 4, 2, 7000])
