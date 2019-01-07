@@ -6,41 +6,36 @@
 
 Advanced Unicode plotting library designed for use in Julia's REPL.
 
-## Installation
-
-To install UnicodePlots, start up Julia and type the following code-snipped into the REPL. It makes use of the native Julia package manger.
-
-```Julia
-using Pkg
-Pkg.add("UnicodePlots")
-using UnicodePlots
-```
-
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without much verbosity. Here is a list of the main high-level functions for common scenarios:
+There are a couple of ways to generate typical plots without much
+verbosity. Here is a list of the main high-level functions for
+common scenarios:
 
   - Scatterplot
   - Lineplot
-  - Barplot (horizontal)
   - Staircase Plot
+  - Barplot (horizontal)
   - Histogram (horizontal)
+  - Boxplot (horizontal)
   - Sparsity Pattern
   - Density Plot
 
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
-myPlot = lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line")
+plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y")
 ```
 
 ![Basic Canvas](doc/img/hello_world.png)
 
-There are other types of `Canvas` available (see section "Low-level Interface").
-In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results.
+There are other types of `Canvas` available (see section
+"Low-level Interface"). In some situations, such as printing to
+a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might
+lead to better results.
 
 ```Julia
-lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line", canvas = AsciiCanvas, border = :ascii)
+lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y", canvas = DotCanvas, border = :ascii)
 ```
 
 ![Basic Canvas](doc/img/ascii.png)
@@ -48,7 +43,7 @@ lineplot([-1, 2, 3, 7], [1, 2, 9, 4], title = "My Plot", name = "my line", canva
 Every plot has a mutating variant that ends with a exclamation mark.
 
 ```Julia
-lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color = :yellow, name = "other line")
+lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
 ```
 
 ![Basic Canvas](doc/img/hello_world2.png)
@@ -56,30 +51,38 @@ lineplot!(myPlot, [0, 4, 8], [10, 1, 10], color = :yellow, name = "other line")
 #### Scatterplot
 
 ```Julia
-scatterplot(randn(50), randn(50), title = "My Scatterplot", color = :red)
+scatterplot(randn(50), randn(50), title = "My Scatterplot")
 ```
 ![Scatterplot Screenshot](doc/img/scatter.png)
 
 #### Lineplot
 
 ```Julia
-lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", color = :blue)
+lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
 ```
 ![Lineplot Screenshot1](doc/img/line.png)
 
 It's also possible to specify a function and a range.
 
 ```Julia
-myPlot = lineplot([cos, sin], -π/2, 2π)
+plt = lineplot([cos, sin], -π/2, 2π)
 ```
 ![Lineplot Screenshot2](doc/img/sin.png)
 
 You can also plot lines by specifying an intercept and slope
 
 ```Julia
-lineplot!(myPlot, -0.5, .2)
+lineplot!(plt, -0.5, .2, name = "line")
 ```
 ![Lineplot Screenshot3](doc/img/abline.png)
+
+#### Staircase plot
+
+```Julia
+# supported style are :pre and :post
+stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "My Staircase Plot")
+```
+![Staircase Screenshot](doc/img/stairs.png)
 
 #### Barplot
 
@@ -90,25 +93,38 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Population")
 ```
-![Barplot Screenshot](doc/img/barplot.png)
+![Barplot Screenshot](https://user-images.githubusercontent.com/10854026/50764892-74682780-1274-11e9-9861-cdcd31fa3cf0.png)
 
 _Note_: You can use the keyword argument `symb` to specify the character that should
 be used to plot the bars. For example `symb = "#"`
 
-#### Staircase plot
-
-```Julia
-# supported style are :pre and :post
-stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "My Staircase Plot")
-```
-![Staircase Screenshot](doc/img/stairs.png)
-
 #### Histogram
 
 ```Julia
-histogram(randn(1000), bins = 15, title = "Histogram")
+histogram(randn(1000) .* 0.1, nbins = 15, closed = :left)
 ```
-![Histogram Screenshot](doc/img/hist.png)
+![Histogram Screenshot 1](https://user-images.githubusercontent.com/10854026/50764895-7500be00-1274-11e9-9b99-aac93afa1247.png)
+
+The `histogram` function also supports axis scaling using the
+parameter `xscale`.
+
+```Julia
+histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=log10)
+```
+![Histogram Screenshot 2](https://user-images.githubusercontent.com/10854026/50764896-7500be00-1274-11e9-9326-7f76091099f2.png)
+
+#### Boxplot
+
+```Julia
+boxplot([1,3,3,4,6,10])
+```
+![Boxplot Screenshot 1](https://user-images.githubusercontent.com/10854026/50764893-74682780-1274-11e9-9f45-0ce5ac95f129.png)
+
+```Julia
+boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Grouped Boxplot", xlabel="x")
+```
+
+![Boxplot Screenshot 2](https://user-images.githubusercontent.com/10854026/50764894-7500be00-1274-11e9-8608-5dc9517730cc.png)
 
 #### Sparsity Pattern
 
@@ -121,14 +137,15 @@ spy(sprandn(50, 120, .05))
 #### Density Plot
 
 ```Julia
-myPlot = densityplot(randn(1000), randn(1000), color = :blue)
-densityplot!(myPlot, randn(1000) .+ 2, randn(1000) .+ 2, color = :red)
+plt = densityplot(randn(1000), randn(1000))
+densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
 ![Density Screenshot](doc/img/density.png)
 
 ### Options
 
-All plots support a common set of named parameters
+All plots support the set (or a subset) of the following named
+parameters.
 
 - `title::String = ""`:
 
@@ -137,6 +154,14 @@ All plots support a common set of named parameters
 - `name::String = ""`:
 
     Annotation of the current drawing to displayed on the right
+
+- `xlabel::String = ""`:
+
+    Description on the x-axis
+
+- `ylabel::String = ""`:
+
+    Description on the y-axis
 
 - `width::Int = 40`:
 
@@ -170,7 +195,7 @@ All plots support a common set of named parameters
 
 - `border::Symbol = :solid`:
 
-    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+    The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:corners`, and `:none`.
 
   ```Julia
   lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:bold)
@@ -197,9 +222,9 @@ All plots support a common set of named parameters
 
     Can be used to hide the gridlines at the origin
 
-- `color::Symbol = :blue`:
+- `color::Symbol = :auto`:
 
-    Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+    Color of the drawing. Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`.
 
 - `canvas::Type = BrailleCanvas`:
 
@@ -279,6 +304,25 @@ At the moment there are the following types of Canvas implemented:
 
   - **BarplotGraphics**:
     This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object
+
+## Installation
+
+To install UnicodePlots, start up Julia and type the following
+code-snipped into the REPL. It makes use of the native Julia
+package manger.
+
+```Julia
+using Pkg
+Pkg.add("UnicodePlots")
+```
+
+After installing the package can be imported like any other Julia
+Package.
+
+```Julia
+using UnicodePlots
+histogram(randn(1000), title = "Hello World!")
+```
 
 ## License
 
