@@ -68,7 +68,7 @@ It's also possible to specify a function and a range.
 ```Julia
 plt = lineplot([cos, sin], -π/2, 2π)
 ```
-![Lineplot Screenshot2]("https://user-images.githubusercontent.com/10854026/50768725-c1062f80-1281-11e9-8a30-ded2671d3781.png)
+![Lineplot Screenshot2](https://user-images.githubusercontent.com/10854026/50768725-c1062f80-1281-11e9-8a30-ded2671d3781.png)
 
 You can also plot lines by specifying an intercept and slope
 
