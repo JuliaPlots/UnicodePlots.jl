@@ -24,6 +24,7 @@ common scenarios:
 Here is a quick hello world example of a typical use-case:
 
 ```Julia
+using UnicodePlots
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y")
 ```
 
@@ -313,14 +314,6 @@ package manger.
 ```Julia
 using Pkg
 Pkg.add("UnicodePlots")
-```
-
-After installing the package can be imported like any other Julia
-Package.
-
-```Julia
-using UnicodePlots
-histogram(randn(1000), title = "Hello World!")
 ```
 
 ## License
