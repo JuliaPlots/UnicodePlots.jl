@@ -28,7 +28,7 @@ using UnicodePlots
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y")
 ```
 
-![Basic Canvas](https://user-images.githubusercontent.com/10854026/50768476-e5add780-1280-11e9-804a-a31a914b8499.png)
+![Basic Canvas](https://user-images.githubusercontent.com/10854026/50774451-c0769480-1293-11e9-9f0f-82a6085900ff.png)
 
 There are other types of `Canvas` available (see section
 "Low-level Interface"). In some situations, such as printing to
