@@ -27,7 +27,7 @@ Here is a quick hello world example of a typical use-case:
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y")
 ```
 
-![Basic Canvas](doc/img/hello_world.png)
+![Basic Canvas](https://user-images.githubusercontent.com/10854026/50768476-e5add780-1280-11e9-804a-a31a914b8499.png)
 
 There are other types of `Canvas` available (see section
 "Low-level Interface"). In some situations, such as printing to
@@ -38,7 +38,7 @@ lead to better results.
 lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y", canvas = DotCanvas, border = :ascii)
 ```
 
-![Basic Canvas](doc/img/ascii.png)
+![Basic Canvas](https://user-images.githubusercontent.com/10854026/50768477-e5add780-1280-11e9-9541-55d937d7d605.png)
 
 Every plot has a mutating variant that ends with a exclamation mark.
 
@@ -46,7 +46,7 @@ Every plot has a mutating variant that ends with a exclamation mark.
 lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
 ```
 
-![Basic Canvas](doc/img/hello_world2.png)
+![Basic Canvas](https://user-images.githubusercontent.com/10854026/50768478-e5add780-1280-11e9-93e3-a7fa35a79a6d.png)
 
 #### Scatterplot
 
@@ -123,7 +123,6 @@ boxplot([1,3,3,4,6,10])
 ```Julia
 boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Grouped Boxplot", xlabel="x")
 ```
-
 ![Boxplot Screenshot 2](https://user-images.githubusercontent.com/10854026/50764894-7500be00-1274-11e9-8608-5dc9517730cc.png)
 
 #### Sparsity Pattern
@@ -132,7 +131,7 @@ boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Grouped Boxplot
 using SparseArrays
 spy(sprandn(50, 120, .05))
 ```
-![Spy Screenshot](doc/img/spy.png)
+![Spy Screenshot](https://user-images.githubusercontent.com/10854026/50768479-e5add780-1280-11e9-8304-d90661465cfa.png)
 
 #### Density Plot
 
