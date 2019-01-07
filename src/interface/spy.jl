@@ -1,47 +1,60 @@
 """
-`spy(A; nargs...)` → `Plot`
+    spy(A; kwargs...)
 
 Description
 ============
 
-Plots the sparsity pattern for the given matrix `A`.
-This means that a scatterplot that resembles the matrix is drawn,
-in which only the pixel for non-zero elements of the matrix are set.
+Plots the sparsity pattern for the given matrix `A`. This means
+that a scatterplot that resembles the matrix is drawn, in which
+only the pixel for non-zero elements of the matrix are set.
 
-If the parameters `width` and `height` are not explicitly specified,
-then the function will attempt to preserve the aspect ratio of the matrix,
-while also attempting to fit the resulting plot withing the bounding box
-specified by `maxwidth` and `maxheight`
+If the parameters `width` and `height` are not explicitly
+specified, then the function will attempt to preserve the aspect
+ratio of the matrix, while also attempting to fit the resulting
+plot withing the bounding box specified by `maxwidth` and
+`maxheight`
 
 Usage
 ======
 
-    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", width = 0, height = 0, border = :solid, margin = 3, padding = 1, color = :automatic, labels = true, canvas = BrailleCanvas)
+    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 0, height = 0, canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
 
-- **`A`** : The matrix of interest, which non-zero elements should be drawn
+- **`A`** : The matrix of interest for which non-zero elements
+  should be drawn
 
-- **`maxwidth`** : Maximal number of characters per row that should be used for plotting
+- **`maxwidth`** : Maximum number of characters per row that
+  should be used for plotting
 
-- **`maxheight`** : Maximal number of rows that should be used for plotting.
+- **`maxheight`** : Maximum number of character rows that should
+  be used for plotting.
 
 - **`title`** : Text to display on the top of the plot.
 
-- **`width`** : Number of characters per row that should be used for plotting. `0` stands for automatic
+- **`labels`** : Boolean. Can be used to hide the labels by
+  setting `labels = false`.
 
-- **`height`** : Number of rows that should be used for plotting. `0` stands for automatic
+- **`border`** : The style of the bounding box of the plot.
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
+  `:ascii`, and `:none`.
 
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+- **`margin`** : Number of empty characters to the left of the
+  whole plot.
 
-- **`margin`** : Number of empty characters to the left of the whole plot.
+- **`padding`** : Space of the left and right of the plot between
+  the labels and the canvas.
 
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
+- **`color`** : Color of the drawing.
+  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
+  `:magenta`, `:white`, `:normal`.
 
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
+- **`width`** : Exact number of characters per row that should be
+  used for plotting. `0` stands for automatic.
 
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
+- **`height`** : Exact number of character rows that should be
+  used for plotting. `0` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
@@ -60,46 +73,51 @@ Author(s)
 Examples
 =========
 
-    julia> spy(sprandn(50, 120, .05))
-
-                              Sparsity Pattern
-        ┌────────────────────────────────────────────────────────────┐
-      1 │⢀⠀⠒⠀⢄⠂⠀⡀⠀⠀⠀⠰⠀⠐⠀⠀⠀⠀⠂⠀⠀⠀⠠⠰⠀⠀⠀⡀⠄⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠐⠀⠐⠀⠀⡀⠀⠀⠀⠀⠀⠀⠂⡀⠀⡀⠠⠀⠀│ > 0
-        │⠀⠀⠀⠀⠀⢀⢀⠀⠀⠀⠀⠐⠄⠀⢀⠂⠀⠠⠀⠉⠀⠀⠀⠀⢐⠀⠀⠀⠀⠀⠠⠐⠄⠄⠀⠀⠀⠐⠐⠈⢁⠀⠀⠀⠀⠀⠀⠀⠠⠀⠐⡐⠀⠄⠀⠀⠈⠀⠀⠠│ < 0
-        │⡀⠀⠀⠀⡀⠊⠀⠀⠀⢀⢀⠀⠄⠀⠂⡠⠂⠐⠐⠀⠀⠄⠀⠀⠀⠄⠀⠀⠀⠀⡀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠠⠀⠂⠀⠠⠀⠀⠀⠆⠄⠈⠀⢀⠀⠀⠀⠐⠄⠀⠀│
-        │⠀⠀⠀⠀⠀⠀⠀⢠⠀⢀⠀⠀⠀⢀⠀⠄⠀⠀⠀⠂⠀⠀⠀⠇⠀⢀⠀⠀⠁⠁⠀⠄⠄⠀⠀⠁⠁⠀⡈⠀⠁⠄⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀│
-        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⢀⠀⠀⠀⠐⠂⠁⢀⠠⠀⠀⠀⠀⠀⠁⠀⠀⠀⠠⠀⠀⠀⠀⢀⠀⢄⠀⠀⠀⠐⠀⠀⠈⠀⠀⠐⠀⠄⠂⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-        │⠠⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠠⠈⠀⠀⠀⠀⢀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-        │⠐⠀⠉⠐⠀⠀⠁⠀⠀⠀⠀⠀⠀⠌⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠌⠀⠀⠄⠀⠀⡀⠀⠀⠀⠀⠀⢀⠈⠄⠀⡀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀│
-        │⠂⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⡨⠀⠠⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠈⡠⠀⡀⠀⠀⠁⠀⠁⠠⠀⠀⠀⠀⠀⠀⠀⠄⡀⠀⠄⡠⠀⠀⠀⠀│
-        │⠐⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠁⠀⡀⠁⠀⢂⠂⠀⠀⠀⠈⠁⠀⠀⠁⠁⠄⠀⠀⠀⠀⠀⡀⠀⠀⠀⠂⠀⠀⠀⠀⠐⠀⠂⠀⠂⠁⠀⠆⠈⠀⠀⠄⠄⠀⠀⠀⠀│
-        │⠀⠀⠀⠠⠀⠁⠀⠀⠀⠀⠂⠀⠠⠀⠀⠌⠀⠀⠂⠄⠀⡀⠂⠀⠀⡀⠠⠁⠄⠀⠀⠀⠀⠀⠄⠈⠀⢂⠐⠀⢀⠀⠠⠀⠄⠁⡀⠀⠀⠐⠀⠀⡐⠀⠀⠀⠁⠀⠀⠔│
-        │⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠁⠃⡀⡁⠀⠀⠀⢀⠀⠀⠂⠀⠀⠠⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠬⠀⡀│
-        │⠐⠀⠀⠀⠀⠀⠀⠀⠢⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠈⠁⠁⠀⠀⠄⠀⠀⠐⠀⠄⠀⠠⠀⠁⡀⠁⠀⠀⠠⠡⠀⠀⠀⠀⠀⠀⠀⠐⠄⠀⠀⠀⠀⡀│
-     50 │⠀⠀⠀⠀⠁⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠂⠀⠀⠀⠀⠀⠀⠐⠀⠈⠂⠀⠀⠀⠀⠀⠀⠀⠀⠠⠈⠀⠀⠀⠀⠀⠀⠂⠀⠄⠀⠀⠀⠂⠁⠀⠀⠀⠂⠀│
-        └────────────────────────────────────────────────────────────┘
-        1                                                          120
-                                  nz = 275
-
+```julia-repl
+julia> spy(sprandn(50, 120, .05))
+                           Sparsity Pattern
+      ┌────────────────────────────────────────────────────────────┐
+    1 │⢀⠀⠒⠀⢄⠂⠀⡀⠀⠀⠀⠰⠀⠐⠀⠀⠀⠀⠂⠀⠀⠀⠠⠰⠀⠀⠀⡀⠄⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠐⠀⠐⠀⠀⡀⠀⠀⠀⠀⠀⠀⠂⡀⠀⡀⠠⠀⠀│ > 0
+      │⠀⠀⠀⠀⠀⢀⢀⠀⠀⠀⠀⠐⠄⠀⢀⠂⠀⠠⠀⠉⠀⠀⠀⠀⢐⠀⠀⠀⠀⠀⠠⠐⠄⠄⠀⠀⠀⠐⠐⠈⢁⠀⠀⠀⠀⠀⠀⠀⠠⠀⠐⡐⠀⠄⠀⠀⠈⠀⠀⠠│ < 0
+      │⡀⠀⠀⠀⡀⠊⠀⠀⠀⢀⢀⠀⠄⠀⠂⡠⠂⠐⠐⠀⠀⠄⠀⠀⠀⠄⠀⠀⠀⠀⡀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠠⠀⠂⠀⠠⠀⠀⠀⠆⠄⠈⠀⢀⠀⠀⠀⠐⠄⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⢠⠀⢀⠀⠀⠀⢀⠀⠄⠀⠀⠀⠂⠀⠀⠀⠇⠀⢀⠀⠀⠁⠁⠀⠄⠄⠀⠀⠁⠁⠀⡈⠀⠁⠄⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⢀⠀⠀⠀⠐⠂⠁⢀⠠⠀⠀⠀⠀⠀⠁⠀⠀⠀⠠⠀⠀⠀⠀⢀⠀⢄⠀⠀⠀⠐⠀⠀⠈⠀⠀⠐⠀⠄⠂⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠠⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠠⠈⠀⠀⠀⠀⢀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠐⠀⠉⠐⠀⠀⠁⠀⠀⠀⠀⠀⠀⠌⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠌⠀⠀⠄⠀⠀⡀⠀⠀⠀⠀⠀⢀⠈⠄⠀⡀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀│
+      │⠂⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⡨⠀⠠⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠈⡠⠀⡀⠀⠀⠁⠀⠁⠠⠀⠀⠀⠀⠀⠀⠀⠄⡀⠀⠄⡠⠀⠀⠀⠀│
+      │⠐⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠁⠀⡀⠁⠀⢂⠂⠀⠀⠀⠈⠁⠀⠀⠁⠁⠄⠀⠀⠀⠀⠀⡀⠀⠀⠀⠂⠀⠀⠀⠀⠐⠀⠂⠀⠂⠁⠀⠆⠈⠀⠀⠄⠄⠀⠀⠀⠀│
+      │⠀⠀⠀⠠⠀⠁⠀⠀⠀⠀⠂⠀⠠⠀⠀⠌⠀⠀⠂⠄⠀⡀⠂⠀⠀⡀⠠⠁⠄⠀⠀⠀⠀⠀⠄⠈⠀⢂⠐⠀⢀⠀⠠⠀⠄⠁⡀⠀⠀⠐⠀⠀⡐⠀⠀⠀⠁⠀⠀⠔│
+      │⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠁⠃⡀⡁⠀⠀⠀⢀⠀⠀⠂⠀⠀⠠⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠬⠀⡀│
+      │⠐⠀⠀⠀⠀⠀⠀⠀⠢⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠈⠁⠁⠀⠀⠄⠀⠀⠐⠀⠄⠀⠠⠀⠁⡀⠁⠀⠀⠠⠡⠀⠀⠀⠀⠀⠀⠀⠐⠄⠀⠀⠀⠀⡀│
+   50 │⠀⠀⠀⠀⠁⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠂⠀⠀⠀⠀⠀⠀⠐⠀⠈⠂⠀⠀⠀⠀⠀⠀⠀⠀⠠⠈⠀⠀⠀⠀⠀⠀⠂⠀⠄⠀⠀⠀⠂⠁⠀⠀⠀⠂⠀│
+      └────────────────────────────────────────────────────────────┘
+      1                                                          120
+                               nz = 275
+```
 
 See also
 =========
 
-`Plot`, `scatterplot`, `BrailleCanvas`, `BlockCanvas`, `DotCanvas`
+[`Plot`](@ref), [`scatterplot`](@ref),
+[`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function spy(
         A::AbstractMatrix;
         maxwidth::Int  = 0,
         maxheight::Int = 0,
-        title::AbstractString = "Sparsity Pattern",
+        title = "Sparsity Pattern",
         width::Int  = 0,
         height::Int = 0,
         margin::Int  = 3,
         padding::Int = 1,
-        color::Symbol = :automatic,
-        labels::Bool = true,
+        color::Symbol = :auto,
         canvas::Type{T} = BrailleCanvas,
         kw...) where {T <: Canvas}
+    if color == :automatic
+        Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
+        color = :auto
+    end
     rows, cols, vals = _findnz(A)
     nrow, ncol = size(A)
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
@@ -112,14 +130,15 @@ function spy(
 
     # if no size bounds ares specified and the session is in an
     # interactive terminal then use the size of the REPL
-    if isinteractive()
+    # TODO: remove interactive check?
+    #if isinteractive()
         term_height, term_width = Base.displaysize()
         maxheight = maxheight > 0 ? maxheight : term_height - height_diff
         maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
-    else
-        maxheight = maxheight > 0 ? maxheight : 40
-        maxwidth  = maxwidth > 0 ? maxwidth : 70
-    end
+    #else
+    #    maxheight = maxheight > 0 ? maxheight : 40
+    #    maxwidth  = maxwidth > 0 ? maxwidth : 70
+    #end
 
     # Check if the size of the plot should be derived from the matrix
     # Note: if both width and height are 0, it means that there are no
@@ -165,11 +184,11 @@ function spy(
             width  = Float64(ncol) + 1,
             height = Float64(nrow) + 1)
     plot = Plot(can;
-                labels = labels, title = title,
-                margin = margin, padding = padding, kw...)
+                title = title, margin = margin,
+                padding = padding, kw...)
     height = nrows(plot.graphics)
     width = ncols(plot.graphics)
-    plot = if color != :automatic
+    plot = if color != :auto
         points!(plot,
                 convert(Vector{Float64}, cols),
                 nrow + 1 .- convert(Vector{Float64}, rows),
@@ -192,10 +211,10 @@ function spy(
         annotate!(plot, :r, 1, "> 0", :red)
         annotate!(plot, :r, 2, "< 0", :blue)
     end
-    annotate!(plot, :l, 1, "1")
-    annotate!(plot, :l, height, string(nrow))
-    annotate!(plot, :bl, "1")
-    annotate!(plot, :br, string(ncol))
+    annotate!(plot, :l, 1, "1", :light_black)
+    annotate!(plot, :l, height, string(nrow), :light_black)
+    annotate!(plot, :bl, "1", :light_black)
+    annotate!(plot, :br, string(ncol), :light_black)
     xlabel!(plot, string("nz = ", length(vals)))
     return plot
 end

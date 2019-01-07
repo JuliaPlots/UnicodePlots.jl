@@ -1,55 +1,47 @@
 """
-`scatterplot(x, y; nargs...)` → `Plot`
+    scatterplot(x, y; kwargs...)
 
 Description
 ============
 
 Draws the given points on a new canvas.
-It uses the first parameter `x`
-(which should be a vector or range) to denote
-the horizontal position of each point,
-and the second parameter `y`
-(which should also be a vector or range)
-as their vertical position.
-This means that the two vectors have to have the same length.
+
+The first (optional) vector `x` should contain the horizontal
+positions for all the points. The second vector `y` should then
+contain the corresponding vertical positions respectively. This
+means that the two vectors must be of the same length and
+ordering.
 
 Usage
 ======
 
-    scatterplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :auto, labels = true, canvas = BrailleCanvas, grid = true)
+    scatterplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = [0, 0], ylim = [0, 0], canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
 
-- **`x`** : The horizontal dimension for each point.
+- **`x`** : Optional. The horizontal position for each point.
+  If omitted, the axes of `y` will be used as `x`.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`title`** : Text to display on the top of the plot.
+- **`name`** : Annotation of the current drawing to be displayed
+  on the right
 
-- **`name`** : Annotation of the current drawing to displayed on the right
+$DOC_PLOT_PARAMS
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
+- **`xlim`** : Plotting range for the x axis.
+  `[0, 0]` stands for automatic.
 
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
-
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
+- **`ylim`** : Plotting range for the y axis.
+  `[0, 0]` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
-- **`grid`** : Can be used to hide the gridlines at the origin
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Returns
 ========
@@ -64,64 +56,62 @@ Author(s)
 Examples
 =========
 
-    julia> scatterplot(randn(50), randn(50), title = "My Scatterplot", color = :red)
-
-                        My Scatterplot
-           ┌────────────────────────────────────────┐
-       2.1 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⡧⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⡀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⢀⠐⠂⠀⠀⠀⠀⠀⡇⠁⠐⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀│
-           │⠠⠀⠀⠀⠀⠀⠐⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠄⡇⢀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠒⠖⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠚⠒⠒⡗⠒⠒⠒⢒⠒⠒⠒⠒⠒⠒⠒⠖⠒⠒⠒⠒⠒⠢│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠠⠀⠁⡇⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠠⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⡇⠀⠀⠀⠀⢀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-      -2.2 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-           └────────────────────────────────────────┘
-           -2.1                                   1.9
+```julia-repl
+julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
+                   My Scatterplot
+      ┌────────────────────────────────────────┐
+    3 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡆⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⡇⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠡⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠁⠀⡇⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠐⠄⠀⠀⠀⠀⡀⠀⠂⡇⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠤⠤⠤⠤⠤⠤⠴⠤⠤⠤⠬⠤⠬⠤⠤⠤⡧⢥⡤⠤⠤⡤⠤⠤⠤⠬⠤⠤⠤⠤⠤⠤⠤⠤⡤⠤⠤⠤⠤⠄│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⡗⠐⠨⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⡇⠀⠐⠀⠨⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠄⠀⠀⠀⠀⠀⡇⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⠁⠂⠰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+   -3 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+      └────────────────────────────────────────┘
+      -2                                       3
+```
 
 See also
 =========
 
-`Plot`, `lineplot`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+[`Plot`](@ref), [`lineplot`](@ref), [`stairs`](@ref),
+[`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function scatterplot(
-        x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
-        color::Symbol = :auto,
-        name::AbstractString = "",
+        x::AbstractVector,
+        y::AbstractVector;
         canvas::Type = BrailleCanvas,
+        color::Symbol = :auto,
+        name = "",
         kw...)
-    X = convert(Vector{Float64}, collect(x))
-    Y = convert(Vector{Float64}, collect(y))
-    new_plot = Plot(X, Y, canvas; kw...)
-    color = (color == :auto) ? next_color!(new_plot) : color
-    name == "" || annotate!(new_plot, :r, name, color)
-    points!(new_plot, X, Y, color)
+    new_plot = Plot(x, y, canvas; kw...)
+    scatterplot!(new_plot, x, y; color = color, name = name)
+end
+
+function scatterplot(y::AbstractVector; kw...)
+    scatterplot(axes(y, 1), y; kw...)
 end
 
 function scatterplot!(
-        plot::Plot{<:Canvas}, x::AbstractVector{<:Number}, y::AbstractVector{<:Number};
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector;
         color::Symbol = :auto,
-        name::AbstractString = "",
-        kw...)
-    X = convert(Vector{Float64}, collect(x))
-    Y = convert(Vector{Float64}, collect(y))
+        name = "")
     color = (color == :auto) ? next_color!(plot) : color
-    name == "" || annotate!(plot, :r, name, color)
-    points!(plot, X, Y, color)
+    name == "" || annotate!(plot, :r, string(name), color)
+    points!(plot, x, y, color)
 end
 
-function scatterplot(X::AbstractVector; kw...)
-    scatterplot(1:length(X), X; kw...)
+function scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...)
+    scatterplot!(plot, axes(y, 1), y; kw...)
 end
-
-function scatterplot!(plot::Plot{<:Canvas}, X::AbstractVector; kw...)
-    scatterplot!(plot, 1:length(X), X; kw...)
-end
-

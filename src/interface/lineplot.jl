@@ -1,59 +1,54 @@
 """
-`lineplot(x, y; nargs...)` → `Plot`
+    lineplot(x, y; kwargs...)
 
 Description
 ============
 
 Draws a path through the given points on a new canvas.
-It uses the first parameter `x`
-(which should be a vector or range) to denote
-the horizontal position of each point,
-and the second parameter `y`
-(which should also be a vector or range)
-as their vertical position.
-This means that the two vectors have to have the same length.
+
+The first (optional) vector `x` should contain the horizontal
+positions for all the points along the path. The second vector
+`y` should then contain the corresponding vertical positions
+respectively. This means that the two vectors must be of the same
+length and ordering.
 
 Usage
 ======
 
-    lineplot(x, y; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :auto, labels = true, canvas = BrailleCanvas, grid = true)
+    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = [0, 0], ylim = [0, 0], canvas = BrailleCanvas, grid = true)
 
-    lineplot(fun[, start, end]; title = "", name = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, color = :auto, labels = true, canvas = BrailleCanvas, grid = true)
+    lineplot(fun, [start], [stop]; kwargs...)
 
 Arguments
 ==========
 
-- **`x`** : The horizontal dimension for each point. Can be a Real number or of type `TimeType`
+- **`x`** : Optional. The horizontal position for each point.
+  Can be a real number or of type `TimeType`.
+  If omitted, the axes of `y` will be used as `x`.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`fun`** : A function f: R -> R that should be drawn from `start` to `end`
+- **`fun`** : A unary function ``f: R -> R`` that should be
+  evaluated, and drawn as a path from `start` to `stop`
+  (numbers in the domain).
 
-- **`title`** : Text to display on the top of the plot.
+- **`name`** : Annotation of the current drawing to be displayed
+  on the right.
 
-- **`name`** : Annotation of the current drawing to displayed on the right
+$DOC_PLOT_PARAMS
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
+- **`xlim`** : Plotting range for the x axis.
+  `[0, 0]` stands for automatic.
 
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`color`** : Color of the drawing. Can be any of `:blue`, `:red`, `:yellow`
-
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
+- **`ylim`** : Plotting range for the y axis.
+  `[0, 0]` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
-- **`grid`** : Can be used to hide the gridlines at the origin
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Returns
 ========
@@ -69,62 +64,89 @@ Author(s)
 Examples
 =========
 
-    julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
-
-                        My Lineplot
-         ┌────────────────────────────────────────┐
-       9 │⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⢱⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠊│
-         │⠈⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀│
-         │⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠁⠀⠀⠀⠀│
-         │⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠊⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠸⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠒⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠉⠉⠉⠉⡏⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⢉⠭⠋⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠁│
-         │⠀⠀⠀⠀⢱⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠀⠀⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⡠⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠀⠀⠀⢣⠀⠀⠀⠀⠀⢀⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         │⠀⠀⠀⠀⠀⠸⡀⠀⠀⡠⠔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-      -6 │⠀⠀⠀⠀⠀⠀⢇⡠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-         └────────────────────────────────────────┘
-         1                                        7
-
+```julia-repl
+julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
+                      My Lineplot
+       ┌────────────────────────────────────────┐
+    10 │⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠│
+       │⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀│
+       │⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀│
+       │⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠤⠤⠤⠼⡤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢤⠤⠶⠥⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤│
+       │⠀⠀⠀⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⢱⠀⠀⠀⠀⡠⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⢇⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+   -10 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       └────────────────────────────────────────┘
+       1                                        7
+```
 
 See also
 =========
 
-`Plot`, `scatter`, `stairs`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+[`Plot`](@ref), [`scatterplot`](@ref), [`stairs`](@ref),
+[`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function lineplot(
-        x::AbstractVector{<:Number},
-        y::AbstractVector{<:Number};
-        color::Symbol = :auto,
-        name::AbstractString = "",
+        x::AbstractVector,
+        y::AbstractVector;
         canvas::Type = BrailleCanvas,
+        color::Symbol = :auto,
+        name = "",
         kw...)
-    X = convert(Vector{Float64},x)
-    Y = convert(Vector{Float64},y)
-    new_plot = Plot(X, Y, canvas; kw...)
-    color = color == :auto ? next_color!(new_plot) : color
-    name == "" || annotate!(new_plot, :r, name, color)
-    lines!(new_plot, X, Y, color)
+    new_plot = Plot(x, y, canvas; kw...)
+    lineplot!(new_plot, x, y; color = color, name = name)
+end
+
+function lineplot(y::AbstractVector; kw...)
+    lineplot(axes(y, 1), y; kw...)
 end
 
 function lineplot!(
         plot::Plot{<:Canvas},
-        x::AbstractVector{<:Number},
-        y::AbstractVector{<:Number};
+        x::AbstractVector,
+        y::AbstractVector;
         color::Symbol = :auto,
-        name::AbstractString = "",
-        kw...)
-    X = convert(Vector{Float64},x)
-    Y = convert(Vector{Float64},y)
+        name = "")
     color = color == :auto ? next_color!(plot) : color
-    name == "" || annotate!(plot, :r, name, color)
-    lines!(plot, X, Y, color)
+    name == "" || annotate!(plot, :r, string(name), color)
+    lines!(plot, x, y, color)
 end
+
+function lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...)
+    lineplot!(plot, axes(y, 1), y; kw...)
+end
+
+# date time
+
+function lineplot(
+        x::AbstractVector{<:TimeType},
+        y::AbstractVector;
+        xlim = [extrema(Dates.value.(x))...],
+        kw...)
+    d = Dates.value.(x)
+    new_plot = lineplot(d, y; xlim = xlim, kw...)
+    annotate!(new_plot, :bl, string(minimum(x)), color = :light_black)
+    annotate!(new_plot, :br, string(maximum(x)), color = :light_black)
+end
+
+function lineplot!(
+        plot::Plot{<:Canvas},
+        x::AbstractVector{<:TimeType},
+        y::AbstractVector;
+        kw...)
+    d = Dates.value.(x)
+    lineplot!(plot, d, y; kw...)
+end
+
+# slope and intercept
 
 function lineplot!(
         plot::Plot{<:Canvas},
@@ -138,159 +160,97 @@ function lineplot!(
     lineplot!(plot, [xmin, xmax], [intercept + xmin*slope, intercept + xmax*slope]; kw...)
 end
 
-function lineplot!(
-        plot::Plot{<:Canvas},
-        Y::Function,
-        x::AbstractRange;
+# plotting a function
+
+function lineplot(
+        f::Function,
+        x::AbstractVector;
+        name = "",
+        xlabel = "x",
+        ylabel = "f(y)",
         kw...)
-    X = collect(x)
-    lineplot!(plot, Y, X; kw...)
+    y = Float64[f(i) for i in x]
+    name = name == "" ? string(nameof(f), "(x)") : name
+    new_plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
 
 function lineplot(
-        Y::Function,
-        x::AbstractRange;
-        kw...)
-    X = collect(x)
-    lineplot(Y, X; kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        Y::Function,
-        X::AbstractVector{<:Number};
-        name::AbstractString = "",
-        kw...)
-    y = convert(Vector{Float64}, [Y(i) for i in X])
-    name = name == "" ? string(Y, "(x)") : name
-    lineplot!(plot, X, y; name = name, kw...)
-end
-
-function lineplot(
-        Y::Function,
-        X::AbstractVector{<:Number};
-        name::AbstractString = "",
-        kw...)
-    y = convert(Vector{Float64}, [Y(i) for i in X])
-    name = name == "" ? string(Y, "(x)") : name
-    new_plot = lineplot(X, y; name = name, kw...)
-    xlabel!(new_plot, "x")
-    ylabel!(new_plot, "f(x)")
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        Y::Function,
-        startx::Number,
-        endx::Number;
-        kw...)
-    diff = abs(endx - startx)
-    X = collect(startx:(diff/(3*ncols(plot.graphics))):endx)
-    lineplot!(plot, Y, X; kw...)
-end
-
-function lineplot(Y::Function; kw...)
-    lineplot(Y, -10, 10; kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        Y::Function;
-        kw...)
-    lineplot!(plot, Y, origin_x(plot.graphics), origin_x(plot.graphics) + width(plot.graphics); kw...)
-end
-
-function lineplot(
-        Y::Function,
+        f::Function,
         startx::Number,
         endx::Number;
         width::Int = 40,
         kw...)
     diff = abs(endx - startx)
-    X = collect(startx:(diff/(3*width)):endx)
-    lineplot(Y, X; width = width, kw...)
+    x = startx:(diff/(3*width)):endx
+    lineplot(f, x; width = width, kw...)
 end
 
-function lineplot(Y::AbstractVector{<:Function}; kw...)
-    lineplot(Y, -10, 10; kw...)
+function lineplot(f::Function; kw...)
+    lineplot(f, -10, 10; kw...)
+end
+
+function lineplot!(
+        plot::Plot{<:Canvas},
+        f::Function,
+        x::AbstractVector;
+        name = "",
+        kw...)
+    y = Float64[f(i) for i in x]
+    name = name == "" ? string(nameof(f), "(x)") : name
+    lineplot!(plot, x, y; name = name, kw...)
+end
+
+function lineplot!(
+        plot::Plot{<:Canvas},
+        f::Function,
+        startx::Number = origin_x(plot.graphics),
+        endx::Number = origin_x(plot.graphics) + width(plot.graphics);
+        kw...)
+    diff = abs(endx - startx)
+    x = startx:(diff/(3*ncols(plot.graphics))):endx
+    lineplot!(plot, f, x; kw...)
+end
+
+# plotting vector of functions
+
+function lineplot(F::AbstractVector{<:Function}; kw...)
+    lineplot(F, -10, 10; kw...)
 end
 
 function lineplot(
-        Y::AbstractVector{<:Function},
+        F::AbstractVector{<:Function},
         startx::Number,
         endx::Number;
         kw...)
-    n = length(Y)
-    @assert n > 0
-    new_plot = lineplot(Y[1], startx, endx; kw...)
+    _lineplot(F, startx, endx; kw...)
+end
+
+function lineplot(
+        F::AbstractVector{<:Function},
+        x::AbstractVector;
+        kw...)
+    _lineplot(F, x; kw...)
+end
+
+function _lineplot(
+        F::AbstractVector{<:Function},
+        args...;
+        color = :auto,
+        name = "",
+        kw...)
+    n = length(F)
+    n > 0 || throw(ArgumentError("Can not plot empty array of functions"))
+    color_is_vec = color isa AbstractVector
+    name_is_vec  = name  isa AbstractVector
+    color_is_vec && (length(color) == n || throw(DimensionMismatch("\"color\" must be a symbol or same length as the function vector")))
+    name_is_vec  && (length(name)  == n || throw(DimensionMismatch("\"name\" must be a string or same length as the function vector")))
+    tcolor = color_is_vec ? color[1] : color
+    tname  = name_is_vec  ? name[1]  : name
+    new_plot = lineplot(F[1], args...; color = tcolor, name = tname, kw...)
     for i = 2:n
-        lineplot!(new_plot, Y[i], startx, endx; kw...)
+        tcolor = color_is_vec ? color[i] : color
+        tname  = name_is_vec  ? name[i]  : name
+        lineplot!(new_plot, F[i], args...; color = tcolor, name = tname)
     end
     new_plot
-end
-
-function lineplot(
-        X::AbstractRange{<:Number},
-        Y::AbstractRange{<:Number};
-        kw...)
-    lineplot(collect(X), collect(Y); kw...)
-end
-
-function lineplot(
-        X::AbstractRange,
-        Y::AbstractVector{<:Number};
-        kw...)
-    lineplot(collect(X), Y; kw...)
-end
-
-function lineplot(
-        X::AbstractVector{<:Number},
-        Y::AbstractRange;
-        kw...)
-    lineplot(X, collect(Y); kw...)
-end
-
-function lineplot(X::AbstractVector; kw...)
-    lineplot(1:length(X), X; kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        X::AbstractVector;
-        kw...)
-    lineplot!(plot, 1:length(X), X; kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        X::AbstractRange{<:Number},
-        Y::AbstractRange{<:Number};
-        kw...)
-    lineplot!(plot, collect(X), collect(Y); kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        X::AbstractRange,
-        Y::AbstractVector{<:Number};
-        kw...)
-    lineplot!(plot, collect(X), Y; kw...)
-end
-
-function lineplot!(
-        plot::Plot{<:Canvas},
-        X::AbstractVector{<:Number},
-        Y::AbstractRange;
-        kw...)
-    lineplot!(plot, X, collect(Y); kw...)
-end
-
-function lineplot(
-        X::AbstractVector{<:TimeType},
-        Y::AbstractVector{<:Number};
-        kw...)
-    d = convert(Vector{Float64}, Dates.value.(X))
-    new_plot = lineplot(d, Y; kw...)
-    annotate!(new_plot, :bl, string(first(X)))
-    annotate!(new_plot, :br, string(last(X)))
 end

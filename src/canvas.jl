@@ -1,53 +1,31 @@
-abstract type GraphicsArea end
 abstract type Canvas <: GraphicsArea end
 
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-function Base.print(io::IO, c::GraphicsArea)
-    for row in 1:nrows(c)
-        printrow(io, c, row)
-        print(io, "\n")
-    end
-end
-
-function Base.show(io::IO, c::GraphicsArea)
-    b = border_dashed
-    border_length = ncols(c)
-    print_border_top(io, "", border_length, :solid)
-    print(io, "\n")
-    for row in 1:nrows(c)
-        printstyled(io, b[:l]; color = :white)
-        printrow(io, c, row)
-        printstyled(io, b[:r], "\n";color = :white)
-    end
-    print_border_bottom(io, "", border_length, :solid)
-    print(io, "\n")
-end
-
-function pixel!(c::Canvas, pixel_x::Int, pixel_y::Int; color::Symbol = :white)
+function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :white)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number, color::Symbol)
-    origin_x(c) <= plot_x < origin_x(c) + width(c) || return c
-    origin_y(c) <= plot_y < origin_y(c) + height(c) || return c
-    plot_offset_x = plot_x - origin_x(c)
+function points!(c::Canvas, x::Number, y::Number, color::Symbol)
+    origin_x(c) <= x <= origin_x(c) + width(c) || return c
+    origin_y(c) <= y <= origin_y(c) + height(c) || return c
+    plot_offset_x = x - origin_x(c)
     pixel_x = plot_offset_x / width(c) * pixel_width(c)
-    plot_offset_y = plot_y - origin_y(c)
+    plot_offset_y = y - origin_y(c)
     pixel_y = pixel_height(c) - plot_offset_y / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, plot_x::Number, plot_y::Number; color::Symbol = :white)
-    points!(c, plot_x, plot_y, color)
+function points!(c::Canvas, x::Number, y::Number; color::Symbol = :white)
+    points!(c, x, y, color)
 end
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    for i in 1:length(X)
-        points!(c, X[i], Y[i], color)
+    for I in eachindex(X, Y)
+        points!(c, X[I], Y[I], color)
     end
     c
 end
