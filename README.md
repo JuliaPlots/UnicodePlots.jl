@@ -53,28 +53,28 @@ lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
 ```Julia
 scatterplot(randn(50), randn(50), title = "My Scatterplot")
 ```
-![Scatterplot Screenshot](doc/img/scatter.png)
+![Scatterplot Screenshot](https://user-images.githubusercontent.com/10854026/50768727-c19ec600-1281-11e9-81de-5710083fe814.png)
 
 #### Lineplot
 
 ```Julia
 lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
 ```
-![Lineplot Screenshot1](doc/img/line.png)
+![Lineplot Screenshot1](https://user-images.githubusercontent.com/10854026/50768724-c1062f80-1281-11e9-9fd0-fdf994be6db4.png)
 
 It's also possible to specify a function and a range.
 
 ```Julia
 plt = lineplot([cos, sin], -π/2, 2π)
 ```
-![Lineplot Screenshot2](doc/img/sin.png)
+![Lineplot Screenshot2]("https://user-images.githubusercontent.com/10854026/50768725-c1062f80-1281-11e9-8a30-ded2671d3781.png)
 
 You can also plot lines by specifying an intercept and slope
 
 ```Julia
 lineplot!(plt, -0.5, .2, name = "line")
 ```
-![Lineplot Screenshot3](doc/img/abline.png)
+![Lineplot Screenshot3](https://user-images.githubusercontent.com/10854026/50768726-c1062f80-1281-11e9-8784-f2d3d4183547.png)
 
 #### Staircase plot
 
@@ -82,7 +82,7 @@ lineplot!(plt, -0.5, .2, name = "line")
 # supported style are :pre and :post
 stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "My Staircase Plot")
 ```
-![Staircase Screenshot](doc/img/stairs.png)
+![Staircase Screenshot](https://user-images.githubusercontent.com/10854026/50768787-0fb3c980-1282-11e9-9b3c-8b66aae57a37.png)
 
 #### Barplot
 
@@ -139,7 +139,7 @@ spy(sprandn(50, 120, .05))
 plt = densityplot(randn(1000), randn(1000))
 densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
-![Density Screenshot](doc/img/density.png)
+![Density Screenshot](https://user-images.githubusercontent.com/10854026/50768809-28bc7a80-1282-11e9-917a-0ee22d1b274a.png)
 
 ### Options
 
