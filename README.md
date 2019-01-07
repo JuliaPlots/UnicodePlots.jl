@@ -1,32 +1,19 @@
 # UnicodePlots
 
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
+[![Build Status](https://travis-ci.org/Evizero/UnicodePlots.jl.svg?branch=master)](https://travis-ci.org/Evizero/UnicodePlots.jl)
+[![Coverage Status](https://coveralls.io/repos/Evizero/UnicodePlots.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/Evizero/UnicodePlots.jl?branch=master)
 
 Advanced Unicode plotting library designed for use in Julia's REPL.
 
 ## Installation
 
-[![Package Evaluator v3](http://pkg.julialang.org/badges/UnicodePlots_0.3.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.3)
-[![Package Evaluator v4](http://pkg.julialang.org/badges/UnicodePlots_0.4.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.4)
-[![Package Evaluator v5](http://pkg.julialang.org/badges/UnicodePlots_0.5.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.5)
-[![Package Evaluator v6](http://pkg.julialang.org/badges/UnicodePlots_0.6.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.6)
-[![Package Evaluator v7](http://pkg.julialang.org/badges/UnicodePlots_0.7.svg)](http://pkg.julialang.org/?pkg=UnicodePlots&ver=0.7)
-
 To install UnicodePlots, start up Julia and type the following code-snipped into the REPL. It makes use of the native Julia package manger.
 
 ```Julia
+using Pkg
 Pkg.add("UnicodePlots")
 using UnicodePlots
-```
-
-For the latest developer version:
-
-[![Build Status](https://travis-ci.org/Evizero/UnicodePlots.jl.svg?branch=master)](https://travis-ci.org/Evizero/UnicodePlots.jl)
-[![Coverage Status](https://coveralls.io/repos/Evizero/UnicodePlots.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/Evizero/UnicodePlots.jl?branch=master)
-
-```Julia
-Pkg.checkout("UnicodePlots")
 ```
 
 ## High-level Interface
@@ -292,12 +279,6 @@ At the moment there are the following types of Canvas implemented:
 
   - **BarplotGraphics**:
     This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object
-
-## Todo
-
-- [ ] Animated plots using cursor movement
-- [ ] Add heatmaps and hinton diagrams
-- [ ] Boxplots in some form
 
 ## License
 
