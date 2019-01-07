@@ -47,6 +47,7 @@
         render = BeforeAfterFull()
     )
     @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
+    @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
     @test_throws MethodError barplot!(p, ["zoom"], [90.])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
     @test @inferred(barplot!(p, ["zoom"], [90])) === p
@@ -178,6 +179,22 @@ end
     )
     @test_reference(
         "references/barplot/parameters2.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+end
+
+@testset "edge cases" begin
+    @test_throws ArgumentError barplot([:a, :b], [-1, 2])
+    p = barplot([5,4,3,2,1], [0,0,0,0,0])
+    @test_reference(
+        "references/barplot/edgecase_zeros.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
+    @test_reference(
+        "references/barplot/edgecase_onelarge.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )

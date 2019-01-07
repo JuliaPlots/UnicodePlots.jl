@@ -50,6 +50,12 @@ x = randn(10000)
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    p = @inferred histogram([0.1f0, 0.1f0, 0f0])
+    @test_reference(
+        "references/histogram/float32.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
 end
 
 @testset "hist params" begin

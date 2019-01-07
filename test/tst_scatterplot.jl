@@ -64,6 +64,14 @@ y = [2, 0, -5, 2, -5]
         @io2str(show(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    miny = -1.2796649117521434e218
+    maxy = -miny
+    p = @inferred scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy])
+    @test_reference(
+        "references/scatterplot/scale3.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
 end
 
 @testset "keyword arguments" begin

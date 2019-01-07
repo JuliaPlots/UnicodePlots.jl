@@ -69,6 +69,20 @@ end
         @io2str(show(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+    tx = [-1.,2, 3, 700000]
+    ty = [1.,2, 9, 4000000]
+    p = @inferred lineplot(tx, ty)
+    @test_reference(
+        "references/lineplot/scale3.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred lineplot(tx, ty, width=5, height=5)
+    @test_reference(
+        "references/lineplot/scale3_small.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
 end
 
 @testset "dates" begin
@@ -105,6 +119,7 @@ end
 end
 
 @testset "functions" begin
+    @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1., 2.])
     p = @inferred lineplot(sin)
     @test_reference(
         "references/lineplot/sin.txt",
