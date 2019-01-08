@@ -167,7 +167,7 @@ function lineplot(
         x::AbstractVector;
         name = "",
         xlabel = "x",
-        ylabel = "f(y)",
+        ylabel = "f(x)",
         kw...)
     y = Float64[f(i) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
