@@ -1,5 +1,5 @@
 """
-`Plot(graphics; nargs...)` → `Plot`
+    Plot(graphics; nargs...)
 
 Description
 ============
@@ -18,37 +18,28 @@ Usage
 Arguments
 ==========
 
-- **`graphics`** : The `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate
+- **`graphics`** : The `GraphicsArea` (e.g. a subtype of
+  `Canvas`) that the plot should decorate.
 
-- **`x`** : The horizontal dimension for each point.
+- **`x`** : The horizontal position for each point.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`canvastype`** : The type of canvas that should be used for drawing.
+- **`canvastype`** : The type of canvas that should be used for
+  drawing.
 
-- **`title`** : Text to display on the top of the plot.
+$DOC_PLOT_PARAMS
 
-- **`xlabel`** : Text to display on the x axis of the plot
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`ylabel`** : Text to display on the y axis of the plot
+- **`xlim`** : Plotting range for the x axis.
+  `[0, 0]` stands for automatic.
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`ylim`** : Plotting range for the y axis.
+  `[0, 0]` stands for automatic.
 
-- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
-
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
-
-- **`grid`** : Can be used to hide the gridlines at the origin
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Methods
 ========
@@ -71,7 +62,9 @@ Author(s)
 see also
 =========
 
-`scatterplot`, `lineplot`, `BarplotGraphics`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+[`scatterplot`](@ref), [`lineplot`](@ref),
+[`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
+[`BlockCanvas`](@ref), [`AsciiCanvas`](@ref)
 """
 mutable struct Plot{T<:GraphicsArea}
     graphics::T
@@ -180,7 +173,7 @@ function next_color!(plot::Plot{<:GraphicsArea})
 end
 
 """
-`title(plot) →  String`
+    title(plot) -> String
 
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
@@ -190,7 +183,7 @@ function title(plot::Plot)
 end
 
 """
-`title!(plot, newtitle) →  Plot`
+    title!(plot, newtitle) -> plot
 
 Sets a new title for the given plot.
 Alternatively, the current title can be
@@ -202,7 +195,7 @@ function title!(plot::Plot, title::AbstractString)
 end
 
 """
-`xlabel(plot) →  String`
+    xlabel(plot) -> String
 
 Returns the current label for the x-axis.
 Alternatively, the x-label can be changed with `xlabel!`
@@ -212,7 +205,7 @@ function xlabel(plot::Plot)
 end
 
 """
-`xlabel!(plot, newlabel) →  Plot`
+    xlabel!(plot, newlabel) -> plot
 
 Sets a new x-label for the given plot.
 Alternatively, the current label can be
@@ -224,7 +217,7 @@ function xlabel!(plot::Plot, xlabel::AbstractString)
 end
 
 """
-`ylabel(plot) →  String`
+    ylabel(plot) -> String
 
 Returns the current label for the y-axis.
 Alternatively, the y-label can be changed with `ylabel!`
@@ -234,7 +227,7 @@ function ylabel(plot::Plot)
 end
 
 """
-`ylabel!(plot, newlabel) →  Plot`
+    ylabel!(plot, newlabel) -> plot
 
 Sets a new y-label for the given plot.
 Alternatively, the current label can be
@@ -246,9 +239,9 @@ function ylabel!(plot::Plot, ylabel::AbstractString)
 end
 
 """
-`annotate!(plot, where, value[, color])`
+    annotate!(plot, where, value, [color])
 
-`annotate!(plot, where, row, value[, color])`
+    annotate!(plot, where, row, value, [color])
 
 This method is responsible for the setting
 all the textual decorations of a plot.
