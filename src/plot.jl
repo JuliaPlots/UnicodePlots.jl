@@ -13,7 +13,7 @@ Usage
 
     Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
 
-    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
 
 Arguments
 ==========
@@ -118,13 +118,13 @@ function Plot(
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
-        xlim::AbstractVector = [0.,0.],
-        ylim::AbstractVector = [0.,0.],
+        xlim = (0.,0.),
+        ylim = (0.,0.),
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
         grid::Bool = true) where {C<:Canvas}
-    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
+    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     width = max(width, 5)
     height = max(height, 2)

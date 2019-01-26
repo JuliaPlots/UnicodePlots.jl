@@ -66,6 +66,12 @@ y = [2, 0, -5, 2, -5]
     )
     miny = -1.2796649117521434e218
     maxy = -miny
+    p = @inferred scatterplot([1],[miny],xlim=(1,1),ylim=(miny,maxy))
+    @test_reference(
+        "references/scatterplot/scale3.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
     p = @inferred scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy])
     @test_reference(
         "references/scatterplot/scale3.txt",
@@ -75,6 +81,12 @@ y = [2, 0, -5, 2, -5]
 end
 
 @testset "keyword arguments" begin
+    p = @inferred scatterplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+    @test_reference(
+        "references/scatterplot/limits.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
     p = @inferred scatterplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
     @test_reference(
         "references/scatterplot/limits.txt",

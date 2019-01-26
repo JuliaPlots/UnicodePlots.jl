@@ -15,7 +15,7 @@ ordering.
 Usage
 ======
 
-    densityplot(x, y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = [0, 0], ylim = [0, 0], ^grid = false)
+    densityplot(x, y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), grid = false)
 
 Arguments
 ==========
@@ -34,10 +34,10 @@ $DOC_PLOT_PARAMS
   for plotting.
 
 - **`xlim`** : Plotting range for the x axis.
-  `[0, 0]` stands for automatic.
+  `(0, 0)` stands for automatic.
 
 - **`ylim`** : Plotting range for the y axis.
-  `[0, 0]` stands for automatic.
+  `(0, 0)` stands for automatic.
 
 - **`grid`** : If `true`, draws grid-lines at the origin.
 

@@ -119,6 +119,7 @@ end
 end
 
 @testset "functions" begin
+    @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=(-1.,1., 2.))
     @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1., 2.])
     p = @inferred lineplot(sin)
     @test_reference(
@@ -187,6 +188,12 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, color = [:red])
+    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = (-.5, 2.5), ylim = (-.9, 1.2))
+    @test_reference(
+        "references/lineplot/sincos_parameters.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
     p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2])
     @test_reference(
         "references/lineplot/sincos_parameters.txt",
@@ -196,6 +203,12 @@ end
 end
 
 @testset "keyword arguments" begin
+    p = @inferred lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+    @test_reference(
+        "references/lineplot/limits.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
     p = @inferred lineplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
     @test_reference(
         "references/lineplot/limits.txt",
