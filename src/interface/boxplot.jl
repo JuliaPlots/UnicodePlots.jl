@@ -39,6 +39,9 @@ Arguments
 
 $DOC_PLOT_PARAMS
 
+- **`xlim`** : Plotting range for the data axis.
+  `(0, 0)` stands for automatic.
+
 Returns
 ========
 
@@ -74,9 +77,9 @@ function boxplot(
         border = :corners,
         color::Symbol = :green,
         width::Int = 40,
-        xlim::AbstractVector = [0., 0.],
+        xlim = (0., 0.),
         kw...)
-    length(xlim) == 2 || throw(ArgumentError("xlim must only be vectors of length 2"))
+    length(xlim) == 2 || throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(width, 10)
@@ -117,7 +120,6 @@ function boxplot!(
         plot::Plot{<:BoxplotGraphics},
         data::AbstractVector{<:Number};
         name = " ",
-        xlim::AbstractVector = [0., 0.],
         kw...)
     !isempty(data)|| throw(ArgumentError("Can't append empty array to boxplot"))
 

@@ -68,7 +68,7 @@ function extend_limits(vec, limits)
         ma = mi + 1
         mi = mi - 1
     end
-    (limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : (mi, ma)
+    (limits == (0.,0.) || limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : (mi, ma)
 end
 
 const bordermap = Dict{Symbol,Dict{Symbol,String}}()
