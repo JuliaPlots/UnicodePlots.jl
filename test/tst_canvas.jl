@@ -109,7 +109,7 @@ end
     lines!(c, 0.6, 0.0, 0.6, 1.2, :yellow)
     lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
     lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
-    lines!(c, 1.2, 0.0, 1.2, 1.2, :white)
+    lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
     @test_reference(
         "references/canvas/color_mixing.txt",
         @io2str(print(IOContext(::IO, :color=>true), c)),

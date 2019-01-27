@@ -4,7 +4,7 @@ origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :white)
+function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Symbol = :normal)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
@@ -18,7 +18,7 @@ function points!(c::Canvas, x::Number, y::Number, color::Symbol)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, x::Number, y::Number; color::Symbol = :white)
+function points!(c::Canvas, x::Number, y::Number; color::Symbol = :normal)
     points!(c, x, y, color)
 end
 
@@ -30,7 +30,7 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :white)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :normal)
     points!(c, X, Y, color)
 end
 
@@ -70,7 +70,7 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     c
 end
 
-function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::Symbol = :white)
+function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::Symbol = :normal)
     lines!(c, x1, y1, x2, y2, color)
 end
 
@@ -82,6 +82,6 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Symbol)
     c
 end
 
-function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :white)
+function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Symbol = :normal)
     lines!(c, X, Y, color)
 end

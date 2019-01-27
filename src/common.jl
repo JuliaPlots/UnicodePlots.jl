@@ -156,7 +156,7 @@ bordermap[:ascii]  = border_ascii
 const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
 const color_encode = Dict{Symbol,UInt8}()
 const color_decode = Dict{UInt8,Symbol}()
-color_encode[:white]   = 0b000
+color_encode[:normal]  = 0b000
 color_encode[:blue]    = 0b001
 color_encode[:red]     = 0b010
 color_encode[:magenta] = 0b011
@@ -167,7 +167,8 @@ for k in keys(color_encode)
     v = color_encode[k]
     color_decode[v] = k
 end
-color_decode[0b111] = :white
+color_encode[:white] = 0b111
+color_decode[0b111]  = :white
 
 function print_color(color::UInt8, io::IO, args...)
     col = color_decode[color]

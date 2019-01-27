@@ -154,12 +154,12 @@ function Plot(
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
-                points!(new_plot, i, 0., :white)
+                points!(new_plot, i, 0., :normal)
             end
         end
         if min_x < 0 < max_x
             for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
-                points!(new_plot, 0., i, :white)
+                points!(new_plot, 0., i, :normal)
             end
         end
     end
