@@ -1,5 +1,5 @@
 """
-`Plot(graphics; nargs...)` → `Plot`
+    Plot(graphics; nargs...)
 
 Description
 ============
@@ -13,42 +13,33 @@ Usage
 
     Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
 
-    Plot(x, y, canvastype; title = "", width = 40, height = 15, border = :solid, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
 
 Arguments
 ==========
 
-- **`graphics`** : The `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate
+- **`graphics`** : The `GraphicsArea` (e.g. a subtype of
+  `Canvas`) that the plot should decorate.
 
-- **`x`** : The horizontal dimension for each point.
+- **`x`** : The horizontal position for each point.
 
-- **`y`** : The vertical dimension for each point.
+- **`y`** : The vertical position for each point.
 
-- **`canvastype`** : The type of canvas that should be used for drawing.
+- **`canvastype`** : The type of canvas that should be used for
+  drawing.
 
-- **`title`** : Text to display on the top of the plot.
+$DOC_PLOT_PARAMS
 
-- **`xlabel`** : Text to display on the x axis of the plot
+- **`height`** : Number of character rows that should be used
+  for plotting.
 
-- **`ylabel`** : Text to display on the y axis of the plot
+- **`xlim`** : Plotting range for the x axis.
+  `[0, 0]` stands for automatic.
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`ylim`** : Plotting range for the y axis.
+  `[0, 0]` stands for automatic.
 
-- **`height`** : Number of rows that should be used for plotting. Not applicable to `barplot`.
-
-- **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`xlim`** : Plotting range for the x coordinate. `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y coordinate. `[0, 0]` stands for automatic.
-
-- **`margin`** : Number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`labels`** : Can be used to hide the labels by setting `labels=false`.
-
-- **`grid`** : Can be used to hide the gridlines at the origin
+- **`grid`** : If `true`, draws grid-lines at the origin.
 
 Methods
 ========
@@ -71,7 +62,9 @@ Author(s)
 see also
 =========
 
-`scatterplot`, `lineplot`, `BarplotGraphics`, `BrailleCanvas`, `BlockCanvas`, `AsciiCanvas`
+[`scatterplot`](@ref), [`lineplot`](@ref),
+[`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
+[`BlockCanvas`](@ref), [`AsciiCanvas`](@ref)
 """
 mutable struct Plot{T<:GraphicsArea}
     graphics::T
@@ -100,6 +93,7 @@ function Plot(
         margin::Int = 3,
         padding::Int = 1,
         labels = true) where T<:GraphicsArea
+    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
@@ -115,19 +109,22 @@ function Plot(
 end
 
 function Plot(
-        X::AbstractVector{F}, Y::AbstractVector{F}, ::Type{C} = BrailleCanvas;
+        X::AbstractVector{<:Number},
+        Y::AbstractVector{<:Number},
+        ::Type{C} = BrailleCanvas;
         title::AbstractString = "",
+        xlabel::AbstractString = "",
+        ylabel::AbstractString = "",
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
-        xlim::AbstractVector = [0.,0.],
-        ylim::AbstractVector = [0.,0.],
+        xlim = (0.,0.),
+        ylim = (0.,0.),
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
-        grid::Bool = true) where {C<:Canvas, F<:AbstractFloat}
-    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must only be vectors of length 2"))
-    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
+        grid::Bool = true) where {C<:Canvas}
+    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     width = max(width, 5)
     height = max(height, 2)
@@ -143,25 +140,26 @@ function Plot(
                origin_x = origin_x, origin_y = origin_y,
                width = p_width, height = p_height)
     new_plot = Plot(canvas, title = title, margin = margin,
-                    padding = padding, border = border, labels = labels)
+                    padding = padding, border = border, labels = labels,
+                    xlabel = xlabel, ylabel = ylabel)
 
     min_x_str = string(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
     max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
     min_y_str = string(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
     max_y_str = string(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    annotate!(new_plot, :l, 1, max_y_str)
-    annotate!(new_plot, :l, height, min_y_str)
-    annotate!(new_plot, :bl, min_x_str)
-    annotate!(new_plot, :br, max_x_str)
+    annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
+    annotate!(new_plot, :l, height, min_y_str, color = :light_black)
+    annotate!(new_plot, :bl, min_x_str, color = :light_black)
+    annotate!(new_plot, :br, max_x_str, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
-                points!(new_plot, i, 0., :white)
+                points!(new_plot, i, 0., :normal)
             end
         end
         if min_x < 0 < max_x
             for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
-                points!(new_plot, 0., i, :white)
+                points!(new_plot, 0., i, :normal)
             end
         end
     end
@@ -175,7 +173,7 @@ function next_color!(plot::Plot{<:GraphicsArea})
 end
 
 """
-`title(plot) →  String`
+    title(plot) -> String
 
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
@@ -185,7 +183,7 @@ function title(plot::Plot)
 end
 
 """
-`title!(plot, newtitle) →  Plot`
+    title!(plot, newtitle) -> plot
 
 Sets a new title for the given plot.
 Alternatively, the current title can be
@@ -197,7 +195,7 @@ function title!(plot::Plot, title::AbstractString)
 end
 
 """
-`xlabel(plot) →  String`
+    xlabel(plot) -> String
 
 Returns the current label for the x-axis.
 Alternatively, the x-label can be changed with `xlabel!`
@@ -207,7 +205,7 @@ function xlabel(plot::Plot)
 end
 
 """
-`xlabel!(plot, newlabel) →  Plot`
+    xlabel!(plot, newlabel) -> plot
 
 Sets a new x-label for the given plot.
 Alternatively, the current label can be
@@ -219,7 +217,7 @@ function xlabel!(plot::Plot, xlabel::AbstractString)
 end
 
 """
-`ylabel(plot) →  String`
+    ylabel(plot) -> String
 
 Returns the current label for the y-axis.
 Alternatively, the y-label can be changed with `ylabel!`
@@ -229,7 +227,7 @@ function ylabel(plot::Plot)
 end
 
 """
-`ylabel!(plot, newlabel) →  Plot`
+    ylabel!(plot, newlabel) -> plot
 
 Sets a new y-label for the given plot.
 Alternatively, the current label can be
@@ -241,9 +239,9 @@ function ylabel!(plot::Plot, ylabel::AbstractString)
 end
 
 """
-`annotate!(plot, where, value[, color])`
+    annotate!(plot, where, value, [color])
 
-`annotate!(plot, where, row, value[, color])`
+    annotate!(plot, where, row, value, [color])
 
 This method is responsible for the setting
 all the textual decorations of a plot.
@@ -280,9 +278,10 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol
         plot.colors_deco[loc] = color
         return plot
     end
+    plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:white)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:normal)
     annotate!(plot, loc, value, color)
 end
 
@@ -294,12 +293,12 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
         plot.labels_right[row] = value
         plot.colors_right[row] = color
     else
-        throw(ArgumentError("Unknown location: try one of these :l :r"))
+        throw(ArgumentError("Unknown location \"$(string(loc))\", try `:l` or `:r` instead"))
     end
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:white)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:normal)
     annotate!(plot, loc, row, value, color)
 end
 
@@ -318,24 +317,26 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0)
+function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :normal)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
-        printstyled(io, padding, tpad, title, "\n"; color = :white)
+        printstyled(io, padding, tpad, title; color = color)
     end
 end
 
-function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
+function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
     b = bordermap[border]
-    border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = :white)
+    border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = color)
 end
 
-function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid)
+function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
     b = bordermap[border]
-    border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = :white)
+    border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = color)
 end
+
+_nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
 
 function Base.show(io::IO, p::Plot)
     b = UnicodePlots.bordermap[p.border]
@@ -343,8 +344,8 @@ function Base.show(io::IO, p::Plot)
     border_length = ncols(c)
 
     # get length of largest strings to the left and right
-    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(string(l)) for l in values(p.labels_left)]) : 0
-    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(string(l)) for l in values(p.labels_right)]) : 0
+    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
+    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(_nocolor_string(l)) for l in values(p.labels_right)]) : 0
     if p.show_labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
@@ -359,14 +360,15 @@ function Base.show(io::IO, p::Plot)
     border_padding = repeat(" ", plot_offset)
 
     # plot the title and the top border
-    print_title(io, border_padding, p.title, p_width = border_length)
+    print_title(io, border_padding, p.title, p_width = border_length, color = :bold)
+    p.title != "" && println(io)
     if p.show_labels
         topleft_str  = get(p.decorations, :tl, "")
-        topleft_col  = get(p.colors_deco, :tl, :white)
+        topleft_col  = get(p.colors_deco, :tl, :light_black)
         topmid_str   = get(p.decorations, :t, "")
-        topmid_col   = get(p.colors_deco, :t, :white)
+        topmid_col   = get(p.colors_deco, :t, :light_black)
         topright_str = get(p.decorations, :tr, "")
-        topright_col = get(p.colors_deco, :tr, :white)
+        topright_col = get(p.colors_deco, :tr, :light_black)
         if topleft_str != "" || topright_str != "" || topmid_str != ""
             topleft_len  = length(topleft_str)
             topmid_len   = length(topmid_str)
@@ -384,23 +386,27 @@ function Base.show(io::IO, p::Plot)
     print(io, repeat(" ", max_len_r), plot_padding, "\n")
 
     # compute position of ylabel
-    ylabRow = round(nrows(c) / 2, RoundNearestTiesUp)
+    y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     # plot all rows
     for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :white)
+        left_col  = get(p.colors_left,  row, :light_black)
         right_str = get(p.labels_right, row, "")
-        right_col = get(p.colors_right, row, :white)
-        left_len  = length(left_str)
-        right_len = length(right_str)
+        right_col = get(p.colors_right, row, :light_black)
+        left_len  = length(_nocolor_string(left_str))
+        right_len = length(_nocolor_string(right_str))
+        if !get(io, :color, false)
+            left_str  = _nocolor_string(left_str)
+            right_str = _nocolor_string(right_str)
+        end
         # print left annotations
         print(io, repeat(" ", p.margin))
         if p.show_labels
-            if row == ylabRow
+            if row == y_lab_row
                 # print ylabel
-                printstyled(io, p.ylabel; color = :white)
+                printstyled(io, p.ylabel; color = :normal)
                 print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
@@ -410,11 +416,11 @@ function Base.show(io::IO, p::Plot)
             printstyled(io, left_str; color = left_col)
         end
         # print left border
-        printstyled(io, plot_padding, b[:l]; color = :white)
+        printstyled(io, plot_padding, b[:l]; color = :light_black)
         # print canvas row
         printrow(io, c, row)
         #print right label and padding
-        printstyled(io, b[:r]; color = :white)
+        printstyled(io, b[:r]; color = :light_black)
         if p.show_labels
             print(io, plot_padding)
             printstyled(io, right_str; color = right_col)
@@ -425,15 +431,16 @@ function Base.show(io::IO, p::Plot)
 
     # draw bottom border and bottom labels
     print_border_bottom(io, border_padding, border_length, p.border)
-    print(io, repeat(" ", max_len_r), plot_padding, "\n")
+    print(io, repeat(" ", max_len_r), plot_padding)
     if p.show_labels
         botleft_str  = get(p.decorations, :bl, "")
-        botleft_col  = get(p.colors_deco, :bl, :white)
+        botleft_col  = get(p.colors_deco, :bl, :light_black)
         botmid_str   = get(p.decorations, :b, "")
-        botmid_col   = get(p.colors_deco, :b, :white)
+        botmid_col   = get(p.colors_deco, :b, :light_black)
         botright_str = get(p.decorations, :br, "")
-        botright_col = get(p.colors_deco, :br, :white)
+        botright_col = get(p.colors_deco, :br, :light_black)
         if botleft_str != "" || botright_str != "" || botmid_str != ""
+            println(io)
             botleft_len  = length(botleft_str)
             botmid_len   = length(botmid_str)
             botright_len = length(botright_str)
@@ -443,9 +450,10 @@ function Base.show(io::IO, p::Plot)
             printstyled(io, pad, botmid_str; color = botmid_col)
             cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, botright_str, "\n"; color = botright_col)
+            printstyled(io, pad, botright_str; color = botright_col)
         end
         # abuse the print_title function to print the xlabel. maybe refactor this
+        p.xlabel != "" && println(io)
         print_title(io, border_padding, p.xlabel, p_width = border_length)
     end
 end
