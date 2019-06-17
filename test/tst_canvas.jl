@@ -7,6 +7,7 @@
             (BlockCanvas,   2, 2),
             (AsciiCanvas,   3, 3),
             (DotCanvas,     1, 2),
+            (HeatmapCanvas, 1, 1),
         ]
         @testset "$(nameof(T))" begin
             @test T <: Canvas
@@ -38,12 +39,19 @@ end
             (BlockCanvas,   "block"),
             (AsciiCanvas,   "ascii"),
             (DotCanvas,     "dot"),
+            (HeatmapCanvas, "heatmap"),
         ]
         @testset "$(nameof(T))" begin
             c = T(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)
             if T == BrailleCanvas
                 @test_reference(
                     "references/canvas/empty_braille_show.txt",
+                    @io2str(show(IOContext(::IO, :color=>true), c)),
+                    render = BeforeAfterFull()
+                )
+            elseif T == HeatmapCanvas
+                @test_reference(
+                    "references/canvas/empty_heatmap_show.txt",
                     @io2str(show(IOContext(::IO, :color=>true), c)),
                     render = BeforeAfterFull()
                 )
