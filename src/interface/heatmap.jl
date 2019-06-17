@@ -53,7 +53,7 @@ A plot object of type `Plot{HeatmapCanvas}`
 Author(s)
 ==========
 
-- Rowan Katekar (https://github.com/rjkat) 
+- Rowan Katekar (https://github.com/rjkat)
 
 Examples
 =========

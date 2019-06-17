@@ -63,6 +63,7 @@ include("canvas/densitycanvas.jl")
 include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
+include("canvas/heatmapcanvas.jl")
 
 include("plot.jl")
 include("interface/barplot.jl")
