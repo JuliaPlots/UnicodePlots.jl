@@ -30,6 +30,8 @@ Arguments
 - **`border`** : The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
 - **`colormap`** : The colormap to use for the heatmap. Supports `:viridis` and `:inferno`.
+                   Alternatively, supply a function `f: z, zmin, zmax -> terminal color (Int)`,
+                   or a vector of RGB vectors in the format shown [here](https://github.com/BIDS/colormap/blob/master/colormaps.py).
 
 - **`xscale`** : Scale for the x coordinate. Defaults to 1 - i.e. each column in `z` corresponds to one unit.
 
@@ -618,9 +620,17 @@ function heatmap(z::AbstractMatrix; maxwidth::Int = 0, maxheight::Int = 0, width
     ncols = size(z, 2)
     maxz = maximum(z)
     minz = minimum(z)
-    cmap = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
+    if colormap isa Symbol
+        cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    elseif typeof(colormap) <: AbstractVector
+        cdata = colormap
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    end
+
     X = (0:(ncols - 1)) .* xscale
     Y = (0:(nrows - 1)) .* yscale
+    # show colorbar by default, unless set to false
     show_colorbar = get(kw, :show_colorbar, :true)
     width, height = get_canvas_dimensions_for_matrix(
         HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
@@ -629,10 +639,10 @@ function heatmap(z::AbstractMatrix; maxwidth::Int = 0, maxheight::Int = 0, width
     )
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
-                    colormap = cmap, colorbar_lim = (minz, maxz),
+                    colormap = colormap, colorbar_lim = (minz, maxz),
                     width = width, height = height, kw...)
     for row = 1:nrows
-        Z = [heatmapcolor(zi, minz, maxz, cmap) for zi in z[row, :]]
+        Z = [colormap(zi, minz, maxz) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
     new_plot
