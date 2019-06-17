@@ -4,7 +4,7 @@ using Crayons
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character
-into a single pixel. 
+into a single pixel.
 """
 struct HeatmapCanvas <: LookupCanvas
     grid::Array{UInt8,2}
@@ -17,11 +17,12 @@ struct HeatmapCanvas <: LookupCanvas
     height::Float64
 end
 
+const HALF_BLOCK = '▄'
 @inline x_pixel_per_char(::Type{HeatmapCanvas}) = 1
 @inline y_pixel_per_char(::Type{HeatmapCanvas}) = 2
 
 @inline lookup_encode(c::HeatmapCanvas) = [0 0; 1 1]
-@inline lookup_decode(c::HeatmapCanvas) = ['▄'; '▄']
+@inline lookup_decode(c::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
 
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2), 2)
 
@@ -34,15 +35,54 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     y = 2*row
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
-        bgcol = Int(colors(c)[x, y-1])
-        fgcol = Int(colors(c)[x, y])
         if iscolor
-            print(io, Crayon(foreground=fgcol, background=bgcol), '▄')
+            bgcol = Int(colors(c)[x, y-1])
+            fgcol = Int(colors(c)[x, y])
+            print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
         else
-            print(io, '▄')
+            print(io, HALF_BLOCK)
         end
     end
     if iscolor
         print(io, Crayon(reset=true))
     end
 end
+
+function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, border::Symbol, lim, plot_padding, zlabel)
+    b = bordermap[border]
+    if row == 1
+        # print top border and maximum z value
+        printstyled(io, b[:tl]; color = :light_black)
+        printstyled(io, b[:t]; color = :light_black)
+        printstyled(io, b[:t]; color = :light_black)
+        printstyled(io, b[:tr]; color = :light_black)
+        max_z_str = float_round_log10(lim[2])
+        printstyled(io, max_z_str; color = :light_black)
+    elseif row == nrows(c)
+        # print bottom border and minimum z value
+        printstyled(io, b[:bl]; color = :light_black)
+        printstyled(io, b[:b]; color = :light_black)
+        printstyled(io, b[:b]; color = :light_black)
+        printstyled(io, b[:br]; color = :light_black)
+        min_z_str = float_round_log10(lim[1])
+        printstyled(io, min_z_str; color = :light_black)
+    else
+        # print gradient
+        printstyled(io, b[:l]; color = :light_black)
+        n = 2*nrows(c)
+        r = row - 1
+        bgcol = heatmapcolor(n - 2*r + 1, 1, n, colormap)
+        fgcol = heatmapcolor(n - 2*r,     1, n, colormap)
+        print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
+        print(io, HALF_BLOCK)
+        print(io, Crayon(reset=true))
+        printstyled(io, b[:r]; color = :light_black)
+
+        # print z label
+        if row == div(nrows(c), 2) + 1
+            print(io, plot_padding)
+            print(io, zlabel)
+        end
+    end
+end
+

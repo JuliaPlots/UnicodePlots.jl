@@ -50,6 +50,8 @@ Methods
 
 - `ylabel!(plot::Plot, xlabel::String)`
 
+- `zlabel!(plot::Plot, zlabel::String)`
+
 - `annotate!(plot::Plot, where::Symbol, value::String)`
 
 - `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
@@ -71,6 +73,7 @@ mutable struct Plot{T<:GraphicsArea}
     title::String
     xlabel::String
     ylabel::String
+    zlabel::String
     margin::Int
     padding::Int
     border::Symbol
@@ -81,6 +84,10 @@ mutable struct Plot{T<:GraphicsArea}
     decorations::Dict{Symbol,String}
     colors_deco::Dict{Symbol,Symbol}
     show_labels::Bool
+    colormap::Any
+    show_colorbar::Bool
+    colorbar_border::Symbol
+    colorbar_lim::Tuple{Number, Number}
     autocolor::Int
 end
 
@@ -89,10 +96,15 @@ function Plot(
         title::AbstractString = "",
         xlabel::AbstractString = "",
         ylabel::AbstractString = "",
+        zlabel::AbstractString = "",
         border::Symbol = :solid,
         margin::Int = 3,
         padding::Int = 1,
-        labels = true) where T<:GraphicsArea
+        labels = true,
+        colormap = nothing,
+        colorbar = false,
+        colorbar_border::Symbol = :solid,
+        colorbar_lim = (0., 1.)) where T<:GraphicsArea
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -102,10 +114,10 @@ function Plot(
     colors_right = Dict{Int,Symbol}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,Symbol}()
-    Plot{T}(graphics, title, xlabel, ylabel,
+    Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border,
             labels_left, colors_left, labels_right, colors_right,
-            decorations, colors_deco, labels, 0)
+            decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
 end
 
 function Plot(
@@ -115,6 +127,7 @@ function Plot(
         title::AbstractString = "",
         xlabel::AbstractString = "",
         ylabel::AbstractString = "",
+        zlabel::AbstractString = "",
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
@@ -123,6 +136,10 @@ function Plot(
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
+        colormap = nothing,
+        colorbar = false,
+        colorbar_border::Symbol = :solid,
+        colorbar_lim = (0., 1.),
         grid::Bool = true) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -141,7 +158,8 @@ function Plot(
                width = p_width, height = p_height)
     new_plot = Plot(canvas, title = title, margin = margin,
                     padding = padding, border = border, labels = labels,
-                    xlabel = xlabel, ylabel = ylabel)
+                    xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
+                    colormap = colormap, colorbar = colorbar, colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
 
     min_x_str = string(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
     max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
@@ -419,12 +437,17 @@ function Base.show(io::IO, p::Plot)
         printstyled(io, plot_padding, b[:l]; color = :light_black)
         # print canvas row
         printrow(io, c, row)
-        #print right label and padding
+        # print right label and padding
         printstyled(io, b[:r]; color = :light_black)
         if p.show_labels
             print(io, plot_padding)
             printstyled(io, right_str; color = right_col)
             print(io, repeat(" ", max_len_r - right_len))
+        end
+        # print colorbar
+        if p.show_colorbar
+            print(io, plot_padding)
+            printcolorbarrow(io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim, plot_padding, p.zlabel)
         end
         print(io, "\n")
     end
