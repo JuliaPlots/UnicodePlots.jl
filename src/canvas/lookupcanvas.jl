@@ -56,6 +56,7 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) whe
         # don't attempt to blend colors if they have been explicitly specified
         colors(c)[char_x, char_y] = color
     end
+    c
 end
 
 function printrow(io::IO, c::LookupCanvas, row::Int)
