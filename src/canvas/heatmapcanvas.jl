@@ -4,7 +4,7 @@ using Crayons
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character
-into a single pixel.
+into two pixels (top and bottom).
 """
 struct HeatmapCanvas <: LookupCanvas
     grid::Array{UInt8,2}
