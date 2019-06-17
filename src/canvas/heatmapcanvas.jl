@@ -56,7 +56,8 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         printstyled(io, b[:t]; color = :light_black)
         printstyled(io, b[:t]; color = :light_black)
         printstyled(io, b[:tr]; color = :light_black)
-        max_z_str = float_round_log10(lim[2])
+        max_z = lim[2]
+        max_z_str = isinteger(max_z) ? max_z : float_round_log10(max_z)
         print(io, plot_padding)
         printstyled(io, max_z_str; color = :light_black)
     elseif row == nrows(c)
@@ -65,16 +66,16 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         printstyled(io, b[:b]; color = :light_black)
         printstyled(io, b[:b]; color = :light_black)
         printstyled(io, b[:br]; color = :light_black)
-        min_z_str = float_round_log10(lim[1])
+        min_z = lim[1]
+        min_z_str = isinteger(min_z) ? min_z : float_round_log10(min_z)
         print(io, plot_padding)
         printstyled(io, min_z_str; color = :light_black)
     else
         # print gradient
         printstyled(io, b[:l]; color = :light_black)
         n = 2*nrows(c)
-        r = row - 1
-        bgcol = heatmapcolor(n - 2*r + 1, 1, n, colormap)
-        fgcol = heatmapcolor(n - 2*r,     1, n, colormap)
+        bgcol = heatmapcolor(n - 2*row + 2, 1, n, colormap)
+        fgcol = heatmapcolor(n - 2*row + 1, 1, n, colormap)
         print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
         print(io, HALF_BLOCK)
         print(io, Crayon(reset=true))

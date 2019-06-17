@@ -12,18 +12,27 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             )
         end
     end
+    @testset "integer values" begin
+        x = repeat(collect(1:20), outer=(1, 20))
+        p = @inferred heatmap(x)
+        @test_reference(
+                        "references/heatmap/integers_$(size(x, 1))x$(size(x, 2)).txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+    end
     @testset "parameters" begin
         seed!(1337)
-        p = @inferred heatmap(randn(200,200), colorbar=:true)
+        p = @inferred heatmap(randn(200,200), colorbar=:false)
         @test_reference(
-            "references/heatmap/parameters_200x200_colorbar.txt",
+            "references/heatmap/parameters_200x200_no_colorbar.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
         seed!(1337)
         p = heatmap(randn(200, 200), title="Custom Title", zlabel="Custom Label", colorbar_border=:ascii)
         @test_reference(
-            "references/spy/parameters_200x200_zlabel_ascii_border.txt",
+            "references/heatmap/parameters_200x200_zlabel_ascii_border.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )

@@ -38,6 +38,7 @@ export
     title, title!,
     xlabel, xlabel!,
     ylabel, ylabel!,
+    zlabel, zlabel!,
     annotate!,
 
     barplot, barplot!,
