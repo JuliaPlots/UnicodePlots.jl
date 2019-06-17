@@ -1,6 +1,8 @@
+using Crayons
+
 """
 The `HeatmapCanvas` is also Unicode-based.
-It has a quarter of the resolution of the `BlockCanvas`.
+It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character
 into a single pixel. 
 """
@@ -16,10 +18,12 @@ struct HeatmapCanvas <: LookupCanvas
 end
 
 @inline x_pixel_per_char(::Type{HeatmapCanvas}) = 1
-@inline y_pixel_per_char(::Type{HeatmapCanvas}) = 1
+@inline y_pixel_per_char(::Type{HeatmapCanvas}) = 2
 
-@inline lookup_encode(c::HeatmapCanvas) = [0, 1]
-@inline lookup_decode(c::HeatmapCanvas) = ['█']
+@inline lookup_encode(c::HeatmapCanvas) = [0 0; 1 1]
+@inline lookup_decode(c::HeatmapCanvas) = ['▄'; '▄']
+
+@inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2), 2)
 
 function HeatmapCanvas(args...; nargs...)
     CreateLookupCanvas(HeatmapCanvas, args...; nargs...)
@@ -27,8 +31,18 @@ end
 
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    y = row
+    y = 2*row
+    iscolor = get(io, :color, false)
     for x in 1:ncols(c)
-        print_true_color(colors(c)[x,y], io, lookup_decode(c)[grid(c)[x,y] + 1])
+        bgcol = Int(colors(c)[x, y-1])
+        fgcol = Int(colors(c)[x, y])
+        if iscolor
+            print(io, Crayon(foreground=fgcol, background=bgcol), '▄')
+        else
+            print(io, '▄')
+        end
+    end
+    if iscolor
+        print(io, Crayon(reset=true))
     end
 end
