@@ -73,9 +73,10 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
     else
         # print gradient
         printstyled(io, b[:l]; color = :light_black)
-        n = 2*nrows(c)
-        bgcol = colormap(n - 2*row + 2, 1, n)
-        fgcol = colormap(n - 2*row + 1, 1, n)
+        n = 2*(nrows(c) - 2)
+        r = row - 2
+        bgcol = colormap(n - (2*r),     1, n)
+        fgcol = colormap(n - (2*r + 1), 1, n)
         print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
         print(io, HALF_BLOCK)
         print(io, Crayon(reset=true))

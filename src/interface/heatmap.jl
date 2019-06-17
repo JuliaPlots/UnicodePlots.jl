@@ -637,6 +637,8 @@ function heatmap(z::AbstractMatrix; maxwidth::Int = 0, maxheight::Int = 0, width
         extra_cols = 0,
         extra_rows = 0
     )
+    # ensure plot height is big enough to show the colorbar
+    height = max(height, min(size(z, 1), 8))
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
                     colormap = colormap, colorbar_lim = (minz, maxz),

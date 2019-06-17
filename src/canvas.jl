@@ -102,8 +102,6 @@ function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, ma
     aspect_ratio = min_canvwidth / min_canvheight
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
-    min_plotheight = min_canvheight + height_diff
-    min_plotwidth  = min_canvwidth  + width_diff
 
     term_height, term_width = Base.displaysize()
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
@@ -149,7 +147,6 @@ function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, ma
     end
     width  = round(Int, width)
     height = round(Int, height)
-    aspect_ratio = min_canvwidth / min_canvheight
 
     (width, height)
 end
