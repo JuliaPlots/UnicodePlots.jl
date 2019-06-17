@@ -613,7 +613,7 @@ function heatmapcolor(z, minz, maxz, cmap)
     rgb2terminal(rgb)
 end
 
-function heatmap(z::AbstractMatrix; colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
+function heatmap(z::AbstractMatrix; maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
     maxz = maximum(z)
@@ -622,9 +622,15 @@ function heatmap(z::AbstractMatrix; colormap=:viridis, xscale=1.0, yscale=1.0, k
     X = (0:(ncols - 1)) .* xscale
     Y = (0:(nrows - 1)) .* yscale
     show_colorbar = get(kw, :show_colorbar, :true)
+    width, height = get_canvas_dimensions_for_matrix(
+        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
+        extra_cols = 0,
+        extra_rows = 0
+    )
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
-                    colormap = cmap, colorbar_lim = (minz, maxz), kw...)
+                    colormap = cmap, colorbar_lim = (minz, maxz),
+                    width = width, height = height, kw...)
     for row = 1:nrows
         Z = [heatmapcolor(zi, minz, maxz, cmap) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)

@@ -57,6 +57,7 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         printstyled(io, b[:t]; color = :light_black)
         printstyled(io, b[:tr]; color = :light_black)
         max_z_str = float_round_log10(lim[2])
+        print(io, plot_padding)
         printstyled(io, max_z_str; color = :light_black)
     elseif row == nrows(c)
         # print bottom border and minimum z value
@@ -65,6 +66,7 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         printstyled(io, b[:b]; color = :light_black)
         printstyled(io, b[:br]; color = :light_black)
         min_z_str = float_round_log10(lim[1])
+        print(io, plot_padding)
         printstyled(io, min_z_str; color = :light_black)
     else
         # print gradient

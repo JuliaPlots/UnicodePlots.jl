@@ -93,3 +93,63 @@ end
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Union{Int, Symbol} = :normal)
     lines!(c, X, Y, color)
 end
+
+
+function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int; extra_rows::Int = 9, extra_cols::Int = 6) where {T <: Canvas}
+    nrow, ncol = size(A)
+    min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
+    min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
+    aspect_ratio = min_canvwidth / min_canvheight
+    height_diff = extra_rows
+    width_diff  = margin + padding + length(string(ncol)) + extra_cols
+    min_plotheight = min_canvheight + height_diff
+    min_plotwidth  = min_canvwidth  + width_diff
+
+    term_height, term_width = Base.displaysize()
+    maxheight = maxheight > 0 ? maxheight : term_height - height_diff
+    maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
+
+    # Check if the size of the plot should be derived from the matrix
+    # Note: if both width and height are 0, it means that there are no
+    #       constraints and the plot should resemble the structure of
+    #       the matrix as close as possible
+    if width == 0 && height == 0
+        # If the interactive code did not take care of this then try
+        # to plot the matrix in the correct aspect ratio (within specified bounds)
+        if min_canvheight > min_canvwidth
+            # long matrix (according to pixel density)
+            height = min_canvheight
+            width  = height * aspect_ratio
+            if width > maxwidth
+                width  = maxwidth
+                height = width / aspect_ratio
+            end
+            if height > maxheight
+                height = maxheight
+                width  = min(height * aspect_ratio, maxwidth)
+            end
+        else
+            # wide matrix
+            width  = min_canvwidth
+            height = width / aspect_ratio
+            if height > maxheight
+                height = maxheight
+                width  = height * aspect_ratio
+            end
+            if width > maxwidth
+                width = maxwidth
+                height = min(width / aspect_ratio, maxheight)
+            end
+        end
+    end
+    if width == 0 && height > 0
+        width  = min(height * aspect_ratio, maxwidth)
+    elseif width > 0 && height == 0
+        height = min(width / aspect_ratio, maxheight)
+    end
+    width  = round(Int, width)
+    height = round(Int, height)
+    aspect_ratio = min_canvwidth / min_canvheight
+
+    (width, height)
+end

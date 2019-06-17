@@ -257,6 +257,28 @@ function ylabel!(plot::Plot, ylabel::AbstractString)
 end
 
 """
+    zlabel(plot) -> String
+
+Returns the current label for the z-axis (colorbar).
+Alternatively, the z-label can be changed with `zlabel!`
+"""
+function zlabel(plot::Plot)
+    plot.zlabel
+end
+
+"""
+    zlabel!(plot, newlabel) -> plot
+
+Sets a new z-label (colorbar label) for the given plot.
+Alternatively, the current label can be
+queried using `zlabel`
+"""
+function zlabel!(plot::Plot, zlabel::AbstractString)
+    plot.zlabel = zlabel
+    plot
+end
+
+"""
     annotate!(plot, where, value, [color])
 
     annotate!(plot, where, row, value, [color])
