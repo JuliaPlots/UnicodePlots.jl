@@ -1,7 +1,7 @@
 
 withenv("LINES"=>24, "COLUMNS"=>80) do
     @testset "sizing" begin
-        for dims in [(6, 8), (8, 6), (10, 10), (10, 15), (15, 10), (2000, 200), (200, 2000), (2000, 2000)]
+        for dims in [(0, 0), (5, 0), (0, 5), (10, 0), (0, 10), (6, 8), (8, 6), (10, 10), (10, 15), (15, 10), (2000, 200), (200, 2000), (2000, 2000)]
             seed!(1337)
             p = @inferred heatmap(randn(dims))
             @test p isa Plot
@@ -17,6 +17,15 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
         p = @inferred heatmap(x)
         @test_reference(
                         "references/heatmap/integers_$(size(x, 1))x$(size(x, 2)).txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+    end
+    @testset "all zero values" begin
+        x = zeros(20, 20)
+        p = @inferred heatmap(x)
+        @test_reference(
+                        "references/heatmap/zeros_$(size(x, 1))x$(size(x, 2)).txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )

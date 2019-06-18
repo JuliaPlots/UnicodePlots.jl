@@ -97,6 +97,7 @@ end
 
 function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int; extra_rows::Int = 9, extra_cols::Int = 6) where {T <: Canvas}
     nrow, ncol = size(A)
+
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
     min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
     aspect_ratio = min_canvwidth / min_canvheight
@@ -106,6 +107,10 @@ function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, ma
     term_height, term_width = Base.displaysize()
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
+
+    if nrow == 0 && ncol == 0
+        return (0, 0, maxwidth, maxheight)
+    end
 
     # Check if the size of the plot should be derived from the matrix
     # Note: if both width and height are 0, it means that there are no

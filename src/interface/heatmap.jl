@@ -97,8 +97,8 @@ See also
 function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
-    maxz = maximum(z)
-    minz = minimum(z)
+    maxz = length(z) == 0 ? 0 : maximum(z)
+    minz = length(z) == 0 ? 0 : minimum(z)
     if colormap isa Symbol
         cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
         colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
@@ -110,10 +110,10 @@ function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int 
     X = (1:ncols) .* xscale
     Y = (1:nrows) .* yscale
     # set the axis limits automatically
-    if xlim == (0, 0)
+    if xlim == (0, 0) && length(X) > 0
         xlim = extrema(X)
     end
-    if ylim == (0, 0)
+    if ylim == (0, 0) && length(Y) > 0
         ylim = extrema(Y)
     end
     width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
@@ -130,13 +130,16 @@ function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int 
     else
         show_colorbar = get(kw, :show_colorbar, :true)
     end
-    new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
+
+    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0., 0.]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0., 0.]
+    new_plot = Plot(xs, ys, HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
                     colormap = colormap, colorbar_lim = (minz, maxz),
                     ylim = ylim, xlim = xlim,
                     width = width, height = height, kw...)
     for row = 1:nrows
-        Z = [colormap(zi, minz, maxz) for zi in z[row, :]]
+        Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
     new_plot
@@ -670,7 +673,11 @@ function rgb2terminal(rgb)
 end
 
 function heatmapcolor(z, minz, maxz, cmap)
-    i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+    if minz == maxz
+        i = 0
+    else
+        i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+    end
     rgb = cmap[i + 1]
     rgb2terminal(rgb)
 end
