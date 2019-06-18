@@ -12,6 +12,39 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             )
         end
     end
+    @testset "axis scaling" begin
+        x = repeat(collect(0:10), outer=(1, 11))
+        p = @inferred heatmap(x, xscale=0.1)
+        @test_reference(
+                        "references/heatmap/scaling_$(size(x, 1))x$(size(x, 2))_xscale_0.1.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xscale=0.1, xoffset=-0.5)
+        @test_reference(
+                        "references/heatmap/scaling_$(size(x, 1))x$(size(x, 2))_xscale_0.1_xoffset-0.5.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, yscale=0.1)
+        @test_reference(
+                        "references/heatmap/scaling_$(size(x, 1))x$(size(x, 2))_yscale_0.1.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, yscale=0.1, yoffset=-0.5)
+        @test_reference(
+                        "references/heatmap/scaling_$(size(x, 1))x$(size(x, 2))_yscale_0.1_yoffset-0.5.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xscale=0.1, xoffset=-0.5, yscale=10, yoffset=-50)
+        @test_reference(
+                        "references/heatmap/scaling_$(size(x, 1))x$(size(x, 2))_xscale_0.1_xoffset-0.5_yscale_10_yoffset_-50.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+    end
     @testset "integer values" begin
         x = repeat(collect(1:20), outer=(1, 20))
         p = @inferred heatmap(x)

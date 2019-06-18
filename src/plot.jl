@@ -166,7 +166,7 @@ function Plot(
     min_y_str = string(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
     max_y_str = string(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
     annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
-    annotate!(new_plot, :l, height, min_y_str, color = :light_black)
+    annotate!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
     annotate!(new_plot, :bl, min_x_str, color = :light_black)
     annotate!(new_plot, :br, max_x_str, color = :light_black)
     if grid

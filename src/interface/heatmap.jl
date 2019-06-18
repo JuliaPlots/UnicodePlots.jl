@@ -15,7 +15,8 @@ Usage
     heatmap(z::AbstractMatrix; title = "", width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
             border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
-            xscale = 0.0, yscale = 0.0, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1)
+            xscale = 0.0, yscale = 0.0, xlim = [0, 0], ylim = [0, 0],
+            xoffset = 0.0, yoffset = 0.0, margin = 3, padding = 1)
 
 Arguments
 ==========
@@ -49,6 +50,10 @@ Arguments
 - **`xlim`** : Plotting range for the x coordinate (after scaling). `[0, 0]` stands for automatic.
 
 - **`ylim`** : Plotting range for the y coordinate (after scaling). `[0, 0]` stands for automatic.
+
+- **`xoffset`** : Plotting offset for the x coordinate (after scaling).
+
+- **`yoffset`** : Plotting offset for the y coordinate (after scaling).
 
 - **`margin`** : Number of empty characters to the left of the whole plot.
 
@@ -94,7 +99,7 @@ See also
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
-function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, kw...)
+function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 0., yoffset = 0., maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
     maxz = length(z) == 0 ? 0 : maximum(z)
@@ -109,8 +114,10 @@ function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int 
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xscale == 0.0 ? (1:ncols) : (0:(ncols-1)) .* xscale
-    Y = yscale == 0.0 ? (1:nrows) : (0:(nrows-1)) .* yscale
+    X = xscale == 0.0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xscale
+    X .+= xoffset
+    Y = yscale == 0.0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yscale
+    Y .+= yoffset
 
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
