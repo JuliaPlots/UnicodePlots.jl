@@ -637,15 +637,20 @@ function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int 
     if ylim == (0, 0)
         ylim = extrema(Y)
     end
-    # show colorbar by default, unless set to false
-    show_colorbar = get(kw, :show_colorbar, :true)
-    width, height = get_canvas_dimensions_for_matrix(
+    width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
         HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
         extra_cols = 0,
         extra_rows = 0
     )
-    # ensure plot height is big enough to show the colorbar
-    height = max(height, min(size(z, 1), 8))
+    # ensure plot height is big enough
+    height = min(maxheight, max(height, size(z, 1)))
+    # for small plots, don't show colorbar by default
+    if height < 8
+        show_colorbar = get(kw, :show_colorbar, :false)
+    # show colorbar by default, unless set to false
+    else
+        show_colorbar = get(kw, :show_colorbar, :true)
+    end
     new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
                     colormap = colormap, colorbar_lim = (minz, maxz),

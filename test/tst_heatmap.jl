@@ -1,7 +1,7 @@
 
 withenv("LINES"=>24, "COLUMNS"=>80) do
     @testset "sizing" begin
-        for dims in [(10, 10), (10, 15), (15, 10), (2000, 200), (200, 2000), (2000, 2000)]
+        for dims in [(6, 8), (8, 6), (10, 10), (10, 15), (15, 10), (2000, 200), (200, 2000), (2000, 2000)]
             seed!(1337)
             p = @inferred heatmap(randn(dims))
             @test p isa Plot

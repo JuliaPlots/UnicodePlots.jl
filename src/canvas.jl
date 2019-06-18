@@ -148,5 +148,5 @@ function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, ma
     width  = round(Int, width)
     height = round(Int, height)
 
-    (width, height)
+    (width, height, maxwidth, maxheight)
 end
