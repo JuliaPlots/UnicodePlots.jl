@@ -15,7 +15,7 @@ Usage
     heatmap(z::AbstractMatrix; title = "", width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
             border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
-            xscale = 1.0, yscale = 1.0, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1)
+            xscale = 0.0, yscale = 0.0, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1)
 
 Arguments
 ==========
@@ -42,9 +42,9 @@ Arguments
 
 - **`colorbar_border`** : The style of the bounding box of the color bar. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
-- **`xscale`** : Scale for the x coordinate. Defaults to 1 - i.e. each column in `z` corresponds to one unit.
+- **`xscale`** : Scale for the x coordinate. Defaults to 0 - i.e. each column in `z` corresponds to one unit, x origin starting at 1. If set to anything else, the x origin will start at 0.
 
-- **`yscale`** : Scale for the y coordinate labels. Defaults to 1 - i.e. each row in `z` corresponds to one unit.
+- **`yscale`** : Scale for the y coordinate labels. Defaults to 0 - i.e. each row in `z` corresponds to one unit, y origin starting at 1. If set to anything else, the y origin will start at 0.
 
 - **`xlim`** : Plotting range for the x coordinate (after scaling). `[0, 0]` stands for automatic.
 
@@ -94,7 +94,7 @@ See also
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
-function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
+function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
     maxz = length(z) == 0 ? 0 : maximum(z)
@@ -107,8 +107,11 @@ function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int 
         colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
     end
 
-    X = (1:ncols) .* xscale
-    Y = (1:nrows) .* yscale
+    # if scale is auto, use the matrix indices as axis labels
+    # otherwise, start axis labels at zero
+    X = xscale == 0.0 ? (1:ncols) : (0:(ncols-1)) .* xscale
+    Y = yscale == 0.0 ? (1:nrows) : (0:(nrows-1)) .* yscale
+
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
         xlim = extrema(X)

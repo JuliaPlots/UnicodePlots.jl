@@ -39,9 +39,30 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             render = BeforeAfterFull()
         )
         seed!(1337)
-        p = heatmap(randn(200, 200), title="Custom Title", zlabel="Custom Label", colorbar_border=:ascii)
+        p = heatmap(randn(200, 200), title="Custom Title", zlabel="Custom Label", colorbar_border=:ascii, colormap=:inferno)
         @test_reference(
             "references/heatmap/parameters_200x200_zlabel_ascii_border.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        seed!(1337)
+        p = @inferred heatmap(randn(10,10), xscale=0.1, colormap=:inferno)
+        @test_reference(
+            "references/heatmap/parameters_10x10_xscale_inferno.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        seed!(1337)
+        p = @inferred heatmap(randn(10,11), xscale=0.1, colormap=:inferno)
+        @test_reference(
+            "references/heatmap/parameters_10x11_xscale_inferno.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        seed!(1337)
+        p = @inferred heatmap(randn(10,10), yscale=1, colormap=:inferno)
+        @test_reference(
+            "references/heatmap/parameters_10x10_yscale_inferno.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
