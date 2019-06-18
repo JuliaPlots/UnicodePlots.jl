@@ -12,7 +12,10 @@ as x and y coordinates respectively.
 Usage
 ======
 
-    heatmap(z; title = "", name = "", width = 40, height = 15, border = :solid, colormap = :viridis, xscale = 1.0, yscale = 1.0,  xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1, labels = true)
+    heatmap(z::AbstractMatrix; title = "", width = 0, height = 0,
+            xlabel = "", ylabel = "", zlabel = "", labels = true,
+            border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
+            xscale = 1.0, yscale = 1.0, xlim = [0, 0], ylim = [0, 0], margin = 3, padding = 1)
 
 Arguments
 ==========
@@ -21,7 +24,11 @@ Arguments
 
 - **`title`** : Text to display on the top of the plot.
 
-- **`name`** : Annotation of the current drawing to displayed on the right
+- **`xlabel`** : x-axis label
+
+- **`ylabel`** : y-axis label
+
+- **`zlabel`** : z-axis (colorbar) label
 
 - **`width`** : Number of characters per row that should be used for plotting.
 
@@ -32,6 +39,8 @@ Arguments
 - **`colormap`** : The colormap to use for the heatmap. Supports `:viridis` and `:inferno`.
                    Alternatively, supply a function `f: z, zmin, zmax -> terminal color (Int)`,
                    or a vector of RGB vectors in the format shown [here](https://github.com/BIDS/colormap/blob/master/colormaps.py).
+
+- **`colorbar_border`** : The style of the bounding box of the color bar. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
 - **`xscale`** : Scale for the x coordinate. Defaults to 1 - i.e. each column in `z` corresponds to one unit.
 
@@ -60,27 +69,78 @@ Author(s)
 Examples
 =========
 
-    julia> heatmap(randn(100, 100), title = "Heatmap")
-
-                        Heatmap
-       ┌────────────────────────────────────────┐
-   100 │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│
-       └────────────────────────────────────────┘
-       0                                      100
-
+```julia-repl
+julia> heatmap(randn(100, 100), title = "Heatmap")
+                            Heatmap
+       ┌────────────────────────────────────────────────┐
+   100 │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  ┌──┐ 4.0
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
+       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  └──┘ -4.0
+       └────────────────────────────────────────────────┘
+       1                                              100
+```
 
 See also
 =========
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
+function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
+    nrows = size(z, 1)
+    ncols = size(z, 2)
+    maxz = maximum(z)
+    minz = minimum(z)
+    if colormap isa Symbol
+        cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    elseif typeof(colormap) <: AbstractVector
+        cdata = colormap
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    end
 
+    X = (1:ncols) .* xscale
+    Y = (1:nrows) .* yscale
+    # set the axis limits automatically
+    if xlim == (0, 0)
+        xlim = extrema(X)
+    end
+    if ylim == (0, 0)
+        ylim = extrema(Y)
+    end
+    width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
+        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
+        extra_cols = 0,
+        extra_rows = 0
+    )
+    # ensure plot height is big enough
+    height = min(maxheight, max(height, size(z, 1)))
+    # for small plots, don't show colorbar by default
+    if height < 8
+        show_colorbar = get(kw, :show_colorbar, :false)
+    # show colorbar by default, unless set to false
+    else
+        show_colorbar = get(kw, :show_colorbar, :true)
+    end
+    new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
+                    grid = false, colorbar = show_colorbar,
+                    colormap = colormap, colorbar_lim = (minz, maxz),
+                    ylim = ylim, xlim = xlim,
+                    width = width, height = height, kw...)
+    for row = 1:nrows
+        Z = [colormap(zi, minz, maxz) for zi in z[row, :]]
+        points!(new_plot, X, repeat([Y[row]], length(X)), Z)
+    end
+    new_plot
+end
 
 # _viridis_data and _inferno_data taken from https://github.com/BIDS/colormap/blob/master/colormaps.py under the CC0 license.
 
@@ -615,51 +675,4 @@ function heatmapcolor(z, minz, maxz, cmap)
     rgb2terminal(rgb)
 end
 
-function heatmap(z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=1.0, yscale=1.0, kw...)
-    nrows = size(z, 1)
-    ncols = size(z, 2)
-    maxz = maximum(z)
-    minz = minimum(z)
-    if colormap isa Symbol
-        cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    elseif typeof(colormap) <: AbstractVector
-        cdata = colormap
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    end
-
-    X = (1:ncols) .* xscale
-    Y = (1:nrows) .* yscale
-    # set the axis limits automatically
-    if xlim == (0, 0)
-        xlim = extrema(X)
-    end
-    if ylim == (0, 0)
-        ylim = extrema(Y)
-    end
-    width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
-        extra_cols = 0,
-        extra_rows = 0
-    )
-    # ensure plot height is big enough
-    height = min(maxheight, max(height, size(z, 1)))
-    # for small plots, don't show colorbar by default
-    if height < 8
-        show_colorbar = get(kw, :show_colorbar, :false)
-    # show colorbar by default, unless set to false
-    else
-        show_colorbar = get(kw, :show_colorbar, :true)
-    end
-    new_plot = Plot([X[1], X[end]], [Y[1], Y[end]], HeatmapCanvas;
-                    grid = false, colorbar = show_colorbar,
-                    colormap = colormap, colorbar_lim = (minz, maxz),
-                    ylim = ylim, xlim = xlim,
-                    width = width, height = height, kw...)
-    for row = 1:nrows
-        Z = [colormap(zi, minz, maxz) for zi in z[row, :]]
-        points!(new_plot, X, repeat([Y[row]], length(X)), Z)
-    end
-    new_plot
-end
 
