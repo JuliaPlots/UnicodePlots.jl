@@ -119,7 +119,7 @@ function spy(
     nrow, ncol = size(A)
     rows, cols, vals = _findnz(A)
     (width, height, _, _) = get_canvas_dimensions_for_matrix(
-        canvas, A, maxwidth, maxheight, width, height, margin, padding;
+        canvas, size(A, 1), size(A, 2), maxwidth, maxheight, width, height, margin, padding;
         extra_rows = 9, extra_cols = 6
     )
     can = T(width, height,

@@ -54,6 +54,57 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             render = BeforeAfterFull()
         )
     end
+    @testset "axis limits" begin
+        x = collect(0:30) * collect(0:30)'
+        p = @inferred heatmap(x, ylim=[10, 20])
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_ylim_10_20.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, ylim=[50, 50])
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_ylim_50_50.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xlim=[10, 20])
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xlim_10_20.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xlim=[50, 50])
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xlim_50_50.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xlim=[10, 20], ylim=[10, 20])
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xlim_10_20_ylim_10_20.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xlim=[0, 0.1], xscale=0.01)
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xscale_0.01_xlim_0_0.1.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, ylim=[0, 0.1], yscale=0.01)
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_yscale_0.01_ylim_0_0.1.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        p = @inferred heatmap(x, xlim=[0, 0.1], xscale=0.01, ylim=[0.1, 0.2], yscale=0.01)
+        @test_reference(
+                        "references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xscale_0.01_xlim_0_0.1_yscale_0.01_ylim_0.1_0.2.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+    end
     @testset "all zero values" begin
         x = zeros(20, 20)
         p = @inferred heatmap(x)

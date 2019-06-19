@@ -95,9 +95,7 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Union{In
 end
 
 
-function get_canvas_dimensions_for_matrix(canvas::Type{T}, A::AbstractMatrix, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int; extra_rows::Int = 0, extra_cols::Int = 0) where {T <: Canvas}
-    nrow, ncol = size(A)
-
+function get_canvas_dimensions_for_matrix(canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int; extra_rows::Int = 0, extra_cols::Int = 0) where {T <: Canvas}
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
     min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
     aspect_ratio = min_canvwidth / min_canvheight

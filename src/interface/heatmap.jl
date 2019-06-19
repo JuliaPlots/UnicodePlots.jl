@@ -102,15 +102,6 @@ See also
 function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 0., yoffset = 0., maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
-    maxz = length(z) == 0 ? 0 : maximum(z)
-    minz = length(z) == 0 ? 0 : minimum(z)
-    if colormap isa Symbol
-        cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    elseif typeof(colormap) <: AbstractVector
-        cdata = colormap
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    end
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
@@ -126,8 +117,30 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     if ylim == (0, 0) && length(Y) > 0
         ylim = extrema(Y)
     end
+
+    # select a subset of z based on the supplied limits
+    firstx = findfirst(x -> x >= xlim[1], X)
+    lastx = findlast(x -> x <= xlim[2], X)
+    xrange = (firstx == nothing || lastx == nothing) ? (1:0) : (firstx:lastx)
+    firsty = findfirst(y -> y >= ylim[1], Y)
+    lasty = findlast(y -> y <= ylim[2], Y)
+    yrange = (firsty == nothing || lasty == nothing) ? (1:0) : (firsty:lasty)
+    z = z[yrange, xrange]
+    X = X[xrange]
+    Y = Y[yrange]
+
+    maxz = length(z) == 0 ? 0 : maximum(z)
+    minz = length(z) == 0 ? 0 : minimum(z)
+    if colormap isa Symbol
+        cdata = Dict(:viridis => _viridis_data, :inferno => _inferno_data)[colormap]
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    elseif typeof(colormap) <: AbstractVector
+        cdata = colormap
+        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    end
+
     width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding
+        HeatmapCanvas, size(z, 1), size(z, 2), maxwidth, maxheight, width, height, margin, padding
     )
     # ensure plot height is big enough
     height = min(maxheight, max(height, size(z, 1)))
@@ -146,7 +159,7 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
                     colormap = colormap, colorbar_lim = (minz, maxz),
                     ylim = ylim, xlim = xlim,
                     width = width, height = height, kw...)
-    for row = 1:nrows
+    for row = 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
