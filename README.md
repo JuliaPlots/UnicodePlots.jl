@@ -161,11 +161,10 @@ the colorbar and configure its border. The `zlabel` option and `zlabel!` method
 may be used to set the z axis (colorbar) label.
 
 ```Julia
-using LinearAlgebra
-heatmap(diagm([x => repeat([x], 11 - x) for x = 0:10]...), xscale=0.1, yscale=0.1, xoffset=-0.5, colormap=:inferno)
+heatmap(collect(0:30) * collect(0:30)', xscale=0.1, yscale=0.1, xoffset=-0.5, colormap=:inferno)
 ```
 
-![Heatmap Screenshot 2](https://user-images.githubusercontent.com/1258076/59730771-fa0deb80-9286-11e9-93bc-a1193814904c.png)
+![Heatmap Screenshot 2](https://user-images.githubusercontent.com/1258076/59735239-21b97f80-9298-11e9-9aef-ad4da8ff3d92.png)
 
 ### Options
 
