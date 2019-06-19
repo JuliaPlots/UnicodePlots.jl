@@ -20,6 +20,7 @@ common scenarios:
   - Boxplot (horizontal)
   - Sparsity Pattern
   - Density Plot
+  - Heatmap
 
 Here is a quick hello world example of a typical use-case:
 
@@ -141,6 +142,25 @@ plt = densityplot(randn(1000), randn(1000))
 densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
 ![Density Screenshot](https://user-images.githubusercontent.com/10854026/50768809-28bc7a80-1282-11e9-917a-0ee22d1b274a.png)
+
+#### Heatmap Plot
+
+```Julia
+z = repeat(collect(0:10)', outer=(11, 1))
+heatmap(z, zlabel="z")
+```
+
+**TODO: ADD HEATMAP SCREENSHOT**
+
+The `heatmap` function also supports axis scaling using the
+parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
+
+The `colormap` parameter may be used to specify a named or custom colormap
+see the `heatmap` function documentation for more details.
+
+In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable
+the colorbar and configure its border. The `zlabel` option and `zlabel!` method
+may be used to set the z axis (colorbar) label.
 
 ### Options
 
@@ -295,6 +315,9 @@ At the moment there are the following types of Canvas implemented:
 
   - **BlockCanvas**:
     This canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
+
+  - **HeatmapCanvas**:
+    This canvas is also Unicode-based. It has half the resolution of the BlockCanvas. This canvas effectively turns every character into 2 color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of y coordinates being displayed.
 
   - **AsciiCanvas** and **DotCanvas**:
     These two canvas utilizes only standard ASCII character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
