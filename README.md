@@ -146,11 +146,9 @@ densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 #### Heatmap Plot
 
 ```Julia
-z = repeat(collect(0:10)', outer=(11, 1))
-heatmap(z, zlabel="z")
+heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 ```
-
-**TODO: ADD HEATMAP SCREENSHOT**
+![Heatmap Screenshot](https://user-images.githubusercontent.com/1258076/59729642-9a154600-9282-11e9-8f55-db586bc4a749.png)
 
 The `heatmap` function also supports axis scaling using the
 parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
