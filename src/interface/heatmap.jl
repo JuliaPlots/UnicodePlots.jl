@@ -127,9 +127,7 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
         ylim = extrema(Y)
     end
     width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding;
-        extra_cols = 0,
-        extra_rows = 0
+        HeatmapCanvas, z, maxwidth, maxheight, width, height, margin, padding
     )
     # ensure plot height is big enough
     height = min(maxheight, max(height, size(z, 1)))

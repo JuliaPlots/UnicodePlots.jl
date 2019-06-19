@@ -153,8 +153,7 @@ heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 The `heatmap` function also supports axis scaling using the
 parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
 
-The `colormap` parameter may be used to specify a named or custom colormap
-see the `heatmap` function documentation for more details.
+The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
 In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable
 the colorbar and configure its border. The `zlabel` option and `zlabel!` method
