@@ -71,28 +71,6 @@ Author(s)
 
 - Rowan Katekar (https://github.com/rjkat)
 
-Examples
-=========
-
-```julia-repl
-julia> heatmap(randn(100, 100), title = "Heatmap")
-                            Heatmap
-       ┌────────────────────────────────────────────────┐
-   100 │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  ┌──┐ 4.0
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│
-       │▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄│  └──┘ -4.0
-       └────────────────────────────────────────────────┘
-       1                                              100
-```
 
 See also
 =========
@@ -107,8 +85,10 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     # otherwise, start axis labels at zero
     X = xscale == 0.0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xscale
     X .+= xoffset
+    xscale = xscale == 0.0 ? 1 : xscale
     Y = yscale == 0.0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yscale
     Y .+= yoffset
+    yscale = yscale == 0.0 ? 1 : yscale
 
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
@@ -139,11 +119,13 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
         colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
     end
 
+    nrows = ceil(Int, (ylim[2] - ylim[1]) / yscale) + 1
+    ncols = ceil(Int, (xlim[2] - xlim[1]) / xscale) + 1
     width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, size(z, 1), size(z, 2), maxwidth, maxheight, width, height, margin, padding
+        HeatmapCanvas, nrows, ncols, maxwidth, maxheight, width, height, margin, padding
     )
     # ensure plot height is big enough
-    height = min(maxheight, max(height, size(z, 1)))
+    height = min(maxheight, max(height, nrows))
     # for small plots, don't show colorbar by default
     if height < 8
         show_colorbar = get(kw, :show_colorbar, :false)
