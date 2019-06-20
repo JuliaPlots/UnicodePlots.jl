@@ -54,6 +54,23 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             render = BeforeAfterFull()
         )
     end
+    @testset "color maps" begin
+        x = collect(0:30) * collect(0:30)'
+        for cmap in keys(UnicodePlots.COLOR_MAP_DATA)
+            p = @inferred heatmap(x, colormap=cmap)
+            @test_reference(
+                            "references/heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$cmap.txt",
+                @io2str(show(IOContext(::IO, :color=>true), p)),
+                render = BeforeAfterFull()
+            )
+        end
+        p = @inferred heatmap(x, colormap=reverse(UnicodePlots.COLOR_MAP_DATA[:viridis]))
+        @test_reference(
+                        "references/heatmap/colormap_$(size(x, 1))x$(size(x, 2))_reverse_viridis.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+    end
     @testset "axis limits" begin
         x = collect(0:30) * collect(0:30)'
         p = @inferred heatmap(x, ylim=[10, 20])
@@ -137,6 +154,13 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
         p = @inferred heatmap(randn(200,200), colorbar=:false)
         @test_reference(
             "references/heatmap/parameters_200x200_no_colorbar.txt",
+            @io2str(show(IOContext(::IO, :color=>true), p)),
+            render = BeforeAfterFull()
+        )
+        seed!(1337)
+        p = @inferred heatmap(randn(200,200), labels=:false)
+        @test_reference(
+            "references/heatmap/parameters_200x200_no_labels.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )

@@ -67,6 +67,7 @@ include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
 
 include("plot.jl")
+include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
