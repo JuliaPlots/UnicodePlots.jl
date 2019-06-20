@@ -140,7 +140,7 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     new_plot = Plot(xs, ys, HeatmapCanvas;
                     grid = false, colorbar = show_colorbar,
                     colormap = colormap, colorbar_lim = (minz, maxz),
-                    ylim = ylim, xlim = xlim,
+                    ylim = ylim, xlim = xlim, labels = labels,
                     width = width, height = height, kw...)
     for row = 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]

@@ -151,14 +151,14 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
     end
     @testset "parameters" begin
         seed!(1337)
-        p = @inferred heatmap(randn(200,200), colorbar=:false)
+        p = @inferred heatmap(randn(200,200), colorbar=false)
         @test_reference(
             "references/heatmap/parameters_200x200_no_colorbar.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
         seed!(1337)
-        p = @inferred heatmap(randn(200,200), labels=:false)
+        p = @inferred heatmap(randn(200,200), labels=false)
         @test_reference(
             "references/heatmap/parameters_200x200_no_labels.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
