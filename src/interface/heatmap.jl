@@ -128,11 +128,11 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     height = min(maxheight, max(height, nrows))
     # for small plots, don't show colorbar by default
     if height < 8
-        show_colorbar = get(kw, :show_colorbar, :false)
+        show_colorbar = get(kw, :colorbar, false)
     # show colorbar by default, unless set to false, or
     # labels == false
     else
-        show_colorbar = get(kw, :show_colorbar, labels)
+        show_colorbar = get(kw, :colorbar, labels)
     end
 
     xs = length(X) > 0 ? [X[1], X[end]] : Float64[0., 0.]
