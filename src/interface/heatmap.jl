@@ -141,7 +141,8 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
                     grid = false, colorbar = show_colorbar,
                     colormap = colormap, colorbar_lim = (minz, maxz),
                     ylim = ylim, xlim = xlim, labels = labels,
-                    width = width, height = height, kw...)
+                    width = width, height = height, min_width = 1, min_height = 1,
+                    kw...)
     for row = 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)

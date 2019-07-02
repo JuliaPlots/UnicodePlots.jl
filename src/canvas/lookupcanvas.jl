@@ -21,11 +21,13 @@ function CreateLookupCanvas(
         origin_x::Number = 0.,
         origin_y::Number = 0.,
         width::Number = 1.,
-        height::Number = 1.) where {T <: LookupCanvas}
+        height::Number = 1.,
+        min_char_height::Int = 5,
+        min_char_width::Int = 2) where {T <: LookupCanvas}
     width  > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width  = max(char_width, 5)
-    char_height = max(char_height, 2)
+    char_width  = max(char_width, min_char_width)
+    char_height = max(char_height, min_char_height)
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid   = fill(0x00, char_width, char_height)

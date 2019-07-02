@@ -140,11 +140,13 @@ function Plot(
         colorbar = false,
         colorbar_border::Symbol = :solid,
         colorbar_lim = (0., 1.),
-        grid::Bool = true) where {C<:Canvas}
+        grid::Bool = true,
+        min_width::Int = 5,
+        min_height::Int = 2) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    width = max(width, 5)
-    height = max(height, 2)
+    width = max(width, min_width)
+    height = max(height, min_height)
 
     min_x, max_x = extend_limits(X, xlim)
     min_y, max_y = extend_limits(Y, ylim)
