@@ -47,7 +47,7 @@ export
     stairs, stairs!,
     histogram,
     densityplot, densityplot!,
-    heatmap, heatmap!,
+    heatmap,
     spy,
     boxplot, boxplot!
 

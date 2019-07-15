@@ -1048,3 +1048,28 @@ COLOR_MAP_DATA = Dict(
     :magma   => _magma_data,
     :plasma  => _plasma_data
 )
+
+function closestansiicolor(c)
+    tc = [0, 95, 135, 175, 215, 255]
+    _, i = findmin(abs.(c .- tc))
+    i - 1
+end
+
+function rgb2ansii(rgb)
+    r, g, b = closestansiicolor.([round(Int, c * 255) for c in rgb])
+    r * 36 + g * 6 + b + 16
+end
+
+function heatmapcolor(z, minz, maxz, cmap)
+    if minz == maxz
+        i = 0
+    else
+        i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+    end
+    rgb = cmap[i + 1]
+    rgb2ansii(rgb)
+end
+
+function rgbimgcolor(z)
+    rgb2ansii([z.r, z.g, z.b])
+end

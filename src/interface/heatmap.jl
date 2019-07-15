@@ -77,7 +77,7 @@ See also
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
-function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 0., yoffset = 0., maxwidth::Int = 0, maxheight::Int = 0, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, labels = true, kw...)
+function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 0., yoffset = 0., width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0, yscale=0.0, labels = true, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
 
@@ -109,9 +109,20 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     X = X[xrange]
     Y = Y[yrange]
 
-    maxz = length(z) == 0 ? 0 : maximum(z)
-    minz = length(z) == 0 ? 0 : minimum(z)
-    if colormap isa Symbol
+    # allow z to be an array over which min and max is not defined,
+    # e.g. an array of RGB color values
+    minz, maxz = (0, 0)
+    noextrema = true
+    try
+        minz, maxz = extrema(z)
+        noextrema = false
+    catch
+    end
+
+    # if z is an rgb image, translate the colors directly to the terminal
+    if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
+        colormap = (z, minz, maxz) -> rgbimgcolor(z)
+    elseif colormap isa Symbol
         cdata = COLOR_MAP_DATA[colormap]
         colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
     elseif typeof(colormap) <: AbstractVector
@@ -121,18 +132,23 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
 
     nrows = ceil(Int, (ylim[2] - ylim[1]) / yscale) + 1
     ncols = ceil(Int, (xlim[2] - xlim[1]) / xscale) + 1
-    width, height, maxwidth, maxheight = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, maxwidth, maxheight, width, height, margin, padding
+    aspect_ratio = ncols / nrows
+
+    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
+    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
+    width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
+        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding
     )
+
     # ensure plot height is big enough
-    height = min(maxheight, max(height, nrows))
+    height = min(max_height, max(height, nrows))
+
     # for small plots, don't show colorbar by default
-    if height < 8
-        show_colorbar = get(kw, :colorbar, false)
-    # show colorbar by default, unless set to false, or
-    # labels == false
+    if height < 7
+        show_colorbar = !noextrema && get(kw, :colorbar, false)
+    # show colorbar by default, unless set to false, or labels == false
     else
-        show_colorbar = get(kw, :colorbar, labels)
+        show_colorbar = !noextrema && get(kw, :colorbar, labels)
     end
 
     xs = length(X) > 0 ? [X[1], X[end]] : Float64[0., 0.]
@@ -149,26 +165,4 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
     end
     new_plot
 end
-
-function findclosesttermcolor(c)
-    tc = [0, 95, 135, 175, 215, 255]
-    _, i = findmin(abs.(c .- tc))
-    i - 1
-end
-
-function rgb2terminal(rgb)
-    r, g, b = findclosesttermcolor.([round(Int, c * 255) for c in rgb])
-    r * 36 + g * 6 + b + 16
-end
-
-function heatmapcolor(z, minz, maxz, cmap)
-    if minz == maxz
-        i = 0
-    else
-        i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
-    end
-    rgb = cmap[i + 1]
-    rgb2terminal(rgb)
-end
-
 
