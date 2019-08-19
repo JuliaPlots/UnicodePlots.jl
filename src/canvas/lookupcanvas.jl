@@ -21,11 +21,13 @@ function CreateLookupCanvas(
         origin_x::Number = 0.,
         origin_y::Number = 0.,
         width::Number = 1.,
-        height::Number = 1.) where {T <: LookupCanvas}
+        height::Number = 1.,
+        min_char_height::Int = 5,
+        min_char_width::Int = 2) where {T <: LookupCanvas}
     width  > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width  = max(char_width, 5)
-    char_height = max(char_height, 2)
+    char_width  = max(char_width, min_char_width)
+    char_height = max(char_height, min_char_height)
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid   = fill(0x00, char_width, char_height)
@@ -35,7 +37,7 @@ function CreateLookupCanvas(
       Float64(width), Float64(height))
 end
 
-function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Symbol) where {T <: LookupCanvas}
+function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) where {T <: LookupCanvas}
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
@@ -50,7 +52,12 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Symbol) where {T <: Loo
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
     grid(c)[char_x, char_y] = grid(c)[char_x,char_y] | lookup_encode(c)[char_x_off, char_y_off]
-    colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | color_encode[color]
+    if color isa Symbol
+        colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | color_encode[color]
+    else
+        # don't attempt to blend colors if they have been explicitly specified
+        colors(c)[char_x, char_y] = color
+    end
     c
 end
 

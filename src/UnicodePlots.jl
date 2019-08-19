@@ -13,6 +13,7 @@ export
             BlockCanvas,
             AsciiCanvas,
             DotCanvas,
+            HeatmapCanvas,
         BarplotGraphics,
         BoxplotGraphics,
 
@@ -37,6 +38,7 @@ export
     title, title!,
     xlabel, xlabel!,
     ylabel, ylabel!,
+    zlabel, zlabel!,
     annotate!,
 
     barplot, barplot!,
@@ -45,6 +47,7 @@ export
     stairs, stairs!,
     histogram,
     densityplot, densityplot!,
+    heatmap,
     spy,
     boxplot, boxplot!
 
@@ -61,14 +64,17 @@ include("canvas/densitycanvas.jl")
 include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
+include("canvas/heatmapcanvas.jl")
 
 include("plot.jl")
+include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
 include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")
+include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
 

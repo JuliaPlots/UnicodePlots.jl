@@ -37,9 +37,7 @@ Arguments
   setting `labels = false`.
 
 - **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
-  `:ascii`, and `:none`.
-
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.  
 - **`margin`** : Number of empty characters to the left of the
   whole plot.
 
@@ -118,68 +116,12 @@ function spy(
         Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
         color = :auto
     end
-    rows, cols, vals = _findnz(A)
     nrow, ncol = size(A)
-    min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
-    min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
-    aspect_ratio = min_canvwidth / min_canvheight
-    height_diff = 9
-    width_diff  = margin + padding + length(string(ncol)) + 6
-    min_plotheight = min_canvheight + height_diff
-    min_plotwidth  = min_canvwidth  + width_diff
-
-    # if no size bounds ares specified and the session is in an
-    # interactive terminal then use the size of the REPL
-    # TODO: remove interactive check?
-    #if isinteractive()
-        term_height, term_width = Base.displaysize()
-        maxheight = maxheight > 0 ? maxheight : term_height - height_diff
-        maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
-    #else
-    #    maxheight = maxheight > 0 ? maxheight : 40
-    #    maxwidth  = maxwidth > 0 ? maxwidth : 70
-    #end
-
-    # Check if the size of the plot should be derived from the matrix
-    # Note: if both width and height are 0, it means that there are no
-    #       constraints and the plot should resemble the structure of
-    #       the matrix as close as possible
-    if width == 0 && height == 0
-        # If the interactive code did not take care of this then try
-        # to plot the matrix in the correct aspect ratio (within specified bounds)
-        if min_canvheight > min_canvwidth
-            # long matrix (according to pixel density)
-            height = min_canvheight
-            width  = height * aspect_ratio
-            if width > maxwidth
-                width  = maxwidth
-                height = width / aspect_ratio
-            end
-            if height > maxheight
-                height = maxheight
-                width  = min(height * aspect_ratio, maxwidth)
-            end
-        else
-            # wide matrix
-            width  = min_canvwidth
-            height = width / aspect_ratio
-            if height > maxheight
-                height = maxheight
-                width  = height * aspect_ratio
-            end
-            if width > maxwidth
-                width = maxwidth
-                height = min(width / aspect_ratio, maxheight)
-            end
-        end
-    end
-    if width == 0 && height > 0
-        width  = min(height * aspect_ratio, maxwidth)
-    elseif width > 0 && height == 0
-        height = min(width / aspect_ratio, maxheight)
-    end
-    width  = round(Int, width)
-    height = round(Int, height)
+    rows, cols, vals = _findnz(A)
+    (width, height, _, _) = get_canvas_dimensions_for_matrix(
+        canvas, size(A, 1), size(A, 2), maxwidth, maxheight, width, height, margin, padding;
+        extra_rows = 9, extra_cols = 6
+    )
     can = T(width, height,
             width  = Float64(ncol) + 1,
             height = Float64(nrow) + 1)

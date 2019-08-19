@@ -16,6 +16,7 @@ tests = [
     "tst_lineplot.jl",
     "tst_spy.jl",
     "tst_boxplot.jl",
+    "tst_heatmap.jl"
 ]
 
 for test in tests

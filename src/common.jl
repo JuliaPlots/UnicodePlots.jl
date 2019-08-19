@@ -171,7 +171,7 @@ color_encode[:white] = 0b111
 color_decode[0b111]  = :white
 
 function print_color(color::UInt8, io::IO, args...)
-    col = color_decode[color]
+    col = color in keys(color_decode) ? color_decode[color] : Int(color)
     str = string(args...)
     printstyled(io, str; color = col)
 end
