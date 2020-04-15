@@ -1,6 +1,6 @@
 @testset "positional types" begin
     dct = Dict("foo" => 37, "bar" => 23)
-    p = @inferred barplot(dct)
+    p = barplot(dct)
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
@@ -18,7 +18,7 @@
     )
 
     dct = Dict("foo" => 37., :bar => 23., 2.1 => 10)
-    p = @inferred barplot(dct)
+    p = barplot(dct)
     @test_reference(
         "references/barplot/default_mixed.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
@@ -26,21 +26,21 @@
     )
 
     dct = Dict(:foo => 37, :bar => 23)
-    p = @inferred barplot(dct)
+    p = barplot(dct)
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot([:bar, :foo], Int16[23, 37])
+    p = barplot([:bar, :foo], Int16[23, 37])
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
@@ -50,45 +50,45 @@
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
     @test_throws MethodError barplot!(p, ["zoom"], [90.])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
-    @test @inferred(barplot!(p, ["zoom"], [90])) === p
+    @test barplot!(p, ["zoom"], [90]) === p
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, :zoom, 90.)) === p
+    p =  barplot(["bar", "foo"], [23, 37])
+    @test barplot!(p, :zoom, 90.) === p
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     @test_throws MethodError barplot!(p, Dict("zoom" => 90.))
-    @test @inferred(barplot!(p, Dict("zoom" => 90))) === p
+    @test barplot!(p, Dict("zoom" => 90)) === p
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, Dict(:zoom => 90))) === p
+    p = barplot(["bar", "foo"], [23, 37])
+    @test barplot!(p, Dict(:zoom => 90)) === p
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(2:6, 11:15)
+    p = barplot(2:6, 11:15)
     @test_reference(
         "references/barplot/ranges.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    @test @inferred(barplot!(p, 9:10, 20:21)) === p
+    @test barplot!(p, 9:10, 20:21) === p
     @test_reference(
         "references/barplot/ranges2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
@@ -97,7 +97,7 @@
 end
 
 @testset "keyword arguments" begin
-    p = @inferred barplot(
+    p = barplot(
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
@@ -108,7 +108,7 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    p = @inferred barplot(
+    p = barplot(
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
@@ -121,7 +121,7 @@ end
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
@@ -135,7 +135,7 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
@@ -151,7 +151,7 @@ end
         render = BeforeAfterFull()
     )
 
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
@@ -167,7 +167,7 @@ end
         render = BeforeAfterFull()
     )
     # same but with Char as symb
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
