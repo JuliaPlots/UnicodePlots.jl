@@ -3,7 +3,7 @@ uuid = "b8865327-cd53-5732-bb35-84acbb429228"
 license = "MIT"
 desc = "Unicode-based scientific plotting for working in the terminal"
 authors = ["Christof Stocker <stocker.christof@gmail.com>"]
-version = "1.2.0"
+version = "1.2.1"
 
 [deps]
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
@@ -17,8 +17,9 @@ StatsBase = "0.32"
 julia = "1"
 
 [extras]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ReferenceTests = "324d217c-45ce-50fc-942e-d289b448e8cf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "ReferenceTests"]
+test = ["Random", "ReferenceTests", "Test"]
