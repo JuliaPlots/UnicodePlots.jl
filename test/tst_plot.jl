@@ -20,7 +20,7 @@ lines!(canvas, .2, .7, 1., 0., :red)
 lines!(canvas, 0., 2., .5, 0., :green)
 points!(canvas, .5, .9)
 
-p = @inferred Plot(canvas)
+p = Plot(canvas)
 @test_reference(
     "references/plot/canvas_only.txt",
     @io2str(print(IOContext(::IO, :color=>true), p)),
@@ -33,7 +33,7 @@ p = @inferred Plot(canvas)
 )
 
 for border in (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
-    p = @inferred Plot(canvas, border = border)
+    global p = @inferred Plot(canvas, border = border)
     @test_reference(
         "references/plot/border_$(string(border)).txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
