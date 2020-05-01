@@ -18,7 +18,7 @@
     )
 
     dct = Dict("foo" => 37., :bar => 23., 2.1 => 10)
-    p = @inferred barplot(dct)
+    p = @inferred Plot barplot(dct)
     @test_reference(
         "references/barplot/default_mixed.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
