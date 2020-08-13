@@ -331,4 +331,14 @@ end
         @io2str(show(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
+
+    dx = [Date(2020,8,i) for i = 1:10]
+    p = stairs(dx,1:10, xlim=(Date(2020,8,1), Date(2020,8,15)))
+    @test_reference(
+        "references/lineplot/stairs_date.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+
+    
 end
