@@ -101,7 +101,9 @@ function lineplot(
         color::Symbol = :auto,
         name = "",
         kw...)
-    new_plot = Plot(x, y, canvas; kw...)
+    idx = map(!isnan, x)
+    idx .&= map(!isnan, y)
+    new_plot = Plot(x[idx], y[idx], canvas; kw...)
     lineplot!(new_plot, x, y; color = color, name = name)
 end
 
