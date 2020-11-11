@@ -1,5 +1,7 @@
 seed!(1337)
 x = randn(10000)
+seed!(1337)
+x2 = randn((1,10000,1,1))
 
 @testset "default params" begin
     p = @inferred histogram(x)
@@ -53,6 +55,12 @@ x = randn(10000)
     p = @inferred histogram([0.1f0, 0.1f0, 0f0])
     @test_reference(
         "references/histogram/float32.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred histogram(x2)
+    @test_reference(
+        "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
