@@ -1,2 +1,5 @@
 *.jl.cov
 *.jl.mem
+/Manifest.toml
+/test/Manifest.toml
+.DS_Store
