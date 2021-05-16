@@ -15,8 +15,8 @@ Usage
     heatmap(z::AbstractMatrix; title = "", width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
             border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
-            xscale = 0.0, yscale = 0.0, xlim = (0., 0.), ylim = (0., 0.),
-            xoffset = 0.0, yoffset = 0.0, zrange = (0., 0.), margin = 3, padding = 1)
+            xscale = 0.0, yscale = 0.0, xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.),
+            xoffset = 0.0, yoffset = 0.0, margin = 3, padding = 1)
 
 Arguments
 ==========
@@ -51,11 +51,11 @@ Arguments
 
 - **`ylim`** : Plotting range for the y coordinate (after scaling). `(0., 0.)` stands for automatic.
 
+- **`zlim`** : Data range that the colormap is scaled to. `(0., 0.)` stands for automatic.
+
 - **`xoffset`** : Plotting offset for the x coordinate (after scaling).
 
 - **`yoffset`** : Plotting offset for the y coordinate (after scaling).
-
-- **`zrange`** : Data range that the colormap is scaled to. `(0., 0.)` stands for automatic.
 
 - **`margin`** : Number of empty characters to the left of the whole plot.
 
@@ -79,7 +79,7 @@ See also
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
-function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 0., yoffset = 0., zrange = (0., 0.),
+function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.), xoffset = 0., yoffset = 0.,
                 width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0,
                 yscale=0.0, labels = true, kw...)
     nrows = size(z, 1)
@@ -122,9 +122,9 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), xoffset = 
         noextrema = false
     catch
     end
-    if zrange != (0., 0.)
-        noextrema && throw(ArgumentError("zrange cannot be set when the element type is $(eltype(z))"))
-        minz, maxz = zrange
+    if zlim != (0., 0.)
+        noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(z))"))
+        minz, maxz = zlim
     end
 
     # if z is an rgb image, translate the colors directly to the terminal
