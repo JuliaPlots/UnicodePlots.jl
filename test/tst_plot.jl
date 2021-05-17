@@ -33,7 +33,7 @@ p = @inferred Plot(canvas)
 )
 
 for border in (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
-    p = @inferred Plot(canvas, border = border)
+    local p = @inferred Plot(canvas, border = border)
     @test_reference(
         "references/plot/border_$(string(border)).txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
