@@ -85,7 +85,8 @@ end
             @test_reference(
                 "references/canvas/$(str)_print_nocolor.txt",
                 @io2str(print(::IO, c)),
-                render = BeforeAfterFull()
+                render = BeforeAfterFull(),
+                force_raw_txt = true
             )
             @test_reference(
                 "references/canvas/$(str)_show.txt",
@@ -121,6 +122,7 @@ end
     @test_reference(
         "references/canvas/color_mixing.txt",
         @io2str(print(IOContext(::IO, :color=>true), c)),
-        render = BeforeAfterFull()
+        render = BeforeAfterFull(),
+        force_raw_txt = true
     )
 end
