@@ -90,7 +90,7 @@ function histogram(
         kw...)
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
-    binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
+    binwidth = typeof(step(edges)) == Float64 ? step(edges) : edges.step.hi
     # compute label padding based on all labels.
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
