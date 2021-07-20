@@ -42,6 +42,7 @@ round_down_tick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)
 round_up_subtick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
 round_down_subtick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
 float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
+float_round_log10(x::Integer,m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
 function plotting_range(xmin, xmax)
