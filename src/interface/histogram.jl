@@ -90,12 +90,13 @@ function histogram(
         kw...)
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
-    binwidth = typeof(edges.step) == Float64 ? edges.step : edges.step.hi
+    binwidths = diff(edges)
     # compute label padding based on all labels.
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
-    for I in eachindex(edges)
-        val1 = float_round_log10(edges[I], binwidth)
+    for i in 1:length(counts)
+        binwidth = binwidths[i]
+        val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1+binwidth, binwidth)
         a1 = Base.alignment(IOBuffer(), val1)
         a2 = Base.alignment(IOBuffer(), val2)
@@ -106,6 +107,7 @@ function histogram(
     l_str = hist.closed == :right ? "(" : "["
     r_str = hist.closed == :right ? "]" : ")"
     for i in 1:length(counts)
+        binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1+binwidth, binwidth)
         a1 = Base.alignment(IOBuffer(), val1)
