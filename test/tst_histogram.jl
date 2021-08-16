@@ -1,5 +1,5 @@
-seed!(1337)
-x = randn(10000)
+seed!(RNG, 1337)
+x = randn(RNG, 10000)
 
 @testset "default params" begin
     p = @inferred histogram(x)
@@ -53,6 +53,12 @@ x = randn(10000)
     p = @inferred histogram([0.1f0, 0.1f0, 0f0])
     @test_reference(
         "references/histogram/float32.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p)),
+        render = BeforeAfterFull()
+    )
+    p = @inferred histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
+    @test_reference(
+        "references/histogram/nonuniformbins.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )

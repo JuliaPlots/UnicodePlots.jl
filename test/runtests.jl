@@ -2,6 +2,7 @@ using UnicodePlots, ReferenceTests, Test
 using ReferenceTests: BeforeAfterFull
 using StatsBase
 using SparseArrays
+using StableRNGs
 using Random: seed!
 using Dates: Date, Day
 
@@ -18,6 +19,8 @@ tests = [
     "tst_boxplot.jl",
     "tst_heatmap.jl"
 ]
+
+const RNG = StableRNG(1337)
 
 for test in tests
     @testset "$test" begin

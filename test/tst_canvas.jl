@@ -30,9 +30,9 @@
 end
 
 @testset "print and show" begin
-    seed!(1337)
-    x1, y1 = rand(20), rand(20)
-    x2, y2 = rand(50), rand(50)
+    seed!(RNG, 1337)
+    x1, y1 = rand(RNG, 20), rand(RNG, 20)
+    x2, y2 = rand(RNG, 50), rand(RNG, 50)
     for (T, str) in [
             (BrailleCanvas, "braille"),
             (DensityCanvas, "density"),

@@ -145,8 +145,8 @@ end
 end
 
 @testset "densityplot" begin
-    seed!(1338)
-    dx, dy = randn(1000), randn(1000)
+    seed!(RNG, 1338)
+    dx, dy = randn(RNG, 1000), randn(RNG, 1000)
 
     p = @inferred densityplot(dx, dy)
     @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2)) === p

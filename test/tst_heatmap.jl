@@ -2,8 +2,8 @@
 withenv("LINES"=>24, "COLUMNS"=>80) do
     @testset "sizing" begin
         for dims in [(0, 0), (1, 1), (2, 1), (1, 2), (2, 2), (3, 6), (6, 3), (9, 4), (4, 9), (5, 0), (0, 5), (5, 1), (1, 5), (10, 0), (0, 10), (6, 8), (8, 6), (10, 10), (10, 15), (15, 10), (2000, 200), (200, 2000), (2000, 2000)]
-            seed!(1337)
-            p = @inferred heatmap(randn(dims))
+            seed!(RNG, 1337)
+            p = @inferred heatmap(randn(RNG, dims))
             @test p isa Plot
             @test_reference(
                 "references/heatmap/default_$(dims[1])x$(dims[2]).txt",
@@ -150,43 +150,43 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
         )
     end
     @testset "parameters" begin
-        seed!(1337)
-        p = @inferred heatmap(randn(200,200), colorbar=false)
+        seed!(RNG, 1337)
+        p = @inferred heatmap(randn(RNG, 200, 200), colorbar=false)
         @test_reference(
             "references/heatmap/parameters_200x200_no_colorbar.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
-        seed!(1337)
-        p = @inferred heatmap(randn(200,200), labels=false)
+        seed!(RNG, 1337)
+        p = @inferred heatmap(randn(RNG, 200, 200), labels=false)
         @test_reference(
             "references/heatmap/parameters_200x200_no_labels.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
-        seed!(1337)
-        p = heatmap(randn(200, 200), title="Custom Title", zlabel="Custom Label", colorbar_border=:ascii, colormap=:inferno)
+        seed!(RNG, 1337)
+        p = heatmap(randn(RNG, 200, 200), title="Custom Title", zlabel="Custom Label", colorbar_border=:ascii, colormap=:inferno)
         @test_reference(
             "references/heatmap/parameters_200x200_zlabel_ascii_border.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
-        seed!(1337)
-        p = @inferred heatmap(randn(10,10), xscale=0.1, colormap=:inferno)
+        seed!(RNG, 1337)
+        p = @inferred heatmap(randn(RNG, 10, 10), xscale=0.1, colormap=:inferno)
         @test_reference(
             "references/heatmap/parameters_10x10_xscale_inferno.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
-        seed!(1337)
-        p = @inferred heatmap(randn(10,11), xscale=0.1, colormap=:inferno)
+        seed!(RNG, 1337)
+        p = @inferred heatmap(randn(RNG, 10, 11), xscale=0.1, colormap=:inferno)
         @test_reference(
             "references/heatmap/parameters_10x11_xscale_inferno.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
             render = BeforeAfterFull()
         )
-        seed!(1337)
-        p = @inferred heatmap(randn(10,10), yscale=1, colormap=:inferno)
+        seed!(RNG, 1337)
+        p = @inferred heatmap(randn(RNG, 10, 10), yscale=1, colormap=:inferno)
         @test_reference(
             "references/heatmap/parameters_10x10_yscale_inferno.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
