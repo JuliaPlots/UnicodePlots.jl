@@ -109,7 +109,7 @@ function spy(
         height::Int = 0,
         margin::Int  = 3,
         padding::Int = 1,
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         canvas::Type{T} = BrailleCanvas,
         kw...) where {T <: Canvas}
     if color == :automatic

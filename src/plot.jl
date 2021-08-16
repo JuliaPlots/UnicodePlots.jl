@@ -297,7 +297,7 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
     loc == :t || loc == :b || loc == :l || loc == :r || loc == :tl || loc == :tr || loc == :bl || loc == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
     if loc == :l || loc == :r
         for row = 1:nrows(plot.graphics)
@@ -323,11 +323,11 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::Symbol
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::Symbol=:normal)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
     annotate!(plot, loc, value, color)
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::Symbol)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = color
@@ -340,7 +340,7 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::Symbol=:normal)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
     annotate!(plot, loc, row, value, color)
 end
 
@@ -368,12 +368,12 @@ function print_title(io::IO, padding::AbstractString, title::AbstractString; p_w
     end
 end
 
-function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
+function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
     b = bordermap[border]
     border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = color)
 end
 
-function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::Symbol = :light_black)
+function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
     b = bordermap[border]
     border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = color)
 end

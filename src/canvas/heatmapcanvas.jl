@@ -1,5 +1,3 @@
-using Crayons
-
 """
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
@@ -8,7 +6,7 @@ into two pixels (top and bottom).
 """
 struct HeatmapCanvas <: LookupCanvas
     grid::Array{UInt8,2}
-    colors::Array{UInt8,2}
+    colors::Array{ColorType,2}
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -30,6 +28,8 @@ function HeatmapCanvas(args...; kwargs...)
     CreateLookupCanvas(HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...)
 end
 
+_toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
+
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = 2*row
@@ -40,9 +40,9 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
-            fgcol = Int(colors(c)[x, y])
+            fgcol = _toCrayon(c.colors[x, y])
             if (y - 1) > 0
-                bgcol = Int(colors(c)[x, y - 1])
+                bgcol = _toCrayon(c.colors[x, y - 1])
                 print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
             # for odd numbers of rows, only print the foreground for the top row
             else

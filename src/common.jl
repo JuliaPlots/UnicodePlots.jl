@@ -20,7 +20,8 @@ const DOC_PLOT_PARAMS = """
 
 - **`color`** : Color of the drawing.
   Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`
+  `:magenta`, `:white`, `:normal`, an integer in the range [0; 255],
+  or a tuple of three integers (RGB components).
 
 - **`width`** : Number of characters per row that should be used
   for plotting.
@@ -166,25 +167,38 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
-const color_encode = Dict{Symbol,UInt8}()
-const color_decode = Dict{UInt8,Symbol}()
-color_encode[:normal]  = 0b000
-color_encode[:blue]    = 0b001
-color_encode[:red]     = 0b010
-color_encode[:magenta] = 0b011
-color_encode[:green]   = 0b100
-color_encode[:cyan]    = 0b101
-color_encode[:yellow]  = 0b110
-for k in keys(color_encode)
-    v = color_encode[k]
-    color_decode[v] = k
-end
-color_encode[:white] = 0b111
-color_decode[0b111]  = :white
+const UserColorType = Union{Integer,Symbol,NTuple{3,Integer}}
+const ColorType = Union{Nothing,UInt8}
 
-function print_color(color::UInt8, io::IO, args...)
-    col = color in keys(color_decode) ? color_decode[color] : Int(color)
-    str = string(args...)
-    printstyled(io, str; color = col)
+const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
+
+function print_color(color::Union{Nothing,Integer,Symbol}, io::IO, args...)
+    col = if color === nothing
+        :normal
+    elseif color isa Symbol
+        color
+    else
+        Int(color)
+    end
+    printstyled(io, string(args...); color = col)
+end
+
+function crayon_256_color(color::UserColorType)::ColorType
+    color in (:normal, :default) && return nothing
+    ansicolor = Crayons._parse_color(color)
+    if ansicolor.style == Crayons.COLORS_16
+        return Crayons.val(ansicolor) % 60
+    elseif ansicolor.style == Crayons.COLORS_24BIT
+        return Crayons.val(Crayons.to_256_colors(ansicolor))
+    end
+    Crayons.val(ansicolor)
+end
+
+@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
+    if color === nothing || colors[x, y] === nothing || force
+        colors[x, y] = color
+    else
+        colors[x, y] |= color
+    end
+    nothing
 end

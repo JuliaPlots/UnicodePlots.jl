@@ -4,11 +4,11 @@ origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::Union{Int, Symbol} = :normal)
+function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal)
     pixel!(c, pixel_x, pixel_y, color)
 end
 
-function points!(c::Canvas, x::Number, y::Number, color::Union{Int, Symbol})
+function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
     origin_x(c) <= x <= origin_x(c) + width(c) || return c
     origin_y(c) <= y <= origin_y(c) + height(c) || return c
     plot_offset_x = x - origin_x(c)
@@ -18,11 +18,11 @@ function points!(c::Canvas, x::Number, y::Number, color::Union{Int, Symbol})
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, x::Number, y::Number; color::Union{Int, Symbol} = :normal)
+function points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal)
     points!(c, x, y, color)
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Union{Int, Symbol})
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for I in eachindex(X, Y)
         points!(c, X[I], Y[I], color)
@@ -30,7 +30,7 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Union{I
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::AbstractVector{T}) where {T <: Union{Int, Symbol}}
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::AbstractVector{T}) where {T <: UserColorType}
     (length(X) == length(color) && length(X) == length(Y)) || throw(DimensionMismatch("X, Y, and color must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
@@ -38,12 +38,12 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Abstrac
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Union{Int, Symbol} = :normal)
+function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal)
     points!(c, X, Y, color)
 end
 
 # Implementation of the digital differential analyser (DDA)
-function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::Union{Int, Symbol})
+function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
     if (x1 < origin_x(c) && x2 < origin_x(c)) ||
         (x1 > origin_x(c) + width(c) && x2 > origin_x(c) + width(c))
         return c
@@ -78,11 +78,11 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     c
 end
 
-function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::Union{Int, Symbol} = :normal)
+function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal)
     lines!(c, x1, y1, x2, y2, color)
 end
 
-function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Union{Int, Symbol})
+function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:(length(X)-1)
         if isnan(X[i]) || isnan(X[i+1]) || isnan(Y[i]) || isnan(Y[i+1])
@@ -93,7 +93,7 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Union{In
     c
 end
 
-function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::Union{Int, Symbol} = :normal)
+function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal)
     lines!(c, X, Y, color)
 end
 

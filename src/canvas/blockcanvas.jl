@@ -30,7 +30,7 @@ using binary operations.
 """
 struct BlockCanvas <: LookupCanvas
     grid::Array{UInt8,2}
-    colors::Array{UInt8,2}
+    colors::Array{ColorType,2}
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
