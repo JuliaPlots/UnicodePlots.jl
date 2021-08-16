@@ -128,7 +128,7 @@ end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
     if bins != nothing
-        Base.depwarn("The keyword parameter `bins` is deprecated, use `nbins` instead", :histogram)
+        @warn "The keyword parameter `bins` is deprecated, use `nbins` instead"
         hist = fit(Histogram, x; nbins = bins, closed = closed)
     else
         hargs = filter(p -> p.first == :nbins, kw)
