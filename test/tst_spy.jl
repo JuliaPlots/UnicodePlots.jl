@@ -63,7 +63,7 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
             render = BeforeAfterFull()
         )
         seed!(RNG, 1337)
-        p = @inferred spy(sprandn(RNG, 200, 200,. 001), width=10)
+        p = @inferred spy(sprandn(RNG, 200, 200, .001), width=10)
         @test_reference(
             "references/spy/default_200x200_normal_small.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
