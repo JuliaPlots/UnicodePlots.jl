@@ -86,8 +86,7 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    p = nothing
-    p = @test_logs (:warn, r"deprecated") @inferred histogram(x, 5, closed = :right)
+    p = @inferred histogram(x, 5, closed = :right)
     @test_reference(
         "references/histogram/hist_params.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
