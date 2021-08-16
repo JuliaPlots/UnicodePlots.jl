@@ -1,5 +1,5 @@
-seed!(1337)
-x = randn(10000)
+seed!(RNG, 1337)
+x = randn(RNG, 10000)
 
 @testset "default params" begin
     p = @inferred histogram(x)
