@@ -54,7 +54,7 @@ x = randn(RNG, 10000)
     @test_reference(
         "references/histogram/float32.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        render = BeforeAfterFull(),
         format = "TXT"
     )
     p = @inferred histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
