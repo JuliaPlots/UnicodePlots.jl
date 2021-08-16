@@ -1,6 +1,6 @@
 mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     bars::Vector{R}
-    color::Symbol
+    color::UserColorType
     char_width::Int
     max_freq::Number
     max_len::Int
@@ -10,7 +10,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     function BarplotGraphics(
             bars::AbstractVector{R},
             char_width::Int,
-            color::Symbol,
+            color::UserColorType,
             symb::Union{Char,String},
             transform) where {R}
         length(symb) == 1 || throw(ArgumentError("The symbol to print has to be a single character, got: \"" * symb * "\""))
@@ -29,7 +29,7 @@ function BarplotGraphics(
         bars::AbstractVector{R},
         char_width::Int,
         transform = identity;
-        color::Symbol = :green,
+        color::UserColorType = :green,
         symb = "■") where {R <: Number}
     BarplotGraphics(bars, char_width, color, symb, transform)
 end

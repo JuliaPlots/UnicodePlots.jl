@@ -8,7 +8,7 @@ end
 
 mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
-    color::Symbol
+    color::UserColorType
     char_width::Int
     min_x::R
     max_x::R
@@ -16,7 +16,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     function BoxplotGraphics{R}(
             data::AbstractVector{R},
             char_width::Int,
-            color::Symbol,
+            color::UserColorType,
             min_x::R,
             max_x::R) where R
         char_width = max(char_width, 10)
@@ -43,7 +43,7 @@ ncols(c::BoxplotGraphics) = c.char_width
 function BoxplotGraphics(
         data::AbstractVector{R},
         char_width::Int;
-        color::Symbol = :green,
+        color::UserColorType = :green,
         min_x::Number = minimum(data),
         max_x::Number = maximum(data)) where {R <: Number}
     BoxplotGraphics{R}(data, char_width, color, R(min_x), R(max_x))
