@@ -86,7 +86,7 @@ end
                 "references/canvas/$(str)_print_nocolor.txt",
                 @io2str(print(::IO, c)),
                 render = BeforeAfterFull(),
-                force_raw_txt = true
+                format = "TXT"
             )
             @test_reference(
                 "references/canvas/$(str)_show.txt",
@@ -123,6 +123,6 @@ end
         "references/canvas/color_mixing.txt",
         @io2str(print(IOContext(::IO, :color=>true), c)),
         render = BeforeAfterFull(),
-        force_raw_txt = true
+        format = "TXT"
     )
 end
