@@ -47,19 +47,22 @@ end
                 @test_reference(
                     "references/canvas/empty_braille_show.txt",
                     @io2str(show(IOContext(::IO, :color=>true), c)),
-                    render = BeforeAfterFull()
+                    render = BeforeAfterFull(),
+                    format = "TXT"
                 )
             elseif T == HeatmapCanvas
                 @test_reference(
                     "references/canvas/empty_heatmap_show.txt",
                     @io2str(show(IOContext(::IO, :color=>true), c)),
-                    render = BeforeAfterFull()
+                    render = BeforeAfterFull(),
+                    format = "TXT"
                 )
             else
                 @test_reference(
                     "references/canvas/empty_show.txt",
                     @io2str(show(IOContext(::IO, :color=>true), c)),
-                    render = BeforeAfterFull()
+                    render = BeforeAfterFull(),
+                    format = "TXT"
                 )
             end
             @test @inferred(lines!(c, 0., 0., 1., 1., :blue)) === c
@@ -75,12 +78,14 @@ end
             @test_reference(
                 "references/canvas/$(str)_printrow.txt",
                 @io2str(printrow(IOContext(::IO, :color=>true), c, 3)),
-                render = BeforeAfterFull()
+                render = BeforeAfterFull(),
+                format = "TXT"
             )
             @test_reference(
                 "references/canvas/$(str)_print.txt",
                 @io2str(print(IOContext(::IO, :color=>true), c)),
-                render = BeforeAfterFull()
+                render = BeforeAfterFull(),
+                format = "TXT"
             )
             @test_reference(
                 "references/canvas/$(str)_print_nocolor.txt",
@@ -91,12 +96,14 @@ end
             @test_reference(
                 "references/canvas/$(str)_show.txt",
                 @io2str(show(IOContext(::IO, :color=>true), c)),
-                render = BeforeAfterFull()
+                render = BeforeAfterFull(),
+                format = "TXT"
             )
             @test_reference(
                 "references/canvas/$(str)_show_nocolor.txt",
                 @io2str(show(::IO, c)),
-                render = BeforeAfterFull()
+                render = BeforeAfterFull(),
+                format = "TXT"
             )
         end
     end
