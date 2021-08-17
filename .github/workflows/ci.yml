@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ['1.2', '1', 'nightly']
+        version: ['1.0', '1', 'nightly']
         os: [ubuntu-latest]
         arch: [x64]
         include:  # spare windows/macos CI credits
