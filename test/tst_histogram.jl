@@ -79,7 +79,7 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p)),
         render = BeforeAfterFull()
     )
-    p = nothing
+    # NOTE: run with $ julia --depwarn=yes for this test to pass
     p = @test_logs (:warn, r"`bins`.+deprecated") @inferred histogram(x, bins = 5, closed = :right)
     @test_reference(
         "references/histogram/hist_params.txt",
