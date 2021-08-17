@@ -257,7 +257,7 @@ parameters.
 
     Barplot only. Specifies the character that should be used to render the bars
 
-_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try `border = :ascii` and `canvas = AsciiCanvas` (or `canvas = DotCanvas` for scatterplots).
+_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border = :ascii` and `canvas = AsciiCanvas` (or `canvas = DotCanvas` for scatterplots).
 
 ### Methods
 
