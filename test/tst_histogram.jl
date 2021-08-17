@@ -6,62 +6,61 @@ x = randn(RNG, 10000)
     @test_reference(
         "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test_reference(
         "references/histogram/default_nocolor.txt",
         @io2str(print(IOContext(::IO, :color=>false), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x, closed = :left)
     @test_reference(
         "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     hist = fit(Histogram, x, closed = :left)
     p = @inferred histogram(hist)
     @test_reference(
         "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x*100)
     @test_reference(
         "references/histogram/default_1e2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x*0.01)
     @test_reference(
         "references/histogram/default_1e-2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x, xscale = log10)
     @test_reference(
         "references/histogram/log10.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x, xlabel = "custom label", xscale = log10)
     @test_reference(
         "references/histogram/log10_label.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram([0.1f0, 0.1f0, 0f0])
     @test_reference(
         "references/histogram/float32.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull(),
-        format = "TXT"
+        KW...
     )
     p = @inferred histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
     @test_reference(
         "references/histogram/nonuniformbins.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
 
@@ -71,26 +70,26 @@ end
     @test_reference(
         "references/histogram/hist_params.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x, nbins = 5, closed = :right)
     @test_reference(
         "references/histogram/hist_params.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     # NOTE: run with $ julia --depwarn=yes for this test to pass
     p = @test_logs (:warn, r"`bins`.+deprecated") @inferred histogram(x, bins = 5, closed = :right)
     @test_reference(
         "references/histogram/hist_params.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(x, 5, closed = :right)
     @test_reference(
         "references/histogram/hist_params.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
 
@@ -106,7 +105,7 @@ end
     @test_reference(
         "references/histogram/parameters1.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred histogram(
         x,
@@ -120,7 +119,7 @@ end
     @test_reference(
         "references/histogram/parameters1_nolabels.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred histogram(
@@ -135,7 +134,7 @@ end
     @test_reference(
         "references/histogram/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     # same but with Char as symb
     p = @inferred histogram(
@@ -150,6 +149,6 @@ end
     @test_reference(
         "references/histogram/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end

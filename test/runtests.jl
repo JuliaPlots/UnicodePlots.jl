@@ -22,6 +22,8 @@ tests = [
 
 const RNG = StableRNG(1337)
 
+const KW = (render = BeforeAfterFull(), format = "TXT")
+
 for test in tests
     @testset "$test" begin
         include(test)

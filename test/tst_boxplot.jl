@@ -3,30 +3,30 @@
     @test_reference(
         "references/boxplot/default.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred boxplot("series1", [1,2,3,4,5])
     @test_reference(
         "references/boxplot/default_name.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = (-1,8), color = :blue, width = 50, border = :solid, xlabel="foo")
     @test_reference(
         "references/boxplot/default_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = :blue, width = 50, border = :solid, xlabel="foo")
     @test_reference(
         "references/boxplot/default_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test_reference(
         "references/boxplot/default_parameters_nocolor.txt",
         @io2str(show(IOContext(::IO, :color=>false), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
 
@@ -36,13 +36,13 @@ end
         @test_reference(
             "references/boxplot/scale$i.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
-            render = BeforeAfterFull()
+            KW...
         )
         p = @inferred boxplot([1,2,3,4,5], xlim=[0,max_x])
         @test_reference(
             "references/boxplot/scale$i.txt",
             @io2str(show(IOContext(::IO, :color=>true), p)),
-            render = BeforeAfterFull()
+            KW...
         )
     end
 end
@@ -52,18 +52,18 @@ end
     @test_reference(
         "references/boxplot/multi1.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test @inferred(boxplot!(p, "one more", [-1,2,3,4,11])) === p
     @test_reference(
         "references/boxplot/multi2.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test @inferred(boxplot!(p, [4,2,2.5,4,14], name = "last one")) === p
     @test_reference(
         "references/boxplot/multi3.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end

@@ -4,17 +4,17 @@
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test_reference(
         "references/barplot/default.txt",
         @io2str(show(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test_reference(
         "references/barplot/nocolor.txt",
         @io2str(show(::IO, p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     dct = Dict("foo" => 37., :bar => 23., 2.1 => 10)
@@ -22,7 +22,7 @@
     @test_reference(
         "references/barplot/default_mixed.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     dct = Dict(:foo => 37, :bar => 23)
@@ -30,21 +30,21 @@
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot([:bar, :foo], Int16[23, 37])
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
     @test_reference(
         "references/barplot/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
@@ -54,7 +54,7 @@
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
@@ -62,7 +62,7 @@
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
@@ -71,7 +71,7 @@
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
@@ -79,20 +79,20 @@
     @test_reference(
         "references/barplot/default2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(2:6, 11:15)
     @test_reference(
         "references/barplot/ranges.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     @test @inferred(barplot!(p, 9:10, 20:21)) === p
     @test_reference(
         "references/barplot/ranges2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
 
@@ -106,7 +106,7 @@ end
     @test_reference(
         "references/barplot/log10.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
@@ -118,7 +118,7 @@ end
     @test_reference(
         "references/barplot/log10_label.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(
@@ -133,7 +133,7 @@ end
     @test_reference(
         "references/barplot/parameters1.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
@@ -148,7 +148,7 @@ end
     @test_reference(
         "references/barplot/parameters1_nolabels.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 
     p = @inferred barplot(
@@ -164,7 +164,7 @@ end
     @test_reference(
         "references/barplot/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     # same but with Char as symb
     p = @inferred barplot(
@@ -180,7 +180,7 @@ end
     @test_reference(
         "references/barplot/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
 
@@ -190,12 +190,12 @@ end
     @test_reference(
         "references/barplot/edgecase_zeros.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
     p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
     @test_reference(
         "references/barplot/edgecase_onelarge.txt",
         @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        KW...
     )
 end
