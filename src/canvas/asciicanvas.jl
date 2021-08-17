@@ -79,14 +79,13 @@ ascii_decode[0b1] = ' '
 for i in 1:511
     min_dist = typemax(Int)
     min_char = ' '
-    for (k, v) in ascii_lookup
+    for (k, v) in sort(collect(pairs(ascii_lookup)), by=x -> x[1])
         cur_dist = count_ones(xor(UInt16(i), k))
         if cur_dist < min_dist
             min_dist = cur_dist
             min_char = v
         end
     end
-    min_char
     ascii_decode[i + 1] = min_char
 end
 
