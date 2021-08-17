@@ -3,107 +3,92 @@ withenv("LINES"=>24, "COLUMNS"=>80) do
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 10, 10, .15))
         @test p isa Plot
-        @test_reference(
+        test_ref(
             "references/spy/default_10x10.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 10, 15, .15))
-        @test_reference(
+        test_ref(
             "references/spy/default_10x15.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 15, 10, .15))
-        @test_reference(
+        test_ref(
             "references/spy/default_15x10.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 2000, 200, .0001))
-        @test_reference(
+        test_ref(
             "references/spy/default_2000x200.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 200, 2000, .0001))
-        @test_reference(
+        test_ref(
             "references/spy/default_200x2000.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprand(RNG, 2000, 2000, .1))
-        @test_reference(
+        test_ref(
             "references/spy/default_overdrawn.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprandn(RNG, 200, 200, .001))
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal_nocolor.txt",
-            @io2str(show(IOContext(::IO, :color=>false), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>false), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(Matrix(sprandn(RNG, 200, 200, .001)))
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprandn(RNG, 200, 200, .001), width=10)
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal_small.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprandn(RNG, 200, 200, .001), height=5)
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal_small.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
         seed!(RNG, 1337)
         p = @inferred spy(sprandn(RNG, 200, 200, .001), height=5, width=20)
-        @test_reference(
+        test_ref(
             "references/spy/default_200x200_normal_misshaped.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
     end
 
     @testset "parameters" begin
         seed!(RNG, 1337)
         p = @inferred spy(sprandn(RNG, 200, 200, .001), color=:green)
-        @test_reference(
+        test_ref(
             "references/spy/parameters_200x200_green.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
-        @test_reference(
+        test_ref(
             "references/spy/parameters_200x200_green_nocolor.txt",
-            @io2str(show(IOContext(::IO, :color=>false), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>false), p))
         )
         seed!(RNG, 1337)
         p = spy(sprandn(RNG, 200, 200, .001), title="Custom Title", canvas=DotCanvas, border=:ascii)
-        @test_reference(
+        test_ref(
             "references/spy/parameters_200x200_dotcanvas.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p)),
-            KW...
+            @io2str(show(IOContext(::IO, :color=>true), p))
         )
     end
 end

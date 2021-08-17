@@ -22,7 +22,9 @@ tests = [
 
 const RNG = StableRNG(1337)
 
-const KW = (render = BeforeAfterFull(), format = "TXT")
+function test_ref(reference, actual)
+    @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+end
 
 for test in tests
     @testset "$test" begin

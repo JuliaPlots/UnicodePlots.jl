@@ -33,6 +33,7 @@ end
     seed!(RNG, 1337)
     x1, y1 = rand(RNG, 20), rand(RNG, 20)
     x2, y2 = rand(RNG, 50), rand(RNG, 50)
+    @debug "norm(x1)=$(sum(x1.^2)) norm(y1)=$(sum(y1.^2)) norm(x2)=$(sum(x2.^2)) norm(y2)=$(sum(y2.^2))"
     for (T, str) in [
             (BrailleCanvas, "braille"),
             (DensityCanvas, "density"),
@@ -44,22 +45,19 @@ end
         @testset "$(nameof(T))" begin
             c = T(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)
             if T == BrailleCanvas
-                @test_reference(
+                test_ref(
                     "references/canvas/empty_braille_show.txt",
-                    @io2str(show(IOContext(::IO, :color=>true), c)),
-                    KW...
+                    @io2str(show(IOContext(::IO, :color=>true), c))
                 )
             elseif T == HeatmapCanvas
-                @test_reference(
+                test_ref(
                     "references/canvas/empty_heatmap_show.txt",
-                    @io2str(show(IOContext(::IO, :color=>true), c)),
-                    KW...
+                    @io2str(show(IOContext(::IO, :color=>true), c))
                 )
             else
-                @test_reference(
+                test_ref(
                     "references/canvas/empty_show.txt",
-                    @io2str(show(IOContext(::IO, :color=>true), c)),
-                    KW...
+                    @io2str(show(IOContext(::IO, :color=>true), c))
                 )
             end
             @test @inferred(lines!(c, 0., 0., 1., 1., :blue)) === c
@@ -72,30 +70,25 @@ end
             lines!(c, 0., 0., .9, 9999., :yellow)
             lines!(c, 0, 0, 1, 1, color = :blue)
             lines!(c, .1, .7, .9, .6, :red)
-            @test_reference(
+            test_ref(
                 "references/canvas/$(str)_printrow.txt",
-                @io2str(printrow(IOContext(::IO, :color=>true), c, 3)),
-                KW...
+                @io2str(printrow(IOContext(::IO, :color=>true), c, 3))
             )
-            @test_reference(
+            test_ref(
                 "references/canvas/$(str)_print.txt",
-                @io2str(print(IOContext(::IO, :color=>true), c)),
-                KW...
+                @io2str(print(IOContext(::IO, :color=>true), c))
             )
-            @test_reference(
+            test_ref(
                 "references/canvas/$(str)_print_nocolor.txt",
-                @io2str(print(::IO, c)),
-                KW...
+                @io2str(print(::IO, c))
             )
-            @test_reference(
+            test_ref(
                 "references/canvas/$(str)_show.txt",
-                @io2str(show(IOContext(::IO, :color=>true), c)),
-                KW...
+                @io2str(show(IOContext(::IO, :color=>true), c))
             )
-            @test_reference(
+            test_ref(
                 "references/canvas/$(str)_show_nocolor.txt",
-                @io2str(show(::IO, c)),
-                KW...
+                @io2str(show(::IO, c))
             )
         end
     end
@@ -118,9 +111,8 @@ end
     lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
     lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
     lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
-    @test_reference(
+    test_ref(
         "references/canvas/color_mixing.txt",
-        @io2str(print(IOContext(::IO, :color=>true), c)),
-        KW...
+        @io2str(print(IOContext(::IO, :color=>true), c))
     )
 end
