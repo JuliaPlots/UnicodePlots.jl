@@ -162,5 +162,5 @@ function boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...)
 end
 
 function boxplot(dict::Dict; kw...)
-    boxplot(collect(keys(dict)), collect(values(dict)); kw...)
+    boxplot(sorted_keys_values(dict)...; kw...)
 end

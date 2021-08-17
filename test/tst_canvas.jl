@@ -33,7 +33,6 @@ end
     seed!(RNG, 1337)
     x1, y1 = rand(RNG, 20), rand(RNG, 20)
     x2, y2 = rand(RNG, 50), rand(RNG, 50)
-    @debug "norm(x1)=$(sum(x1.^2)) norm(y1)=$(sum(y1.^2)) norm(x2)=$(sum(x2.^2)) norm(y2)=$(sum(y2.^2))"
     for (T, str) in [
             (BrailleCanvas, "braille"),
             (DensityCanvas, "density"),
