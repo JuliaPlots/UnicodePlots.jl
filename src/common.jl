@@ -71,7 +71,7 @@ function extend_limits(vec, limits)
     (limits == (0.,0.) || limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : (mi, ma)
 end
 
-sort_by_keys(dict::Dict) = collect(sort(collect(dict), by=x->x[1]))
+sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])
 
 function sorted_keys_values(dict::Dict; k2s=true)
     if k2s  # check and force key type to be of AbstractString type if necessary
