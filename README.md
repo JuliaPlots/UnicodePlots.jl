@@ -1,8 +1,12 @@
 # UnicodePlots
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
-[![Build Status](https://travis-ci.org/Evizero/UnicodePlots.jl.svg?branch=master)](https://travis-ci.org/Evizero/UnicodePlots.jl)
 [![Coverage Status](https://coveralls.io/repos/Evizero/UnicodePlots.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/Evizero/UnicodePlots.jl?branch=master)
+
+| Julia   | CI |
+| ------- | -- |
+| v1      | [![CI](https://github.com/Evizero/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/Evizero/UnicodePlots.jl/actions/workflows/ci.yml) |
+| nightly | [![CI (Julia nightly)](https://github.com/Evizero/UnicodePlots.jl/actions/workflows/ci_julia_nightly.yml/badge.svg)](https://github.com/Evizero/UnicodePlots.jl/actions/workflows/ci_julia_nightly.yml) |
 
 Advanced Unicode plotting library designed for use in Julia's REPL.
 
