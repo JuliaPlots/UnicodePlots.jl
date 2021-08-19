@@ -105,5 +105,5 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
         line[i] = line_char
     end
 
-    printstyled(io, join(line), color = c.color)
+    print_color(c.color, io, join(line))
 end

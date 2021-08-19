@@ -364,18 +364,18 @@ function print_title(io::IO, padding::AbstractString, title::AbstractString; p_w
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
         tpad = repeat(" ", offset)
-        printstyled(io, padding, tpad, title; color = color)
+        print_color(color, io, padding, tpad, title)
     end
 end
 
 function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
     b = bordermap[border]
-    border == :none || printstyled(io, padding, b[:tl], repeat(b[:t], length), b[:tr]; color = color)
+    border == :none || print_color(color, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
 function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
     b = bordermap[border]
-    border == :none || printstyled(io, padding, b[:bl], repeat(b[:b], length), b[:br]; color = color)
+    border == :none || print_color(color, io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 _nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
@@ -415,13 +415,13 @@ function Base.show(io::IO, p::Plot)
             topleft_len  = length(topleft_str)
             topmid_len   = length(topmid_str)
             topright_len = length(topright_str)
-            printstyled(io, border_padding, topleft_str; color = topleft_col)
+            print_color(topleft_col, io, border_padding, topleft_str)
             cnt = round(Int, border_length / 2 - topmid_len / 2 - topleft_len, RoundNearestTiesUp)
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, topmid_str; color = topmid_col)
+            print_color(topmid_col, io, pad, topmid_str)
             cnt = border_length - topright_len - topleft_len - topmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, topright_str, "\n"; color = topright_col)
+            print_color(topright_col, io, pad, topright_str, "\n")
         end
     end
     print_border_top(io, border_padding, border_length, p.border)
@@ -448,24 +448,24 @@ function Base.show(io::IO, p::Plot)
         if p.show_labels
             if row == y_lab_row
                 # print ylabel
-                printstyled(io, p.ylabel; color = :normal)
+                print_color(:normal, io, p.ylabel)
                 print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
                 print(io, repeat(" ", max_len_l - left_len))
             end
             # print the left annotation
-            printstyled(io, left_str; color = left_col)
+            print_color(left_col, io, left_str)
         end
         # print left border
-        printstyled(io, plot_padding, b[:l]; color = :light_black)
+        print_color(:light_black, io, plot_padding, b[:l])
         # print canvas row
         printrow(io, c, row)
         # print right label and padding
-        printstyled(io, b[:r]; color = :light_black)
+        print_color(:light_black, io, b[:r])
         if p.show_labels
             print(io, plot_padding)
-            printstyled(io, right_str; color = right_col)
+            print_color(right_col, io, right_str)
             print(io, repeat(" ", max_len_r - right_len))
         end
         # print colorbar
@@ -491,13 +491,13 @@ function Base.show(io::IO, p::Plot)
             botleft_len  = length(botleft_str)
             botmid_len   = length(botmid_str)
             botright_len = length(botright_str)
-            printstyled(io, border_padding, botleft_str; color = botleft_col)
+            print_color(botleft_col, io, border_padding, botleft_str)
             cnt = round(Int, border_length / 2 - botmid_len / 2 - botleft_len, RoundNearestTiesUp)
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, botmid_str; color = botmid_col)
+            print_color(botmid_col, io, pad, botmid_str)
             cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
             pad = cnt > 0 ? repeat(" ", cnt) : ""
-            printstyled(io, pad, botright_str; color = botright_col)
+            print_color(botright_col, io, pad, botright_str)
         end
         # abuse the print_title function to print the xlabel. maybe refactor this
         p.xlabel != "" && println(io)
