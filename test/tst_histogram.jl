@@ -133,4 +133,25 @@ end
         "references/histogram/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
+
+    # colors
+    p = @inferred histogram(
+        x,
+        title = "Gray color",
+        color = 240,
+    )
+    test_ref(
+        "references/histogram/col1.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
+
+    p = @inferred histogram(
+        x,
+        title = "Green color",
+        color = (50,100,50),
+    )
+    test_ref(
+        "references/histogram/col2.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
 end

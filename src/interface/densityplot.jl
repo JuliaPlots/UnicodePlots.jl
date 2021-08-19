@@ -85,7 +85,7 @@ See also
 function densityplot(
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         grid = false,
         name = "",
         kw...)

@@ -75,7 +75,7 @@ function boxplot(
         text::AbstractVector{<:AbstractString},
         data::AbstractVector{<:AbstractArray{<:Number}};
         border = :corners,
-        color::Symbol = :green,
+        color::UserColorType = :green,
         width::Int = 40,
         xlim = (0., 0.),
         kw...)

@@ -124,7 +124,7 @@ end
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
         xlabel = "population [in mil]",
-        color = :blue,
+        color = (0,0,255),
         margin = 7,
         padding = 3,
         labels = false,
@@ -175,6 +175,19 @@ end
     p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
     test_ref(
         "references/barplot/edgecase_onelarge.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
+end
+
+@testset "colors" begin
+    p = barplot(["B","A"], [2,1], color=9)
+    test_ref(
+        "references/barplot/col1.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
+    p = barplot(["B","A"], [2,1], color=(200,50,0))
+    test_ref(
+        "references/barplot/col2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
 end

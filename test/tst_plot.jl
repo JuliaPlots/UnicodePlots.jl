@@ -87,9 +87,9 @@ annotate!(p, :bl, ":bl", :blue)
 annotate!(p, :b, ":b", :green)
 annotate!(p, :br, ":br", :white)
 
-@test @inferred(lines!(p, 0., 1., 1., 0., color=:blue)) === p
-@test @inferred(pixel!(p, 10, 1, color = :yellow)) === p
-@test @inferred(points!(p, 0.05, .75, color = :green)) === p
+@test @inferred(lines!(p, 0., 1., 1., 0., color=(0,0,255))) === p
+@test @inferred(pixel!(p, 10, 1, color = (255,255,0))) === p
+@test @inferred(points!(p, 0.05, .75, color = (0,255,0))) === p
 
 ttl = "title!(plot, text)"
 @test @inferred(title!(p, ttl)) === p

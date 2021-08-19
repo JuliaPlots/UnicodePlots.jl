@@ -108,7 +108,7 @@ end
 
 @testset "functions" begin
     @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=(-1.,1., 2.))
-    @test_throws ArgumentError lineplot(sin, 1:.5:12, color=:blue, ylim=[-1.,1., 2.])
+    @test_throws ArgumentError lineplot(sin, 1:.5:12, color=(0,0,255), ylim=[-1.,1., 2.])
     p = @inferred lineplot(sin)
     test_ref(
         "references/lineplot/sin.txt",
@@ -196,7 +196,7 @@ end
         @io2str(show(IOContext(::IO, :color=>true), p))
     )
 
-    p = @inferred lineplot(x, y, color = :blue, name = "points1")
+    p = @inferred lineplot(x, y, color = 20, name = "points1")
     test_ref(
         "references/lineplot/blue.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))

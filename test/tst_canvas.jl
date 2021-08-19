@@ -115,3 +115,26 @@ end
         @io2str(print(IOContext(::IO, :color=>true), c))
     )
 end
+
+@testset "colors" begin
+    c = BrailleCanvas(40, 15, origin_x = 0., origin_y = 0., width = 1.2, height = 1.2)
+    @inferred lines!(c, 0.0, 0.0, 1.2, 0.0, (0,0,255))
+    lines!(c, 0.0, 0.2, 1.2, 0.2, (255,0,0))
+    lines!(c, 0.0, 0.4, 1.2, 0.4, (0,255,0))
+    lines!(c, 0.0, 0.6, 1.2, 0.6, (255,255,0))
+    lines!(c, 0.0, 0.8, 1.2, 0.8, 127)
+    lines!(c, 0.0, 1.0, 1.2, 1.0, 51)
+    lines!(c, 0.0, 1.2, 1.2, 1.2, 231)
+
+    lines!(c, 0.0, 0.0, 0.0, 1.2, :blue)
+    lines!(c, 0.2, 0.0, 0.2, 1.2, :red)
+    lines!(c, 0.4, 0.0, 0.4, 1.2, :green)
+    lines!(c, 0.6, 0.0, 0.6, 1.2, :yellow)
+    lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
+    lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
+    lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
+    test_ref(
+        "references/canvas/colors.txt",
+        @io2str(print(IOContext(::IO, :color=>true), c))
+    )
+end
