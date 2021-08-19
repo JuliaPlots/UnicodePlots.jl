@@ -1,6 +1,6 @@
 mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     bars::Vector{R}
-    color::UserColorType
+    color::ColorType
     char_width::Int
     max_freq::Number
     max_len::Int
@@ -18,7 +18,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
         max_freq, i = findmax(transform.(bars))
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
-        new{R}(bars, color, char_width, max_freq, max_len, string(symb), transform)
+        new{R}(bars, crayon_256_color(color), char_width, max_freq, max_len, string(symb), transform)
     end
 end
 
@@ -31,7 +31,7 @@ function BarplotGraphics(
         transform = identity;
         color::UserColorType = :green,
         symb = "■") where {R <: Number}
-    BarplotGraphics(bars, char_width, color, symb, transform)
+    BarplotGraphics(bars, char_width, crayon_256_color(color), symb, transform)
 end
 
 function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
