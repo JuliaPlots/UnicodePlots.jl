@@ -96,7 +96,7 @@ end
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
-        color = :blue,
+        color = (0,0,255),
         margin = 7,
         padding = 3,
         labels = false,
@@ -124,7 +124,7 @@ end
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
-        color = :yellow,
+        color = (255,255,0),
         border = :solid,
         symb = '=',
         width = 50

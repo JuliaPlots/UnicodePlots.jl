@@ -62,7 +62,7 @@ end
             @test @inferred(lines!(c, 0., 0., 1., 1., :blue)) === c
             @test @inferred(points!(c, x1, y1, :white)) === c
             @test @inferred(pixel!(c, 2, 4, color = :cyan)) === c
-            points!(c, x2, y2, color = :red)
+            points!(c, x2, y2, color = (255,0,0))
             lines!(c, 0., 1., .5, 0., :green)
             points!(c, .05, .3, color = :cyan)
             lines!(c, [1.,2], [2.,1])
@@ -104,8 +104,8 @@ end
     lines!(c, 0.0, 1.2, 1.2, 1.2, :white)
 
     lines!(c, 0.0, 0.0, 0.0, 1.2, :blue)
-    lines!(c, 0.2, 0.0, 0.2, 1.2, :red)
-    lines!(c, 0.4, 0.0, 0.4, 1.2, :green)
+    lines!(c, 0.2, 0.0, 0.2, 1.2, (255,0,0))
+    lines!(c, 0.4, 0.0, 0.4, 1.2, 22)  # 256 color green
     lines!(c, 0.6, 0.0, 0.6, 1.2, :yellow)
     lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
     lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)

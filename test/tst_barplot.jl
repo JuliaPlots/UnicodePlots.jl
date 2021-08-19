@@ -124,7 +124,7 @@ end
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
         xlabel = "population [in mil]",
-        color = :blue,
+        color = (0,0,255),
         margin = 7,
         padding = 3,
         labels = false,
@@ -154,7 +154,7 @@ end
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
         xlabel = "population [in mil]",
-        color = :yellow,
+        color = 220,  # 256 color yellow
         border = :solid,
         symb = '=',
         width = 60
