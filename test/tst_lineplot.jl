@@ -171,7 +171,7 @@ end
         "references/lineplot/sincos_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))
     )
-    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [196, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2])
+    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2])
     test_ref(
         "references/lineplot/sincos_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))

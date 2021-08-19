@@ -167,24 +167,18 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const UserColorType = Union{Integer,Symbol,NTuple{3,Integer}}
-const ColorType = Union{Nothing,UInt8}
+const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const JuliaColorType = Union{Symbol,Int}  # printstyle color type (defined in base/util.jl)
+const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
 
 const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
 
-function print_color(color::Union{Nothing,Integer,Symbol}, io::IO, args...)
-    col = if color === nothing
-        :normal
-    elseif color isa Symbol
-        color
-    else
-        Int(color)
-    end
-    printstyled(io, string(args...); color = col)
+function print_color(color::UserColorType, io::IO, args...)
+    printstyled(io, string(args...); color = julia_color(color))
 end
 
 function crayon_256_color(color::UserColorType)::ColorType
-    color in (:normal, :default) && return nothing
+    color in (:normal, :default, :nothing, nothing) && return nothing
     ansicolor = Crayons._parse_color(color)
     if ansicolor.style == Crayons.COLORS_16
         return Crayons.val(ansicolor) % 60
@@ -192,6 +186,18 @@ function crayon_256_color(color::UserColorType)::ColorType
         return Crayons.val(Crayons.to_256_colors(ansicolor))
     end
     Crayons.val(ansicolor)
+end
+
+function julia_color(color::UserColorType)::JuliaColorType
+    if color isa Nothing
+        :normal
+    elseif color isa Symbol
+        color
+    elseif color isa Integer
+        Int(color)
+    else
+        julia_color(crayon_256_color(color))
+    end
 end
 
 @inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
