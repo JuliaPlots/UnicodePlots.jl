@@ -168,7 +168,7 @@ bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
-const JuliaColorType = Union{Symbol,Int}  # printstyle color type (defined in base/util.jl)
+const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
 const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
 
 const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
