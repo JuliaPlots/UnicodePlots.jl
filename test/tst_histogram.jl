@@ -96,7 +96,7 @@ end
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
-        color = (0,0,255),
+        color = :blue,
         margin = 7,
         padding = 3,
         labels = false,
@@ -124,13 +124,34 @@ end
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
-        color = (255,255,0),
+        color = :yellow,
         border = :solid,
         symb = '=',
         width = 50
     )
     test_ref(
         "references/histogram/parameters2.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
+
+    # colors
+    p = @inferred histogram(
+        x,
+        title = "Gray color",
+        color = 240,
+    )
+    test_ref(
+        "references/histogram/col1.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
+
+    p = @inferred histogram(
+        x,
+        title = "Green color",
+        color = (50,100,50),
+    )
+    test_ref(
+        "references/histogram/col2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
 end

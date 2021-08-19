@@ -78,11 +78,11 @@ mutable struct Plot{T<:GraphicsArea}
     padding::Int
     border::Symbol
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,Symbol}
+    colors_left::Dict{Int,ColorType}
     labels_right::Dict{Int,String}
-    colors_right::Dict{Int,Symbol}
+    colors_right::Dict{Int,ColorType}
     decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,Symbol}
+    colors_deco::Dict{Symbol,ColorType}
     show_labels::Bool
     colormap::Any
     show_colorbar::Bool
@@ -109,11 +109,11 @@ function Plot(
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,Symbol}()
+    colors_left = Dict{Int,ColorType}()
     labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,Symbol}()
+    colors_right = Dict{Int,ColorType}()
     decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,Symbol}()
+    colors_deco = Dict{Symbol,ColorType}()
     Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border,
             labels_left, colors_left, labels_right, colors_right,
@@ -304,20 +304,20 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
             if loc == :l
                 if(!haskey(plot.labels_left, row) || plot.labels_left[row] == "")
                     plot.labels_left[row] = value
-                    plot.colors_left[row] = color
+                    plot.colors_left[row] = crayon_256_color(color)
                     return plot
                 end
             elseif loc == :r
                 if(!haskey(plot.labels_right, row) || plot.labels_right[row] == "")
                     plot.labels_right[row] = value
-                    plot.colors_right[row] = color
+                    plot.colors_right[row] = crayon_256_color(color)
                     return plot
                 end
             end
         end
     else
         plot.decorations[loc] = value
-        plot.colors_deco[loc] = color
+        plot.colors_deco[loc] = crayon_256_color(color)
         return plot
     end
     plot
@@ -330,10 +330,10 @@ end
 function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
-        plot.colors_left[row] = color
+        plot.colors_left[row] = crayon_256_color(color)
     elseif loc == :r
         plot.labels_right[row] = value
-        plot.colors_right[row] = color
+        plot.colors_right[row] = crayon_256_color(color)
     else
         throw(ArgumentError("Unknown location \"$(string(loc))\", try `:l` or `:r` instead"))
     end

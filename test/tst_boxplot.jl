@@ -14,7 +14,7 @@
         "references/boxplot/default_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))
     )
-    p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = (0,0,255), width = 50, border = :solid, xlabel="foo")
+    p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = :blue, width = 50, border = :solid, xlabel="foo")
     test_ref(
         "references/boxplot/default_parameters.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))
@@ -41,7 +41,7 @@ end
 end
 
 @testset "multi-series" begin
-    p = @inferred boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", xlabel="foo", color=11)  # color 256 yellowish
+    p = @inferred boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", xlabel="foo", color=:yellow)
     test_ref(
         "references/boxplot/multi1.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))
@@ -54,6 +54,20 @@ end
     @test @inferred(boxplot!(p, [4,2,2.5,4,14], name = "last one")) === p
     test_ref(
         "references/boxplot/multi3.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p))
+    )
+end
+
+@testset "colors" begin
+    p = @inferred boxplot(["one", "two"], [[1,2,3], [4,5,6]], color=214)
+    test_ref(
+        "references/boxplot/col1.txt",
+        @io2str(show(IOContext(::IO, :color=>true), p))
+    )
+
+    p = @inferred boxplot(["one", "two"], [[1,2,3], [4,5,6]], color=(187,0,187))
+    test_ref(
+        "references/boxplot/col2.txt",
         @io2str(show(IOContext(::IO, :color=>true), p))
     )
 end
