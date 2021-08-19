@@ -20,8 +20,8 @@ const DOC_PLOT_PARAMS = """
 
 - **`color`** : Color of the drawing.
   Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`, an integer in the range [0; 255],
-  or a tuple of three integers (RGB components).
+  `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255` for Color256 palette,
+  or a tuple of three integers as RGB components.
 
 - **`width`** : Number of characters per row that should be used
   for plotting.
