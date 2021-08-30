@@ -163,10 +163,10 @@ function Plot(
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
                     colormap = colormap, colorbar = colorbar, colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
 
-    min_x_str = string(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
-    max_x_str = string(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
-    min_y_str = string(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
-    max_y_str = string(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
+    min_x_str = compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
+    max_x_str = compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
+    min_y_str = compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
+    max_y_str = compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
     annotate!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
     annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
     annotate!(new_plot, :bl, min_x_str, color = :light_black)
