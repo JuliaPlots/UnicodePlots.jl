@@ -473,7 +473,7 @@ function Base.show(io::IO, p::Plot)
             print(io, plot_padding)
             printcolorbarrow(io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim, plot_padding, p.zlabel)
         end
-        print(io, "\n")
+        println(io)
     end
 
     # draw bottom border and bottom labels
@@ -502,5 +502,6 @@ function Base.show(io::IO, p::Plot)
         # abuse the print_title function to print the xlabel. maybe refactor this
         p.xlabel != "" && println(io)
         print_title(io, border_padding, p.xlabel, p_width = border_length)
+        println(io)
     end
 end
