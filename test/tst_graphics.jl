@@ -50,7 +50,7 @@
 
     @testset "Constructor parameter" begin
         @test_throws MethodError BarplotGraphics(0:2:10)
-        @test_throws ArgumentError BarplotGraphics(Int[], 20)
+        @test_throws Union{ArgumentError,MethodError} BarplotGraphics(Int[], 20)
         @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symb="--")
         g = @inferred BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) === 2
@@ -145,7 +145,7 @@ end
 
     @testset "Constructor parameter" begin
         @test_throws MethodError BoxplotGraphics([1,2,2,4,5,6])
-        @test_throws ArgumentError BoxplotGraphics(Int[], 30)
+        @test_throws Union{ArgumentError,MethodError} BoxplotGraphics(Int[], 30)
         g = @inferred BoxplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 20

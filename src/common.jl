@@ -35,6 +35,7 @@ function transform_name(f, basename = "")
 end
 
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+compact_repr(num::Number) = repr(num, context=:compact => true)
 
 ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
 round_neg_log10(x) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
