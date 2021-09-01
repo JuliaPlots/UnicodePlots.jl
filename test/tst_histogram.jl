@@ -155,3 +155,10 @@ end
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
 end
+
+@testset "integer edges (#139)" begin
+    p_int = histogram(fit(Histogram, rand(10), 0:3))
+    p_float = histogram(fit(Histogram, rand(10), 0.0:1.0:3.0))
+    @test @io2str(print(IOContext(::IO, :color=>true), p_int)) ==
+        @io2str(print(IOContext(::IO, :color=>true), p_float))
+end
