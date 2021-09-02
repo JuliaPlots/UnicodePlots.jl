@@ -53,7 +53,7 @@ x2 = randn(RNG, (1, 10000, 1, 1))
         "references/histogram/nonuniformbins.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
-    p = @inferred histogram(x2)
+    p = @inferred Plot histogram(x2)
     test_ref(
         "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
