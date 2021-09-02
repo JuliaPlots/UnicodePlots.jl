@@ -9,6 +9,7 @@ using Random
 import Random: seed!
 
 tests = [
+    "tst_issues.jl",
     "tst_common.jl",
     "tst_graphics.jl",
     "tst_canvas.jl",

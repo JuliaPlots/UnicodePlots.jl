@@ -44,35 +44,40 @@ end
 
 # Implementation of the digital differential analyser (DDA)
 function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
-    if (x1 < origin_x(c) && x2 < origin_x(c)) ||
-        (x1 > origin_x(c) + width(c) && x2 > origin_x(c) + width(c))
-        return c
-    end
-    if (y1 < origin_y(c) && y2 < origin_y(c)) ||
-        (y1 > origin_y(c) + height(c) && y2 > origin_y(c) + height(c))
-        return c
-    end
-    toff = x1 - origin_x(c)
-    px1 = toff / width(c) * pixel_width(c)
-    toff = x2 - origin_x(c)
-    px2 = toff / width(c) * pixel_width(c)
-    toff = y1 - origin_y(c)
-    py1 = pixel_height(c) - toff / height(c) * pixel_height(c)
-    toff = y2 - origin_y(c)
-    py2 = pixel_height(c) - toff / height(c) * pixel_height(c)
-    dx = px2 - px1
-    dy = py2 - py1
-    nsteps = abs(dx) > abs(dy) ? abs(dx) : abs(dy)
-    inc_x = dx / nsteps
-    inc_y = dy / nsteps
-    cur_x = px1
-    cur_y = py1
-    fpw = Float64(pixel_width(c))
-    fph = Float64(pixel_height(c))
+    mx = origin_x(c)
+    Mx = origin_x(c) + width(c)
+    (x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx) && return c
+
+    my = origin_y(c)
+    My = origin_y(c) + height(c)
+    (y1 < my && y2 < my) || (y1 > My && y2 > My) && return c
+
+    x2p(x) = (x - mx) / width(c) * pixel_width(c)
+    y2p(y) = pixel_height(c) - (y - my) / height(c) * pixel_height(c)
+
+    Δx = x2p(x2) - (cur_x = x2p(x1))
+    Δy = y2p(y2) - (cur_y = y2p(y1))
+
+    nsteps = abs(Δx) > abs(Δy) ? abs(Δx) : abs(Δy)
+    nsteps = min(nsteps, typemax(Int32))  # hard limit
+
+    δx = Δx / nsteps
+    δy = Δy / nsteps
+
+    px, Px = extrema([x2p(mx), x2p(Mx)])
+    py, Py = extrema([y2p(my), y2p(My)])
+
     pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
-    for i = 1:nsteps
-        cur_x += inc_x
-        cur_y += inc_y
+    max_num_iter = typemax(Int16)  # performance limit
+    for _ = if nsteps > max_num_iter
+        range(1, stop=nsteps, length=max_num_iter)
+    else
+        range(1, stop=nsteps, step=1)
+    end
+        cur_x += δx
+        cur_y += δy
+        (cur_y < py || cur_y > Py) && continue
+        (cur_x < px || cur_x > Px) && continue
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
     end
     c
