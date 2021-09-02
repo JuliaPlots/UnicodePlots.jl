@@ -101,8 +101,9 @@ function lineplot(
         color::UserColorType = :auto,
         name = "",
         kw...)
-    idx = map(!isnan, x)
-    idx .&= map(!isnan, y)
+    idx = map(x, y) do i, j
+        isfinite(i) && isfinite(j)
+    end
     new_plot = Plot(x[idx], y[idx], canvas; kw...)
     lineplot!(new_plot, x, y; color = color, name = name)
 end

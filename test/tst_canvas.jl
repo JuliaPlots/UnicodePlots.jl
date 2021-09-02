@@ -1,5 +1,12 @@
 @test Canvas <: GraphicsArea
 
+@testset "Nan / Inf" begin
+    c = BrailleCanvas(40, 15)
+    lines!(c, [0, NaN], [0, 0])
+    lines!(c, [0, 0], [+Inf, 0])
+    lines!(c, [0, 0], [0, -Inf])
+end
+
 @testset "interface" begin
     for (T, xres, yres) in [
             (BrailleCanvas, 2, 4),

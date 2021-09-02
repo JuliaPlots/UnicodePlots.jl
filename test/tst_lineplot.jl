@@ -6,11 +6,17 @@ y = [2, 0, -5, 2, -5]
 @test_throws ArgumentError lineplot(Function[], 0, 3)
 @test_throws ArgumentError lineplot(Function[], x)
 @test_throws ArgumentError lineplot(Function[])
-@test_throws DimensionMismatch lineplot([1,2], [1,2,3])
-@test_throws DimensionMismatch lineplot([1,2,3], [1,2])
-@test_throws DimensionMismatch lineplot([1,2,3], 1:2)
-@test_throws DimensionMismatch lineplot(1:3, [1,2])
-@test_throws DimensionMismatch lineplot(1:3, 1:2)
+@test_throws Union{BoundsError,DimensionMismatch} lineplot([1,2], [1,2,3])
+@test_throws Union{BoundsError,DimensionMismatch} lineplot([1,2,3], [1,2])
+@test_throws Union{BoundsError,DimensionMismatch} lineplot([1,2,3], 1:2)
+@test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, [1,2])
+@test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, 1:2)
+
+@testset "Nan / Inf" begin
+    lineplot([0, NaN], [0, 0])
+    lineplot([0, 0], [+Inf, 0])
+    lineplot([0, 0], [0, -Inf])
+end
 
 @testset "numeric array types" begin
     for p in (
