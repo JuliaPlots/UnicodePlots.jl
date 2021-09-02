@@ -518,10 +518,12 @@ julia> savefig(lineplot([0, 1]), "foo.txt")
 
 ```
 """
-function savefig(p::Plot, fn::String; color::Bool=false)
-    ext = lowercase(splitext(fn)[2])
-    ext in (".png", ".jpg", ".jpeg", ".tif", ".gif", ".svg") && @warn "`UnicodePlots.savefig` only support writing to text files" filename=fn
-    open(fn, "w") do io
+function savefig(p::Plot, filename::String; color::Bool=false)
+    ext = lowercase(splitext(filename)[2])
+    if ext in (".png", ".jpg", ".jpeg", ".tif", ".gif", ".svg")
+        @warn "`UnicodePlots.savefig` only support writing to text files"
+    end
+    open(filename, "w") do io
         print(IOContext(io, :color=>color), p)
     end
 end
