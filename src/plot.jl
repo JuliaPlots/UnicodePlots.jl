@@ -506,7 +506,7 @@ function Base.show(io::IO, p::Plot)
 end
 
 """
-    savefig(p, fn[, color])
+    savefig(p, filename; color=false)
 
 Save a `Plot` to a file. The optional keyword argument `color` determines if the ANSI color codes
 should be included or not in the file.
