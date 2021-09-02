@@ -75,23 +75,17 @@ ascii_lookup[0b100_100_100] = '|'
 ascii_lookup[0b001_001_001] = '|'
 ascii_lookup[0b110_011_110] = '}'
 
-# julia #18977
-if !isdefined(Base, :⊻)
-    const ⊻ = $
-end
-
 ascii_decode[0b1] = ' '
 for i in 1:511
     min_dist = typemax(Int)
     min_char = ' '
-    for (k, v) in ascii_lookup
-        cur_dist = count_ones(UInt16(i) ⊻ k)
+    for (k, v) in sort_by_keys(ascii_lookup)
+        cur_dist = count_ones(xor(UInt16(i), k))
         if cur_dist < min_dist
             min_dist = cur_dist
             min_char = v
         end
     end
-    min_char
     ascii_decode[i + 1] = min_char
 end
 
@@ -110,7 +104,7 @@ instead.
 """
 struct AsciiCanvas <: LookupCanvas
     grid::Array{UInt16,2}
-    colors::Array{UInt8,2}
+    colors::Array{ColorType,2}
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64

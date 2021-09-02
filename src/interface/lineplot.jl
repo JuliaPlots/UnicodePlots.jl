@@ -98,10 +98,13 @@ function lineplot(
         x::AbstractVector,
         y::AbstractVector;
         canvas::Type = BrailleCanvas,
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "",
         kw...)
-    new_plot = Plot(x, y, canvas; kw...)
+    idx = map(x, y) do i, j
+        isfinite(i) && isfinite(j)
+    end
+    new_plot = Plot(x[idx], y[idx], canvas; kw...)
     lineplot!(new_plot, x, y; color = color, name = name)
 end
 
@@ -113,7 +116,7 @@ function lineplot!(
         plot::Plot{<:Canvas},
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "")
     color = color == :auto ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, string(name), color)
@@ -127,14 +130,15 @@ end
 # date time
 
 function lineplot(
-        x::AbstractVector{<:TimeType},
+        x::AbstractVector{D},
         y::AbstractVector;
-        xlim = extrema(Dates.value.(x)),
-        kw...)
+        xlim = extrema(x),
+        kw...) where {D<:TimeType}
     d = Dates.value.(x)
-    new_plot = lineplot(d, y; xlim = xlim, kw...)
-    annotate!(new_plot, :bl, string(minimum(x)), color = :light_black)
-    annotate!(new_plot, :br, string(maximum(x)), color = :light_black)
+    dlim = Dates.value.(D.(xlim))
+    new_plot = lineplot(d, y; xlim = dlim, kw...)
+    annotate!(new_plot, :bl, string(xlim[1]), color = :light_black)
+    annotate!(new_plot, :br, string(xlim[2]), color = :light_black)
 end
 
 function lineplot!(

@@ -31,13 +31,13 @@ function CreateLookupCanvas(
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid   = fill(0x00, char_width, char_height)
-    colors = fill(0x00, char_width, char_height)
+    colors = fill(nothing, char_width, char_height)
     T(grid, colors, pixel_width, pixel_height,
       Float64(origin_x), Float64(origin_y),
       Float64(width), Float64(height))
 end
 
-function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) where {T <: LookupCanvas}
+function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
@@ -51,13 +51,9 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::Union{Int, Symbol}) whe
     end
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
-    grid(c)[char_x, char_y] = grid(c)[char_x,char_y] | lookup_encode(c)[char_x_off, char_y_off]
-    if color isa Symbol
-        colors(c)[char_x, char_y] = colors(c)[char_x,char_y] | color_encode[color]
-    else
-        # don't attempt to blend colors if they have been explicitly specified
-        colors(c)[char_x, char_y] = color
-    end
+    grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
+    force = !(color isa Symbol)  # don't attempt to blend colors if they have been explicitly specified
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color); force=force)
     c
 end
 

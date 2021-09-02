@@ -1,6 +1,6 @@
 mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     bars::Vector{R}
-    color::Symbol
+    color::ColorType
     char_width::Int
     max_freq::Number
     max_len::Int
@@ -10,7 +10,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     function BarplotGraphics(
             bars::AbstractVector{R},
             char_width::Int,
-            color::Symbol,
+            color::UserColorType,
             symb::Union{Char,String},
             transform) where {R}
         length(symb) == 1 || throw(ArgumentError("The symbol to print has to be a single character, got: \"" * symb * "\""))
@@ -18,7 +18,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
         max_freq, i = findmax(transform.(bars))
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
-        new{R}(bars, color, char_width, max_freq, max_len, string(symb), transform)
+        new{R}(bars, crayon_256_color(color), char_width, max_freq, max_len, string(symb), transform)
     end
 end
 
@@ -29,9 +29,9 @@ function BarplotGraphics(
         bars::AbstractVector{R},
         char_width::Int,
         transform = identity;
-        color::Symbol = :green,
+        color::UserColorType = :green,
         symb = "■") where {R <: Number}
-    BarplotGraphics(bars, char_width, color, symb, transform)
+    BarplotGraphics(bars, char_width, crayon_256_color(color), symb, transform)
 end
 
 function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
@@ -57,8 +57,8 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
     bar_len = max_freq > 0 ? round(Int, max(val, zero(val))/max_freq * max_bar_width, RoundNearestTiesUp) : 0
     bar_str = max_freq > 0 ? repeat(g.symb, bar_len) : ""
     bar_lbl = string(bar)
-    printstyled(io, bar_str; color = g.color)
-    printstyled(io, " ", bar_lbl; color = :normal)
+    print_color(g.color, io, bar_str)
+    print_color(:normal, io, " ", bar_lbl)
     pan_len = max(max_bar_width + 1 + g.max_len - bar_len - length(bar_lbl), 0)
     pad = repeat(" ", round(Int, pan_len))
     print(io, pad)
