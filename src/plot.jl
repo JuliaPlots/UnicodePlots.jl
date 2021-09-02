@@ -508,8 +508,9 @@ end
 """
     savefig(p, filename; color=false)
 
-Save a `Plot` to a file. The optional keyword argument `color` determines if the ANSI color codes
-should be included or not in the file.
+Print the given plot `p` to a text file.
+
+By default, it does not write ANSI color codes to the file. To enable this, set the keyword `color=true`.
 
 # Examples
 ```julia-repl
