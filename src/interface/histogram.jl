@@ -127,12 +127,14 @@ function histogram(
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
+    singleton_dims = Tuple([i for i in 1:ndims(x) if size(x, i) == 1])
+    x_plot = dropdims(x, dims=singleton_dims)
     if bins !== nothing
         Base.depwarn("The keyword parameter `bins` is deprecated, use `nbins` instead", :histogram)
-        hist = fit(Histogram, x; nbins = bins, closed = closed)
+        hist = fit(Histogram, x_plot; nbins = bins, closed = closed)
     else
         hargs = filter(p -> p.first == :nbins, kw)
-        hist = fit(Histogram, x; closed = closed, hargs...)
+        hist = fit(Histogram, x_plot; closed = closed, hargs...)
     end
     pargs = filter(p -> p.first != :nbins, kw)
     histogram(hist; pargs...)

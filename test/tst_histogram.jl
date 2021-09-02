@@ -52,6 +52,12 @@ x = randn(RNG, 10000)
         "references/histogram/nonuniformbins.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
+    x2 = copy(reshape(x, (1, length(x), 1, 1)))
+    p = @inferred Plot histogram(x2)
+    test_ref(
+        "references/histogram/default.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
 end
 
 @testset "hist params" begin
