@@ -105,7 +105,14 @@ test_ref(
     "references/plot/full_deco.txt",
     @io2str(show(IOContext(::IO, :color=>true), p))
 )
+tmp = tempname()
+savefig(p, tmp; color=true)
+test_ref("references/plot/full_deco.txt", read(tmp, String))
+
 test_ref(
     "references/plot/full_deco_nocolor.txt",
     @io2str(show(::IO, p))
 )
+tmp = tempname()
+savefig(p, tmp; color=false)
+test_ref("references/plot/full_deco_nocolor.txt", read(tmp, String))

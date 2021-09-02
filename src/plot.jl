@@ -504,3 +504,26 @@ function Base.show(io::IO, p::Plot)
         print_title(io, border_padding, p.xlabel, p_width = border_length)
     end
 end
+
+"""
+    savefig(p, filename; color=false)
+
+Print the given plot `p` to a text file.
+
+By default, it does not write ANSI color codes to the file. To enable this, set the keyword `color=true`.
+
+# Examples
+```julia-repl
+julia> savefig(lineplot([0, 1]), "foo.txt")
+
+```
+"""
+function savefig(p::Plot, filename::String; color::Bool=false)
+    ext = lowercase(splitext(filename)[2])
+    if ext in (".png", ".jpg", ".jpeg", ".tif", ".gif", ".svg")
+        @warn "`UnicodePlots.savefig` only support writing to text files"
+    end
+    open(filename, "w") do io
+        print(IOContext(io, :color=>color), p)
+    end
+end
