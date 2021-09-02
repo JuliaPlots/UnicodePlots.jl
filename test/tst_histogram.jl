@@ -54,10 +54,9 @@ x2 = randn(RNG, (1, 10000, 1, 1))
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
     p = @inferred histogram(x2)
-    @test_reference(
+    test_ref(
         "references/histogram/default.txt",
-        @io2str(print(IOContext(::IO, :color=>true), p)),
-        render = BeforeAfterFull()
+        @io2str(print(IOContext(::IO, :color=>true), p))
     )
 end
 
