@@ -6,7 +6,6 @@ using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 
 export
-
     GraphicsArea,
         Canvas,
             BrailleCanvas,
@@ -50,7 +49,9 @@ export
     densityplot, densityplot!,
     heatmap,
     spy,
-    boxplot, boxplot!
+    boxplot, boxplot!,
+
+    savefig
 
 include("common.jl")
 

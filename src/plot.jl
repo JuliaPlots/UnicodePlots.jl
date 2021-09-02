@@ -504,3 +504,9 @@ function Base.show(io::IO, p::Plot)
         print_title(io, border_padding, p.xlabel, p_width = border_length)
     end
 end
+
+function savefig(p::Plot, fn::String; color::Bool=false)
+    open(fn, "w") do io
+        print(IOContext(io, :color=>color), p)
+    end
+end
