@@ -130,14 +130,15 @@ end
 # date time
 
 function lineplot(
-        x::AbstractVector{<:TimeType},
+        x::AbstractVector{D},
         y::AbstractVector;
-        xlim = extrema(Dates.value.(x)),
-        kw...)
+        xlim = extrema(x),
+        kw...) where {D<:TimeType}
     d = Dates.value.(x)
-    new_plot = lineplot(d, y; xlim = xlim, kw...)
-    annotate!(new_plot, :bl, string(minimum(x)), color = :light_black)
-    annotate!(new_plot, :br, string(maximum(x)), color = :light_black)
+    dlim = Dates.value.(D.(xlim))
+    new_plot = lineplot(d, y; xlim = dlim, kw...)
+    annotate!(new_plot, :bl, string(xlim[1]), color = :light_black)
+    annotate!(new_plot, :br, string(xlim[2]), color = :light_black)
 end
 
 function lineplot!(

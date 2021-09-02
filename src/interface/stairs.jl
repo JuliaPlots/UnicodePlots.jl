@@ -106,12 +106,12 @@ function stairs!(
 end
 
 function compute_stair_lines(
-        X::AbstractVector{<:Number},
-        Y::AbstractVector{<:Number},
+        X::AbstractVector,
+        Y::AbstractVector,
         style::Symbol)
     if style == :post
-        x_vex = zeros(length(X) * 2 - 1)
-        y_vex = zeros(length(X) * 2 - 1)
+        x_vex = similar(X, length(X) * 2 - 1)
+        y_vex = similar(Y, length(X) * 2 - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
         o = 0
