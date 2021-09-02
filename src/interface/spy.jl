@@ -37,7 +37,7 @@ Arguments
   setting `labels = false`.
 
 - **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.  
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 - **`margin`** : Number of empty characters to the left of the
   whole plot.
 
@@ -64,7 +64,7 @@ A plot object of type `Plot{T<:Canvas}`
 Author(s)
 ==========
 
-- Dominique (Github: https://github.com/dpo)
+- Dominique Orban (Github: https://github.com/dpo)
 - Christof Stocker (Github: https://github.com/Evizero)
 - Jake Bolewski (Github: https://github.com/jakebolewski)
 
@@ -100,8 +100,14 @@ See also
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
+spy(A::AbstractMatrix; kwargs...) = spy(size(A)..., _findnz(A)...; kwargs...)
+
 function spy(
-        A::AbstractMatrix;
+        nrow::Int,
+        ncol::Int,
+        rows::AbstractArray{<:Integer},
+        cols::AbstractArray{<:Integer},
+        vals::AbstractArray;
         maxwidth::Int  = 0,
         maxheight::Int = 0,
         title = "Sparsity Pattern",
@@ -116,10 +122,8 @@ function spy(
         Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
         color = :auto
     end
-    nrow, ncol = size(A)
-    rows, cols, vals = _findnz(A)
     (width, height, _, _) = get_canvas_dimensions_for_matrix(
-        canvas, size(A, 1), size(A, 2), maxwidth, maxheight, width, height, margin, padding;
+        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding;
         extra_rows = 9, extra_cols = 6
     )
     can = T(width, height,
