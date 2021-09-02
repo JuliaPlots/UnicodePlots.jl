@@ -1,6 +1,5 @@
 seed!(RNG, 1337)
 x = randn(RNG, 10000)
-x2 = randn(RNG, (1, 10000, 1, 1))
 
 @testset "default params" begin
     p = @inferred histogram(x)
@@ -53,6 +52,7 @@ x2 = randn(RNG, (1, 10000, 1, 1))
         "references/histogram/nonuniformbins.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
+    x2 = copy(reshape(x, (1, length(x), 1, 1)))
     p = @inferred Plot histogram(x2)
     test_ref(
         "references/histogram/default.txt",
