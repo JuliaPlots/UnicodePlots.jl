@@ -98,10 +98,13 @@ function lineplot(
         x::AbstractVector,
         y::AbstractVector;
         canvas::Type = BrailleCanvas,
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "",
         kw...)
-    new_plot = Plot(x, y, canvas; kw...)
+    idx = map(x, y) do i, j
+        isfinite(i) && isfinite(j)
+    end
+    new_plot = Plot(x[idx], y[idx], canvas; kw...)
     lineplot!(new_plot, x, y; color = color, name = name)
 end
 
@@ -113,7 +116,7 @@ function lineplot!(
         plot::Plot{<:Canvas},
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "")
     color = color == :auto ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, string(name), color)

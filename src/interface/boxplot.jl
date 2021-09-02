@@ -75,7 +75,7 @@ function boxplot(
         text::AbstractVector{<:AbstractString},
         data::AbstractVector{<:AbstractArray{<:Number}};
         border = :corners,
-        color::Symbol = :green,
+        color::UserColorType = :green,
         width::Int = 40,
         xlim = (0., 0.),
         kw...)
@@ -93,9 +93,9 @@ function boxplot(
     new_plot = Plot(area; border = border, kw...)
 
     mean_x = (min_x + max_x) / 2
-    min_x_str = string(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
-    mean_x_str = string(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
-    max_x_str = string(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
+    min_x_str = compact_repr(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
+    mean_x_str = compact_repr(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
+    max_x_str = compact_repr(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
     annotate!(new_plot, :bl, min_x_str, color = :light_black)
     annotate!(new_plot, :b,  mean_x_str, color = :light_black)
     annotate!(new_plot, :br, max_x_str, color = :light_black)
@@ -135,9 +135,9 @@ function boxplot!(
     min_x = plot.graphics.min_x
     max_x = plot.graphics.max_x
     mean_x = (min_x + max_x) / 2
-    min_x_str = string(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
-    mean_x_str = string(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
-    max_x_str = string(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
+    min_x_str = compact_repr(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
+    mean_x_str = compact_repr(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
+    max_x_str = compact_repr(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
     annotate!(plot, :bl, min_x_str)
     annotate!(plot, :b,  mean_x_str)
     annotate!(plot, :br, max_x_str)
@@ -162,5 +162,5 @@ function boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...)
 end
 
 function boxplot(dict::Dict; kw...)
-    boxplot(collect(keys(dict)), collect(values(dict)); kw...)
+    boxplot(sorted_keys_values(dict)...; kw...)
 end

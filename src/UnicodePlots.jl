@@ -1,6 +1,7 @@
 module UnicodePlots
 
 using Dates
+using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 

@@ -8,7 +8,7 @@ end
 
 mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
-    color::Symbol
+    color::ColorType
     char_width::Int
     min_x::R
     max_x::R
@@ -16,7 +16,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     function BoxplotGraphics{R}(
             data::AbstractVector{R},
             char_width::Int,
-            color::Symbol,
+            color::UserColorType,
             min_x::R,
             max_x::R) where R
         char_width = max(char_width, 10)
@@ -32,7 +32,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
                 percentile(data, 75),
                 maximum(data)
             )],
-            color, char_width, min_x, max_x
+            crayon_256_color(color), char_width, min_x, max_x
         )
     end
 end
@@ -43,10 +43,10 @@ ncols(c::BoxplotGraphics) = c.char_width
 function BoxplotGraphics(
         data::AbstractVector{R},
         char_width::Int;
-        color::Symbol = :green,
+        color::UserColorType = :green,
         min_x::Number = minimum(data),
         max_x::Number = maximum(data)) where {R <: Number}
-    BoxplotGraphics{R}(data, char_width, color, R(min_x), R(max_x))
+    BoxplotGraphics{R}(data, char_width, crayon_256_color(color), R(min_x), R(max_x))
 end
 
 function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R <: Number}
@@ -105,5 +105,5 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
         line[i] = line_char
     end
 
-    printstyled(io, join(line), color = c.color)
+    print_color(c.color, io, join(line))
 end

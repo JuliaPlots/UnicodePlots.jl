@@ -20,7 +20,8 @@ const DOC_PLOT_PARAMS = """
 
 - **`color`** : Color of the drawing.
   Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`
+  `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255` for Color256 palette,
+  or a tuple of three integers as RGB components.
 
 - **`width`** : Number of characters per row that should be used
   for plotting.
@@ -34,6 +35,7 @@ function transform_name(f, basename = "")
 end
 
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+compact_repr(num::Number) = repr(num, context=:compact => true)
 
 ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
 round_neg_log10(x) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
@@ -42,6 +44,7 @@ round_down_tick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)
 round_up_subtick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
 round_down_subtick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
 float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
+float_round_log10(x::Integer,m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
 
 function plotting_range(xmin, xmax)
@@ -69,6 +72,19 @@ function extend_limits(vec, limits)
         mi = mi - 1
     end
     (limits == (0.,0.) || limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : (mi, ma)
+end
+
+sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])
+
+function sorted_keys_values(dict::Dict; k2s=true)
+    if k2s  # check and force key type to be of AbstractString type if necessary
+        kt, vt = eltype(dict).types
+        if !(kt <: AbstractString)
+            dict = Dict(string(k) => v  for (k, v) in pairs(dict))
+        end
+    end
+    keys_vals = sort_by_keys(dict)
+    first.(keys_vals), last.(keys_vals)
 end
 
 const bordermap = Dict{Symbol,Dict{Symbol,String}}()
@@ -153,25 +169,44 @@ bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
 bordermap[:ascii]  = border_ascii
 
-const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
-const color_encode = Dict{Symbol,UInt8}()
-const color_decode = Dict{UInt8,Symbol}()
-color_encode[:normal]  = 0b000
-color_encode[:blue]    = 0b001
-color_encode[:red]     = 0b010
-color_encode[:magenta] = 0b011
-color_encode[:green]   = 0b100
-color_encode[:cyan]    = 0b101
-color_encode[:yellow]  = 0b110
-for k in keys(color_encode)
-    v = color_encode[k]
-    color_decode[v] = k
-end
-color_encode[:white] = 0b111
-color_decode[0b111]  = :white
+const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
+const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
 
-function print_color(color::UInt8, io::IO, args...)
-    col = color in keys(color_decode) ? color_decode[color] : Int(color)
-    str = string(args...)
-    printstyled(io, str; color = col)
+const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
+
+function print_color(color::UserColorType, io::IO, args...)
+    printstyled(io, string(args...); color = julia_color(color))
+end
+
+function crayon_256_color(color::UserColorType)::ColorType
+    color in (:normal, :default, :nothing, nothing) && return nothing
+    ansicolor = Crayons._parse_color(color)
+    if ansicolor.style == Crayons.COLORS_16
+        return Crayons.val(ansicolor) % 60
+    elseif ansicolor.style == Crayons.COLORS_24BIT
+        return Crayons.val(Crayons.to_256_colors(ansicolor))
+    end
+    Crayons.val(ansicolor)
+end
+
+function julia_color(color::UserColorType)::JuliaColorType
+    if color isa Nothing
+        :normal
+    elseif color isa Symbol
+        color
+    elseif color isa Integer
+        Int(color)
+    else
+        julia_color(crayon_256_color(color))
+    end
+end
+
+@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
+    if color === nothing || colors[x, y] === nothing || force
+        colors[x, y] = color
+    else
+        colors[x, y] |= color
+    end
+    nothing
 end

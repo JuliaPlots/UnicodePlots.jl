@@ -90,7 +90,7 @@ function scatterplot(
         x::AbstractVector,
         y::AbstractVector;
         canvas::Type = BrailleCanvas,
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "",
         kw...)
     new_plot = Plot(x, y, canvas; kw...)
@@ -105,7 +105,7 @@ function scatterplot!(
         plot::Plot{<:Canvas},
         x::AbstractVector,
         y::AbstractVector;
-        color::Symbol = :auto,
+        color::UserColorType = :auto,
         name = "")
     color = (color == :auto) ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, string(name), color)
