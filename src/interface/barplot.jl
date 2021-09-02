@@ -91,7 +91,7 @@ function barplot(
 end
 
 function barplot(dict::Dict{T,N}; kw...) where {T, N <: Number}
-    barplot(collect(keys(dict)), collect(values(dict)); kw...)
+    barplot(sorted_keys_values(dict)...; kw...)
 end
 
 function barplot(text::AbstractVector, heights::AbstractVector{<:Number}; kw...)
@@ -128,7 +128,7 @@ end
 function barplot!(
         plot::Plot{<:BarplotGraphics},
         dict::Dict{T,N}) where {T, N <: Number}
-    barplot!(plot, collect(keys(dict)), collect(values(dict)))
+    barplot!(plot, sorted_keys_values(dict)...)
 end
 
 function barplot!(

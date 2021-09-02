@@ -11,7 +11,7 @@ that can individually be manipulated using binary operations.
 """
 struct BrailleCanvas <: Canvas
     grid::Array{Char,2}
-    colors::Array{UInt8,2}
+    colors::Array{ColorType,2}
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -44,14 +44,14 @@ function BrailleCanvas(char_width::Int, char_height::Int;
     pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
     grid = fill(Char(0x2800), char_width, char_height)
-    colors = fill(0x00, char_width, char_height)
+    colors = fill(nothing, char_width, char_height)
     BrailleCanvas(grid, colors,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height))
 end
 
-function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
+function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
     0 <= pixel_x <= c.pixel_width  || return c
     0 <= pixel_y <= c.pixel_height || return c
     pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
@@ -66,7 +66,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::Symbol)
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
     char_y_off = (pixel_y % 4) + 1
     c.grid[char_x,char_y] = Char(UInt64(c.grid[char_x,char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
-    c.colors[char_x,char_y] = c.colors[char_x,char_y] | color_encode[color]
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
     c
 end
 
