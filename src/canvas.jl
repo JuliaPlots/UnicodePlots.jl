@@ -85,7 +85,7 @@ end
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 1:(length(X)-1)
-        if isnan(X[i]) || isnan(X[i+1]) || isnan(Y[i]) || isnan(Y[i+1])
+        if !(isfinite(X[i]) && isfinite(X[i+1]) && isfinite(Y[i]) && isfinite(Y[i+1]))
             continue
         end
         lines!(c, X[i], Y[i], X[i+1], Y[i+1], color)
