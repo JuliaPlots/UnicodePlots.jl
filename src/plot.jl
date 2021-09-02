@@ -505,6 +505,18 @@ function Base.show(io::IO, p::Plot)
     end
 end
 
+"""
+    savefig(p, fn[, color])
+
+Save a `Plot` to a file. The optional keyword argument `color` determines if the ANSI color codes
+should be included or not in the file.
+
+# Examples
+```julia-repl
+julia> savefig(lineplot([0, 1]), "foo.txt")
+
+```
+"""
 function savefig(p::Plot, fn::String; color::Bool=false)
     open(fn, "w") do io
         print(IOContext(io, :color=>color), p)
