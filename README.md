@@ -101,8 +101,8 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 ```
 ![Barplot Screenshot](https://user-images.githubusercontent.com/10854026/50764892-74682780-1274-11e9-9861-cdcd31fa3cf0.png)
 
-_Note_: You can use the keyword argument `symb` to specify the character that should
-be used to plot the bars. For example `symb = "#"`
+_Note_: You can use the keyword argument `symbols` to specify the characters that should
+be used to plot the bars. For example `symbols = ["#"]`
 
 #### Histogram
 
@@ -257,9 +257,9 @@ parameters.
 
     The type of canvas that should be used for drawing (see section "Low-level Interface")
 
-- `symb::AbstractString = "▪"`:
+- `symbols::AbstractString = ["▪"]`:
 
-    Barplot only. Specifies the character that should be used to render the bars
+    Barplot only. Specifies the characters that should be used to render the bars
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border = :ascii` and `canvas = AsciiCanvas` (or `canvas = DotCanvas` for scatterplots).
 

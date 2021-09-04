@@ -58,6 +58,11 @@ x = randn(RNG, 10000)
         "references/histogram/default.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
+    p = @inferred histogram(Histogram(1:15., vcat(collect(1:13), 400)))
+    test_ref(
+        "references/histogram/fraction.txt",
+        @io2str(print(IOContext(::IO, :color=>true), p))
+    )
 end
 
 @testset "hist params" begin
@@ -118,21 +123,21 @@ end
         xlabel = "Absolute Frequency",
         color = :yellow,
         border = :solid,
-        symb = "=",
+        symbols = ["="],
         width = 50
     )
     test_ref(
         "references/histogram/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
-    # same but with Char as symb
+    # same but with Char as symbols
     p = @inferred histogram(
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
         color = :yellow,
         border = :solid,
-        symb = '=',
+        symbols = ['='],
         width = 50
     )
     test_ref(
@@ -160,11 +165,4 @@ end
         "references/histogram/col2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
-end
-
-@testset "integer edges (#139)" begin
-    p_int = histogram(fit(Histogram, rand(10), 0:3))
-    p_float = histogram(fit(Histogram, rand(10), 0.0:1.0:3.0))
-    @test @io2str(print(IOContext(::IO, :color=>true), p_int)) ==
-        @io2str(print(IOContext(::IO, :color=>true), p_float))
 end

@@ -141,14 +141,14 @@ end
         xlabel = "population [in mil]",
         color = :yellow,
         border = :solid,
-        symb = "=",
+        symbols = ["="],
         width = 60
     )
     test_ref(
         "references/barplot/parameters2.txt",
         @io2str(print(IOContext(::IO, :color=>true), p))
     )
-    # same but with Char as symb
+    # same but with Char as symbols
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
@@ -156,7 +156,7 @@ end
         xlabel = "population [in mil]",
         color = :yellow,
         border = :solid,
-        symb = '=',
+        symbols = ['='],
         width = 60
     )
     test_ref(

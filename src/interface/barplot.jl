@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symb = "■")
+    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ["■"])
 
     barplot(dict; kwargs...)
 
@@ -35,7 +35,7 @@ Arguments
 
 $DOC_PLOT_PARAMS
 
-- **`symb`** : Specifies the character that should be used to
+- **`symbols`** : Specifies the characters that should be used to
   render the bars
 
 Returns
@@ -75,14 +75,14 @@ function barplot(
         border = :barplot,
         color = :green,
         width = 40,
-        symb = "■",
+        symbols = ["■"],
         xscale = identity,
         xlabel = transform_name(xscale),
         kw...)
     length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
     minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
 
-    area = BarplotGraphics(heights, width, xscale, color = color, symb = symb)
+    area = BarplotGraphics(heights, width, xscale, color = color, symbols = symbols)
     new_plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in 1:length(text)
         annotate!(new_plot, :l, i, text[i])
