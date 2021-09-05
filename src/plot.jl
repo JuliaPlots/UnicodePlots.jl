@@ -128,6 +128,8 @@ function Plot(
         xlabel::AbstractString = "",
         ylabel::AbstractString = "",
         zlabel::AbstractString = "",
+        xscale::Symbol = :identity,
+        yscale::Symbol = :identity,
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
@@ -148,8 +150,8 @@ function Plot(
     width = max(width, min_width)
     height = max(height, min_height)
 
-    min_x, max_x = extend_limits(X, xlim)
-    min_y, max_y = extend_limits(Y, ylim)
+    min_x, max_x = extend_limits(X, xlim, xscale)
+    min_y, max_y = extend_limits(Y, ylim, yscale)
     origin_x = min_x
     origin_y = min_y
     p_width = max_x - origin_x
@@ -157,7 +159,8 @@ function Plot(
 
     canvas = C(width, height,
                origin_x = origin_x, origin_y = origin_y,
-               width = p_width, height = p_height)
+               width = p_width, height = p_height,
+               xscale = xscale, yscale = yscale)
     new_plot = Plot(canvas, title = title, margin = margin,
                     padding = padding, border = border, labels = labels,
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
@@ -198,9 +201,7 @@ end
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
 """
-function title(plot::Plot)
-    plot.title
-end
+title(plot::Plot) = plot.title
 
 """
     title!(plot, newtitle) -> plot
@@ -220,9 +221,7 @@ end
 Returns the current label for the x-axis.
 Alternatively, the x-label can be changed with `xlabel!`
 """
-function xlabel(plot::Plot)
-    plot.xlabel
-end
+xlabel(plot::Plot) = plot.xlabel
 
 """
     xlabel!(plot, newlabel) -> plot
@@ -242,9 +241,7 @@ end
 Returns the current label for the y-axis.
 Alternatively, the y-label can be changed with `ylabel!`
 """
-function ylabel(plot::Plot)
-    plot.ylabel
-end
+ylabel(plot::Plot) = plot.ylabel
 
 """
     ylabel!(plot, newlabel) -> plot
@@ -264,9 +261,7 @@ end
 Returns the current label for the z-axis (colorbar).
 Alternatively, the z-label can be changed with `zlabel!`
 """
-function zlabel(plot::Plot)
-    plot.zlabel
-end
+zlabel(plot::Plot) = plot.zlabel
 
 """
     zlabel!(plot, newlabel) -> plot

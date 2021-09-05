@@ -13,6 +13,8 @@ struct HeatmapCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
+    xscale::Symbol
+    yscale::Symbol
 end
 
 const HALF_BLOCK = '▄'

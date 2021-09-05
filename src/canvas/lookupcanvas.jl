@@ -22,6 +22,8 @@ function CreateLookupCanvas(
         origin_y::Number = 0.,
         width::Number = 1.,
         height::Number = 1.,
+        xscale::Symbol = :identity,
+        yscale::Symbol = :identity,
         min_char_height::Int = 5,
         min_char_width::Int = 2) where {T <: LookupCanvas}
     width  > 0 || throw(ArgumentError("width has to be positive"))
@@ -34,7 +36,7 @@ function CreateLookupCanvas(
     colors = fill(nothing, char_width, char_height)
     T(grid, colors, pixel_width, pixel_height,
       Float64(origin_x), Float64(origin_y),
-      Float64(width), Float64(height))
+      Float64(width), Float64(height), xscale, yscale)
 end
 
 function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
@@ -47,7 +49,7 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T
     char_x = floor(Int, tmp) + 1
     char_x_off = (pixel_x % x_pixel_per_char(T)) + 1
     if char_x < round(Int, tmp, RoundNearestTiesUp) + 1 && char_x_off == 1
-        char_x = char_x + 1
+        char_x += 1
     end
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1

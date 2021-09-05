@@ -5,6 +5,10 @@ const DOC_PLOT_PARAMS = """
 
 - **`ylabel`** : Text to display on the y axis of the plot
 
+- **`xscale`** : X-axis scale (choose from (:identity, :log, :log2, :log10))
+
+- **`yscale`** : Y-axis scale (choose from (:identity, :log, :log2, :log10))
+
 - **`labels`** : Boolean. Can be used to hide the labels by
   setting `labels = false`.
 
@@ -26,6 +30,12 @@ const DOC_PLOT_PARAMS = """
 - **`width`** : Number of characters per row that should be used
   for plotting.
 """
+
+const SCALES = (identity=identity, log=log, log2=log2, log10=log10)
+const ISCALES = (identity=identity, log=exp, log2=exp2, log10=exp10)
+
+scale(x, s; scales=SCALES) = scales[s](x)
+iscale(x, s; iscales=ISCALES) = iscales[s](x)
 
 transform_name(::typeof(identity), basename = "") = basename
 function transform_name(f, basename = "")
@@ -61,7 +71,9 @@ function plotting_range_narrow(xmin, xmax)
     Float64(xmin), Float64(xmax)
 end
 
-function extend_limits(vec, limits)
+extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
+
+function extend_limits(vec, limits, scl)
     mi, ma = map(Float64, extrema(limits))
     if mi == 0. && ma == 0.
         mi, ma = map(Float64, extrema(vec))
@@ -71,7 +83,11 @@ function extend_limits(vec, limits)
         ma = mi + 1
         mi = mi - 1
     end
-    (limits == (0.,0.) || limits == [0.,0.]) ? plotting_range_narrow(mi, ma) : (mi, ma)
+    if scl !== :identity
+        return scale(mi, scl), scale(ma, scl)
+    else
+        return all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+    end
 end
 
 sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])

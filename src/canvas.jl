@@ -4,23 +4,17 @@ origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-function pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal)
-    pixel!(c, pixel_x, pixel_y, color)
-end
+pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) = pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) <= x <= origin_x(c) + width(c) || return c
-    origin_y(c) <= y <= origin_y(c) + height(c) || return c
-    plot_offset_x = x - origin_x(c)
-    pixel_x = plot_offset_x / width(c) * pixel_width(c)
-    plot_offset_y = y - origin_y(c)
-    pixel_y = pixel_height(c) - plot_offset_y / height(c) * pixel_height(c)
+    origin_x(c) <= (xs = scale(x, c.xscale)) <= origin_x(c) + width(c) || return c
+    origin_y(c) <= (ys = scale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
+    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-function points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal)
-    points!(c, x, y, color)
-end
+points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal) = points!(c, x, y, color)
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -38,12 +32,15 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Abstrac
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal)
-    points!(c, X, Y, color)
-end
+points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = points!(c, X, Y, color)
 
 # Implementation of the digital differential analyser (DDA)
 function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
+    x1 = scale(x1, c.xscale)
+    x2 = scale(x2, c.xscale)
+    y1 = scale(y1, c.yscale)
+    y2 = scale(y2, c.yscale)
+
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
     (x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx) && return c
@@ -83,9 +80,7 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     c
 end
 
-function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal)
-    lines!(c, x1, y1, x2, y2, color)
-end
+lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal) = lines!(c, x1, y1, x2, y2, color)
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -98,9 +93,7 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColo
     c
 end
 
-function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal)
-    lines!(c, X, Y, color)
-end
+lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = lines!(c, X, Y, color)
 
 
 function get_canvas_dimensions_for_matrix(

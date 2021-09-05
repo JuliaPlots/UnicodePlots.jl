@@ -18,6 +18,8 @@ struct BrailleCanvas <: Canvas
     origin_y::Float64
     width::Float64
     height::Float64
+    xscale::Symbol
+    yscale::Symbol
 end
 
 @inline pixel_width(c::BrailleCanvas) = c.pixel_width
@@ -36,7 +38,9 @@ function BrailleCanvas(char_width::Int, char_height::Int;
                        origin_x::Number = 0.,
                        origin_y::Number = 0.,
                        width::Number  = 1.,
-                       height::Number = 1.)
+                       height::Number = 1.,
+                       xscale::Symbol = :identity,
+                       yscale::Symbol = :identity)
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
     char_width = max(char_width, 5)
@@ -48,7 +52,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
     BrailleCanvas(grid, colors,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
-                  Float64(width), Float64(height))
+                  Float64(width), Float64(height), xscale, yscale)
 end
 
 function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
@@ -61,7 +65,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x = floor(Int, tmp) + 1
     char_x_off = (pixel_x % 2) + 1
     if char_x < round(Int, tmp, RoundNearestTiesUp) + 1 && char_x_off == 1
-        char_x = char_x + 1
+        char_x += 1
     end
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
     char_y_off = (pixel_y % 4) + 1

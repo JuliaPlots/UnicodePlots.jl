@@ -28,6 +28,8 @@ struct DotCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
+    xscale::Symbol
+    yscale::Symbol
 end
 
 @inline x_pixel_per_char(::Type{DotCanvas}) = 1
