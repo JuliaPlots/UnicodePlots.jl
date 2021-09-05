@@ -76,8 +76,8 @@ function boxplot(
         data::AbstractVector{<:AbstractArray{<:Number}};
         border = :corners,
         color::UserColorType = :green,
-        os::Union{Nothing,IO} = nothing,
-        width::Int = default_os_width(os),
+        out_stream::Union{Nothing,IO} = nothing,
+        width::Int = out_stream_width(out_stream),
         xlim = (0., 0.),
         kw...)
     length(xlim) == 2 || throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
