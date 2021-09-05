@@ -12,7 +12,7 @@ as x and y coordinates respectively.
 Usage
 ======
 
-    heatmap(z::AbstractMatrix; title = "", width = 0, height = 0,
+    heatmap(z::AbstractMatrix; title = "", os::Union{Nothing,IO} = nothing, width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
             border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
             xscale = 0.0, yscale = 0.0, xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.),
@@ -79,9 +79,10 @@ See also
 
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
-function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.), xoffset = 0., yoffset = 0.,
-                width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0,
-                yscale=0.0, labels = true, kw...)
+function heatmap(
+    z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.), xoffset = 0., yoffset = 0.,
+    os::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0,
+    yscale=0.0, labels = true, kw...)
     nrows = size(z, 1)
     ncols = size(z, 2)
 
@@ -145,7 +146,7 @@ function heatmap(z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0.
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
     width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding
+        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, os
     )
 
     # ensure plot height is big enough

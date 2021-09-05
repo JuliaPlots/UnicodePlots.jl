@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symb = "■")
+    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width::Int = default_os_width(os), symb = "■")
 
     barplot(dict; kwargs...)
 
@@ -74,7 +74,8 @@ function barplot(
         heights::AbstractVector{<:Number};
         border = :barplot,
         color = :green,
-        width = 40,
+        os::Union{Nothing,IO} = nothing,
+        width::Int = default_os_width(os),
         symb = "■",
         xscale = identity,
         xlabel = transform_name(xscale),
@@ -90,18 +91,14 @@ function barplot(
     new_plot
 end
 
-function barplot(dict::Dict{T,N}; kw...) where {T, N <: Number}
-    barplot(sorted_keys_values(dict)...; kw...)
-end
+barplot(dict::Dict{T,N}; kw...) where {T, N <: Number} = barplot(sorted_keys_values(dict)...; kw...)
+barplot(label, height::Number; kw...) = barplot([string(label)], [height]; kw...)
 
 function barplot(text::AbstractVector, heights::AbstractVector{<:Number}; kw...)
     text_str = map(string, text)
     barplot(text_str, heights; kw...)
 end
 
-function barplot(label, height::Number; kw...)
-    barplot([string(label)], [height]; kw...)
-end
 
 """
     barplot!(plot, text, heights) -> plot
@@ -125,11 +122,7 @@ function barplot!(
     plot
 end
 
-function barplot!(
-        plot::Plot{<:BarplotGraphics},
-        dict::Dict{T,N}) where {T, N <: Number}
-    barplot!(plot, sorted_keys_values(dict)...)
-end
+barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} = barplot!(plot, sorted_keys_values(dict)...)
 
 function barplot!(
         plot::Plot{<:BarplotGraphics},

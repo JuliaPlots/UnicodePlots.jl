@@ -15,7 +15,7 @@ ordering.
 Usage
 ======
 
-    scatterplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    scatterplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
