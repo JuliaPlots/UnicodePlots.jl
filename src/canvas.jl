@@ -104,7 +104,7 @@ end
 
 
 function get_canvas_dimensions_for_matrix(
-    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, os::Union{Nothing,IO};
+    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
     extra_rows::Int = 0, extra_cols::Int = 0
 ) where {T <: Canvas}
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
@@ -113,7 +113,7 @@ function get_canvas_dimensions_for_matrix(
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
-    term_height, term_width = os === nothing ? displaysize() : displaysize(os)
+    term_height, term_width = out_stream === nothing ? displaysize() : displaysize(out_stream)
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
 

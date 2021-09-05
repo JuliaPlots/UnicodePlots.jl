@@ -17,7 +17,7 @@ plot withing the bounding box specified by `maxwidth` and
 Usage
 ======
 
-    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, os::Union{Nothing,IO} = nothing,width = 0, height = 0, canvas = BrailleCanvas, grid = true)
+    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing,width = 0, height = 0, canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
@@ -111,7 +111,7 @@ function spy(
         maxwidth::Int  = 0,
         maxheight::Int = 0,
         title = "Sparsity Pattern",
-        os::Union{Nothing,IO} = nothing,
+        out_stream::Union{Nothing,IO} = nothing,
         width::Int  = 0,
         height::Int = 0,
         margin::Int  = 3,
@@ -124,7 +124,7 @@ function spy(
         color = :auto
     end
     (width, height, _, _) = get_canvas_dimensions_for_matrix(
-        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, os;
+        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
         extra_rows = 9, extra_cols = 6
     )
     can = T(width, height,

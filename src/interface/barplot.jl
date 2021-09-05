@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = default_os_width(os), symbols = ["■"])
+    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
 
     barplot(dict; kwargs...)
 
@@ -74,8 +74,8 @@ function barplot(
         heights::AbstractVector{<:Number};
         border = :barplot,
         color = :green,
-        os::Union{Nothing,IO} = nothing,
-        width::Int = default_os_width(os),
+        out_stream::Union{Nothing,IO} = nothing,
+        width::Int = out_stream_width(out_stream),
         symb = nothing,  # deprecated
         symbols = ["■"],
         xscale = identity,

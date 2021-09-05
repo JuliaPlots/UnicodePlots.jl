@@ -15,7 +15,7 @@ length and ordering.
 Usage
 ======
 
-    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, os::Union{Nothing,IO} = nothing, width = default_os_width(os), xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = out_stream_width(out_stream), xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
 
     lineplot(fun, [start], [stop]; kwargs...)
 
@@ -179,8 +179,8 @@ function lineplot(
         f::Function,
         startx::Number,
         endx::Number;
-        os::Union{Nothing,IO} = nothing,
-        width::Int = default_os_width(os),
+        out_stream::Union{Nothing,IO} = nothing,
+        width::Int = out_stream_width(out_stream),
         kw...)
     diff = abs(endx - startx)
     x = startx:(diff/(3*width)):endx

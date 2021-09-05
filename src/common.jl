@@ -211,9 +211,9 @@ end
     nothing
 end
 
-default_os_size(os::Union{Nothing,IO}) = os === nothing ? (40, 15) : displaysize(os)
-default_os_width(os::Union{Nothing,IO})::Int = default_os_size(os)[1]
-default_os_height(os::Union{Nothing,IO})::Int = default_os_size(os)[2]
+out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (40, 15) : displaysize(out_stream)
+out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
+out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
 
 function _handle_deprecated_symb(symb, symbols)
     if symb === nothing
