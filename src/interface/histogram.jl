@@ -84,6 +84,7 @@ See also
 """
 function histogram(
         hist::Histogram;
+        symb = nothing,  # deprecated
         symbols = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"],
         xscale = identity,
         xlabel = transform_name(xscale, "Frequency"),
@@ -123,7 +124,7 @@ function histogram(
             repeat(" ", pad_right - a2[2]) *
             "\e[90m" * r_str * "\e[0m"
     end
-    barplot(labels, counts; symbols = symbols, xlabel = xlabel, xscale = xscale, kw...)
+    barplot(labels, counts; symbols = _handle_deprecated_symb(symb, symbols), xlabel = xlabel, xscale = xscale, kw...)
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)

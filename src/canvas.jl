@@ -103,14 +103,17 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColo
 end
 
 
-function get_canvas_dimensions_for_matrix(canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int; extra_rows::Int = 0, extra_cols::Int = 0) where {T <: Canvas}
+function get_canvas_dimensions_for_matrix(
+    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, os::Union{Nothing,IO};
+    extra_rows::Int = 0, extra_cols::Int = 0
+) where {T <: Canvas}
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
     min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
     aspect_ratio = min_canvwidth / min_canvheight
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
-    term_height, term_width = Base.displaysize()
+    term_height, term_width = os === nothing ? displaysize() : displaysize(os)
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
 

@@ -257,7 +257,7 @@ parameters.
 
     The type of canvas that should be used for drawing (see section "Low-level Interface")
 
-- `symbols::AbstractString = ["▪"]`:
+- `symbols::AbstractVector{String} = ["▪"]`:
 
     Barplot only. Specifies the characters that should be used to render the bars
 
