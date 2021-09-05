@@ -24,10 +24,23 @@ tests = [
 ]
 
 const RNG = StableRNG(1337)
+const TERM_SIZE = (24, 80)
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
-function test_ref(reference, actual)
-    @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+test_ref(reference, actual) = @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+
+# helpers
+macro show_col(p, kv...)
+    :(@io2str($(Expr(:call, :show, Expr(:call, :IOContext, :(::IO), :color=>true, kv...), esc(p)))))
+end
+macro show_nocol(p, kv...)
+    :(@io2str($(Expr(:call, :show, Expr(:call, :IOContext, :(::IO), :color=>false, kv...), esc(p)))))
+end
+macro print_col(p, kv...)
+    :(@io2str($(Expr(:call, :print, Expr(:call, :IOContext, :(::IO), :color=>true, kv...), esc(p)))))
+end
+macro print_nocol(p, kv...)
+    :(@io2str($(Expr(:call, :print, Expr(:call, :IOContext, :(::IO), :color=>false, kv...), esc(p)))))
 end
 
 # sprand or sprandn is not stable across versions (e.g. 1.0 vs 1.6)

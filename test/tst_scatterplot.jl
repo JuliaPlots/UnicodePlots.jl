@@ -17,10 +17,7 @@ y = [2, 0, -5, 2, -5]
             @inferred(scatterplot(x, float.(y))),
         )
         @test p isa Plot
-        test_ref(
-            "references/scatterplot/default.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p))
-        )
+        test_ref("references/scatterplot/default.txt", @show_col(p))
     end
 
     for p in (
@@ -28,103 +25,55 @@ y = [2, 0, -5, 2, -5]
             @inferred(scatterplot(float.(y))),
         )
         @test p isa Plot
-        test_ref(
-            "references/scatterplot/y_only.txt",
-            @io2str(show(IOContext(::IO, :color=>true), p))
-        )
+        test_ref("references/scatterplot/y_only.txt", @show_col(p))
     end
 
     p = @inferred scatterplot(6:10)
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/range1.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/range1.txt", @show_col(p))
 
     p = @inferred scatterplot(11:15, 6:10)
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/range2.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/range2.txt", @show_col(p))
 
     p = @inferred scatterplot(x .* 1e3  .+ 15, y .* 1e-3 .- 15)
-    test_ref(
-        "references/scatterplot/scale1.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/scale1.txt", @show_col(p))
     p = @inferred scatterplot(x .* 1e-3 .+ 15, y .* 1e3  .- 15)
-    test_ref(
-        "references/scatterplot/scale2.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/scale2.txt", @show_col(p))
     miny = -1.2796649117521434e218
     maxy = -miny
     p = @inferred scatterplot([1],[miny],xlim=(1,1),ylim=(miny,maxy))
-    test_ref(
-        "references/scatterplot/scale3.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/scale3.txt", @show_col(p))
     p = @inferred scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy])
-    test_ref(
-        "references/scatterplot/scale3.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/scale3.txt", @show_col(p))
 end
 
 @testset "keyword arguments" begin
     p = @inferred scatterplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
-    test_ref(
-        "references/scatterplot/limits.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/limits.txt", @show_col(p))
     p = @inferred scatterplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
-    test_ref(
-        "references/scatterplot/limits.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/limits.txt", @show_col(p))
 
     p = @inferred scatterplot(x, y, grid = false)
-    test_ref(
-        "references/scatterplot/nogrid.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/nogrid.txt", @show_col(p))
 
     p = @inferred scatterplot(x, y, color = :blue, name = "points1")
-    test_ref(
-        "references/scatterplot/blue.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/blue.txt", @show_col(p))
 
     p = @inferred scatterplot(x, y, name = "points1", title = "Scatter", xlabel = "x", ylabel = "y")
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/parameters1.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/parameters1.txt", @show_col(p))
 
     @test @inferred(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) === p
-    test_ref(
-        "references/scatterplot/parameters2.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/parameters2.txt", @show_col(p))
 
     @test @inferred(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
-    test_ref(
-        "references/scatterplot/parameters3.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
-    test_ref(
-        "references/scatterplot/nocolor.txt",
-        @io2str(show(IOContext(::IO, :color=>false), p))
-    )
+    test_ref("references/scatterplot/parameters3.txt", @show_col(p))
+    test_ref("references/scatterplot/nocolor.txt", @show_nocol(p))
 
     p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/canvassize.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/canvassize.txt", @show_col(p))
 end
 
 @testset "densityplot" begin
@@ -134,16 +83,10 @@ end
     p = @inferred densityplot(dx, dy)
     @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2)) === p
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/densityplot.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/densityplot.txt", @show_col(p))
 
     p = @inferred densityplot(dx, dy, name = "foo", color = :red, title = "Title", xlabel = "x")
     @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2, name = "bar")) === p
     @test p isa Plot
-    test_ref(
-        "references/scatterplot/densityplot_parameters.txt",
-        @io2str(show(IOContext(::IO, :color=>true), p))
-    )
+    test_ref("references/scatterplot/densityplot_parameters.txt", @show_col(p))
 end

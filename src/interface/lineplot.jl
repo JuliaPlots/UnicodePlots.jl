@@ -15,7 +15,7 @@ length and ordering.
 Usage
 ======
 
-    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, os::Union{Nothing,IO} = nothing, width = default_os_width(os), xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
 
     lineplot(fun, [start], [stop]; kwargs...)
 
@@ -36,9 +36,6 @@ Arguments
   on the right.
 
 $DOC_PLOT_PARAMS
-
-- **`height`** : Number of character rows that should be used
-  for plotting.
 
 - **`xlim`** : Plotting range for the x axis.
   `(0, 0)` stands for automatic.
@@ -182,7 +179,8 @@ function lineplot(
         f::Function,
         startx::Number,
         endx::Number;
-        width::Int = 40,
+        os::Union{Nothing,IO} = nothing,
+        width::Int = default_os_width(os),
         kw...)
     diff = abs(endx - startx)
     x = startx:(diff/(3*width)):endx

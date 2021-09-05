@@ -76,7 +76,8 @@ function boxplot(
         data::AbstractVector{<:AbstractArray{<:Number}};
         border = :corners,
         color::UserColorType = :green,
-        width::Int = 40,
+        os::Union{Nothing,IO} = nothing,
+        width::Int = default_os_width(os),
         xlim = (0., 0.),
         kw...)
     length(xlim) == 2 || throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
@@ -145,22 +146,8 @@ function boxplot!(
     plot
 end
 
-function boxplot!(plot, name, data::AbstractVector{<:Number}; kw...)
-    boxplot!(plot, data; name = name, kw...)
-end
-
-function boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...)
-    boxplot(fill("", length(data)), data; kw...)
-end
-
-function boxplot(data::AbstractVector{<:Number}; kw...)
-    boxplot("", data; kw...)
-end
-
-function boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...)
-    boxplot([text], [data]; kw...)
-end
-
-function boxplot(dict::Dict; kw...)
-    boxplot(sorted_keys_values(dict)...; kw...)
-end
+boxplot!(plot, name, data::AbstractVector{<:Number}; kw...) = boxplot!(plot, data; name = name, kw...)
+boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...) = boxplot(fill("", length(data)), data; kw...)
+boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...) = boxplot([text], [data]; kw...)
+boxplot(data::AbstractVector{<:Number}; kw...) = boxplot("", data; kw...)
+boxplot(dict::Dict; kw...) = boxplot(sorted_keys_values(dict)...; kw...)
