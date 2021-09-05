@@ -33,7 +33,7 @@
     @testset "Constructor parameter" begin
         @test_throws MethodError BarplotGraphics(0:2:10)
         @test_throws Union{ArgumentError,MethodError} BarplotGraphics(Int[], 20)
-        @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symb="--")
+        @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symbols=["--"])
         g = @inferred BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) === 2
         @test @inferred(ncols(g)) === 20
@@ -46,7 +46,7 @@
         @test @inferred(nrows(g)) === 5
         @test @inferred(ncols(g)) === 20
         test_ref("references/graphics/bar_log10.txt", @show_col(g))
-        g = @inferred BarplotGraphics([0, 1, 10], 20, symb="#")
+        g = @inferred BarplotGraphics([0, 1, 10], 20, symbols=["#"])
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 20
         test_ref("references/graphics/bar_symb.txt", @show_col(g))

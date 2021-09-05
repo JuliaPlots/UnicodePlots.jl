@@ -7,10 +7,7 @@
     test_ref("references/boxplot/default_parameters.txt", @show_col(p))
     p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = :blue, width = 50, border = :solid, xlabel="foo")
     test_ref("references/boxplot/default_parameters.txt", @show_col(p))
-    test_ref(
-        "references/boxplot/default_parameters_nocolor.txt",
-        @io2str(show(IOContext(::IO, :color=>false), p))
-    )
+    test_ref("references/boxplot/default_parameters_nocolor.txt", @show_nocol(p))
 end
 
 @testset "scaling" begin

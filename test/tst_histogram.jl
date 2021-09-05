@@ -25,6 +25,8 @@ x = randn(RNG, 10000)
     x2 = copy(reshape(x, (1, length(x), 1, 1)))
     p = @inferred Plot histogram(x2)
     test_ref("references/histogram/default.txt", @print_col(p))
+    p = @inferred histogram(Histogram(1:15., vcat(collect(1:13), 400)))
+    test_ref("references/histogram/fraction.txt", @print_col(p))
 end
 
 @testset "hist params" begin
@@ -34,6 +36,7 @@ end
     p = @inferred histogram(x, nbins = 5, closed = :right)
     test_ref("references/histogram/hist_params.txt", @print_col(p))
     # NOTE: run with $ julia --depwarn=yes for this test to pass
+    @test_logs (:warn, r"`symb`.+deprecated") @inferred histogram(x, symb = "#", closed = :right)
     p = @test_logs (:warn, r"`bins`.+deprecated") @inferred histogram(x, bins = 5, closed = :right)
     test_ref("references/histogram/hist_params.txt", @print_col(p))
     p = @inferred histogram(x, 5, closed = :right)
@@ -67,18 +70,19 @@ end
         xlabel = "Absolute Frequency",
         color = :yellow,
         border = :solid,
-        symb = "=",
+        symbols = ["="],
         width = 50
     )
     test_ref("references/histogram/parameters2.txt", @print_col(p))
-    # same but with Char as symb
+    # same but with Char as symbols
+
     p = @inferred histogram(
         x,
         title = "My Histogram",
         xlabel = "Absolute Frequency",
         color = :yellow,
         border = :solid,
-        symb = '=',
+        symbols = ['='],
         width = 50
     )
     test_ref("references/histogram/parameters2.txt", @print_col(p))
