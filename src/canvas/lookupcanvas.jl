@@ -22,8 +22,8 @@ function CreateLookupCanvas(
         origin_y::Number = 0.,
         width::Number = 1.,
         height::Number = 1.,
-        xscale::Symbol = :identity,
-        yscale::Symbol = :identity,
+        xscale::Union{Symbol,Function} = :identity,
+        yscale::Union{Symbol,Function} = :identity,
         min_char_height::Int = 5,
         min_char_width::Int = 2) where {T <: LookupCanvas}
     width  > 0 || throw(ArgumentError("width has to be positive"))

@@ -5,9 +5,9 @@ const DOC_PLOT_PARAMS = """
 
 - **`ylabel`** : Text to display on the y axis of the plot
 
-- **`xscale`** : X-axis scale (choose from (:identity, :log, :log2, :log10))
+- **`xscale`** : X-axis scale (:identity, :log, :log2, :log10), or scale function e.g. `x -> log10(x)`
 
-- **`yscale`** : Y-axis scale (choose from (:identity, :log, :log2, :log10))
+- **`yscale`** : Y-axis scale
 
 - **`labels`** : Boolean. Can be used to hide the labels by
   setting `labels = false`.
@@ -31,11 +31,15 @@ const DOC_PLOT_PARAMS = """
   for plotting.
 """
 
-const SCALES = (identity=identity, log=log, log2=log2, log10=log10)
-const ISCALES = (identity=identity, log=exp, log2=exp2, log10=exp10)
+const FSCALES = (identity=identity, log=log, log2=log2, log10=log10)  # forward
+const ISCALES = (identity=identity, log=exp, log2=exp2, log10=exp10)  # inverse
 
-scale(x, s; scales=SCALES) = scales[s](x)
-iscale(x, s; iscales=ISCALES) = iscales[s](x)
+fscale(x, s::Symbol; fscales=FSCALES) = fscales[s](x)
+iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)
+
+# support arbitrary scale functions
+fscale(x, f::Function) = f(x)
+iscale(x, f::Function) = f(x)
 
 transform_name(::typeof(identity), basename = "") = basename
 function transform_name(f, basename = "")
@@ -73,7 +77,7 @@ end
 
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
-function extend_limits(vec, limits, scl)
+function extend_limits(vec, limits, scale)
     mi, ma = map(Float64, extrema(limits))
     if mi == 0. && ma == 0.
         mi, ma = map(Float64, extrema(vec))
@@ -83,8 +87,8 @@ function extend_limits(vec, limits, scl)
         ma = mi + 1
         mi = mi - 1
     end
-    if scl !== :identity
-        return scale(mi, scl), scale(ma, scl)
+    if scale !== :identity
+        return fscale(mi, scale), fscale(ma, scale)
     else
         return all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end

@@ -18,8 +18,8 @@ struct BrailleCanvas <: Canvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Symbol
-    yscale::Symbol
+    xscale::Union{Symbol,Function}
+    yscale::Union{Symbol,Function}
 end
 
 @inline pixel_width(c::BrailleCanvas) = c.pixel_width
@@ -39,8 +39,8 @@ function BrailleCanvas(char_width::Int, char_height::Int;
                        origin_y::Number = 0.,
                        width::Number  = 1.,
                        height::Number = 1.,
-                       xscale::Symbol = :identity,
-                       yscale::Symbol = :identity)
+                       xscale::Union{Symbol,Function} = :identity,
+                       yscale::Union{Symbol,Function} = :identity)
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
     char_width = max(char_width, 5)

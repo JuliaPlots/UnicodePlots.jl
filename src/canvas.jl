@@ -7,8 +7,8 @@ pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) = pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) <= (xs = scale(x, c.xscale)) <= origin_x(c) + width(c) || return c
-    origin_y(c) <= (ys = scale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+    origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
+    origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
@@ -36,10 +36,10 @@ points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = 
 
 # Implementation of the digital differential analyser (DDA)
 function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
-    x1 = scale(x1, c.xscale)
-    x2 = scale(x2, c.xscale)
-    y1 = scale(y1, c.yscale)
-    y2 = scale(y2, c.yscale)
+    x1 = fscale(x1, c.xscale)
+    x2 = fscale(x2, c.xscale)
+    y1 = fscale(y1, c.yscale)
+    y2 = fscale(y2, c.yscale)
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
