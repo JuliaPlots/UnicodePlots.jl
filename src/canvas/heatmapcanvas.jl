@@ -27,14 +27,20 @@ const HALF_BLOCK = '▄'
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
 function HeatmapCanvas(args...; kwargs...)
-    CreateLookupCanvas(HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...)
+    CreateLookupCanvas(
+        HeatmapCanvas,
+        args...;
+        min_char_width=1,
+        min_char_height=1,
+        kwargs...,
+    )
 end
 
 _toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
 
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    y = 2*row
+    y = 2 * row
     # extend the plot upwards by half a row
     if isodd(size(grid(c), 2))
         y -= 1
@@ -46,7 +52,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
             if (y - 1) > 0
                 bgcol = _toCrayon(c.colors[x, y - 1])
                 print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
-            # for odd numbers of rows, only print the foreground for the top row
+                # for odd numbers of rows, only print the foreground for the top row
             else
                 print(io, Crayon(foreground=fgcol), HALF_BLOCK)
             end
@@ -59,7 +65,16 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     end
 end
 
-function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, border::Symbol, lim, plot_padding, zlabel)
+function printcolorbarrow(
+    io::IO,
+    c::HeatmapCanvas,
+    row::Int,
+    colormap::Any,
+    border::Symbol,
+    lim,
+    plot_padding,
+    zlabel,
+)
     b = bordermap[border]
     min_z = lim[1]
     max_z = lim[2]
@@ -82,12 +97,12 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         if min_z == max_z
             bgcol = colormap(1, 1, 1)
             fgcol = bgcol
-        # otherwise, blend from min to max
+            # otherwise, blend from min to max
         else
-            n = 2*(nrows(c) - 2)
+            n = 2 * (nrows(c) - 2)
             r = row - 2
-            bgcol = colormap(n - (2*r),     1, n)
-            fgcol = colormap(n - (2*r + 1), 1, n)
+            bgcol = colormap(n - (2 * r), 1, n)
+            fgcol = colormap(n - (2 * r + 1), 1, n)
         end
         print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
         print(io, HALF_BLOCK)
@@ -101,4 +116,3 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         end
     end
 end
-

@@ -4,7 +4,8 @@ origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) = pixel!(c, pixel_x, pixel_y, color)
+pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType=:normal) =
+    pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
     origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
@@ -14,7 +15,8 @@ function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
 end
 
-points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal) = points!(c, x, y, color)
+points!(c::Canvas, x::Number, y::Number; color::UserColorType=:normal) =
+    points!(c, x, y, color)
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -24,18 +26,32 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserCol
     c
 end
 
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::AbstractVector{T}) where {T <: UserColorType}
-    (length(X) == length(color) && length(X) == length(Y)) || throw(DimensionMismatch("X, Y, and color must be the same length"))
+function points!(
+    c::Canvas,
+    X::AbstractVector,
+    Y::AbstractVector,
+    color::AbstractVector{T},
+) where {T<:UserColorType}
+    (length(X) == length(color) && length(X) == length(Y)) ||
+        throw(DimensionMismatch("X, Y, and color must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
     end
     c
 end
 
-points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = points!(c, X, Y, color)
+points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType=:normal) =
+    points!(c, X, Y, color)
 
 # Implementation of the digital differential analyser (DDA)
-function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
+function lines!(
+    c::Canvas,
+    x1::Number,
+    y1::Number,
+    x2::Number,
+    y2::Number,
+    color::UserColorType,
+)
     x1 = fscale(x1, c.xscale)
     x2 = fscale(x2, c.xscale)
     y1 = fscale(y1, c.yscale)
@@ -66,7 +82,7 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
 
     pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
     max_num_iter = typemax(Int16)  # performance limit
-    for _ = if nsteps > max_num_iter
+    for _ in if nsteps > max_num_iter
         range(1, stop=nsteps, length=max_num_iter)
     else
         range(1, stop=nsteps, step=1)
@@ -80,35 +96,53 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     c
 end
 
-lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal) = lines!(c, x1, y1, x2, y2, color)
+lines!(
+    c::Canvas,
+    x1::Number,
+    y1::Number,
+    x2::Number,
+    y2::Number;
+    color::UserColorType=:normal,
+) = lines!(c, x1, y1, x2, y2, color)
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    for i in 1:(length(X)-1)
-        if !(isfinite(X[i]) && isfinite(X[i+1]) && isfinite(Y[i]) && isfinite(Y[i+1]))
+    for i in 1:(length(X) - 1)
+        if !(isfinite(X[i]) && isfinite(X[i + 1]) && isfinite(Y[i]) && isfinite(Y[i + 1]))
             continue
         end
-        lines!(c, X[i], Y[i], X[i+1], Y[i+1], color)
+        lines!(c, X[i], Y[i], X[i + 1], Y[i + 1], color)
     end
     c
 end
 
-lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = lines!(c, X, Y, color)
-
+lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType=:normal) =
+    lines!(c, X, Y, color)
 
 function get_canvas_dimensions_for_matrix(
-    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
-    extra_rows::Int = 0, extra_cols::Int = 0
-) where {T <: Canvas}
+    canvas::Type{T},
+    nrow::Int,
+    ncol::Int,
+    maxwidth::Int,
+    maxheight::Int,
+    width::Int,
+    height::Int,
+    margin::Int,
+    padding::Int,
+    out_stream::Union{Nothing,IO};
+    extra_rows::Int=0,
+    extra_cols::Int=0,
+) where {T<:Canvas}
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
     min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
-    aspect_ratio = min_canvwidth / min_canvheight
-    height_diff = extra_rows
-    width_diff  = margin + padding + length(string(ncol)) + extra_cols
+    aspect_ratio   = min_canvwidth / min_canvheight
+    height_diff    = extra_rows
+    width_diff     = margin + padding + length(string(ncol)) + extra_cols
 
-    term_height, term_width = out_stream === nothing ? displaysize() : displaysize(out_stream)
+    term_height, term_width =
+        out_stream === nothing ? displaysize() : displaysize(out_stream)
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
-    maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
+    maxwidth = maxwidth > 0 ? maxwidth : term_width - width_diff
 
     if nrow == 0 && ncol == 0
         return (0, 0, maxwidth, maxheight)
@@ -148,7 +182,7 @@ function get_canvas_dimensions_for_matrix(
         end
     end
     if width == 0 && height > 0
-        width  = min(height * aspect_ratio, maxwidth)
+        width = min(height * aspect_ratio, maxwidth)
     elseif width > 0 && height == 0
         height = min(width / aspect_ratio, maxheight)
     end

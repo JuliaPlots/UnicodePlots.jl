@@ -5,22 +5,20 @@ const DOC_PLOT_PARAMS = """
 
 - **`ylabel`** : Text to display on the y axis of the plot
 
-- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10), or scale function e.g. `x -> log10(x)`
+- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10),
+or scale function e.g. `x -> log10(x)`
 
 - **`yscale`** : Y-axis scale
 
-- **`labels`** : Boolean. Can be used to hide the labels by
-  setting `labels = false`.
+- **`labels`** : Boolean. Can be used to hide the labels by setting `labels = false`.
 
 - **`border`** : The style of the bounding box of the plot.
   Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
   `:ascii`, and `:none`.
 
-- **`margin`** : Number of empty characters to the left of the
-  whole plot.
+- **`margin`** : Number of empty characters to the left of the whole plot.
 
-- **`padding`** : Space of the left and right of the plot between
-  the labels and the canvas.
+- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
 - **`color`** : Color of the drawing.
   Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
@@ -41,8 +39,8 @@ iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)
 fscale(x, f::Function) = f(x)
 iscale(x, f::Function) = f(x)
 
-transform_name(::typeof(identity), basename = "") = basename
-function transform_name(f, basename = "")
+transform_name(::typeof(identity), basename="") = basename
+function transform_name(f, basename="")
     fname = string(nameof(f))
     fname = occursin("#", fname) ? "custom" : fname
     string(basename, " [", fname, "]")
@@ -51,15 +49,43 @@ end
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 compact_repr(num::Number) = repr(num, context=:compact => true)
 
-ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_neg_log10(x) = roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) : floor(Integer, -log10(x))
-round_up_tick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
-round_down_tick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
-round_up_subtick(x,m) = x == 0. ? 0. : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
-round_down_subtick(x,m) = x == 0. ? 0. : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
-float_round_log10(x::F,m) where {F<:AbstractFloat} = x == 0. ? F(0) : (x > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
-float_round_log10(x::Integer,m) = float_round_log10(float(x), m)
-float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
+ceil_neg_log10(x) =
+    roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+round_neg_log10(x) = (
+    roundable(-log10(x)) ? round(Integer, -log10(x), RoundNearestTiesUp) :
+    floor(Integer, -log10(x))
+)
+round_up_tick(x, m) = (
+    x == 0 ? 0 :
+    (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
+)
+round_down_tick(x, m) = (
+    x == 0 ? 0 :
+    (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
+)
+round_up_subtick(x, m) = (
+    x == 0 ? 0 :
+    (
+        x > 0 ? ceil(x, digits=ceil_neg_log10(m) + 1) :
+        -floor(-x, digits=ceil_neg_log10(m) + 1)
+    )
+)
+round_down_subtick(x, m) = (
+    x == 0 ? 0 :
+    (
+        x > 0 ? floor(x, digits=ceil_neg_log10(m) + 1) :
+        -ceil(-x, digits=ceil_neg_log10(m) + 1)
+    )
+)
+float_round_log10(x::F, m) where {F<:AbstractFloat} = (
+    x == 0 ? F(0) :
+    (
+        x > 0 ? round(x, digits=ceil_neg_log10(m) + 1)::F :
+        -round(-x, digits=ceil_neg_log10(m) + 1)::F
+    )
+)
+float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
+float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 
 function plotting_range(xmin, xmax)
     diff = xmax - xmin
@@ -79,7 +105,7 @@ extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
 function extend_limits(vec, limits, scale)
     mi, ma = map(Float64, extrema(limits))
-    if mi == 0. && ma == 0.
+    if mi == 0.0 && ma == 0.0
         mi, ma = map(Float64, extrema(vec))
     end
     diff = ma - mi
@@ -94,13 +120,13 @@ function extend_limits(vec, limits, scale)
     end
 end
 
-sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])
+sort_by_keys(dict::Dict) = sort!(collect(dict), by=x -> x[1])
 
 function sorted_keys_values(dict::Dict; k2s=true)
     if k2s  # check and force key type to be of AbstractString type if necessary
         kt, vt = eltype(dict).types
         if !(kt <: AbstractString)
-            dict = Dict(string(k) => v  for (k, v) in pairs(dict))
+            dict = Dict(string(k) => v for (k, v) in pairs(dict))
         end
     end
     keys_vals = sort_by_keys(dict)
@@ -108,14 +134,14 @@ function sorted_keys_values(dict::Dict; k2s=true)
 end
 
 const bordermap = Dict{Symbol,Dict{Symbol,String}}()
-const border_solid  = Dict{Symbol,String}()
+const border_solid = Dict{Symbol,String}()
 const border_corners = Dict{Symbol,String}()
 const border_barplot = Dict{Symbol,String}()
-const border_bold   = Dict{Symbol,String}()
-const border_none   = Dict{Symbol,String}()
+const border_bold = Dict{Symbol,String}()
+const border_none = Dict{Symbol,String}()
 const border_dashed = Dict{Symbol,String}()
 const border_dotted = Dict{Symbol,String}()
-const border_ascii  = Dict{Symbol,String}()
+const border_ascii = Dict{Symbol,String}()
 border_solid[:tl] = "┌"
 border_solid[:tr] = "┐"
 border_solid[:bl] = "└"
@@ -180,14 +206,14 @@ border_ascii[:t] = "-"
 border_ascii[:l] = "|"
 border_ascii[:b] = "-"
 border_ascii[:r] = "|"
-bordermap[:solid]  = border_solid
+bordermap[:solid] = border_solid
 bordermap[:corners] = border_corners
 bordermap[:barplot] = border_barplot
-bordermap[:bold]   = border_bold
-bordermap[:none]   = border_none
+bordermap[:bold] = border_bold
+bordermap[:none] = border_none
 bordermap[:dashed] = border_dashed
 bordermap[:dotted] = border_dotted
-bordermap[:ascii]  = border_ascii
+bordermap[:ascii] = border_ascii
 
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
 const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
@@ -196,7 +222,7 @@ const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
 const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
 
 function print_color(color::UserColorType, io::IO, args...)
-    printstyled(io, string(args...); color = julia_color(color))
+    printstyled(io, string(args...); color=julia_color(color))
 end
 
 function crayon_256_color(color::UserColorType)::ColorType
@@ -222,7 +248,13 @@ function julia_color(color::UserColorType)::JuliaColorType
     end
 end
 
-@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
+@inline function set_color!(
+    colors::Array{ColorType,2},
+    x::Int,
+    y::Int,
+    color::ColorType;
+    force::Bool=false,
+)
     if color === nothing || colors[x, y] === nothing || force
         colors[x, y] = color
     else
@@ -231,7 +263,8 @@ end
     nothing
 end
 
-out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (40, 15) : displaysize(out_stream)
+out_stream_size(out_stream::Union{Nothing,IO}) =
+    out_stream === nothing ? (40, 15) : displaysize(out_stream)
 out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
 out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
 
@@ -239,7 +272,10 @@ function _handle_deprecated_symb(symb, symbols)
     if symb === nothing
         return symbols
     else
-        Base.depwarn("The keyword `symb` is deprecated in favor of `symbols`", :BarplotGraphics)
+        Base.depwarn(
+            "The keyword `symb` is deprecated in favor of `symbols`",
+            :BarplotGraphics,
+        )
         return [symb]
     end
 end

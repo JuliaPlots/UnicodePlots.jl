@@ -1,5 +1,7 @@
-const block_signs = [0b1000 0b0010;
-                     0b0100 0b0001]
+const block_signs = [
+    0b1000 0b0010
+    0b0100 0b0001
+]
 
 const block_decode = Vector{Char}(undef, 16)
 block_decode[0b0000 + 1] = ' '

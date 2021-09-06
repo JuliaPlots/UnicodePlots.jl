@@ -1,7 +1,7 @@
 
 @testset "reported issues" begin
     @testset "plot hang (tan → ∞) (#129)" begin
-        p = lineplot([cos, sin, tan], -π/2, 2π)
+        p = lineplot([cos, sin, tan], -π / 2, 2π)
         test_ref("references/issues/cos_sin_tan.txt", @show_col(p))
     end
 

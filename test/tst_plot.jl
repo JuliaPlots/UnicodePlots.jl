@@ -1,40 +1,48 @@
-canvas = BrailleCanvas(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)
+canvas = BrailleCanvas(40, 10, origin_x=0.0, origin_y=0.0, width=1.0, height=1.0)
 p = @inferred Plot(canvas)
 @test_throws ArgumentError Plot(canvas, margin=-1)
 test_ref("references/plot/empty.txt", @show_col(p))
-canvas = BrailleCanvas(30, 5, origin_x = 0., origin_y = 0., width = 1., height = 1.)
+canvas = BrailleCanvas(30, 5, origin_x=0.0, origin_y=0.0, width=1.0, height=1.0)
 p = @inferred Plot(canvas)
 test_ref("references/plot/empty_small.txt", @show_col(p))
 
-canvas = BrailleCanvas(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)
-lines!(canvas, 0., 0., 1., 1., :blue)
-lines!(canvas, .2, .7, 1., 0., :red)
-lines!(canvas, 0., 2., .5, 0., :green)
-points!(canvas, .5, .9)
+canvas = BrailleCanvas(40, 10, origin_x=0.0, origin_y=0.0, width=1.0, height=1.0)
+lines!(canvas, 0.0, 0.0, 1.0, 1.0, :blue)
+lines!(canvas, 0.2, 0.7, 1.0, 0.0, :red)
+lines!(canvas, 0.0, 2.0, 0.5, 0.0, :green)
+points!(canvas, 0.5, 0.9)
 
 p = @inferred Plot(canvas)
 test_ref("references/plot/canvas_only.txt", @print_col(p))
 test_ref("references/plot/canvas_only.txt", @show_col(p))
 
 for border in (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
-    local p = @inferred Plot(canvas, border = border)
+    local p = @inferred Plot(canvas, border=border)
     test_ref("references/plot/border_$(string(border)).txt", @show_col(p))
 end
 
-p = @inferred Plot(canvas, xlabel = "x", ylabel= "y")
+p = @inferred Plot(canvas, xlabel="x", ylabel="y")
 test_ref("references/plot/xylabel.txt", @show_col(p))
 
-p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5)
+p = @inferred Plot(canvas, title="testtitle", xlabel="x", ylabel="y", margin=4, padding=5)
 @test @inferred(annotate!(p, :l, ":l auto 1")) === p
 @test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
 test_ref("references/plot/padding.txt", @show_col(p))
 
-p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5, labels = false)
+p = @inferred Plot(
+    canvas,
+    title="testtitle",
+    xlabel="x",
+    ylabel="y",
+    margin=4,
+    padding=5,
+    labels=false,
+)
 @test @inferred(annotate!(p, :l, ":l auto 1")) === p
 @test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
 test_ref("references/plot/padding_nolabels.txt", @show_col(p))
 
-p = @inferred Plot(canvas, title = "testtitle")
+p = @inferred Plot(canvas, title="testtitle")
 test_ref("references/plot/title.txt", @show_col(p))
 @test @inferred(annotate!(p, :l, ":l auto 1")) === p
 @test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
@@ -57,9 +65,9 @@ annotate!(p, :bl, ":bl", :blue)
 annotate!(p, :b, ":b", :green)
 annotate!(p, :br, ":br", :white)
 
-@test @inferred(lines!(p, 0., 1., 1., 0., color=(0,0,255))) === p
-@test @inferred(pixel!(p, 10, 1, color = (255,255,0))) === p
-@test @inferred(points!(p, 0.05, .75, color = (0,255,0))) === p
+@test @inferred(lines!(p, 0.0, 1.0, 1.0, 0.0, color=(0, 0, 255))) === p
+@test @inferred(pixel!(p, 10, 1, color=(255, 255, 0))) === p
+@test @inferred(points!(p, 0.05, 0.75, color=(0, 255, 0))) === p
 
 ttl = "title!(plot, text)"
 @test @inferred(title!(p, ttl)) === p

@@ -5,18 +5,16 @@ using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 
-export
-    GraphicsArea,
-        Canvas,
-            BrailleCanvas,
-            DensityCanvas,
-            BlockCanvas,
-            AsciiCanvas,
-            DotCanvas,
-            HeatmapCanvas,
-        BarplotGraphics,
-        BoxplotGraphics,
-
+export GraphicsArea,
+    Canvas,
+    BrailleCanvas,
+    DensityCanvas,
+    BlockCanvas,
+    AsciiCanvas,
+    DotCanvas,
+    HeatmapCanvas,
+    BarplotGraphics,
+    BoxplotGraphics,
     pixel_width,
     pixel_height,
     pixel_size,
@@ -28,29 +26,35 @@ export
     printrow,
     nrows,
     ncols,
-
     pixel!,
     points!,
     lines!,
     addrow!,
-
     Plot,
-    title, title!,
-    xlabel, xlabel!,
-    ylabel, ylabel!,
-    zlabel, zlabel!,
+    title,
+    title!,
+    xlabel,
+    xlabel!,
+    ylabel,
+    ylabel!,
+    zlabel,
+    zlabel!,
     annotate!,
-
-    barplot, barplot!,
-    lineplot, lineplot!,
-    scatterplot, scatterplot!,
-    stairs, stairs!,
+    barplot,
+    barplot!,
+    lineplot,
+    lineplot!,
+    scatterplot,
+    scatterplot!,
+    stairs,
+    stairs!,
     histogram,
-    densityplot, densityplot!,
+    densityplot,
+    densityplot!,
     heatmap,
     spy,
-    boxplot, boxplot!,
-
+    boxplot,
+    boxplot!,
     savefig
 
 include("common.jl")
@@ -79,5 +83,4 @@ include("interface/densityplot.jl")
 include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
-
 end

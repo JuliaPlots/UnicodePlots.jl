@@ -9,19 +9,19 @@ end
 
 @testset "interface" begin
     for (T, xres, yres) in [
-            (BrailleCanvas, 2, 4),
-            (DensityCanvas, 1, 2),
-            (BlockCanvas,   2, 2),
-            (AsciiCanvas,   3, 3),
-            (DotCanvas,     1, 2),
-            (HeatmapCanvas, 1, 2),
-        ]
+        (BrailleCanvas, 2, 4),
+        (DensityCanvas, 1, 2),
+        (BlockCanvas, 2, 2),
+        (AsciiCanvas, 3, 3),
+        (DotCanvas, 1, 2),
+        (HeatmapCanvas, 1, 2),
+    ]
         @testset "$(nameof(T))" begin
             @test T <: Canvas
-            c = @inferred T(30, 15, origin_x = -1, origin_y = -1.5, width = 2, height = 3)
-            @test @inferred(size(c)) === (2., 3.)
-            @test @inferred(width(c)) === 2.
-            @test @inferred(height(c)) === 3.
+            c = @inferred T(30, 15, origin_x=-1, origin_y=-1.5, width=2, height=3)
+            @test @inferred(size(c)) === (2.0, 3.0)
+            @test @inferred(width(c)) === 2.0
+            @test @inferred(height(c)) === 3.0
             @test @inferred(origin(c)) === (-1.0, -1.5)
             @test @inferred(origin_x(c)) === -1.0
             @test @inferred(origin_y(c)) === -1.5
@@ -41,15 +41,15 @@ end
     x1, y1 = rand(RNG, 20), rand(RNG, 20)
     x2, y2 = rand(RNG, 50), rand(RNG, 50)
     for (T, str) in [
-            (BrailleCanvas, "braille"),
-            (DensityCanvas, "density"),
-            (BlockCanvas,   "block"),
-            (AsciiCanvas,   "ascii"),
-            (DotCanvas,     "dot"),
-            (HeatmapCanvas, "heatmap"),
-        ]
+        (BrailleCanvas, "braille"),
+        (DensityCanvas, "density"),
+        (BlockCanvas, "block"),
+        (AsciiCanvas, "ascii"),
+        (DotCanvas, "dot"),
+        (HeatmapCanvas, "heatmap"),
+    ]
         @testset "$(nameof(T))" begin
-            c = T(40, 10, origin_x = 0., origin_y = 0., width = 1., height = 1.)
+            c = T(40, 10, origin_x=0.0, origin_y=0.0, width=1.0, height=1.0)
             if T == BrailleCanvas
                 test_ref("references/canvas/empty_braille_show.txt", @show_col(c))
             elseif T == HeatmapCanvas
@@ -57,19 +57,19 @@ end
             else
                 test_ref("references/canvas/empty_show.txt", @show_col(c))
             end
-            @test @inferred(lines!(c, 0., 0., 1., 1., :blue)) === c
+            @test @inferred(lines!(c, 0.0, 0.0, 1.0, 1.0, :blue)) === c
             @test @inferred(points!(c, x1, y1, :white)) === c
-            @test @inferred(pixel!(c, 2, 4, color = :cyan)) === c
-            points!(c, x2, y2, color = :red)
-            lines!(c, 0., 1., .5, 0., :green)
-            points!(c, .05, .3, color = :cyan)
-            lines!(c, [1.,2], [2.,1])
-            lines!(c, 0., 0., .9, 9999., :yellow)
-            lines!(c, 0, 0, 1, 1, color = :blue)
-            lines!(c, .1, .7, .9, .6, :red)
+            @test @inferred(pixel!(c, 2, 4, color=:cyan)) === c
+            points!(c, x2, y2, color=:red)
+            lines!(c, 0.0, 1.0, 0.5, 0.0, :green)
+            points!(c, 0.05, 0.3, color=:cyan)
+            lines!(c, [1.0, 2], [2.0, 1])
+            lines!(c, 0.0, 0.0, 0.9, 9999.0, :yellow)
+            lines!(c, 0, 0, 1, 1, color=:blue)
+            lines!(c, 0.1, 0.7, 0.9, 0.6, :red)
             test_ref(
                 "references/canvas/$(str)_printrow.txt",
-                @io2str(printrow(IOContext(::IO, :color=>true), c, 3))
+                @io2str(printrow(IOContext(::IO, :color => true), c, 3))
             )
             test_ref("references/canvas/$(str)_print.txt", @print_col(c))
             test_ref("references/canvas/$(str)_print_nocolor.txt", @print_nocol(c))
@@ -80,7 +80,7 @@ end
 end
 
 @testset "color mixing" begin
-    c = BrailleCanvas(40, 15, origin_x = 0., origin_y = 0., width = 1.2, height = 1.2)
+    c = BrailleCanvas(40, 15, origin_x=0.0, origin_y=0.0, width=1.2, height=1.2)
     @inferred lines!(c, 0.0, 0.0, 1.2, 0.0, :blue)
     lines!(c, 0.0, 0.2, 1.2, 0.2, :red)
     lines!(c, 0.0, 0.4, 1.2, 0.4, :green)
@@ -100,11 +100,11 @@ end
 end
 
 @testset "colors" begin
-    c = BrailleCanvas(40, 15, origin_x = 0., origin_y = 0., width = 1.2, height = 1.2)
-    @inferred lines!(c, 0.0, 0.0, 1.2, 0.0, (0,0,255))
-    lines!(c, 0.0, 0.2, 1.2, 0.2, (255,0,0))
-    lines!(c, 0.0, 0.4, 1.2, 0.4, (0,255,0))
-    lines!(c, 0.0, 0.6, 1.2, 0.6, (255,255,0))
+    c = BrailleCanvas(40, 15, origin_x=0.0, origin_y=0.0, width=1.2, height=1.2)
+    @inferred lines!(c, 0.0, 0.0, 1.2, 0.0, (0, 0, 255))
+    lines!(c, 0.0, 0.2, 1.2, 0.2, (255, 0, 0))
+    lines!(c, 0.0, 0.4, 1.2, 0.4, (0, 255, 0))
+    lines!(c, 0.0, 0.6, 1.2, 0.6, (255, 255, 0))
     lines!(c, 0.0, 0.8, 1.2, 0.8, 127)
     lines!(c, 0.0, 1.0, 1.2, 1.0, 51)
     lines!(c, 0.0, 1.2, 1.2, 1.2, 231)

@@ -4,26 +4,23 @@ y = [2, 0, -5, 2, -5]
 @test_throws MethodError scatterplot()
 @test_throws MethodError scatterplot(sin, x)
 @test_throws MethodError scatterplot([sin], x)
-@test_throws DimensionMismatch scatterplot([1,2], [1,2,3])
-@test_throws DimensionMismatch scatterplot([1,2,3], [1,2])
-@test_throws DimensionMismatch scatterplot([1,2,3], 1:2)
-@test_throws DimensionMismatch scatterplot(1:3, [1,2])
+@test_throws DimensionMismatch scatterplot([1, 2], [1, 2, 3])
+@test_throws DimensionMismatch scatterplot([1, 2, 3], [1, 2])
+@test_throws DimensionMismatch scatterplot([1, 2, 3], 1:2)
+@test_throws DimensionMismatch scatterplot(1:3, [1, 2])
 @test_throws DimensionMismatch scatterplot(1:3, 1:2)
 
 @testset "positional types" begin
     for p in (
-            @inferred(scatterplot(x, y)),
-            @inferred(scatterplot(float.(x), y)),
-            @inferred(scatterplot(x, float.(y))),
-        )
+        @inferred(scatterplot(x, y)),
+        @inferred(scatterplot(float.(x), y)),
+        @inferred(scatterplot(x, float.(y))),
+    )
         @test p isa Plot
         test_ref("references/scatterplot/default.txt", @show_col(p))
     end
 
-    for p in (
-            @inferred(scatterplot(y)),
-            @inferred(scatterplot(float.(y))),
-        )
+    for p in (@inferred(scatterplot(y)), @inferred(scatterplot(float.(y))))
         @test p isa Plot
         test_ref("references/scatterplot/y_only.txt", @show_col(p))
     end
@@ -36,42 +33,42 @@ y = [2, 0, -5, 2, -5]
     @test p isa Plot
     test_ref("references/scatterplot/range2.txt", @show_col(p))
 
-    p = @inferred scatterplot(x .* 1e3  .+ 15, y .* 1e-3 .- 15)
+    p = @inferred scatterplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
     test_ref("references/scatterplot/scale1.txt", @show_col(p))
-    p = @inferred scatterplot(x .* 1e-3 .+ 15, y .* 1e3  .- 15)
+    p = @inferred scatterplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
     test_ref("references/scatterplot/scale2.txt", @show_col(p))
     miny = -1.2796649117521434e218
     maxy = -miny
-    p = @inferred scatterplot([1],[miny],xlim=(1,1),ylim=(miny,maxy))
+    p = @inferred scatterplot([1], [miny], xlim=(1, 1), ylim=(miny, maxy))
     test_ref("references/scatterplot/scale3.txt", @show_col(p))
-    p = @inferred scatterplot([1],[miny],xlim=[1,1],ylim=[miny,maxy])
+    p = @inferred scatterplot([1], [miny], xlim=[1, 1], ylim=[miny, maxy])
     test_ref("references/scatterplot/scale3.txt", @show_col(p))
 end
 
 @testset "keyword arguments" begin
-    p = @inferred scatterplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+    p = @inferred scatterplot(x, y, xlim=(-1.5, 3.5), ylim=(-5.5, 2.5))
     test_ref("references/scatterplot/limits.txt", @show_col(p))
-    p = @inferred scatterplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
+    p = @inferred scatterplot(x, y, xlim=[-1.5, 3.5], ylim=[-5.5, 2.5])
     test_ref("references/scatterplot/limits.txt", @show_col(p))
 
-    p = @inferred scatterplot(x, y, grid = false)
+    p = @inferred scatterplot(x, y, grid=false)
     test_ref("references/scatterplot/nogrid.txt", @show_col(p))
 
-    p = @inferred scatterplot(x, y, color = :blue, name = "points1")
+    p = @inferred scatterplot(x, y, color=:blue, name="points1")
     test_ref("references/scatterplot/blue.txt", @show_col(p))
 
-    p = @inferred scatterplot(x, y, name = "points1", title = "Scatter", xlabel = "x", ylabel = "y")
+    p = @inferred scatterplot(x, y, name="points1", title="Scatter", xlabel="x", ylabel="y")
     @test p isa Plot
     test_ref("references/scatterplot/parameters1.txt", @show_col(p))
 
-    @test @inferred(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) === p
+    @test @inferred(scatterplot!(p, [0.5, 1, 1.5], name="points2")) === p
     test_ref("references/scatterplot/parameters2.txt", @show_col(p))
 
-    @test @inferred(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
+    @test @inferred(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name="points3")) === p
     test_ref("references/scatterplot/parameters3.txt", @show_col(p))
     test_ref("references/scatterplot/nocolor.txt", @show_nocol(p))
 
-    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
+    p = scatterplot(x, y, title="Scatter", canvas=DotCanvas, width=10, height=5)
     @test p isa Plot
     test_ref("references/scatterplot/canvassize.txt", @show_col(p))
 end
@@ -85,8 +82,8 @@ end
     @test p isa Plot
     test_ref("references/scatterplot/densityplot.txt", @show_col(p))
 
-    p = @inferred densityplot(dx, dy, name = "foo", color = :red, title = "Title", xlabel = "x")
-    @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2, name = "bar")) === p
+    p = @inferred densityplot(dx, dy, name="foo", color=:red, title="Title", xlabel="x")
+    @test @inferred(densityplot!(p, dx .+ 2, dy .+ 2, name="bar")) === p
     @test p isa Plot
     test_ref("references/scatterplot/densityplot_parameters.txt", @show_col(p))
 end

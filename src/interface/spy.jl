@@ -103,43 +103,55 @@ See also
 spy(A::AbstractMatrix; kwargs...) = spy(size(A)..., _findnz(A)...; kwargs...)
 
 function spy(
-        nrow::Int,
-        ncol::Int,
-        rows::AbstractArray{<:Integer},
-        cols::AbstractArray{<:Integer},
-        vals::AbstractArray;
-        maxwidth::Int  = 0,
-        maxheight::Int = 0,
-        title = "Sparsity Pattern",
-        out_stream::Union{Nothing,IO} = nothing,
-        width::Int  = 0,
-        height::Int = 0,
-        margin::Int  = 3,
-        padding::Int = 1,
-        color::UserColorType = :auto,
-        canvas::Type{T} = BrailleCanvas,
-        kw...) where {T <: Canvas}
+    nrow::Int,
+    ncol::Int,
+    rows::AbstractArray{<:Integer},
+    cols::AbstractArray{<:Integer},
+    vals::AbstractArray;
+    maxwidth::Int=0,
+    maxheight::Int=0,
+    title="Sparsity Pattern",
+    out_stream::Union{Nothing,IO}=nothing,
+    width::Int=0,
+    height::Int=0,
+    margin::Int=3,
+    padding::Int=1,
+    color::UserColorType=:auto,
+    canvas::Type{T}=BrailleCanvas,
+    kw...,
+) where {T<:Canvas}
     if color == :automatic
-        Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
+        Base.depwarn(
+            "`color = :automatic` is deprecated, use `color = :auto` instead",
+            :spy,
+        )
         color = :auto
     end
     (width, height, _, _) = get_canvas_dimensions_for_matrix(
-        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
-        extra_rows = 9, extra_cols = 6
+        canvas,
+        nrow,
+        ncol,
+        maxwidth,
+        maxheight,
+        width,
+        height,
+        margin,
+        padding,
+        out_stream;
+        extra_rows=9,
+        extra_cols=6,
     )
-    can = T(width, height,
-            width  = Float64(ncol) + 1,
-            height = Float64(nrow) + 1)
-    plot = Plot(can;
-                title = title, margin = margin,
-                padding = padding, kw...)
+    can = T(width, height, width=Float64(ncol) + 1, height=Float64(nrow) + 1)
+    plot = Plot(can; title=title, margin=margin, padding=padding, kw...)
     height = nrows(plot.graphics)
     width = ncols(plot.graphics)
     plot = if color != :auto
-        points!(plot,
-                convert(Vector{Float64}, cols),
-                nrow + 1 .- convert(Vector{Float64}, rows),
-                color)
+        points!(
+            plot,
+            convert(Vector{Float64}, cols),
+            nrow + 1 .- convert(Vector{Float64}, rows),
+            color,
+        )
     else
         pos_idx = vals .> 0
         neg_idx = (!).(pos_idx)
@@ -147,14 +159,18 @@ function spy(
         pos_rows = rows[pos_idx]
         neg_cols = cols[neg_idx]
         neg_rows = rows[neg_idx]
-        points!(plot,
-                convert(Vector{Float64}, pos_cols),
-                nrow + 1 .- convert(Vector{Float64}, pos_rows),
-                :red)
-        points!(plot,
-                convert(Vector{AbstractFloat}, neg_cols),
-                nrow + 1 .- convert(Vector{Float64}, neg_rows),
-                :blue)
+        points!(
+            plot,
+            convert(Vector{Float64}, pos_cols),
+            nrow + 1 .- convert(Vector{Float64}, pos_rows),
+            :red,
+        )
+        points!(
+            plot,
+            convert(Vector{AbstractFloat}, neg_cols),
+            nrow + 1 .- convert(Vector{Float64}, neg_rows),
+            :blue,
+        )
         annotate!(plot, :r, 1, "> 0", :red)
         annotate!(plot, :r, 2, "< 0", :blue)
     end

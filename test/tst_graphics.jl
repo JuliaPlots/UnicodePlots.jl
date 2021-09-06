@@ -12,7 +12,7 @@
         @test_throws ArgumentError printrow(stdout, g, 7)
         test_ref(
             "references/graphics/bar_printrow.txt",
-            @io2str(printrow(IOContext(::IO, :color=>true), g, 3))
+            @io2str(printrow(IOContext(::IO, :color => true), g, 3))
         )
         test_ref("references/graphics/bar_print.txt", @print_col(g))
         test_ref("references/graphics/bar_show.txt", @show_col(g))
@@ -66,31 +66,31 @@ end
     @test !(BoxplotGraphics <: Canvas)
 
     @testset "basic API and display" begin
-        g = @inferred BoxplotGraphics([1,2,2,4,5,6], 30)
+        g = @inferred BoxplotGraphics([1, 2, 2, 4, 5, 6], 30)
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 30
         @test_throws ArgumentError printrow(stdout, g, 0)
         @test_throws ArgumentError printrow(stdout, g, 4)
         test_ref(
             "references/graphics/box_printrow.txt",
-            @io2str(printrow(IOContext(::IO, :color=>true), g, 3))
+            @io2str(printrow(IOContext(::IO, :color => true), g, 3))
         )
         test_ref("references/graphics/box_print.txt", @print_col(g))
         test_ref("references/graphics/box_show.txt", @show_col(g))
         test_ref("references/graphics/box_print_nocolor.txt", @print_nocol(g))
         test_ref("references/graphics/box_show_nocolor.txt", @show_nocol(g))
-        @test @inferred(UnicodePlots.addseries!(g, [3.,3,2,4,0,1])) === g
+        @test @inferred(UnicodePlots.addseries!(g, [3.0, 3, 2, 4, 0, 1])) === g
         @test @inferred(nrows(g)) === 6
         @test @inferred(ncols(g)) === 30
         test_ref("references/graphics/box_addseries.txt", @show_col(g))
-        @test @inferred(UnicodePlots.addseries!(g, [2,2,2])) === g
+        @test @inferred(UnicodePlots.addseries!(g, [2, 2, 2])) === g
         @test @inferred(nrows(g)) === 9
         @test @inferred(ncols(g)) === 30
         test_ref("references/graphics/box_addseries_small.txt", @show_col(g))
     end
 
     @testset "Constructor parameter" begin
-        @test_throws MethodError BoxplotGraphics([1,2,2,4,5,6])
+        @test_throws MethodError BoxplotGraphics([1, 2, 2, 4, 5, 6])
         @test_throws Union{ArgumentError,MethodError} BoxplotGraphics(Int[], 30)
         g = @inferred BoxplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) === 3
@@ -104,11 +104,11 @@ end
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 10
         test_ref("references/graphics/box_short.txt", @show_col(g))
-        g = @inferred BoxplotGraphics([1,2,2,4,5,6], 30, min_x = 2, max_x = 8)
+        g = @inferred BoxplotGraphics([1, 2, 2, 4, 5, 6], 30, min_x=2, max_x=8)
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 30
         test_ref("references/graphics/box_minmax1.txt", @show_col(g))
-        g = @inferred BoxplotGraphics([1,2,2,4,5,6], 30, min_x = 0, max_x = 7)
+        g = @inferred BoxplotGraphics([1, 2, 2, 4, 5, 6], 30, min_x=0, max_x=7)
         @test @inferred(nrows(g)) === 3
         @test @inferred(ncols(g)) === 30
         test_ref("references/graphics/box_minmax2.txt", @show_col(g))

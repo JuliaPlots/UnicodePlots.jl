@@ -87,24 +87,25 @@ mutable struct Plot{T<:GraphicsArea}
     colormap::Any
     show_colorbar::Bool
     colorbar_border::Symbol
-    colorbar_lim::Tuple{Number, Number}
+    colorbar_lim::Tuple{Number,Number}
     autocolor::Int
 end
 
 function Plot(
-        graphics::T;
-        title::AbstractString = "",
-        xlabel::AbstractString = "",
-        ylabel::AbstractString = "",
-        zlabel::AbstractString = "",
-        border::Symbol = :solid,
-        margin::Int = 3,
-        padding::Int = 1,
-        labels = true,
-        colormap = nothing,
-        colorbar = false,
-        colorbar_border::Symbol = :solid,
-        colorbar_lim = (0., 1.)) where T<:GraphicsArea
+    graphics::T;
+    title::AbstractString="",
+    xlabel::AbstractString="",
+    ylabel::AbstractString="",
+    zlabel::AbstractString="",
+    border::Symbol=:solid,
+    margin::Int=3,
+    padding::Int=1,
+    labels=true,
+    colormap=nothing,
+    colorbar=false,
+    colorbar_border::Symbol=:solid,
+    colorbar_lim=(0.0, 1.0),
+) where {T<:GraphicsArea}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -114,38 +115,58 @@ function Plot(
     colors_right = Dict{Int,JuliaColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
-    Plot{T}(graphics, title, xlabel, ylabel, zlabel,
-            margin, padding, border,
-            labels_left, colors_left, labels_right, colors_right,
-            decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
+    Plot{T}(
+        graphics,
+        title,
+        xlabel,
+        ylabel,
+        zlabel,
+        margin,
+        padding,
+        border,
+        labels_left,
+        colors_left,
+        labels_right,
+        colors_right,
+        decorations,
+        colors_deco,
+        labels,
+        colormap,
+        colorbar,
+        colorbar_border,
+        colorbar_lim,
+        0,
+    )
 end
 
 function Plot(
-        X::AbstractVector{<:Number},
-        Y::AbstractVector{<:Number},
-        ::Type{C} = BrailleCanvas;
-        title::AbstractString = "",
-        xlabel::AbstractString = "",
-        ylabel::AbstractString = "",
-        zlabel::AbstractString = "",
-        xscale::Union{Symbol,Function} = :identity,
-        yscale::Union{Symbol,Function} = :identity,
-        width::Int = 40,
-        height::Int = 15,
-        border::Symbol = :solid,
-        xlim = (0.,0.),
-        ylim = (0.,0.),
-        margin::Int = 3,
-        padding::Int = 1,
-        labels::Bool = true,
-        colormap = nothing,
-        colorbar = false,
-        colorbar_border::Symbol = :solid,
-        colorbar_lim = (0., 1.),
-        grid::Bool = true,
-        min_width::Int = 5,
-        min_height::Int = 2) where {C<:Canvas}
-    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
+    X::AbstractVector{<:Number},
+    Y::AbstractVector{<:Number},
+    ::Type{C}                      = BrailleCanvas;
+    title::AbstractString          = "",
+    xlabel::AbstractString         = "",
+    ylabel::AbstractString         = "",
+    zlabel::AbstractString         = "",
+    xscale::Union{Symbol,Function} = :identity,
+    yscale::Union{Symbol,Function} = :identity,
+    width::Int                     = 40,
+    height::Int                    = 15,
+    border::Symbol                 = :solid,
+    xlim                           = (0.0, 0.0),
+    ylim                           = (0.0, 0.0),
+    margin::Int                    = 3,
+    padding::Int                   = 1,
+    labels::Bool                   = true,
+    colormap                       = nothing,
+    colorbar                       = false,
+    colorbar_border::Symbol        = :solid,
+    colorbar_lim                   = (0.0, 1.0),
+    grid::Bool                     = true,
+    min_width::Int                 = 5,
+    min_height::Int                = 2,
+) where {C<:Canvas}
+    length(xlim) == length(ylim) == 2 ||
+        throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     width = max(width, min_width)
     height = max(height, min_height)
@@ -157,32 +178,55 @@ function Plot(
     p_width = max_x - origin_x
     p_height = max_y - origin_y
 
-    canvas = C(width, height,
-               origin_x = origin_x, origin_y = origin_y,
-               width = p_width, height = p_height,
-               xscale = xscale, yscale = yscale)
-    new_plot = Plot(canvas, title = title, margin = margin,
-                    padding = padding, border = border, labels = labels,
-                    xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
-                    colormap = colormap, colorbar = colorbar, colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
+    canvas = C(
+        width,
+        height,
+        origin_x=origin_x,
+        origin_y=origin_y,
+        width=p_width,
+        height=p_height,
+        xscale=xscale,
+        yscale=yscale,
+    )
+    new_plot = Plot(
+        canvas,
+        title=title,
+        margin=margin,
+        padding=padding,
+        border=border,
+        labels=labels,
+        xlabel=xlabel,
+        ylabel=ylabel,
+        zlabel=zlabel,
+        colormap=colormap,
+        colorbar=colorbar,
+        colorbar_border=colorbar_border,
+        colorbar_lim=colorbar_lim,
+    )
 
-    min_x_str = compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
-    max_x_str = compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
-    min_y_str = compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
-    max_y_str = compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    annotate!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
-    annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
-    annotate!(new_plot, :bl, min_x_str, color = :light_black)
-    annotate!(new_plot, :br, max_x_str, color = :light_black)
+    min_x_str =
+        compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
+    max_x_str =
+        compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
+    min_y_str =
+        compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
+    max_y_str =
+        compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
+    annotate!(new_plot, :l, nrows(canvas), min_y_str, color=:light_black)
+    annotate!(new_plot, :l, 1, max_y_str, color=:light_black)
+    annotate!(new_plot, :bl, min_x_str, color=:light_black)
+    annotate!(new_plot, :br, max_x_str, color=:light_black)
     if grid
         if min_y < 0 < max_y
-            for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
-                points!(new_plot, i, 0., :normal)
+            for i in
+                range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
+                points!(new_plot, i, 0.0, :normal)
             end
         end
         if min_x < 0 < max_x
-            for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
-                points!(new_plot, 0., i, :normal)
+            for i in
+                range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
+                points!(new_plot, 0.0, i, :normal)
             end
         end
     end
@@ -293,17 +337,25 @@ can be between 1 and the number of character rows
 of the plots canvas.
 """
 function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
-    loc == :t || loc == :b || loc == :l || loc == :r || loc == :tl || loc == :tr || loc == :bl || loc == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
+    loc == :t ||
+        loc == :b ||
+        loc == :l ||
+        loc == :r ||
+        loc == :tl ||
+        loc == :tr ||
+        loc == :bl ||
+        loc == :br ||
+        throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
     if loc == :l || loc == :r
-        for row = 1:nrows(plot.graphics)
+        for row in 1:nrows(plot.graphics)
             if loc == :l
-                if(!haskey(plot.labels_left, row) || plot.labels_left[row] == "")
+                if (!haskey(plot.labels_left, row) || plot.labels_left[row] == "")
                     plot.labels_left[row] = value
                     plot.colors_left[row] = julia_color(color)
                     return plot
                 end
             elseif loc == :r
-                if(!haskey(plot.labels_right, row) || plot.labels_right[row] == "")
+                if (!haskey(plot.labels_right, row) || plot.labels_right[row] == "")
                     plot.labels_right[row] = value
                     plot.colors_right[row] = julia_color(color)
                     return plot
@@ -318,11 +370,22 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
+function annotate!(
+    plot::Plot,
+    loc::Symbol,
+    value::AbstractString;
+    color::UserColorType=:normal,
+)
     annotate!(plot, loc, value, color)
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
+function annotate!(
+    plot::Plot,
+    loc::Symbol,
+    row::Int,
+    value::AbstractString,
+    color::UserColorType,
+)
     if loc == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = julia_color(color)
@@ -330,12 +393,20 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
         plot.labels_right[row] = value
         plot.colors_right[row] = julia_color(color)
     else
-        throw(ArgumentError("Unknown location \"$(string(loc))\", try `:l` or `:r` instead"))
+        throw(
+            ArgumentError("Unknown location \"$(string(loc))\", try `:l` or `:r` instead"),
+        )
     end
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
+function annotate!(
+    plot::Plot,
+    loc::Symbol,
+    row::Int,
+    value::AbstractString;
+    color::UserColorType=:normal,
+)
     annotate!(plot, loc, row, value, color)
 end
 
@@ -354,7 +425,13 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :normal)
+function print_title(
+    io::IO,
+    padding::AbstractString,
+    title::AbstractString;
+    p_width::Int=0,
+    color=:normal,
+)
     if title != ""
         offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
         offset = offset > 0 ? offset : 0
@@ -363,14 +440,28 @@ function print_title(io::IO, padding::AbstractString, title::AbstractString; p_w
     end
 end
 
-function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
+function print_border_top(
+    io::IO,
+    padding::AbstractString,
+    length::Int,
+    border::Symbol=:solid,
+    color::UserColorType=:light_black,
+)
     b = bordermap[border]
-    border == :none || print_color(color, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
+    border == :none ||
+        print_color(color, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
 end
 
-function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
+function print_border_bottom(
+    io::IO,
+    padding::AbstractString,
+    length::Int,
+    border::Symbol=:solid,
+    color::UserColorType=:light_black,
+)
     b = bordermap[border]
-    border == :none || print_color(color, io, padding, b[:bl], repeat(b[:b], length), b[:br])
+    border == :none ||
+        print_color(color, io, padding, b[:bl], repeat(b[:b], length), b[:br])
 end
 
 _nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
@@ -381,8 +472,12 @@ function Base.show(io::IO, p::Plot)
     border_length = ncols(c)
 
     # get length of largest strings to the left and right
-    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
-    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(_nocolor_string(l)) for l in values(p.labels_right)]) : 0
+    max_len_l =
+        p.show_labels && !isempty(p.labels_left) ?
+        maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
+    max_len_r =
+        p.show_labels && !isempty(p.labels_right) ?
+        maximum([length(_nocolor_string(l)) for l in values(p.labels_right)]) : 0
     if p.show_labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
@@ -397,7 +492,7 @@ function Base.show(io::IO, p::Plot)
     border_padding = repeat(" ", plot_offset)
 
     # plot the title and the top border
-    print_title(io, border_padding, p.title, p_width = border_length, color = :bold)
+    print_title(io, border_padding, p.title, p_width=border_length, color=:bold)
     p.title != "" && println(io)
     if p.show_labels
         topleft_str  = get(p.decorations, :tl, "")
@@ -411,7 +506,11 @@ function Base.show(io::IO, p::Plot)
             topmid_len   = length(topmid_str)
             topright_len = length(topright_str)
             print_color(topleft_col, io, border_padding, topleft_str)
-            cnt = round(Int, border_length / 2 - topmid_len / 2 - topleft_len, RoundNearestTiesUp)
+            cnt = round(
+                Int,
+                border_length / 2 - topmid_len / 2 - topleft_len,
+                RoundNearestTiesUp,
+            )
             pad = cnt > 0 ? repeat(" ", cnt) : ""
             print_color(topmid_col, io, pad, topmid_str)
             cnt = border_length - topright_len - topleft_len - topmid_len + 2 - cnt
@@ -428,8 +527,8 @@ function Base.show(io::IO, p::Plot)
     # plot all rows
     for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
-        left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :light_black)
+        left_str  = get(p.labels_left, row, "")
+        left_col  = get(p.colors_left, row, :light_black)
         right_str = get(p.labels_right, row, "")
         right_col = get(p.colors_right, row, :light_black)
         left_len  = length(_nocolor_string(left_str))
@@ -466,7 +565,16 @@ function Base.show(io::IO, p::Plot)
         # print colorbar
         if p.show_colorbar
             print(io, plot_padding)
-            printcolorbarrow(io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim, plot_padding, p.zlabel)
+            printcolorbarrow(
+                io,
+                c,
+                row,
+                p.colormap,
+                p.colorbar_border,
+                p.colorbar_lim,
+                plot_padding,
+                p.zlabel,
+            )
         end
         print(io, "\n")
     end
@@ -487,7 +595,11 @@ function Base.show(io::IO, p::Plot)
             botmid_len   = length(botmid_str)
             botright_len = length(botright_str)
             print_color(botleft_col, io, border_padding, botleft_str)
-            cnt = round(Int, border_length / 2 - botmid_len / 2 - botleft_len, RoundNearestTiesUp)
+            cnt = round(
+                Int,
+                border_length / 2 - botmid_len / 2 - botleft_len,
+                RoundNearestTiesUp,
+            )
             pad = cnt > 0 ? repeat(" ", cnt) : ""
             print_color(botmid_col, io, pad, botmid_str)
             cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
@@ -496,7 +608,7 @@ function Base.show(io::IO, p::Plot)
         end
         # abuse the print_title function to print the xlabel. maybe refactor this
         p.xlabel != "" && println(io)
-        print_title(io, border_padding, p.xlabel, p_width = border_length)
+        print_title(io, border_padding, p.xlabel, p_width=border_length)
     end
 end
 
@@ -519,6 +631,6 @@ function savefig(p::Plot, filename::String; color::Bool=false)
         @warn "`UnicodePlots.savefig` only support writing to text files"
     end
     open(filename, "w") do io
-        print(IOContext(io, :color=>color), p)
+        print(IOContext(io, :color => color), p)
     end
 end

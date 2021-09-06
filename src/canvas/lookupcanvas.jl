@@ -15,31 +15,46 @@ function lookup_decode end
 @inline ncols(c::LookupCanvas) = size(grid(c), 1)
 
 function CreateLookupCanvas(
-        ::Type{T},
-        char_width::Int,
-        char_height::Int;
-        origin_x::Number = 0.,
-        origin_y::Number = 0.,
-        width::Number = 1.,
-        height::Number = 1.,
-        xscale::Union{Symbol,Function} = :identity,
-        yscale::Union{Symbol,Function} = :identity,
-        min_char_height::Int = 5,
-        min_char_width::Int = 2) where {T <: LookupCanvas}
-    width  > 0 || throw(ArgumentError("width has to be positive"))
+    ::Type{T},
+    char_width::Int,
+    char_height::Int;
+    origin_x::Number               = 0.0,
+    origin_y::Number               = 0.0,
+    width::Number                  = 1.0,
+    height::Number                 = 1.0,
+    xscale::Union{Symbol,Function} = :identity,
+    yscale::Union{Symbol,Function} = :identity,
+    min_char_height::Int           = 5,
+    min_char_width::Int            = 2,
+) where {T<:LookupCanvas}
+    width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width  = max(char_width, min_char_width)
-    char_height = max(char_height, min_char_height)
+    char_width   = max(char_width, min_char_width)
+    char_height  = max(char_height, min_char_height)
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
-    grid   = fill(0x00, char_width, char_height)
-    colors = fill(nothing, char_width, char_height)
-    T(grid, colors, pixel_width, pixel_height,
-      Float64(origin_x), Float64(origin_y),
-      Float64(width), Float64(height), xscale, yscale)
+    grid         = fill(0x00, char_width, char_height)
+    colors       = fill(nothing, char_width, char_height)
+    T(
+        grid,
+        colors,
+        pixel_width,
+        pixel_height,
+        Float64(origin_x),
+        Float64(origin_y),
+        Float64(width),
+        Float64(height),
+        xscale,
+        yscale,
+    )
 end
 
-function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
+function pixel!(
+    c::T,
+    pixel_x::Int,
+    pixel_y::Int,
+    color::UserColorType,
+) where {T<:LookupCanvas}
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
@@ -63,6 +78,6 @@ function printrow(io::IO, c::LookupCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_color(colors(c)[x,y], io, lookup_decode(c)[grid(c)[x,y] + 1])
+        print_color(colors(c)[x, y], io, lookup_decode(c)[grid(c)[x, y] + 1])
     end
 end

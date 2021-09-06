@@ -87,27 +87,30 @@ See also
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function scatterplot(
-        x::AbstractVector,
-        y::AbstractVector;
-        canvas::Type = BrailleCanvas,
-        color::UserColorType = :auto,
-        name = "",
-        kw...)
+    x::AbstractVector,
+    y::AbstractVector;
+    canvas::Type=BrailleCanvas,
+    color::UserColorType=:auto,
+    name="",
+    kw...,
+)
     new_plot = Plot(x, y, canvas; kw...)
-    scatterplot!(new_plot, x, y; color = color, name = name)
+    scatterplot!(new_plot, x, y; color=color, name=name)
 end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 function scatterplot!(
-        plot::Plot{<:Canvas},
-        x::AbstractVector,
-        y::AbstractVector;
-        color::UserColorType = :auto,
-        name = "")
+    plot::Plot{<:Canvas},
+    x::AbstractVector,
+    y::AbstractVector;
+    color::UserColorType=:auto,
+    name="",
+)
     color = (color == :auto) ? next_color!(plot) : color
     name == "" || annotate!(plot, :r, string(name), color)
     points!(plot, x, y, color)
 end
 
-scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(plot, axes(y, 1), y; kw...)
+scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
+    scatterplot!(plot, axes(y, 1), y; kw...)

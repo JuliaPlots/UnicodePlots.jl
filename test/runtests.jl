@@ -20,40 +20,69 @@ tests = [
     "tst_lineplot.jl",
     "tst_spy.jl",
     "tst_boxplot.jl",
-    "tst_heatmap.jl"
+    "tst_heatmap.jl",
 ]
 
 const RNG = StableRNG(1337)
 const TERM_SIZE = (24, 80)
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
-test_ref(reference, actual) = @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+test_ref(reference, actual) =
+    @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
 
 # helpers
 macro show_col(p, kv...)
-    :(@io2str($(Expr(:call, :show, Expr(:call, :IOContext, :(::IO), :color=>true, kv...), esc(p)))))
+    :(@io2str(
+        $(Expr(
+            :call,
+            :show,
+            Expr(:call, :IOContext, :(::IO), :color => true, kv...),
+            esc(p),
+        ))
+    ))
 end
 macro show_nocol(p, kv...)
-    :(@io2str($(Expr(:call, :show, Expr(:call, :IOContext, :(::IO), :color=>false, kv...), esc(p)))))
+    :(@io2str(
+        $(Expr(
+            :call,
+            :show,
+            Expr(:call, :IOContext, :(::IO), :color => false, kv...),
+            esc(p),
+        ))
+    ))
 end
 macro print_col(p, kv...)
-    :(@io2str($(Expr(:call, :print, Expr(:call, :IOContext, :(::IO), :color=>true, kv...), esc(p)))))
+    :(@io2str(
+        $(Expr(
+            :call,
+            :print,
+            Expr(:call, :IOContext, :(::IO), :color => true, kv...),
+            esc(p),
+        ))
+    ))
 end
 macro print_nocol(p, kv...)
-    :(@io2str($(Expr(:call, :print, Expr(:call, :IOContext, :(::IO), :color=>false, kv...), esc(p)))))
+    :(@io2str(
+        $(Expr(
+            :call,
+            :print,
+            Expr(:call, :IOContext, :(::IO), :color => false, kv...),
+            esc(p),
+        ))
+    ))
 end
 
 # sprand or sprandn is not stable across versions (e.g. 1.0 vs 1.6)
 function stable_sprand(r::AbstractRNG, m::Integer, n::Integer, density::AbstractFloat)
-  I = Int[]
-  J = Int[]
-  for li in randsubseq(r, 1:(m*n), density)
-    j, i = divrem(li - 1, m)
-    push!(I, i + 1)
-    push!(J, j + 1)
-  end
-  V = rand(r, length(I))
-  return sparse(I, J, V)
+    I = Int[]
+    J = Int[]
+    for li in randsubseq(r, 1:(m * n), density)
+        j, i = divrem(li - 1, m)
+        push!(I, i + 1)
+        push!(J, j + 1)
+    end
+    V = rand(r, length(I))
+    return sparse(I, J, V)
 end
 
 for test in tests

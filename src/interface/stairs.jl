@@ -89,36 +89,33 @@ See also
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function stairs(
-        X::AbstractVector, Y::AbstractVector;
-        style::Symbol = :post,
-        kw...)
+function stairs(X::AbstractVector, Y::AbstractVector; style::Symbol=:post, kw...)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
     lineplot(x_vex, y_vex; kw...)
 end
 
 function stairs!(
-        plot::Plot{<:Canvas}, X::AbstractVector, Y::AbstractVector;
-        style::Symbol = :post,
-        kw...)
+    plot::Plot{<:Canvas},
+    X::AbstractVector,
+    Y::AbstractVector;
+    style::Symbol=:post,
+    kw...,
+)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
     lineplot!(plot, x_vex, y_vex; kw...)
 end
 
-function compute_stair_lines(
-        X::AbstractVector,
-        Y::AbstractVector,
-        style::Symbol)
+function compute_stair_lines(X::AbstractVector, Y::AbstractVector, style::Symbol)
     if style == :post
         x_vex = similar(X, length(X) * 2 - 1)
         y_vex = similar(Y, length(X) * 2 - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
         o = 0
-        for i = 2:(length(X))
+        for i in 2:(length(X))
             x_vex[i + o] = X[i]
             x_vex[i + o + 1] = X[i]
-            y_vex[i + o] = Y[i-1]
+            y_vex[i + o] = Y[i - 1]
             y_vex[i + o + 1] = Y[i]
             o += 1
         end
@@ -129,8 +126,8 @@ function compute_stair_lines(
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
         o = 0
-        for i = 2:(length(X))
-            x_vex[i + o] = X[i-1]
+        for i in 2:(length(X))
+            x_vex[i + o] = X[i - 1]
             x_vex[i + o + 1] = X[i]
             y_vex[i + o] = Y[i]
             y_vex[i + o + 1] = Y[i]

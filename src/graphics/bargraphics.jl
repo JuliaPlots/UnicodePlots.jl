@@ -8,19 +8,30 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     transform
 
     function BarplotGraphics(
-            bars::AbstractVector{R},
-            char_width::Int,
-            color::UserColorType,
-            symbols::AbstractVector{S},
-            transform) where {R, S <: Union{Char, String}}
-        for s ∈ symbols
-            length(s) == 1 || throw(ArgumentError("Symbol has to be a single character, got: \"" * s * "\""))
+        bars::AbstractVector{R},
+        char_width::Int,
+        color::UserColorType,
+        symbols::AbstractVector{S},
+        transform,
+    ) where {R,S<:Union{Char,String}}
+        for s in symbols
+            length(s) == 1 || throw(
+                ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
+            )
         end
         char_width = max(char_width, 10)
         max_freq, i = findmax(transform.(bars))
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
-        new{R}(bars, crayon_256_color(color), char_width, max_freq, max_len, map(string, symbols), transform)
+        new{R}(
+            bars,
+            crayon_256_color(color),
+            char_width,
+            max_freq,
+            max_len,
+            map(string, symbols),
+            transform,
+        )
     end
 end
 
@@ -28,22 +39,23 @@ nrows(g::BarplotGraphics) = length(g.bars)
 ncols(g::BarplotGraphics) = g.char_width
 
 function BarplotGraphics(
-        bars::AbstractVector{R},
-        char_width::Int,
-        transform = identity;
-        color::UserColorType = :green,
-        symbols = ["■"]) where {R <: Number}
+    bars::AbstractVector{R},
+    char_width::Int,
+    transform=identity;
+    color::UserColorType=:green,
+    symbols=["■"],
+) where {R<:Number}
     BarplotGraphics(bars, char_width, crayon_256_color(color), symbols, transform)
 end
 
-function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
+function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R<:Number}
     append!(g.bars, bars)
     g.max_freq, i = findmax(g.transform.(g.bars))
     g.max_len = length(string(g.bars[i]))
     g
 end
 
-function addrow!(g::BarplotGraphics{R}, bar::Number) where {R <: Number}
+function addrow!(g::BarplotGraphics{R}, bar::Number) where {R<:Number}
     push!(g.bars, R(bar))
     g.max_freq, i = findmax(g.transform.(g.bars))
     g.max_len = length(string(g.bars[i]))

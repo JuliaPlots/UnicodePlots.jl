@@ -80,18 +80,32 @@ See also
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
 function heatmap(
-    z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.), xoffset = 0., yoffset = 0.,
-    out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0,
-    yscale=0.0, labels = true, kw...)
+    z::AbstractMatrix;
+    xlim=(0.0, 0.0),
+    ylim=(0.0, 0.0),
+    zlim=(0.0, 0.0),
+    xoffset=0.0,
+    yoffset=0.0,
+    out_stream::Union{Nothing,IO}=nothing,
+    width::Int=0,
+    height::Int=0,
+    margin::Int=3,
+    padding::Int=1,
+    colormap=:viridis,
+    xscale=0.0,
+    yscale=0.0,
+    labels=true,
+    kw...,
+)
     nrows = size(z, 1)
     ncols = size(z, 2)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xscale == 0.0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xscale
+    X = xscale == 0.0 ? collect(1:ncols) : collect(0:(ncols - 1)) .* xscale
     X .+= xoffset
     xscale = xscale == 0.0 ? 1 : xscale
-    Y = yscale == 0.0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yscale
+    Y = yscale == 0.0 ? collect(1:nrows) : collect(0:(nrows - 1)) .* yscale
     Y .+= yoffset
     yscale = yscale == 0.0 ? 1 : yscale
 
@@ -123,8 +137,9 @@ function heatmap(
         noextrema = false
     catch
     end
-    if zlim != (0., 0.)
-        noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(z))"))
+    if zlim != (0.0, 0.0)
+        noextrema &&
+            throw(ArgumentError("zlim cannot be set when the element type is $(eltype(z))"))
         minz, maxz = zlim
     end
 
@@ -146,7 +161,16 @@ function heatmap(
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
     width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, out_stream
+        HeatmapCanvas,
+        nrows,
+        ncols,
+        max_width,
+        max_height,
+        width,
+        height,
+        margin,
+        padding,
+        out_stream,
     )
 
     # ensure plot height is big enough
@@ -155,23 +179,33 @@ function heatmap(
     # for small plots, don't show colorbar by default
     if height < 7
         show_colorbar = !noextrema && get(kw, :colorbar, false)
-    # show colorbar by default, unless set to false, or labels == false
+        # show colorbar by default, unless set to false, or labels == false
     else
         show_colorbar = !noextrema && get(kw, :colorbar, labels)
     end
 
-    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0., 0.]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0., 0.]
-    new_plot = Plot(xs, ys, HeatmapCanvas;
-                    grid = false, colorbar = show_colorbar,
-                    colormap = colormap, colorbar_lim = (minz, maxz),
-                    ylim = ylim, xlim = xlim, labels = labels,
-                    width = width, height = height, min_width = 1, min_height = 1,
-                    kw...)
-    for row = 1:length(Y)
+    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0.0, 0.0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0.0, 0.0]
+    new_plot = Plot(
+        xs,
+        ys,
+        HeatmapCanvas;
+        grid=false,
+        colorbar=show_colorbar,
+        colormap=colormap,
+        colorbar_lim=(minz, maxz),
+        ylim=ylim,
+        xlim=xlim,
+        labels=labels,
+        width=width,
+        height=height,
+        min_width=1,
+        min_height=1,
+        kw...,
+    )
+    for row in 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
         points!(new_plot, X, repeat([Y[row]], length(X)), Z)
     end
     new_plot
 end
-

@@ -2,14 +2,14 @@
     @testset "types" begin
         @test UnicodePlots.plotting_range(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range(0, 1f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0)
         @test UnicodePlots.plotting_range(0x0, 0x1) === (0.0, 1.0)
     end
 
     @test UnicodePlots.plotting_range(0.0001, 0.002) === (0.0, 0.01)
-    @test UnicodePlots.plotting_range(0.001,  0.02)  === (0.0, 0.1)
-    @test UnicodePlots.plotting_range(0.01,   0.2)   === (0.0, 1.0)
-    @test UnicodePlots.plotting_range(0.1,    2.)    === (0.0, 10.0)
+    @test UnicodePlots.plotting_range(0.001, 0.02) === (0.0, 0.1)
+    @test UnicodePlots.plotting_range(0.01, 0.2) === (0.0, 1.0)
+    @test UnicodePlots.plotting_range(0.1, 2.0) === (0.0, 10.0)
     @test UnicodePlots.plotting_range(0, 2) === (0.0, 10.0)
     @test UnicodePlots.plotting_range(0, 5) === (0.0, 10.0)
 end
@@ -18,24 +18,24 @@ end
     @testset "types" begin
         @test UnicodePlots.plotting_range_narrow(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range_narrow(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range_narrow(0, 1f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0)
         @test UnicodePlots.plotting_range_narrow(0x0, 0x1) === (0.0, 1.0)
     end
 
     @test UnicodePlots.plotting_range_narrow(0.0001, 0.002) === (0.0, 0.002)
-    @test UnicodePlots.plotting_range_narrow(0.001,  0.02)  === (0.0, 0.02)
-    @test UnicodePlots.plotting_range_narrow(0.01,   0.2)   === (0.0, 0.2)
-    @test UnicodePlots.plotting_range_narrow(0.1,    2.)    === (0.0, 2.0)
+    @test UnicodePlots.plotting_range_narrow(0.001, 0.02) === (0.0, 0.02)
+    @test UnicodePlots.plotting_range_narrow(0.01, 0.2) === (0.0, 0.2)
+    @test UnicodePlots.plotting_range_narrow(0.1, 2.0) === (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 2) === (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 5) === (0.0, 5.0)
 end
 
 @testset "extend_limits" begin
-    @test UnicodePlots.extend_limits([1,2,3,4], [0.1,2]) === (0.1, 2.)
-    @test UnicodePlots.extend_limits([1,2,3,4], [0,1.1]) === (0., 1.1)
-    @test UnicodePlots.extend_limits([1,2,3,4], [2,3]) === (2., 3.)
-    @test UnicodePlots.extend_limits([1,2,3,4], [0,0]) === (1., 4.)
-    @test UnicodePlots.extend_limits([1,2,3,4], [1,1]) === (0., 2.)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) === (0.1, 2.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) === (0.0, 1.1)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) === (2.0, 3.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) === (1.0, 4.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) === (0.0, 2.0)
 end
 
 @testset "bordermap" begin
@@ -48,7 +48,7 @@ end
     @test haskey(UnicodePlots.bordermap, :dotted)
     @test haskey(UnicodePlots.bordermap, :dashed)
     @test haskey(UnicodePlots.bordermap, :ascii)
-    for (k,v) in UnicodePlots.bordermap
+    for (k, v) in UnicodePlots.bordermap
         @test length(keys(v)) == 8
         @test haskey(v, :tl)
         @test haskey(v, :tr)
