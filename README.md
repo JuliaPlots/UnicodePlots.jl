@@ -46,7 +46,7 @@ lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line",
 
 ![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot2.png)
 
-Every plot has a mutating variant that ends with a exclamation mark.
+Some plot methods have a mutating variant that ends with a exclamation mark.
 
 ```julia
 lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
@@ -59,7 +59,14 @@ lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
 ```julia
 scatterplot(randn(50), randn(50), title = "My Scatterplot", border=:dotted)
 ```
-![Scatterplot Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot1.png)
+![Scatterplot Screenshot1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot1.png)
+
+`xscale` and `yscale` are supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function
+
+```julia
+scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10)
+```
+![Scatterplot Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot2.png)
 
 #### Lineplot
 
@@ -111,8 +118,7 @@ histogram(randn(1000) .* 0.1, nbins = 15, closed = :left)
 ```
 ![Histogram Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/histogram1.png)
 
-The `histogram` function also supports axis scaling using the
-parameter `xscale`.
+The `histogram` function also supports axis scaling using the parameter `xscale`.
 
 ```julia
 histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=log10)
@@ -154,8 +160,7 @@ heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 ```
 ![Heatmap Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap1.png)
 
-The `heatmap` function also supports axis scaling using the
-parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
+The `heatmap` function also supports axis scaling using the parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
 
 The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
