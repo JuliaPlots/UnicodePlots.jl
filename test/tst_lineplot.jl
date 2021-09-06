@@ -182,8 +182,8 @@ end
 @testset "scales" begin
     x = y = collect(1:100)
     tmp = tempname()
-    for s ∈ (:log, :log2, :log10)
-        fscale = getproperty(Base, s)
+    for s ∈ (:ln, :log2, :log10)
+        fscale = UnicodePlots.FSCALES[s]
 
         xs = fscale.(x)
         ys = fscale.(y)
