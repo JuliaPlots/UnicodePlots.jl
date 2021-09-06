@@ -97,9 +97,7 @@ function scatterplot(
     scatterplot!(new_plot, x, y; color = color, name = name)
 end
 
-function scatterplot(y::AbstractVector; kw...)
-    scatterplot(axes(y, 1), y; kw...)
-end
+scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 function scatterplot!(
         plot::Plot{<:Canvas},
@@ -112,6 +110,4 @@ function scatterplot!(
     points!(plot, x, y, color)
 end
 
-function scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...)
-    scatterplot!(plot, axes(y, 1), y; kw...)
-end
+scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(plot, axes(y, 1), y; kw...)

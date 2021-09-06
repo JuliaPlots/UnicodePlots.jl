@@ -177,6 +177,31 @@ end
     dx = [Date(2020,8,i) for i = 1:10]
     p = stairs(dx,1:10, xlim=(Date(2020,8,1), Date(2020,8,15)))
     test_ref("references/lineplot/stairs_date.txt", @show_col(p))
+end
 
-    
+@testset "scales" begin
+    x = y = collect(1:100)
+    tmp = tempname()
+    for s ∈ (:log, :log2, :log10)
+        fscale = getproperty(Base, s)
+
+        xs = fscale.(x)
+        ys = fscale.(y)
+
+        # xscale
+        savefig(lineplot(xs, y, xlim=extrema(xs)), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, xscale=s)))
+
+        # yscale
+        savefig(lineplot(x, ys, ylim=extrema(ys)), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, yscale=s)))
+
+        # xscale and yscale
+        savefig(lineplot(xs, ys, xlim=extrema(xs), ylim=extrema(xs)), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, xscale=s, yscale=s)))
+    end
+
+    lineplot(1:10, 1:10, xscale=x->log10(x))  # arbitrary scale function
+    scl(x) = log(x)
+    lineplot(1:10, 1:10, yscale=scl)
 end
