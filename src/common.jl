@@ -5,7 +5,7 @@ const DOC_PLOT_PARAMS = """
 
 - **`ylabel`** : Text to display on the y axis of the plot
 
-- **`xscale`** : X-axis scale (:identity, :log, :log2, :log10), or scale function e.g. `x -> log10(x)`
+- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10), or scale function e.g. `x -> log10(x)`
 
 - **`yscale`** : Y-axis scale
 
@@ -31,8 +31,8 @@ const DOC_PLOT_PARAMS = """
   for plotting.
 """
 
-const FSCALES = (identity=identity, log=log, log2=log2, log10=log10)  # forward
-const ISCALES = (identity=identity, log=exp, log2=exp2, log10=exp10)  # inverse
+const FSCALES = (identity=identity, ln=log, log2=log2, log10=log10)  # forward
+const ISCALES = (identity=identity, ln=exp, log2=exp2, log10=exp10)  # inverse
 
 fscale(x, s::Symbol; fscales=FSCALES) = fscales[s](x)
 iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)
