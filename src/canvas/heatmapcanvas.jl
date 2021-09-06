@@ -59,22 +59,25 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     end
 end
 
-function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, border::Symbol, lim, plot_padding, zlabel)
+function printcolorbarrow(
+    io::IO, c::HeatmapCanvas, row::Int, colormap::Any, border::Symbol,
+    lim, lim_str, plot_padding, zlabel, max_len, blank::Char
+)
     b = bordermap[border]
-    min_z = lim[1]
-    max_z = lim[2]
+    min_z, max_z = lim
+    label = ""
     if row == 1
+        label = lim_str[2]
         # print top border and maximum z value
         print_color(:light_black, io, b[:tl], b[:t], b[:t], b[:tr])
-        max_z_str = isinteger(max_z) ? max_z : float_round_log10(max_z)
         print(io, plot_padding)
-        print_color(:light_black, io, max_z_str)
+        print_color(:light_black, io, label)
     elseif row == nrows(c)
+        label = lim_str[1]
         # print bottom border and minimum z value
         print_color(:light_black, io, b[:bl], b[:b], b[:b], b[:br])
-        min_z_str = isinteger(min_z) ? min_z : float_round_log10(min_z)
         print(io, plot_padding)
-        print_color(:light_black, io, min_z_str)
+        print_color(:light_black, io, label)
     else
         # print gradient
         print_color(:light_black, io, b[:l])
@@ -93,12 +96,13 @@ function printcolorbarrow(io::IO, c::HeatmapCanvas, row::Int, colormap::Any, bor
         print(io, HALF_BLOCK)
         print(io, Crayon(reset=true))
         print_color(:light_black, io, b[:r])
-
+        print(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1
-            print(io, plot_padding)
-            print(io, zlabel)
+            label = zlabel
+            print(io, label)            
         end
     end
+    print(io, repeat(blank, max_len - length(label)))
 end
 

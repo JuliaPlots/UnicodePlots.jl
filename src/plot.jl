@@ -297,13 +297,13 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
     if loc == :l || loc == :r
         for row = 1:nrows(plot.graphics)
             if loc == :l
-                if(!haskey(plot.labels_left, row) || plot.labels_left[row] == "")
+                if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
                     plot.colors_left[row] = julia_color(color)
                     return plot
                 end
             elseif loc == :r
-                if(!haskey(plot.labels_right, row) || plot.labels_right[row] == "")
+                if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
                     plot.colors_right[row] = julia_color(color)
                     return plot
@@ -354,31 +354,65 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
-function print_title(io::IO, padding::AbstractString, title::AbstractString; p_width::Int = 0, color = :normal)
-    if title != ""
-        offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
-        offset = offset > 0 ? offset : 0
-        tpad = repeat(" ", offset)
-        print_color(color, io, padding, tpad, title)
-    end
+function print_title(io::IO, left_pad::AbstractString, title::AbstractString, right_pad::AbstractString, blank::Char; p_width::Int = 0, color = :normal)
+    title == "" && return
+    offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
+    pre_pad = repeat(blank, offset > 0 ? offset : 0)
+    print(io, left_pad, pre_pad)
+    print_color(color, io, title)
+    post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
+    print(io, post_pad, right_pad)
 end
 
-function print_border_top(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
+function print_border(io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString, border::Symbol = :solid, color::UserColorType = :light_black)
+    border === :none && return
     b = bordermap[border]
-    border == :none || print_color(color, io, padding, b[:tl], repeat(b[:t], length), b[:tr])
-end
-
-function print_border_bottom(io::IO, padding::AbstractString, length::Int, border::Symbol = :solid, color::UserColorType = :light_black)
-    b = bordermap[border]
-    border == :none || print_color(color, io, padding, b[:bl], repeat(b[:b], length), b[:br])
+    print(io, left_pad)
+    print_color(color, io, b[Symbol(loc, :l)], repeat(b[loc], length), b[Symbol(loc, :r)])
+    print(io, right_pad)
 end
 
 _nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
 
+function print_labels(io::IO, mloc::Symbol, p::Plot, border_length, left_pad::AbstractString, right_pad::AbstractString, blank::Char)
+    p.show_labels || return
+    lloc = Symbol(mloc, :l)
+    rloc = Symbol(mloc, :r)
+    left_str  = get(p.decorations, lloc, "")
+    left_col  = get(p.colors_deco, lloc, :light_black)
+    mid_str   = get(p.decorations, mloc, "")
+    mid_col   = get(p.colors_deco, mloc, :light_black)
+    right_str = get(p.decorations, rloc, "")
+    right_col = get(p.colors_deco, rloc, :light_black)
+    if left_str != "" || right_str != "" || mid_str != ""
+        left_len  = length(left_str)
+        mid_len   = length(mid_str)
+        right_len = length(right_str)
+        print(io, left_pad)
+        print_color(left_col, io, left_str)
+        cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
+        pad = cnt > 0 ? repeat(blank, cnt) : ""
+        print(io, pad)
+        print_color(mid_col, io, mid_str)
+        cnt = border_length - right_len - left_len - mid_len + 2 - cnt
+        pad = cnt > 0 ? repeat(blank, cnt) : ""
+        print(io, pad)
+        print_color(right_col, io, right_str)
+        print(io, right_pad)
+    end
+end
+
 function Base.show(io::IO, p::Plot)
-    b = UnicodePlots.bordermap[p.border]
     c = p.graphics
+    🗷 = Char(0x0020)  # blank outside canvas
+    🗹 = Char(typeof(c) <: BrailleCanvas ? 0x2800 : 🗷)  # blank inside canvas
+    ############################################################
+    # 🗷 = 'x'  # debug
+    # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
+    ############################################################
+    b = UnicodePlots.bordermap[p.border]
     border_length = ncols(c)
+    p_width = border_length + 2  # left corner + border + right corner
 
     # get length of largest strings to the left and right
     max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
@@ -391,42 +425,37 @@ function Base.show(io::IO, p::Plot)
     plot_offset = max_len_l + p.margin + p.padding
 
     # padding-string from left to border
-    plot_padding = repeat(" ", p.padding)
+    plot_padding = repeat(🗷, p.padding)
+
+    if p.show_colorbar
+        min_z, max_z = p.colorbar_lim
+        min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
+        max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
+        cbar_max_len = max(length(min_z_str), length(max_z_str), length(_nocolor_string(p.zlabel)))
+        cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
+    else
+        cbar_pad = ""
+    end
 
     # padding-string between labels and border
-    border_padding = repeat(" ", plot_offset)
+    border_left_pad = repeat(🗷, plot_offset)
+
+    # trailing
+    border_right_pad = repeat(🗷, max_len_r) * plot_padding * cbar_pad
 
     # plot the title and the top border
-    print_title(io, border_padding, p.title, p_width = border_length, color = :bold)
-    p.title != "" && println(io)
-    if p.show_labels
-        topleft_str  = get(p.decorations, :tl, "")
-        topleft_col  = get(p.colors_deco, :tl, :light_black)
-        topmid_str   = get(p.decorations, :t, "")
-        topmid_col   = get(p.colors_deco, :t, :light_black)
-        topright_str = get(p.decorations, :tr, "")
-        topright_col = get(p.colors_deco, :tr, :light_black)
-        if topleft_str != "" || topright_str != "" || topmid_str != ""
-            topleft_len  = length(topleft_str)
-            topmid_len   = length(topmid_str)
-            topright_len = length(topright_str)
-            print_color(topleft_col, io, border_padding, topleft_str)
-            cnt = round(Int, border_length / 2 - topmid_len / 2 - topleft_len, RoundNearestTiesUp)
-            pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_color(topmid_col, io, pad, topmid_str)
-            cnt = border_length - topright_len - topleft_len - topmid_len + 2 - cnt
-            pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_color(topright_col, io, pad, topright_str, "\n")
-        end
-    end
-    print_border_top(io, border_padding, border_length, p.border)
-    print(io, repeat(" ", max_len_r), plot_padding, "\n")
+    print_title(
+        io, border_left_pad, p.title, border_right_pad * '\n', 🗹;
+        p_width = p_width, color = :bold
+    )
+    print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
+    print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', p.border)
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     # plot all rows
-    for row in 1:nrows(c)
+    for row in 1:(nr = nrows(c))
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
         left_col  = get(p.colors_left,  row, :light_black)
@@ -439,21 +468,22 @@ function Base.show(io::IO, p::Plot)
             right_str = _nocolor_string(right_str)
         end
         # print left annotations
-        print(io, repeat(" ", p.margin))
+        print(io, repeat(🗷, p.margin))
         if p.show_labels
             if row == y_lab_row
                 # print ylabel
                 print_color(:normal, io, p.ylabel)
-                print(io, repeat(" ", max_len_l - length(p.ylabel) - left_len))
+                print(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
-                print(io, repeat(" ", max_len_l - left_len))
+                print(io, repeat(🗷, max_len_l - left_len))
             end
             # print the left annotation
             print_color(left_col, io, left_str)
         end
         # print left border
-        print_color(:light_black, io, plot_padding, b[:l])
+        print(io, plot_padding)
+        print_color(:light_black, io, b[:l])
         # print canvas row
         printrow(io, c, row)
         # print right label and padding
@@ -461,42 +491,27 @@ function Base.show(io::IO, p::Plot)
         if p.show_labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)
-            print(io, repeat(" ", max_len_r - right_len))
+            print(io, repeat(🗷, max_len_r - right_len))
         end
         # print colorbar
         if p.show_colorbar
             print(io, plot_padding)
-            printcolorbarrow(io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim, plot_padding, p.zlabel)
+            printcolorbarrow(
+                io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim,
+                (min_z_str, max_z_str), plot_padding, p.zlabel, cbar_max_len, 🗷
+            )
         end
-        print(io, "\n")
+        row < nr && println(io)
     end
 
-    # draw bottom border and bottom labels
-    print_border_bottom(io, border_padding, border_length, p.border)
-    print(io, repeat(" ", max_len_r), plot_padding)
+    # draw bottom border and bottom labels  
+    print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, p.border)
     if p.show_labels
-        botleft_str  = get(p.decorations, :bl, "")
-        botleft_col  = get(p.colors_deco, :bl, :light_black)
-        botmid_str   = get(p.decorations, :b, "")
-        botmid_col   = get(p.colors_deco, :b, :light_black)
-        botright_str = get(p.decorations, :br, "")
-        botright_col = get(p.colors_deco, :br, :light_black)
-        if botleft_str != "" || botright_str != "" || botmid_str != ""
-            println(io)
-            botleft_len  = length(botleft_str)
-            botmid_len   = length(botmid_str)
-            botright_len = length(botright_str)
-            print_color(botleft_col, io, border_padding, botleft_str)
-            cnt = round(Int, border_length / 2 - botmid_len / 2 - botleft_len, RoundNearestTiesUp)
-            pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_color(botmid_col, io, pad, botmid_str)
-            cnt = border_length - botright_len - botleft_len - botmid_len + 2 - cnt
-            pad = cnt > 0 ? repeat(" ", cnt) : ""
-            print_color(botright_col, io, pad, botright_str)
-        end
-        # abuse the print_title function to print the xlabel. maybe refactor this
-        p.xlabel != "" && println(io)
-        print_title(io, border_padding, p.xlabel, p_width = border_length)
+        print_labels(io, :b, p, border_length - 2, '\n' * border_left_pad * 🗹, 🗹 * border_right_pad, 🗹)
+        print_title(
+            io, '\n' * border_left_pad, p.xlabel, border_right_pad, 🗹;
+            p_width = p_width
+        )
     end
 end
 
