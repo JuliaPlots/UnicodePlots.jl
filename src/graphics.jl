@@ -5,22 +5,21 @@ function ncols end
 function printrow end
 
 function Base.print(io::IO, c::GraphicsArea)
-    for row in 1:nrows(c)
+    for row in 1:(nr = nrows(c))
         printrow(io, c, row)
-        row < nrows(c) && print(io, '\n')
+        row < nr && println(io)
     end
 end
 
 function Base.show(io::IO, c::GraphicsArea)
     b = border_solid
     border_length = ncols(c)
-    print_border_top(io, "", border_length, :solid, :light_black)
-    print(io, '\n')
-    for row in 1:nrows(c)
+    print_border(io, :t, border_length, "", "\n", :solid, :light_black)
+    for row in 1:(nr = nrows(c))
         print_color(:light_black, io, b[:l])
         printrow(io, c, row)
         print_color(:light_black, io, b[:r])
-        print(io, '\n')
+        row < nr && println(io)
     end
-    print_border_bottom(io, "", border_length, :solid, :light_black)
+    print_border(io, :b, border_length, "\n", "", :solid, :light_black)
 end
