@@ -296,6 +296,11 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 ![Annotate Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/annotate.png)
 
+## Know Issues
+
+Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border vs canvas).
+Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or use `border=:dotted` keyword argument in the plots.
+
 ## Low-level Interface
 
 The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.
