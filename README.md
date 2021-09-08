@@ -300,6 +300,7 @@ The method `annotate!` is responsible for the setting all the textual decoration
 
 Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border vs canvas).
 Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or use `border=:dotted` keyword argument in the plots.
+For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.netlify.app/faq/#can_i_use_this_font_in_a_jupyter_notebook_and_how_do_i_do_it).
 
 ## Low-level Interface
 
