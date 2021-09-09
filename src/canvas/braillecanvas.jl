@@ -74,6 +74,36 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     c
 end
 
+function gridpoint_char!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+  if checkbounds(Bool, c.grid, char_x, char_y)
+    c.grid[char_x,char_y] = char
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+  end
+  return c
+end
+
+function point_to_gridpoint(c::T, x::Number, y::Number) where {T<:BrailleCanvas}
+  origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
+  origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+  gridpoint_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
+  gridpoint_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
+  return max(ceil(Int, gridpoint_x), 1), max(ceil(Int, gridpoint_y), 1)
+end
+
+function point_char!(c::T, x::Number, y::Number, char::Char, color::UserColorType) where {T<:BrailleCanvas}
+  gridpoint_x, gridpoint_y = point_to_gridpoint(c, x, y)
+  gridpoint_char!(c, gridpoint_x, gridpoint_y, char)
+end
+
+function annotate!(c::BrailleCanvas, x::Number, y::Number, str::String, color::UserColorType)
+  gridpoint_x, gridpoint_y = point_to_gridpoint(c, x, y)
+  for char in str
+    gridpoint_char!(c, gridpoint_x, gridpoint_y, char, color)
+    gridpoint_x += 1
+  end
+  return c
+end
+
 function printrow(io::IO, c::BrailleCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row

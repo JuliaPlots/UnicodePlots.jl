@@ -3,3 +3,4 @@
 /Manifest.toml
 /test/Manifest.toml
 .DS_Store
+*.swp

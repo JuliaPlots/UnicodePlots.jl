@@ -354,6 +354,16 @@ function points!(plot::Plot{<:Canvas}, args...; vars...)
     plot
 end
 
+function gridpoint_char!(plot::Plot{<:Canvas}, args...; vars...)
+  gridpoint_char!(plot.graphics, args...; vars...)
+  return plot
+end
+
+function point_char!(plot::Plot{<:Canvas}, args...; vars...)
+  point_char!(plot.graphics, args...; vars...)
+  return plot
+end
+
 function print_title(io::IO, left_pad::AbstractString, title::AbstractString, right_pad::AbstractString, blank::Char; p_width::Int = 0, color = :normal)
     title == "" && return
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
