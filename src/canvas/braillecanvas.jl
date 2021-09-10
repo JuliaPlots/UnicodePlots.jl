@@ -83,8 +83,8 @@ function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, col
 end
 
 function point_to_char_point(c::T, x::Number, y::Number) where {T<:BrailleCanvas}
-  origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
-  origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+  xs = fscale(x, c.xscale)
+  ys = fscale(y, c.yscale)
   char_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
   char_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
   return max(ceil(Int, char_x), 1), max(ceil(Int, char_y), 1)
