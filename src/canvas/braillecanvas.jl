@@ -74,7 +74,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     c
 end
 
-function gridpoint_char!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
   if checkbounds(Bool, c.grid, char_x, char_y)
     c.grid[char_x,char_y] = char
     set_color!(c.colors, char_x, char_y, crayon_256_color(color))
@@ -82,24 +82,51 @@ function gridpoint_char!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char,
   return c
 end
 
-function point_to_gridpoint(c::T, x::Number, y::Number) where {T<:BrailleCanvas}
+function point_to_char_point(c::T, x::Number, y::Number) where {T<:BrailleCanvas}
   origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
   origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
-  gridpoint_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
-  gridpoint_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
-  return max(ceil(Int, gridpoint_x), 1), max(ceil(Int, gridpoint_y), 1)
+  char_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
+  char_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
+  return max(ceil(Int, char_x), 1), max(ceil(Int, char_y), 1)
 end
 
-function point_char!(c::T, x::Number, y::Number, char::Char, color::UserColorType) where {T<:BrailleCanvas}
-  gridpoint_x, gridpoint_y = point_to_gridpoint(c, x, y)
-  gridpoint_char!(c, gridpoint_x, gridpoint_y, char)
+function align_char_point(text::AbstractString, char_x::Integer, char_y::Integer, halign, valign)
+  nchar = lastindex(text)
+  char_x = if halign == :center
+    char_x - nchar ÷ 2
+  elseif halign == :left
+    char_x + 1
+  elseif halign == :right
+    char_x - nchar
+  else
+    error("Argument `halign = $halign` not supported.")
+  end
+  char_y = if valign == :center
+    char_y
+  elseif valign == :top
+    char_y + 1
+  elseif valign == :bottom
+    char_y - 1
+  else
+    error("Argument `valign = $valign` not supported.")
+  end
+  return char_x, char_y
 end
 
-function annotate!(c::BrailleCanvas, x::Number, y::Number, str::String, color::UserColorType)
-  gridpoint_x, gridpoint_y = point_to_gridpoint(c, x, y)
-  for char in str
-    gridpoint_char!(c, gridpoint_x, gridpoint_y, char, color)
-    gridpoint_x += 1
+function annotate!(
+  c::BrailleCanvas,
+  x::Number,
+  y::Number,
+  text::AbstractString,
+  color::UserColorType;
+  halign=:center,
+  valign=:center,
+)
+  char_x, char_y = point_to_char_point(c, x, y)
+  char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
+  for char in text
+    char_point!(c, char_x, char_y, char, color)
+    char_x += 1
   end
   return c
 end
