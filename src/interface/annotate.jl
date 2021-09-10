@@ -53,7 +53,7 @@ See also
 [`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text; color=:auto)
+function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text; color=:normal)
   color = color == :auto ? next_color!(plot) : color
   annotate!(plot.graphics, x, y, text, color)
   return plot
