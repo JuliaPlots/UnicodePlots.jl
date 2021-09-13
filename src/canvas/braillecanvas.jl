@@ -95,9 +95,9 @@ function align_char_point(text::AbstractString, char_x::Integer, char_y::Integer
   char_x = if halign == :center
     char_x - nchar ÷ 2
   elseif halign == :left
-    char_x + 1
+    char_x
   elseif halign == :right
-    char_x - nchar
+    char_x - nchar + 1
   else
     error("Argument `halign = $halign` not supported.")
   end
