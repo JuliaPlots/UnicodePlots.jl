@@ -30,7 +30,7 @@ end
 
 @testset "padding" begin
     p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5)
-    @test @inferred(label!(p, :l, ":l auto 1")) === p
+    @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, ":l auto 1")
     @test @inferred(label!(p, :r, ":r auto 1", :red)) === p
     test_ref("references/plot/padding.txt", @show_col(p))
 

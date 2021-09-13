@@ -322,6 +322,11 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColor
     label!(plot, loc, value, color)
 end
 
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, value, color)
+end
+
 function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
