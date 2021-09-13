@@ -74,10 +74,10 @@ ascii_lookup[0b100_100_100] = '|'
 ascii_lookup[0b001_001_001] = '|'
 ascii_lookup[0b110_011_110] = '}'
 
-const n_ascii_canvas = 512
-const ascii_decode = Vector{Char}(undef, n_ascii_canvas + n_ascii)
+const n_ascii = 512
+const ascii_decode = Vector{Char}(undef, typemax(UInt16))
 ascii_decode[1] = ' '
-for i in 2:n_ascii_canvas
+for i in 2:n_ascii
     min_dist = typemax(Int)
     min_char = ' '
     for (k, v) in sort_by_keys(ascii_lookup)
@@ -90,7 +90,7 @@ for i in 2:n_ascii_canvas
     ascii_decode[i] = min_char
 end
 
-ascii_decode[n_ascii_canvas + 1:n_ascii_canvas + n_ascii] = ascii_table[1:n_ascii]
+ascii_decode[(n_ascii+1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16)-n_ascii)]
 
 """
 As the name suggests the `AsciiCanvas` only uses
@@ -129,8 +129,8 @@ function AsciiCanvas(args...; nargs...)
 end
 
 function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
-  if checkbounds(Bool, c.grid, char_x, char_y) && isascii(char)
-    c.grid[char_x,char_y] = n_ascii_canvas + char
+  if checkbounds(Bool, c.grid, char_x, char_y)
+    c.grid[char_x,char_y] = n_ascii + char
     set_color!(c.colors, char_x, char_y, crayon_256_color(color))
   end
   c

@@ -1,7 +1,15 @@
-const n_ascii = 128
-const ascii_table = Array{Char}(undef, n_ascii)
-for i in 1:n_ascii
-    ascii_table[i] = Char(i - 1)
+# https://en.wikipedia.org/wiki/Plane_(Unicode)
+const plane0_start = 0x00000
+const plane0_stop = 0x0FFFF
+const plane1_start = 0x10000
+const plane1_stop = 0x1FFFF
+const plane2_start = 0x20000
+const plane2_stop = 0x2FFFF
+
+# FIXME: maybe later support plane 1 (SMP) and plane 2 (CJK)
+const unicode_table = Array{Char}(undef, plane0_stop - plane0_start + 1)
+for i in plane0_start:plane0_stop
+    unicode_table[i + 1] = Char(i)
 end
 
 abstract type LookupCanvas <: Canvas end
