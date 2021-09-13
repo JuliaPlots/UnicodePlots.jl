@@ -96,7 +96,7 @@ end
     @test @inferred(annotate!(p, 1.0, 1.0, "North East"; halign = :right)) === p
     @test @inferred(annotate!(p, 1.0, 0.5, "East"; halign = :right)) === p
     @test @inferred(annotate!(p, 1.0, 0.0, "South East"; halign = :right)) === p
-    @test @inferred(annotate!(p, 0.5, 0.0, "South"; halign = :left)) === p
+    @test @inferred(annotate!(p, 0.5, 0.0, "South")) === p
     @test @inferred(annotate!(p, 0.0, 0.0, "South West"; halign = :left)) === p
     @test @inferred(annotate!(p, 0.0, 0.5, "West"; halign = :left)) === p
     @test @inferred(annotate!(p, 0.0, 1.0, "North West"; halign = :left)) === p

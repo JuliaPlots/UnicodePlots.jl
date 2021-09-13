@@ -296,6 +296,9 @@ The method `label!` is responsible for the setting all the textual decorations o
 
 ![Label Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/annotate.png)
 
+- `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kwargs...)`
+    - `text` arbitrary annotation at position (x, y)
+
 ## Know Issues
 
 Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border vs canvas).

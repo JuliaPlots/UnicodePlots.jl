@@ -102,7 +102,7 @@ function boxplot(
     label!(new_plot, :br, max_x_str, color = :light_black)
 
     for (i, name) in enumerate(text)
-        # Find end of last 3-line region, then add 2 for centre of current
+        # Find end of last 3-line region, then add 2 for center of current
         length(name) > 0 && label!(new_plot, :l, (i-1)*3+2, name)
     end
 
@@ -124,13 +124,13 @@ function boxplot!(
         kw...)
     !isempty(data)|| throw(ArgumentError("Can't append empty array to boxplot"))
 
-    #min_x, max_x = extend_limits(data, xlim)
-    #plot.graphics.min_x = max(plot.graphics.min_x, min_x)
-    #plot.graphics.max_x = min(plot.graphics.max_x, max_x)
+    # min_x, max_x = extend_limits(data, xlim)
+    # plot.graphics.min_x = max(plot.graphics.min_x, min_x)
+    # plot.graphics.max_x = min(plot.graphics.max_x, max_x)
 
     addseries!(plot.graphics, data)
 
-    # Find end of last 3-line region, then add 2 for centre of current
+    # Find end of last 3-line region, then add 2 for center of current
     label!(plot, :l, (length(plot.graphics.data)-1)*3+2, name)
 
     min_x = plot.graphics.min_x

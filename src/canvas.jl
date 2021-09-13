@@ -157,22 +157,14 @@ function get_canvas_dimensions_for_matrix(
     (width, height, maxwidth, maxheight)
 end
 
-function point_to_char_point(c::T, x::Number, y::Number) where {T<:Canvas}
-  xs = fscale(x, c.xscale)
-  ys = fscale(y, c.yscale)
-  char_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
-  char_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
-  return max(ceil(Int, char_x), 1), max(ceil(Int, char_y), 1)
-end
-
 function align_char_point(text::AbstractString, char_x::Integer, char_y::Integer, halign, valign)
-  nchar = lastindex(text)
+  nchar = length(text)
   char_x = if halign == :center
     char_x - nchar ÷ 2
   elseif halign == :left
     char_x
   elseif halign == :right
-    char_x - nchar + 1
+    char_x - (nchar - 1)
   else
     error("Argument `halign = $halign` not supported.")
   end
@@ -194,10 +186,15 @@ function annotate!(
   y::Number,
   text::AbstractString,
   color::UserColorType;
-  halign=:center,
-  valign=:center,
+  halign = :center,
+  valign = :center,
 )
-  char_x, char_y = point_to_char_point(c, x, y)
+  xs = fscale(x, c.xscale)
+  ys = fscale(y, c.yscale)
+  pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
+  pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
+
+  char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
   char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
   for char in text
     char_point!(c, char_x, char_y, char, color)
