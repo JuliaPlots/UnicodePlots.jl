@@ -1,7 +1,8 @@
 const block_signs = [0b1000 0b0010;
                      0b0100 0b0001]
 
-const block_decode = Vector{Char}(undef, 16)
+const n_block_canvas = 16
+const block_decode = Vector{Char}(undef, n_block_canvas + n_ascii)
 block_decode[0b0000 + 1] = ' '
 block_decode[0b0001 + 1] = '▗'
 block_decode[0b0010 + 1] = '▖'
@@ -18,6 +19,7 @@ block_decode[0b1100 + 1] = '▀'
 block_decode[0b1101 + 1] = '▜'
 block_decode[0b1110 + 1] = '▛'
 block_decode[0b1111 + 1] = '█'
+block_decode[n_block_canvas+1:n_block_canvas+n_ascii] = ascii_table[1:n_ascii]
 
 """
 The `BlockCanvas` is also Unicode-based.
@@ -49,4 +51,12 @@ end
 
 function BlockCanvas(args...; nargs...)
     CreateLookupCanvas(BlockCanvas, args...; nargs...)
+end
+
+function char_point!(c::BlockCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+  if checkbounds(Bool, c.grid, char_x, char_y) && isascii(char)  # NOTE: limit to ASCII (fits UInt8)
+    c.grid[char_x,char_y] = n_block_canvas + char
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+  end
+  c
 end

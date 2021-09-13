@@ -3,7 +3,6 @@ const ascii_signs = [0b100_000_000 0b000_100_000 0b000_000_100;
                      0b001_000_000 0b000_001_000 0b000_000_001]
 
 const ascii_lookup = Dict{UInt16,Char}()
-const ascii_decode = Vector{Char}(undef, 512)
 ascii_lookup[0b101_000_000] = '"'
 ascii_lookup[0b111_111_111] = '@'
 #ascii_lookup[0b011_110_011] = '$'
@@ -75,19 +74,23 @@ ascii_lookup[0b100_100_100] = '|'
 ascii_lookup[0b001_001_001] = '|'
 ascii_lookup[0b110_011_110] = '}'
 
-ascii_decode[0b1] = ' '
-for i in 1:511
+const n_ascii_canvas = 512
+const ascii_decode = Vector{Char}(undef, n_ascii_canvas + n_ascii)
+ascii_decode[1] = ' '
+for i in 2:n_ascii_canvas
     min_dist = typemax(Int)
     min_char = ' '
     for (k, v) in sort_by_keys(ascii_lookup)
-        cur_dist = count_ones(xor(UInt16(i), k))
+        cur_dist = count_ones(xor(UInt16(i - 1), k))
         if cur_dist < min_dist
             min_dist = cur_dist
             min_char = v
         end
     end
-    ascii_decode[i + 1] = min_char
+    ascii_decode[i] = min_char
 end
+
+ascii_decode[n_ascii_canvas + 1:n_ascii_canvas + n_ascii] = ascii_table[1:n_ascii]
 
 """
 As the name suggests the `AsciiCanvas` only uses
@@ -123,4 +126,12 @@ end
 
 function AsciiCanvas(args...; nargs...)
     CreateLookupCanvas(AsciiCanvas, args...; nargs...)
+end
+
+function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+  if checkbounds(Bool, c.grid, char_x, char_y) && isascii(char)
+    c.grid[char_x,char_y] = n_ascii_canvas + char
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+  end
+  c
 end

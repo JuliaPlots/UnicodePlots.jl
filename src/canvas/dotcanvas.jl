@@ -1,10 +1,12 @@
 const dot_signs = [0b10 0b01]
 
-const dot_decode = Array{Char}(undef, 5)
+const n_dot_canvas = 4
+const dot_decode = Array{Char}(undef, n_dot_canvas + n_ascii)
 dot_decode[0b00 + 1] = ' '
 dot_decode[0b01 + 1] = '.'
 dot_decode[0b10 + 1] = '\''
 dot_decode[0b11 + 1] = ':'
+dot_decode[n_dot_canvas+1:n_dot_canvas+n_ascii] = ascii_table[1:n_ascii]
 
 """
 Similar to the `AsciiCanvas`, the `DotCanvas` only uses
@@ -40,4 +42,12 @@ end
 
 function DotCanvas(args...; nargs...)
     CreateLookupCanvas(DotCanvas, args...; nargs...)
+end
+
+function char_point!(c::DotCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+  if checkbounds(Bool, c.grid, char_x, char_y) && isascii(char)  # NOTE: limit to ASCII (fits UInt8)
+    c.grid[char_x,char_y] = n_dot_canvas + char
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+  end
+  c
 end

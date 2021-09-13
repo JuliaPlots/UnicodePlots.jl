@@ -1,3 +1,9 @@
+const n_ascii = 128
+const ascii_table = Array{Char}(undef, n_ascii)
+for i in 1:n_ascii
+    ascii_table[i] = Char(i - 1)
+end
+
 abstract type LookupCanvas <: Canvas end
 
 function lookup_encode end

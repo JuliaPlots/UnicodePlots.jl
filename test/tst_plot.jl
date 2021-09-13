@@ -91,10 +91,28 @@ end
 
 @testset "annotations" begin
     p = @inferred Plot(canvas)
-    @test @inferred(annotate!(p, 0.5, 0.5, "Center")) === p
-    @test @inferred(annotate!(p, 0., 0., "Bottom Left"; halign=:left)) === p
-    @test @inferred(annotate!(p, 1., 0., "Bottom Right"; halign=:right)) === p
-    @test @inferred(annotate!(p, 0., 1., "Top Left"; halign=:left)) === p
-    @test @inferred(annotate!(p, 1., 1., "Top Right"; halign=:right)) === p
-    test_ref("references/plot/annotations.txt", @show_col(p))
+    @test @inferred(annotate!(p, 0.5, 0.5, "Origin")) === p
+    @test @inferred(annotate!(p, 0.5, 1.0, "North")) === p
+    @test @inferred(annotate!(p, 1.0, 1.0, "North East"; halign = :right)) === p
+    @test @inferred(annotate!(p, 1.0, 0.5, "East"; halign = :right)) === p
+    @test @inferred(annotate!(p, 1.0, 0.0, "South East"; halign = :right)) === p
+    @test @inferred(annotate!(p, 0.5, 0.0, "South"; halign = :left)) === p
+    @test @inferred(annotate!(p, 0.0, 0.0, "South West"; halign = :left)) === p
+    @test @inferred(annotate!(p, 0.0, 0.5, "West"; halign = :left)) === p
+    @test @inferred(annotate!(p, 0.0, 1.0, "North West"; halign = :left)) === p
+    test_ref("references/plot/annotations_BrailleCanvas.txt", @show_col(p))
+
+    for sym in (:AsciiCanvas, :DotCanvas, :BlockCanvas)
+        p = lineplot([-1, 1], [-1, 1], canvas = getproperty(UnicodePlots, sym))
+        annotate!(p, +0, +0, "Origin")
+        annotate!(p, +0, +1, "North")
+        annotate!(p, +1, +1, "North East"; halign = :right)
+        annotate!(p, +1, +0, "East"; halign = :right)
+        annotate!(p, +1, -1, "South East"; halign = :right)
+        annotate!(p, +0, -1, "South")
+        annotate!(p, -1, -1, "South West"; halign = :left)
+        annotate!(p, -1, +0, "West"; halign = :left)
+        annotate!(p, -1, +1, "North West"; halign = :left)
+        test_ref("references/plot/annotations_$sym.txt", @show_col(p))
+    end
 end

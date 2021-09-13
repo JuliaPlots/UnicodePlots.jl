@@ -95,7 +95,6 @@ end
 
 lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = lines!(c, X, Y, color)
 
-
 function get_canvas_dimensions_for_matrix(
     canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
     extra_rows::Int = 0, extra_cols::Int = 0
@@ -156,4 +155,53 @@ function get_canvas_dimensions_for_matrix(
     height = round(Int, height)
 
     (width, height, maxwidth, maxheight)
+end
+
+function point_to_char_point(c::T, x::Number, y::Number) where {T<:Canvas}
+  xs = fscale(x, c.xscale)
+  ys = fscale(y, c.yscale)
+  char_x = ((xs - origin_x(c)) / width(c) * pixel_width(c)) / x_pixel_per_char(T)
+  char_y = (pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)) / y_pixel_per_char(T)
+  return max(ceil(Int, char_x), 1), max(ceil(Int, char_y), 1)
+end
+
+function align_char_point(text::AbstractString, char_x::Integer, char_y::Integer, halign, valign)
+  nchar = lastindex(text)
+  char_x = if halign == :center
+    char_x - nchar ÷ 2
+  elseif halign == :left
+    char_x
+  elseif halign == :right
+    char_x - nchar + 1
+  else
+    error("Argument `halign = $halign` not supported.")
+  end
+  char_y = if valign == :center
+    char_y
+  elseif valign == :top
+    char_y + 1
+  elseif valign == :bottom
+    char_y - 1
+  else
+    error("Argument `valign = $valign` not supported.")
+  end
+  return char_x, char_y
+end
+
+function annotate!(
+  c::Canvas,
+  x::Number,
+  y::Number,
+  text::AbstractString,
+  color::UserColorType;
+  halign=:center,
+  valign=:center,
+)
+  char_x, char_y = point_to_char_point(c, x, y)
+  char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
+  for char in text
+    char_point!(c, char_x, char_y, char, color)
+    char_x += 1
+  end
+  return c
 end
