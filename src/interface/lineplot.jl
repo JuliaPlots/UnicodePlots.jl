@@ -116,7 +116,7 @@ function lineplot!(
         color::UserColorType = :auto,
         name = "")
     color = color == :auto ? next_color!(plot) : color
-    name == "" || annotate!(plot, :r, string(name), color)
+    name == "" || label!(plot, :r, string(name), color)
     lines!(plot, x, y, color)
 end
 
@@ -134,8 +134,8 @@ function lineplot(
     d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
     new_plot = lineplot(d, y; xlim = dlim, kw...)
-    annotate!(new_plot, :bl, string(xlim[1]), color = :light_black)
-    annotate!(new_plot, :br, string(xlim[2]), color = :light_black)
+    label!(new_plot, :bl, string(xlim[1]), color = :light_black)
+    label!(new_plot, :br, string(xlim[2]), color = :light_black)
 end
 
 function lineplot!(

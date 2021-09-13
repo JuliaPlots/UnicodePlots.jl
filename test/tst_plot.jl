@@ -25,37 +25,37 @@ p = @inferred Plot(canvas, xlabel = "x", ylabel= "y")
 test_ref("references/plot/xylabel.txt", @show_col(p))
 
 p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5)
-@test @inferred(annotate!(p, :l, ":l auto 1")) === p
-@test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
+@test @inferred(label!(p, :l, ":l auto 1")) === p
+@test @inferred(label!(p, :r, ":r auto 1", :red)) === p
 test_ref("references/plot/padding.txt", @show_col(p))
 
 p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5, labels = false)
-@test @inferred(annotate!(p, :l, ":l auto 1")) === p
-@test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
+@test @inferred(label!(p, :l, ":l auto 1")) === p
+@test @inferred(label!(p, :r, ":r auto 1", :red)) === p
 test_ref("references/plot/padding_nolabels.txt", @show_col(p))
 
 p = @inferred Plot(canvas, title = "testtitle")
 test_ref("references/plot/title.txt", @show_col(p))
-@test @inferred(annotate!(p, :l, ":l auto 1")) === p
-@test @inferred(annotate!(p, :r, ":r auto 1", :red)) === p
-@test @inferred(annotate!(p, :l, ":l auto 2", :green)) === p
-@test @inferred(annotate!(p, :r, ":r auto 2", :blue)) === p
+@test @inferred(label!(p, :l, ":l auto 1")) === p
+@test @inferred(label!(p, :r, ":r auto 1", :red)) === p
+@test @inferred(label!(p, :l, ":l auto 2", :green)) === p
+@test @inferred(label!(p, :r, ":r auto 2", :blue)) === p
 test_ref("references/plot/title_auto.txt", @show_col(p))
 
 for i in 1:10
-    @test @inferred(annotate!(p, :l, i, "$i", color=:green)) === p
-    @test @inferred(annotate!(p, :r, i, "$i", :yellow)) === p
+    @test @inferred(label!(p, :l, i, "$i", color=:green)) === p
+    @test @inferred(label!(p, :r, i, "$i", :yellow)) === p
 end
-@test_throws ArgumentError annotate!(p, :bl, 5, ":l  5", :red)
-@test_throws ArgumentError annotate!(p, :d, ":l auto", :red)
-@test @inferred(annotate!(p, :l, 5, ":l  5", :red)) === p
-@test @inferred(annotate!(p, :r, 5, "5  :r", color=:blue)) === p
-@test @inferred(annotate!(p, :t, ":t", color=:yellow)) === p
-@test @inferred(annotate!(p, :tl, ":tl", :cyan)) === p
-@test @inferred(annotate!(p, :tr, ":tr")) === p
-annotate!(p, :bl, ":bl", :blue)
-annotate!(p, :b, ":b", :green)
-annotate!(p, :br, ":br", :white)
+@test_throws ArgumentError label!(p, :bl, 5, ":l  5", :red)
+@test_throws ArgumentError label!(p, :d, ":l auto", :red)
+@test @inferred(label!(p, :l, 5, ":l  5", :red)) === p
+@test @inferred(label!(p, :r, 5, "5  :r", color=:blue)) === p
+@test @inferred(label!(p, :t, ":t", color=:yellow)) === p
+@test @inferred(label!(p, :tl, ":tl", :cyan)) === p
+@test @inferred(label!(p, :tr, ":tr")) === p
+label!(p, :bl, ":bl", :blue)
+label!(p, :b, ":b", :green)
+label!(p, :br, ":br", :white)
 
 @test @inferred(lines!(p, 0., 1., 1., 0., color=(0,0,255))) === p
 @test @inferred(pixel!(p, 10, 1, color = (255,255,0))) === p

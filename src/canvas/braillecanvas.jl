@@ -79,7 +79,7 @@ function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, col
     c.grid[char_x,char_y] = char
     set_color!(c.colors, char_x, char_y, crayon_256_color(color))
   end
-  return c
+  c
 end
 
 function point_to_char_point(c::T, x::Number, y::Number) where {T<:BrailleCanvas}

@@ -39,6 +39,7 @@ export
     xlabel, xlabel!,
     ylabel, ylabel!,
     zlabel, zlabel!,
+    label!,
     annotate!,
 
     barplot, barplot!,
@@ -79,6 +80,5 @@ include("interface/densityplot.jl")
 include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
-include("interface/annotate.jl")
 
 end

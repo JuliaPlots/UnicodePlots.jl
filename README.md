@@ -282,19 +282,19 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
     - `ylabel` the string to display on the far left of the plot window.
 
-The method `annotate!` is responsible for the setting all the textual decorations of a plot. It has two functions:
+The method `label!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
-- `annotate!(plot::Plot, where::Symbol, value::String)`
+- `label!(plot::Plot, where::Symbol, value::String)`
 
     - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
 
-- `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
+- `label!(plot::Plot, where::Symbol, row::Int, value::String)`
 
     - `where` can be any of: `:l` (left), `:r` (right)
 
     - `row` can be between 1 and the number of character rows of the canvas
 
-![Annotate Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/annotate.png)
+![Label Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/annotate.png)
 
 ## Know Issues
 

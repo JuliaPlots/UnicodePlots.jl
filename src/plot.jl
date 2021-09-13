@@ -52,9 +52,9 @@ Methods
 
 - `zlabel!(plot::Plot, zlabel::String)`
 
-- `annotate!(plot::Plot, where::Symbol, value::String)`
+- `label!(plot::Plot, where::Symbol, value::String)`
 
-- `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
+- `label!(plot::Plot, where::Symbol, row::Int, value::String)`
 
 Author(s)
 ==========
@@ -170,10 +170,10 @@ function Plot(
     max_x_str = compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
     min_y_str = compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
     max_y_str = compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    annotate!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
-    annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
-    annotate!(new_plot, :bl, min_x_str, color = :light_black)
-    annotate!(new_plot, :br, max_x_str, color = :light_black)
+    label!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
+    label!(new_plot, :l, 1, max_y_str, color = :light_black)
+    label!(new_plot, :bl, min_x_str, color = :light_black)
+    label!(new_plot, :br, max_x_str, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -276,9 +276,9 @@ function zlabel!(plot::Plot, zlabel::AbstractString)
 end
 
 """
-    annotate!(plot, where, value, [color])
+    label!(plot, where, value, [color])
 
-    annotate!(plot, where, row, value, [color])
+    label!(plot, where, row, value, [color])
 
 This method is responsible for the setting
 all the textual decorations of a plot.
@@ -292,7 +292,7 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
+function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
     loc == :t || loc == :b || loc == :l || loc == :r || loc == :tl || loc == :tr || loc == :bl || loc == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
     if loc == :l || loc == :r
         for row = 1:nrows(plot.graphics)
@@ -318,11 +318,11 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
-    annotate!(plot, loc, value, color)
+function label!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
+    label!(plot, loc, value, color)
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
+function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = julia_color(color)
@@ -335,9 +335,71 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
-    annotate!(plot, loc, row, value, color)
+function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
+    label!(plot, loc, row, value, color)
 end
+
+
+"""
+    annotate!(plot::Plot, x, y, text; kwargs...)
+
+Description
+============
+
+Adds text to the plot at the position `(x, y)`.
+
+Arguments
+==========
+
+- **`x`** : The horizontal position of the text.
+
+- **`y`** : The vertical position of the text.
+
+- **`text`** : A string of text.
+
+- **`color`** : The color of the text.
+
+Examples
+=========
+
+```julia-repl
+julia> plt = lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot");
+
+julia> annotate!(plt, 5, 5, "My text")
+       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My Lineplot⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+       ┌────────────────────────────────────────┐
+    10 │⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠│
+       │⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀│
+       │⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My text⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀│
+       │⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠤⠤⠤⠼⡤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢤⠤⠶⠥⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤│
+       │⠀⠀⠀⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⢱⠀⠀⠀⠀⡠⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⢇⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+   -10 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
+       └────────────────────────────────────────┘
+       ⠀1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀7⠀
+```
+
+See also
+=========
+
+[`Plot`](@ref), [`lineplot`](@ref), [`scatterplot`](@ref),
+[`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
+"""
+function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text; color=:normal, kwargs...)
+  color = color == :auto ? next_color!(plot) : color
+  annotate!(plot.graphics, x, y, text, color; kwargs...)
+  return plot
+end
+
 
 function lines!(plot::Plot{<:Canvas}, args...; vars...)
     lines!(plot.graphics, args...; vars...)

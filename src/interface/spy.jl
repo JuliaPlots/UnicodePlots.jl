@@ -155,13 +155,13 @@ function spy(
                 convert(Vector{AbstractFloat}, neg_cols),
                 nrow + 1 .- convert(Vector{Float64}, neg_rows),
                 :blue)
-        annotate!(plot, :r, 1, "> 0", :red)
-        annotate!(plot, :r, 2, "< 0", :blue)
+        label!(plot, :r, 1, "> 0", :red)
+        label!(plot, :r, 2, "< 0", :blue)
     end
-    annotate!(plot, :l, 1, "1", :light_black)
-    annotate!(plot, :l, height, string(nrow), :light_black)
-    annotate!(plot, :bl, "1", :light_black)
-    annotate!(plot, :br, string(ncol), :light_black)
+    label!(plot, :l, 1, "1", :light_black)
+    label!(plot, :l, height, string(nrow), :light_black)
+    label!(plot, :bl, "1", :light_black)
+    label!(plot, :br, string(ncol), :light_black)
     xlabel!(plot, string("nz = ", length(vals)))
     return plot
 end
