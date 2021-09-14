@@ -18,7 +18,7 @@ Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ["▇"])
+    histogram(hist; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ["▇"])
 
 Arguments
 ==========
@@ -33,9 +33,9 @@ Arguments
 
 - **`hist`** : A fitted `StatsBase.Histogram` that should be plotted.
 
-- **`xscale`** : Function to transform the bar length before plotting.
+- **`xscale`** : Function or Symbol to transform the bar length before plotting.
   This effectively scales the x-axis without influencing the captions
-  of the individual bars. e.g. use `xscale = log10` for logscale.
+  of the individual bars. e.g. use `xscale = :log10` for logscale.
 
 $DOC_PLOT_PARAMS
 
@@ -83,12 +83,13 @@ See also
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """
 function histogram(
-        hist::Histogram;
-        symb = nothing,  # deprecated
-        symbols = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"],
-        xscale = identity,
-        xlabel = transform_name(xscale, "Frequency"),
-        kw...)
+    hist::Histogram;
+    symb = nothing,  # deprecated
+    symbols = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"],
+    xscale::Union{Symbol,Function} = :identity,
+    xlabel = transform_name(xscale, "Frequency"),
+    kw...
+)
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
     binwidths = diff(edges)
@@ -124,7 +125,11 @@ function histogram(
             repeat(" ", pad_right - a2[2]) *
             "\e[90m" * r_str * "\e[0m"
     end
-    barplot(labels, counts; symbols = _handle_deprecated_symb(symb, symbols), xlabel = xlabel, xscale = xscale, kw...)
+    barplot(
+        labels, counts;
+        symbols = _handle_deprecated_symb(symb, symbols),
+        xlabel = xlabel, xscale = xscale, kw...
+    )
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)

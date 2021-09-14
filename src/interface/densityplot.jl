@@ -83,20 +83,15 @@ See also
 [`Plot`](@ref), [`scatterplot`](@ref), [`DensityCanvas`](@ref)
 """
 function densityplot(
-        x::AbstractVector,
-        y::AbstractVector;
-        color::UserColorType = :auto,
-        grid = false,
-        name = "",
-        kw...)
+    x::AbstractVector, y::AbstractVector;
+    color::UserColorType = :auto, grid = false, name = "", kw...
+)
     new_plot = Plot(x, y, DensityCanvas; grid = grid, kw...)
     scatterplot!(new_plot, x, y; color = color, name = name)
 end
 
-function densityplot!(
-        plot::Plot{<:DensityCanvas},
-        x::AbstractVector,
-        y::AbstractVector;
-        kw...)
-    scatterplot!(plot, x, y; kw...)
-end
+densityplot!(
+    plot::Plot{<:DensityCanvas}, x::AbstractVector, y::AbstractVector;
+    kw...
+) = scatterplot!(plot, x, y; kw...)
+

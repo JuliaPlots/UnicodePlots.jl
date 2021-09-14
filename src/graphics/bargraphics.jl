@@ -5,17 +5,21 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     max_freq::Number
     max_len::Int
     symbols::AbstractVector{String}
-    transform
+    transform::Function
 
     function BarplotGraphics(
-            bars::AbstractVector{R},
-            char_width::Int,
-            color::UserColorType,
-            symbols::AbstractVector{S},
-            transform) where {R, S <: Union{Char, String}}
+        bars::AbstractVector{R},
+        char_width::Int,
+        color::UserColorType,
+        symbols::AbstractVector{S},
+        transform::Union{Symbol,Function}
+    ) where {R, S <: Union{Char, String}}
         for s ∈ symbols
-            length(s) == 1 || throw(ArgumentError("Symbol has to be a single character, got: \"" * s * "\""))
+            length(s) == 1 || throw(
+                ArgumentError("Symbol has to be a single character, got: \"" * s * "\"")
+            )
         end
+        transform isa Symbol && (transform = getfield(Main, transform))
         char_width = max(char_width, 10)
         max_freq, i = findmax(transform.(bars))
         max_len = length(string(bars[i]))
@@ -27,14 +31,13 @@ end
 nrows(g::BarplotGraphics) = length(g.bars)
 ncols(g::BarplotGraphics) = g.char_width
 
-function BarplotGraphics(
-        bars::AbstractVector{R},
-        char_width::Int,
-        transform = identity;
-        color::UserColorType = :green,
-        symbols = ["■"]) where {R <: Number}
-    BarplotGraphics(bars, char_width, crayon_256_color(color), symbols, transform)
-end
+BarplotGraphics(
+    bars::AbstractVector{R},
+    char_width::Int,
+    transform::Union{Symbol,Function} = :identity;
+    color::UserColorType = :green,
+    symbols = ["■"]
+) where {R <: Number} = BarplotGraphics(bars, char_width, crayon_256_color(color), symbols, transform)
 
 function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
     append!(g.bars, bars)

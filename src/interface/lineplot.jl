@@ -105,9 +105,7 @@ function lineplot(
     lineplot!(new_plot, x, y; color = color, name = name)
 end
 
-function lineplot(y::AbstractVector; kw...)
-    lineplot(axes(y, 1), y; kw...)
-end
+lineplot(y::AbstractVector; kw...) = lineplot(axes(y, 1), y; kw...)
 
 function lineplot!(
         plot::Plot{<:Canvas},
@@ -120,17 +118,18 @@ function lineplot!(
     lines!(plot, x, y, color)
 end
 
-function lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...)
-    lineplot!(plot, axes(y, 1), y; kw...)
-end
+lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = lineplot!(
+    plot, axes(y, 1), y; kw...
+)
 
 # date time
 
 function lineplot(
-        x::AbstractVector{D},
-        y::AbstractVector;
-        xlim = extrema(x),
-        kw...) where {D<:TimeType}
+    x::AbstractVector{D},
+    y::AbstractVector;
+    xlim = extrema(x),
+    kw...
+) where {D<:TimeType}
     d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
     new_plot = lineplot(d, y; xlim = dlim, kw...)
@@ -139,10 +138,11 @@ function lineplot(
 end
 
 function lineplot!(
-        plot::Plot{<:Canvas},
-        x::AbstractVector{<:TimeType},
-        y::AbstractVector;
-        kw...)
+    plot::Plot{<:Canvas},
+    x::AbstractVector{<:TimeType},
+    y::AbstractVector;
+    kw...
+)
     d = Dates.value.(x)
     lineplot!(plot, d, y; kw...)
 end
@@ -150,10 +150,11 @@ end
 # slope and intercept
 
 function lineplot!(
-        plot::Plot{<:Canvas},
-        intercept::Number,
-        slope::Number;
-        kw...)
+    plot::Plot{<:Canvas},
+    intercept::Number,
+    slope::Number;
+    kw...
+)
     xmin = origin_x(plot.graphics)
     xmax = origin_x(plot.graphics) + width(plot.graphics)
     ymin = origin_y(plot.graphics)
@@ -164,50 +165,52 @@ end
 # plotting a function
 
 function lineplot(
-        f::Function,
-        x::AbstractVector;
-        name = "",
-        xlabel = "x",
-        ylabel = "f(x)",
-        kw...)
+    f::Function,
+    x::AbstractVector;
+    name = "",
+    xlabel = "x",
+    ylabel = "f(x)",
+    kw...
+)
     y = Float64[f(i) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
     new_plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
 
 function lineplot(
-        f::Function,
-        startx::Number,
-        endx::Number;
-        out_stream::Union{Nothing,IO} = nothing,
-        width::Int = out_stream_width(out_stream),
-        kw...)
+    f::Function,
+    startx::Number,
+    endx::Number;
+    out_stream::Union{Nothing,IO} = nothing,
+    width::Int = out_stream_width(out_stream),
+    kw...
+)
     diff = abs(endx - startx)
     x = startx:(diff/(3*width)):endx
     lineplot(f, x; width = width, kw...)
 end
 
-function lineplot(f::Function; kw...)
-    lineplot(f, -10, 10; kw...)
-end
+lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
 
 function lineplot!(
-        plot::Plot{<:Canvas},
-        f::Function,
-        x::AbstractVector;
-        name = "",
-        kw...)
+    plot::Plot{<:Canvas},
+    f::Function,
+    x::AbstractVector;
+    name = "",
+    kw...
+)
     y = Float64[f(i) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
     lineplot!(plot, x, y; name = name, kw...)
 end
 
 function lineplot!(
-        plot::Plot{<:Canvas},
-        f::Function,
-        startx::Number = origin_x(plot.graphics),
-        endx::Number = origin_x(plot.graphics) + width(plot.graphics);
-        kw...)
+    plot::Plot{<:Canvas},
+    f::Function,
+    startx::Number = origin_x(plot.graphics),
+    endx::Number = origin_x(plot.graphics) + width(plot.graphics);
+    kw...
+)
     diff = abs(endx - startx)
     x = startx:(diff/(3*ncols(plot.graphics))):endx
     lineplot!(plot, f, x; kw...)
@@ -215,29 +218,30 @@ end
 
 # plotting vector of functions
 
-lineplot(F::AbstractVector{<:Function}; kw...) = lineplot(F, -10, 10; kw...)
+lineplot(F::AbstractVector{<:Function}; kw...) = lineplot(
+    F, -10, 10; kw...
+)
 
-function lineplot(
-        F::AbstractVector{<:Function},
-        startx::Number,
-        endx::Number;
-        kw...)
-    _lineplot(F, startx, endx; kw...)
-end
+lineplot(
+    F::AbstractVector{<:Function},
+    startx::Number,
+    endx::Number;
+    kw...
+) = _lineplot(F, startx, endx; kw...)
 
-function lineplot(
-        F::AbstractVector{<:Function},
-        x::AbstractVector;
-        kw...)
-    _lineplot(F, x; kw...)
-end
+lineplot(
+    F::AbstractVector{<:Function},
+    x::AbstractVector;
+    kw...
+) = _lineplot(F, x; kw...)
 
 function _lineplot(
-        F::AbstractVector{<:Function},
-        args...;
-        color = :auto,
-        name = "",
-        kw...)
+    F::AbstractVector{<:Function},
+    args...;
+    color = :auto,
+    name = "",
+    kw...
+)
     n = length(F)
     n > 0 || throw(ArgumentError("Can not plot empty array of functions"))
     color_is_vec = color isa AbstractVector
