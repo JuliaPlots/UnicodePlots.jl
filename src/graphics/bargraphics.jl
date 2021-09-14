@@ -70,4 +70,5 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
     pan_len = max(max_bar_width + 1 + g.max_len - bar_head - length(bar_lbl), 0)
     pad = repeat(" ", round(Int, pan_len))
     print(io, pad)
+    nothing
 end

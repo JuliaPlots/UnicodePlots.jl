@@ -106,8 +106,10 @@ function scatterplot!(
         color::UserColorType = :auto,
         name = "")
     color = (color == :auto) ? next_color!(plot) : color
-    name == "" || annotate!(plot, :r, string(name), color)
+    name == "" || label!(plot, :r, string(name), color)
     points!(plot, x, y, color)
 end
 
-scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(plot, axes(y, 1), y; kw...)
+scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(
+  plot, axes(y, 1), y; kw...
+)

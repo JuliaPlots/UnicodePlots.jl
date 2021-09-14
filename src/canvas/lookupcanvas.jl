@@ -1,3 +1,17 @@
+# https://en.wikipedia.org/wiki/Plane_(Unicode)
+const plane0_start = 0x00000
+const plane0_stop = 0x0FFFF
+const plane1_start = 0x10000
+const plane1_stop = 0x1FFFF
+const plane2_start = 0x20000
+const plane2_stop = 0x2FFFF
+
+# TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
+const unicode_table = Array{Char}(undef, plane0_stop - plane0_start + 1)
+for i in plane0_start:plane0_stop
+    unicode_table[i + 1] = Char(i)
+end
+
 abstract type LookupCanvas <: Canvas end
 
 function lookup_encode end
@@ -39,9 +53,7 @@ function CreateLookupCanvas(
       Float64(width), Float64(height), xscale, yscale)
 end
 
-function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
-    0 <= pixel_x <= pixel_width(c) || return c
-    0 <= pixel_y <= pixel_height(c) || return c
+function pixel_to_char_point(c::T, pixel_x::Number, pixel_y::Number) where {T <: LookupCanvas}
     pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
     pixel_y = pixel_y < pixel_height(c) ? pixel_y : pixel_y - 1
     cw, ch = size(grid(c))
@@ -53,6 +65,13 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T
     end
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
+    char_x, char_y, char_x_off, char_y_off
+end
+
+function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
+    0 <= pixel_x <= pixel_width(c) || return c
+    0 <= pixel_y <= pixel_height(c) || return c
+    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
     grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     force = !(color isa Symbol)  # don't attempt to blend colors if they have been explicitly specified
     set_color!(c.colors, char_x, char_y, crayon_256_color(color); force=force)
@@ -65,4 +84,5 @@ function printrow(io::IO, c::LookupCanvas, row::Int)
     for x in 1:ncols(c)
         print_color(colors(c)[x,y], io, lookup_decode(c)[grid(c)[x,y] + 1])
     end
+    nothing
 end

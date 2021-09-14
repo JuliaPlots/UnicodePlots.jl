@@ -1,4 +1,3 @@
-
 @testset "reported issues" begin
     @testset "plot hang (tan → ∞) (#129)" begin
         p = lineplot([cos, sin, tan], -π/2, 2π)

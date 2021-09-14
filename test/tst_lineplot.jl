@@ -106,9 +106,15 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, color = [:red])
-    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = (-.5, 2.5), ylim = (-.9, 1.2))
+    p = @inferred lineplot(
+        [sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow],
+        title = "Funs", ylabel = "f", xlabel = "num", xlim = (-.5, 2.5), ylim = (-.9, 1.2)
+    )
     test_ref("references/lineplot/sincos_parameters.txt", @show_col(p))
-    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2])
+    p = @inferred lineplot(
+        [sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow],
+        title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2]
+    )
     test_ref("references/lineplot/sincos_parameters.txt", @show_col(p))
 end
 
@@ -165,12 +171,12 @@ end
     test_ref("references/lineplot/stairs_edgecase.txt", @show_col(p))
 
     p = stairs(sx, sy, width = 10, padding = 3)
-    annotate!(p, :tl, "Hello")
-    annotate!(p, :t, "how are")
-    annotate!(p, :tr, "you?")
-    annotate!(p, :bl, "Hello")
-    annotate!(p, :b, "how are")
-    annotate!(p, :br, "you?")
+    label!(p, :tl, "Hello")
+    label!(p, :t, "how are")
+    label!(p, :tr, "you?")
+    label!(p, :bl, "Hello")
+    label!(p, :b, "how are")
+    label!(p, :br, "you?")
     lineplot!(p, 1, .5)
     test_ref("references/lineplot/squeeze_annotations.txt", @show_col(p))
 

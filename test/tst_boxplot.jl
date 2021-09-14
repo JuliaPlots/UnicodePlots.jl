@@ -3,9 +3,13 @@
     test_ref("references/boxplot/default.txt", @show_col(p))
     p = @inferred boxplot("series1", [1,2,3,4,5])
     test_ref("references/boxplot/default_name.txt", @show_col(p))
-    p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = (-1,8), color = :blue, width = 50, border = :solid, xlabel="foo")
+    p = @inferred boxplot(
+        "series1", [1,2,3,4,5], title = "Test", xlim = (-1,8), color = :blue, width = 50, border = :solid, xlabel="foo"
+    )
     test_ref("references/boxplot/default_parameters.txt", @show_col(p))
-    p = @inferred boxplot("series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = :blue, width = 50, border = :solid, xlabel="foo")
+    p = @inferred boxplot(
+        "series1", [1,2,3,4,5], title = "Test", xlim = [-1,8], color = :blue, width = 50, border = :solid, xlabel="foo"
+    )
     test_ref("references/boxplot/default_parameters.txt", @show_col(p))
     test_ref("references/boxplot/default_parameters_nocolor.txt", @show_nocol(p))
 end
@@ -20,7 +24,9 @@ end
 end
 
 @testset "multi-series" begin
-    p = @inferred boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", xlabel="foo", color=:yellow)
+    p = @inferred boxplot(
+        ["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Multi-series", xlabel="foo", color=:yellow
+    )
     test_ref("references/boxplot/multi1.txt", @show_col(p))
     @test @inferred(boxplot!(p, "one more", [-1,2,3,4,11])) === p
     test_ref("references/boxplot/multi2.txt", @show_col(p))

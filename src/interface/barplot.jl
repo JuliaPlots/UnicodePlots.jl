@@ -87,7 +87,7 @@ function barplot(
     area = BarplotGraphics(heights, width, xscale, color = color, symbols = _handle_deprecated_symb(symb, symbols))
     new_plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in 1:length(text)
-        annotate!(new_plot, :l, i, text[i])
+        label!(new_plot, :l, i, text[i])
     end
     new_plot
 end
@@ -118,12 +118,14 @@ function barplot!(
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights)
     for i = 1:length(heights)
-        annotate!(plot, :l, curidx + i, text[i])
+        label!(plot, :l, curidx + i, text[i])
     end
     plot
 end
 
-barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} = barplot!(plot, sorted_keys_values(dict)...)
+barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} = barplot!(
+  plot, sorted_keys_values(dict)...
+)
 
 function barplot!(
         plot::Plot{<:BarplotGraphics},
@@ -139,6 +141,6 @@ function barplot!(
         heights::Number)
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights)
-    annotate!(plot, :l, curidx + 1, string(label))
+    label!(plot, :l, curidx + 1, string(label))
     plot
 end

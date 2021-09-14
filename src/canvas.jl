@@ -4,7 +4,9 @@ origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
-pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) = pixel!(c, pixel_x, pixel_y, color)
+pixel!(
+    c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal
+) = pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
     origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
@@ -25,14 +27,18 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserCol
 end
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::AbstractVector{T}) where {T <: UserColorType}
-    (length(X) == length(color) && length(X) == length(Y)) || throw(DimensionMismatch("X, Y, and color must be the same length"))
+    (length(X) == length(color) && length(X) == length(Y)) || throw(
+        DimensionMismatch("X, Y, and color must be the same length")
+    )
     for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
     end
     c
 end
 
-points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = points!(c, X, Y, color)
+points!(
+    c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal
+) = points!(c, X, Y, color)
 
 # Implementation of the digital differential analyser (DDA)
 function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color::UserColorType)
@@ -80,7 +86,9 @@ function lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number, color
     c
 end
 
-lines!(c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal) = lines!(c, x1, y1, x2, y2, color)
+lines!(
+    c::Canvas, x1::Number, y1::Number, x2::Number, y2::Number; color::UserColorType = :normal
+) = lines!(c, x1, y1, x2, y2, color)
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -95,9 +103,9 @@ end
 
 lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = lines!(c, X, Y, color)
 
-
 function get_canvas_dimensions_for_matrix(
-    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int, width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
+    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int,
+    width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
     extra_rows::Int = 0, extra_cols::Int = 0
 ) where {T <: Canvas}
     min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
@@ -111,7 +119,7 @@ function get_canvas_dimensions_for_matrix(
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
 
     if nrow == 0 && ncol == 0
-        return (0, 0, maxwidth, maxheight)
+        return 0, 0, maxwidth, maxheight
     end
 
     # Check if the size of the plot should be derived from the matrix
@@ -155,5 +163,52 @@ function get_canvas_dimensions_for_matrix(
     width  = round(Int, width)
     height = round(Int, height)
 
-    (width, height, maxwidth, maxheight)
+    width, height, maxwidth, maxheight
+end
+
+
+function align_char_point(text::AbstractString, char_x::Integer, char_y::Integer, halign::Symbol, valign::Symbol)
+    nchar = length(text)
+    char_x = if halign in (:center, :hcenter)
+        char_x - nchar ÷ 2
+    elseif halign == :left
+        char_x
+    elseif halign == :right
+        char_x - (nchar - 1)
+    else
+        error("Argument `halign=$halign` not supported.")
+    end
+    char_y = if valign in (:center, :vcenter)
+        char_y
+    elseif valign == :top
+        char_y + 1
+    elseif valign == :bottom
+        char_y - 1
+    else
+        error("Argument `valign=$valign` not supported.")
+    end
+    char_x, char_y
+end
+
+function annotate!(
+    c::Canvas,
+    x::Number,
+    y::Number,
+    text::AbstractString,
+    color::UserColorType;
+    halign = :center,
+    valign = :center,
+  )
+    xs = fscale(x, c.xscale)
+    ys = fscale(y, c.yscale)
+    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
+    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
+
+    char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
+    char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
+    for char in text
+        char_point!(c, char_x, char_y, char, color)
+        char_x += 1
+    end
+    c
 end

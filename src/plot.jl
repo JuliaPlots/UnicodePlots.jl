@@ -52,9 +52,9 @@ Methods
 
 - `zlabel!(plot::Plot, zlabel::String)`
 
-- `annotate!(plot::Plot, where::Symbol, value::String)`
+- `label!(plot::Plot, where::Symbol, value::String)`
 
-- `annotate!(plot::Plot, where::Symbol, row::Int, value::String)`
+- `label!(plot::Plot, where::Symbol, row::Int, value::String)`
 
 Author(s)
 ==========
@@ -104,7 +104,7 @@ function Plot(
         colormap = nothing,
         colorbar = false,
         colorbar_border::Symbol = :solid,
-        colorbar_lim = (0., 1.)) where T<:GraphicsArea
+        colorbar_lim = (0, 1)) where T<:GraphicsArea
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -133,20 +133,24 @@ function Plot(
         width::Int = 40,
         height::Int = 15,
         border::Symbol = :solid,
-        xlim = (0.,0.),
-        ylim = (0.,0.),
+        xlim = (0, 0),
+        ylim = (0, 0),
         margin::Int = 3,
         padding::Int = 1,
         labels::Bool = true,
         colormap = nothing,
         colorbar = false,
         colorbar_border::Symbol = :solid,
-        colorbar_lim = (0., 1.),
+        colorbar_lim = (0, 1),
         grid::Bool = true,
         min_width::Int = 5,
         min_height::Int = 2) where {C<:Canvas}
-    length(xlim) == length(ylim) == 2 || throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+    length(xlim) == length(ylim) == 2 || throw(
+        ArgumentError("xlim and ylim must be tuples or vectors of length 2")
+    )
+    length(X) == length(Y) || throw(
+        DimensionMismatch("X and Y must be the same length")
+    )
     width = max(width, min_width)
     height = max(height, min_height)
 
@@ -164,16 +168,17 @@ function Plot(
     new_plot = Plot(canvas, title = title, margin = margin,
                     padding = padding, border = border, labels = labels,
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
-                    colormap = colormap, colorbar = colorbar, colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
+                    colormap = colormap, colorbar = colorbar,
+                    colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
 
     min_x_str = compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
     max_x_str = compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
     min_y_str = compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
     max_y_str = compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    annotate!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
-    annotate!(new_plot, :l, 1, max_y_str, color = :light_black)
-    annotate!(new_plot, :bl, min_x_str, color = :light_black)
-    annotate!(new_plot, :br, max_x_str, color = :light_black)
+    label!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
+    label!(new_plot, :l, 1, max_y_str, color = :light_black)
+    label!(new_plot, :bl, min_x_str, color = :light_black)
+    label!(new_plot, :br, max_x_str, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -276,9 +281,9 @@ function zlabel!(plot::Plot, zlabel::AbstractString)
 end
 
 """
-    annotate!(plot, where, value, [color])
+    label!(plot, where, value, [color])
 
-    annotate!(plot, where, row, value, [color])
+    label!(plot, where, row, value, [color])
 
 This method is responsible for the setting
 all the textual decorations of a plot.
@@ -292,8 +297,10 @@ If `where` is either `:l`, or `:r`, then `row`
 can be between 1 and the number of character rows
 of the plots canvas.
 """
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
-    loc == :t || loc == :b || loc == :l || loc == :r || loc == :tl || loc == :tr || loc == :bl || loc == :br || throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
+function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
+    loc ∉ (:t, :b, :l, :r, :tl, :tr, :bl, :br) && throw(
+        ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br")
+    )
     if loc == :l || loc == :r
         for row = 1:nrows(plot.graphics)
             if loc == :l
@@ -318,11 +325,21 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
-    annotate!(plot, loc, value, color)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, value, color)
 end
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
+label!(
+    plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal
+) = label!(plot, loc, value, color)
+
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, value, color)
+end
+
+function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
         plot.colors_left[row] = julia_color(color)
@@ -330,31 +347,116 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
         plot.labels_right[row] = value
         plot.colors_right[row] = julia_color(color)
     else
-        throw(ArgumentError("Unknown location \"$(string(loc))\", try `:l` or `:r` instead"))
+        throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
     end
     plot
 end
 
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, row, value, color)
+end
+
+label!(
+    plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal
+) = label!(plot, loc, row, value, color)
+
+
 function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
-    annotate!(plot, loc, row, value, color)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, row, value, color)
 end
 
-function lines!(plot::Plot{<:Canvas}, args...; vars...)
-    lines!(plot.graphics, args...; vars...)
+"""
+    annotate!(plot, x, y, text; kwargs...)
+
+Description
+============
+
+Adds text to the plot at the position `(x, y)`.
+
+Arguments
+==========
+
+- **`x`** : The horizontal position of the text.
+
+- **`y`** : The vertical position of the text.
+
+- **`text`** : A string of text.
+
+- **`color`** : The color of the text.
+
+Examples
+=========
+
+```julia-repl
+julia> plt = lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot");
+
+julia> annotate!(plt, 5, 5, "My text")
+       ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My Lineplot⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
+       ┌────────────────────────────────────────┐ 
+    10 │⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠│ 
+       │⠘⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀│ 
+       │⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My text⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀│ 
+       │⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠤⠤⠤⠼⡤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⢤⠤⠶⠥⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤│ 
+       │⠀⠀⠀⠀⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠤⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⣀⠔⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⠀⠀⢱⠀⠀⠀⠀⡠⠔⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⠀⠀⠀⢇⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+   -10 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+       └────────────────────────────────────────┘ 
+       ⠀1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀7⠀
+```
+
+See also
+=========
+
+[`Plot`](@ref), [`lineplot`](@ref), [`scatterplot`](@ref),
+[`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
+[`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
+"""
+function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text::AbstractString; color=:normal, kwargs...)
+  color = color == :auto ? next_color!(plot) : color
+  annotate!(plot.graphics, x, y, text, color; kwargs...)
+  plot
+end
+
+
+function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
+    lines!(plot.graphics, args...; kwargs...)
     plot
 end
 
-function pixel!(plot::Plot{<:Canvas}, args...; vars...)
-    pixel!(plot.graphics, args...; vars...)
+function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
+    pixel!(plot.graphics, args...; kwargs...)
     plot
 end
 
-function points!(plot::Plot{<:Canvas}, args...; vars...)
-    points!(plot.graphics, args...; vars...)
+function points!(plot::Plot{<:Canvas}, args...; kwargs...)
+    points!(plot.graphics, args...; kwargs...)
     plot
 end
 
-function print_title(io::IO, left_pad::AbstractString, title::AbstractString, right_pad::AbstractString, blank::Char; p_width::Int = 0, color = :normal)
+function gridpoint_char!(plot::Plot{<:Canvas}, args...; kwargs...)
+  gridpoint_char!(plot.graphics, args...; kwargs...)
+  plot
+end
+
+function point_char!(plot::Plot{<:Canvas}, args...; kwargs...)
+  point_char!(plot.graphics, args...; kwargs...)
+  plot
+end
+
+function print_title(
+    io::IO, left_pad::AbstractString, title::AbstractString, right_pad::AbstractString, blank::Char;
+    p_width::Int = 0, color = :normal
+)
     title == "" && return
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = repeat(blank, offset > 0 ? offset : 0)
@@ -362,19 +464,26 @@ function print_title(io::IO, left_pad::AbstractString, title::AbstractString, ri
     print_color(color, io, title)
     post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
     print(io, post_pad, right_pad)
+    nothing
 end
 
-function print_border(io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString, border::Symbol = :solid, color::UserColorType = :light_black)
+function print_border(
+    io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString,
+    border::Symbol = :solid, color::UserColorType = :light_black
+)
     border === :none && return
     b = bordermap[border]
     print(io, left_pad)
     print_color(color, io, b[Symbol(loc, :l)], repeat(b[loc], length), b[Symbol(loc, :r)])
     print(io, right_pad)
+    nothing
 end
 
 _nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
 
-function print_labels(io::IO, mloc::Symbol, p::Plot, border_length, left_pad::AbstractString, right_pad::AbstractString, blank::Char)
+function print_labels(
+    io::IO, mloc::Symbol, p::Plot, border_length, left_pad::AbstractString, right_pad::AbstractString, blank::Char
+)
     p.show_labels || return
     lloc = Symbol(mloc, :l)
     rloc = Symbol(mloc, :r)
@@ -400,6 +509,7 @@ function print_labels(io::IO, mloc::Symbol, p::Plot, border_length, left_pad::Ab
         print_color(right_col, io, right_str)
         print(io, right_pad)
     end
+    nothing
 end
 
 function Base.show(io::IO, p::Plot)
@@ -513,6 +623,7 @@ function Base.show(io::IO, p::Plot)
             p_width = p_width
         )
     end
+    nothing
 end
 
 """
@@ -536,4 +647,5 @@ function savefig(p::Plot, filename::String; color::Bool=false)
     open(filename, "w") do io
         print(IOContext(io, :color=>color), p)
     end
+    nothing
 end

@@ -122,7 +122,7 @@ function compute_stair_lines(
             y_vex[i + o + 1] = Y[i]
             o += 1
         end
-        x_vex, y_vex
+        return x_vex, y_vex
     elseif style == :pre
         x_vex = zeros(length(X) * 2 - 1)
         y_vex = zeros(length(X) * 2 - 1)
@@ -136,6 +136,6 @@ function compute_stair_lines(
             y_vex[i + o + 1] = Y[i]
             o += 1
         end
-        x_vex, y_vex
+        return x_vex, y_vex
     end
 end

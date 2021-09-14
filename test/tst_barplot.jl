@@ -106,8 +106,6 @@ end
         width = 60
     )
     test_ref("references/barplot/parameters2.txt", @print_col(p))
-
-    @test_logs (:warn, r"`symb`.+deprecated") @inferred barplot(["Paris", "New York", "Moskau"], [2.244, 8.406, 11.92]; symb = "#")
 end
 
 @testset "edge cases" begin

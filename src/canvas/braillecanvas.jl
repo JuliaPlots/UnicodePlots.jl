@@ -55,9 +55,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
                   Float64(width), Float64(height), xscale, yscale)
 end
 
-function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
-    0 <= pixel_x <= c.pixel_width  || return c
-    0 <= pixel_y <= c.pixel_height || return c
+function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
     pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
     pixel_y = pixel_y < c.pixel_height ? pixel_y : pixel_y - 1
     cw, ch = size(c.grid)
@@ -69,8 +67,23 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     end
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
     char_y_off = (pixel_y % 4) + 1
+    char_x, char_y, char_x_off, char_y_off
+end
+
+function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
+    0 <= pixel_x <= c.pixel_width  || return c
+    0 <= pixel_y <= c.pixel_height || return c
+    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x,char_y] = Char(UInt64(c.grid[char_x,char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
     set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    c
+end
+
+function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        c.grid[char_x,char_y] = char
+        set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    end
     c
 end
 
@@ -80,4 +93,5 @@ function printrow(io::IO, c::BrailleCanvas, row::Int)
     for x in 1:ncols(c)
         print_color(c.colors[x,y], io, c.grid[x,y])
     end
+    nothing
 end
