@@ -106,9 +106,15 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -.5, 3, color = [:red])
-    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = (-.5, 2.5), ylim = (-.9, 1.2))
+    p = @inferred lineplot(
+        [sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow],
+        title = "Funs", ylabel = "f", xlabel = "num", xlim = (-.5, 2.5), ylim = (-.9, 1.2)
+    )
     test_ref("references/lineplot/sincos_parameters.txt", @show_col(p))
-    p = @inferred lineplot([sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow], title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2])
+    p = @inferred lineplot(
+        [sin, cos], -.5, 3, name = ["s", "c"], color = [:red, :yellow],
+        title = "Funs", ylabel = "f", xlabel = "num", xlim = [-.5, 2.5], ylim = [-.9, 1.2]
+    )
     test_ref("references/lineplot/sincos_parameters.txt", @show_col(p))
 end
 

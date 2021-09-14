@@ -123,7 +123,9 @@ function barplot!(
     plot
 end
 
-barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} = barplot!(plot, sorted_keys_values(dict)...)
+barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} = barplot!(
+  plot, sorted_keys_values(dict)...
+)
 
 function barplot!(
         plot::Plot{<:BarplotGraphics},

@@ -215,9 +215,7 @@ end
 
 # plotting vector of functions
 
-function lineplot(F::AbstractVector{<:Function}; kw...)
-    lineplot(F, -10, 10; kw...)
-end
+lineplot(F::AbstractVector{<:Function}; kw...) = lineplot(F, -10, 10; kw...)
 
 function lineplot(
         F::AbstractVector{<:Function},

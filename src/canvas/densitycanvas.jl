@@ -54,8 +54,7 @@ function DensityCanvas(char_width::Int, char_height::Int;
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height),
-                  xscale, yscale, 1
-                  )
+                  xscale, yscale, 1)
 end
 
 function pixel_to_char_point(c::DensityCanvas, pixel_x::Number, pixel_y::Number)
@@ -64,7 +63,7 @@ function pixel_to_char_point(c::DensityCanvas, pixel_x::Number, pixel_y::Number)
     cw, ch = size(c.grid)
     char_x = floor(Int, pixel_x / c.pixel_width * cw) + 1
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
-    return char_x, char_y
+    char_x, char_y
 end
 
 function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
@@ -87,4 +86,5 @@ function printrow(io::IO, c::DensityCanvas, row::Int)
         den_index = round(Int, c.grid[x,y] * val_scale, RoundNearestTiesUp) + 1
         print_color(c.colors[x,y], io, signs[den_index])
     end
+    nothing
 end

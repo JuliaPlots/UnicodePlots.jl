@@ -9,6 +9,7 @@ function Base.print(io::IO, c::GraphicsArea)
         printrow(io, c, row)
         row < nr && println(io)
     end
+    nothing
 end
 
 function Base.show(io::IO, c::GraphicsArea)
@@ -22,4 +23,5 @@ function Base.show(io::IO, c::GraphicsArea)
         row < nr && println(io)
     end
     print_border(io, :b, border_length, "\n", "", :solid, :light_black)
+    nothing
 end

@@ -124,14 +124,12 @@ end
 @inline lookup_encode(c::AsciiCanvas) = ascii_signs
 @inline lookup_decode(c::AsciiCanvas) = ascii_decode
 
-function AsciiCanvas(args...; nargs...)
-    CreateLookupCanvas(AsciiCanvas, args...; nargs...)
-end
+AsciiCanvas(args...; nargs...) = CreateLookupCanvas(AsciiCanvas, args...; nargs...)
 
 function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
-  if checkbounds(Bool, c.grid, char_x, char_y)
-    c.grid[char_x,char_y] = n_ascii + char
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
-  end
-  c
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        c.grid[char_x,char_y] = n_ascii + char
+        set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    end
+    c
 end

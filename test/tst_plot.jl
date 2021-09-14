@@ -34,7 +34,9 @@ end
     @test @inferred(label!(p, :r, ":r auto 1", :red)) === p
     test_ref("references/plot/padding.txt", @show_col(p))
 
-    p = @inferred Plot(canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5, labels = false)
+    p = @inferred Plot(
+        canvas, title = "testtitle", xlabel = "x", ylabel= "y", margin = 4, padding = 5, labels = false
+    )
     @test @inferred(label!(p, :l, ":l auto 1")) === p
     @test @inferred(label!(p, :r, ":r auto 1", :red)) === p
     test_ref("references/plot/padding_nolabels.txt", @show_col(p))

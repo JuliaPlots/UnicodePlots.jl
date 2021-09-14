@@ -67,9 +67,9 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     series = c.data[ceil(Int, row/3)]
 
-    function transform(value)
-        clamp(round(Int, (value - c.min_x) / (c.max_x - c.min_x) * c.char_width), 1, c.char_width)
-    end
+    transform(value) = clamp(
+        round(Int, (value - c.min_x) / (c.max_x - c.min_x) * c.char_width), 1, c.char_width
+    )
 
     series_row = Int((row-1) % 3) + 1
 
@@ -92,18 +92,19 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
     line[transform(series.maximum)] = max_char
 
     # Fill in gaps with lines
-    for i in transform(series.minimum)+1:transform(series.lower_quartile)-1
+    for i in (transform(series.minimum)+1):(transform(series.lower_quartile)-1)
         line[i] = line_char
     end
-    for i in transform(series.lower_quartile)+1:transform(series.median)-1
+    for i in (transform(series.lower_quartile)+1):(transform(series.median)-1)
         line[i] = line_box_char
     end
-    for i in transform(series.median)+1:transform(series.upper_quartile)-1
+    for i in (transform(series.median)+1):(transform(series.upper_quartile)-1)
         line[i] = line_box_char
     end
-    for i in transform(series.upper_quartile)+1:transform(series.maximum)-1
+    for i in (transform(series.upper_quartile)+1):(transform(series.maximum)-1)
         line[i] = line_char
     end
 
     print_color(c.color, io, join(line))
+    nothing
 end

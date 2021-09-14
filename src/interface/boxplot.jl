@@ -105,7 +105,6 @@ function boxplot(
         # Find end of last 3-line region, then add 2 for center of current
         length(name) > 0 && label!(new_plot, :l, (i-1)*3+2, name)
     end
-
     new_plot
 end
 
@@ -142,7 +141,6 @@ function boxplot!(
     label!(plot, :bl, min_x_str)
     label!(plot, :b,  mean_x_str)
     label!(plot, :br, max_x_str)
-
     plot
 end
 

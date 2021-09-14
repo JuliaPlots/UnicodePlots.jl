@@ -168,7 +168,7 @@ end
 
 function _findnz(A::AbstractMatrix)
     I = findall(!iszero, A)
-    (getindex.(I, 1), getindex.(I, 2), A[I])
+    getindex.(I, 1), getindex.(I, 2), A[I]
 end
 
 _findnz(A::AbstractSparseMatrix) = findnz(A)

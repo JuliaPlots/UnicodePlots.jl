@@ -67,7 +67,7 @@ function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
     end
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
     char_y_off = (pixel_y % 4) + 1
-    return char_x, char_y, char_x_off, char_y_off
+    char_x, char_y, char_x_off, char_y_off
 end
 
 function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
@@ -80,11 +80,11 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
 end
 
 function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
-  if checkbounds(Bool, c.grid, char_x, char_y)
-    c.grid[char_x,char_y] = char
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
-  end
-  c
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        c.grid[char_x,char_y] = char
+        set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    end
+    c
 end
 
 function printrow(io::IO, c::BrailleCanvas, row::Int)
@@ -93,4 +93,5 @@ function printrow(io::IO, c::BrailleCanvas, row::Int)
     for x in 1:ncols(c)
         print_color(c.colors[x,y], io, c.grid[x,y])
     end
+    nothing
 end

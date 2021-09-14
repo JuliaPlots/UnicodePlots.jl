@@ -24,7 +24,7 @@ tests = [
 ]
 
 const RNG = StableRNG(1337)
-const TERM_SIZE = (24, 80)
+const T_SZ = (24, 80)
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
@@ -53,7 +53,7 @@ function stable_sprand(r::AbstractRNG, m::Integer, n::Integer, density::Abstract
     push!(J, j + 1)
   end
   V = rand(r, length(I))
-  return sparse(I, J, V)
+  sparse(I, J, V)
 end
 
 for test in tests

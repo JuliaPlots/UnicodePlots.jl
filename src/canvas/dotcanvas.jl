@@ -40,14 +40,12 @@ end
 @inline lookup_encode(c::DotCanvas) = dot_signs
 @inline lookup_decode(c::DotCanvas) = dot_decode
 
-function DotCanvas(args...; nargs...)
-    CreateLookupCanvas(DotCanvas, args...; nargs...)
-end
+DotCanvas(args...; nargs...) = CreateLookupCanvas(DotCanvas, args...; nargs...)
 
 function char_point!(c::DotCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
-  if checkbounds(Bool, c.grid, char_x, char_y)
-    c.grid[char_x,char_y] = n_dot + char
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
-  end
-  c
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        c.grid[char_x,char_y] = n_dot + char
+        set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    end
+    c
 end

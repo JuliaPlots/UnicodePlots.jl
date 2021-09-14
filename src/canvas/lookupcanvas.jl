@@ -6,7 +6,7 @@ const plane1_stop = 0x1FFFF
 const plane2_start = 0x20000
 const plane2_stop = 0x2FFFF
 
-# FIXME: maybe later support plane 1 (SMP) and plane 2 (CJK)
+# TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
 const unicode_table = Array{Char}(undef, plane0_stop - plane0_start + 1)
 for i in plane0_start:plane0_stop
     unicode_table[i + 1] = Char(i)
@@ -65,7 +65,7 @@ function pixel_to_char_point(c::T, pixel_x::Number, pixel_y::Number) where {T <:
     end
     char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
     char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
-    return char_x, char_y, char_x_off, char_y_off
+    char_x, char_y, char_x_off, char_y_off
 end
 
 function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T <: LookupCanvas}
@@ -84,4 +84,5 @@ function printrow(io::IO, c::LookupCanvas, row::Int)
     for x in 1:ncols(c)
         print_color(colors(c)[x,y], io, lookup_decode(c)[grid(c)[x,y] + 1])
     end
+    nothing
 end
