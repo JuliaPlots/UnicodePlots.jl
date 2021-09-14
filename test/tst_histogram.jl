@@ -35,12 +35,6 @@ end
     test_ref("references/histogram/hist_params.txt", @print_col(p))
     p = @inferred histogram(x, nbins = 5, closed = :right)
     test_ref("references/histogram/hist_params.txt", @print_col(p))
-    # NOTE: run with $ julia --depwarn=yes for this test to pass
-    @test_logs (:warn, r"`symb`.+deprecated") @inferred histogram(x, symb = "#", closed = :right)
-    p = @test_logs (:warn, r"`bins`.+deprecated") @inferred histogram(x, bins = 5, closed = :right)
-    test_ref("references/histogram/hist_params.txt", @print_col(p))
-    p = @inferred histogram(x, 5, closed = :right)
-    test_ref("references/histogram/hist_params.txt", @print_col(p))
 end
 
 @testset "keyword arguments" begin

@@ -20,7 +20,8 @@ tests = [
     "tst_lineplot.jl",
     "tst_spy.jl",
     "tst_boxplot.jl",
-    "tst_heatmap.jl"
+    "tst_heatmap.jl",
+    "tst_deprecated.jl",
 ]
 
 const RNG = StableRNG(1337)

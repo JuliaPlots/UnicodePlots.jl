@@ -325,13 +325,18 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
     plot
 end
 
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, value, color)
+end
+
 label!(
     plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal
 ) = label!(plot, loc, value, color)
 
 function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
     Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
-    label!(plot, loc, value; color=color)
+    label!(plot, loc, value, color)
 end
 
 function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
@@ -347,10 +352,20 @@ function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color:
     plot
 end
 
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, row, value, color)
+end
+
 label!(
     plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal
 ) = label!(plot, loc, row, value, color)
 
+
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
+    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
+    label!(plot, loc, row, value, color)
+end
 
 """
     annotate!(plot, x, y, text; kwargs...)
