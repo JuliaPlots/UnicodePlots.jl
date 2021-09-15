@@ -121,7 +121,7 @@ histogram(randn(1000) .* 0.1, nbins = 15, closed = :left)
 The `histogram` function also supports axis scaling using the parameter `xscale`.
 
 ```julia
-histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=log10)
+histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=:log10)
 ```
 ![Histogram Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/histogram2.png)
 
