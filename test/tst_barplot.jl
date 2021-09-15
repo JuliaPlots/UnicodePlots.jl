@@ -49,7 +49,7 @@ end
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
-        xscale = log10,
+        xscale = :log10,
     )
     test_ref("references/barplot/log10.txt", @print_col(p))
     p = @inferred barplot(
@@ -57,7 +57,7 @@ end
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
         xlabel = "custom label",
-        xscale = log10,
+        xscale = :log10,
     )
     test_ref("references/barplot/log10_label.txt", @print_col(p))
 

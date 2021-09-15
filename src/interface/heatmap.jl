@@ -15,7 +15,7 @@ Usage
     heatmap(z::AbstractMatrix; title = "", out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
             border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
-            xscale = 0.0, yscale = 0.0, xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.),
+            xfact = 0, yfact = 0, xlim = (0, 0), ylim = (0, 0), zlim = (0, 0),
             xoffset = 0.0, yoffset = 0.0, margin = 3, padding = 1)
 
 Arguments
@@ -43,15 +43,15 @@ Arguments
 
 - **`colorbar_border`** : The style of the bounding box of the color bar. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
-- **`xscale`** : Scale for the x coordinate. Defaults to 0 - i.e. each column in `z` corresponds to one unit, x origin starting at 1. If set to anything else, the x origin will start at 0.
+- **`xfact`** : Scale for the x coordinate. Defaults to 0 - i.e. each column in `z` corresponds to one unit, x origin starting at 1. If set to anything else, the x origin will start at 0.
 
-- **`yscale`** : Scale for the y coordinate labels. Defaults to 0 - i.e. each row in `z` corresponds to one unit, y origin starting at 1. If set to anything else, the y origin will start at 0.
+- **`yfact`** : Scale for the y coordinate labels. Defaults to 0 - i.e. each row in `z` corresponds to one unit, y origin starting at 1. If set to anything else, the y origin will start at 0.
 
-- **`xlim`** : Plotting range for the x coordinate (after scaling). `(0., 0.)` stands for automatic.
+- **`xlim`** : Plotting range for the x coordinate (after scaling). `(0, 0)` stands for automatic.
 
-- **`ylim`** : Plotting range for the y coordinate (after scaling). `(0., 0.)` stands for automatic.
+- **`ylim`** : Plotting range for the y coordinate (after scaling). `(0, 0)` stands for automatic.
 
-- **`zlim`** : Data range that the colormap is scaled to. `(0., 0.)` stands for automatic.
+- **`zlim`** : Data range that the colormap is scaled to. `(0, 0)` stands for automatic.
 
 - **`xoffset`** : Plotting offset for the x coordinate (after scaling).
 
@@ -80,20 +80,21 @@ See also
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
 function heatmap(
-    z::AbstractMatrix; xlim = (0., 0.), ylim = (0., 0.), zlim = (0., 0.), xoffset = 0., yoffset = 0.,
-    out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3, padding::Int = 1, colormap=:viridis, xscale=0.0,
-    yscale=0.0, labels = true, kw...)
+    z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
+    out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
+    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true, kw...
+)
     nrows = size(z, 1)
     ncols = size(z, 2)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xscale == 0.0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xscale
+    X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xfact
     X .+= xoffset
-    xscale = xscale == 0.0 ? 1 : xscale
-    Y = yscale == 0.0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yscale
+    xfact = xfact == 0 ? 1 : xfact
+    Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yfact
     Y .+= yoffset
-    yscale = yscale == 0.0 ? 1 : yscale
+    yfact = yfact == 0 ? 1 : yfact
 
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
@@ -139,8 +140,8 @@ function heatmap(
         colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
     end
 
-    nrows = ceil(Int, (ylim[2] - ylim[1]) / yscale) + 1
-    ncols = ceil(Int, (xlim[2] - xlim[1]) / xscale) + 1
+    nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
+    ncols = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
     aspect_ratio = ncols / nrows
 
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width

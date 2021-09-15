@@ -160,7 +160,7 @@ heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 ```
 ![Heatmap Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap1.png)
 
-The `heatmap` function also supports axis scaling using the parameters `xscale`, `yscale` and axis offsets after scaling using `xoffset` and `yoffset`.
+The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
 
 The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
@@ -169,7 +169,7 @@ the colorbar and configure its border. The `zlabel` option and `zlabel!` method
 may be used to set the z axis (colorbar) label.
 
 ```julia
-heatmap(collect(0:30) * collect(0:30)', xscale=0.1, yscale=0.1, xoffset=-1.5, colormap=:inferno)
+heatmap(collect(0:30) * collect(0:30)', xfact=0.1, yfact=0.1, xoffset=-1.5, colormap=:inferno)
 ```
 
 ![Heatmap Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap2.png)

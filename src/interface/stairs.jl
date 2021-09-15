@@ -90,25 +90,26 @@ See also
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function stairs(
-        X::AbstractVector, Y::AbstractVector;
-        style::Symbol = :post,
-        kw...)
+    X::AbstractVector, Y::AbstractVector;
+    style::Symbol = :post, kw...
+)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
     lineplot(x_vex, y_vex; kw...)
 end
 
 function stairs!(
-        plot::Plot{<:Canvas}, X::AbstractVector, Y::AbstractVector;
-        style::Symbol = :post,
-        kw...)
+    plot::Plot{<:Canvas}, X::AbstractVector, Y::AbstractVector;
+    style::Symbol = :post, kw...
+)
     x_vex, y_vex = compute_stair_lines(X, Y, style)
     lineplot!(plot, x_vex, y_vex; kw...)
 end
 
 function compute_stair_lines(
-        X::AbstractVector,
-        Y::AbstractVector,
-        style::Symbol)
+    X::AbstractVector,
+    Y::AbstractVector,
+    style::Symbol
+)
     if style == :post
         x_vex = similar(X, length(X) * 2 - 1)
         y_vex = similar(Y, length(X) * 2 - 1)

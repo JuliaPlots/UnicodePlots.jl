@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; xscale = identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
+    barplot(text, heights; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
 
     barplot(dict; kwargs...)
 
@@ -29,9 +29,9 @@ Arguments
 - **`dict`** : A dictonary in which the keys will be used
   as `text` and the values will be utilized as `heights`.
 
-- **`xscale`** : Function to transform the bar length before plotting.
+- **`xscale`** : Function or Symbol to transform the bar length before plotting.
   This effectively scales the x-axis without influencing the captions
-  of the individual bars. e.g. use `xscale = log10` for logscale.
+  of the individual bars. e.g. use `xscale = :log10` for logscale.
 
 $DOC_PLOT_PARAMS
 
@@ -70,21 +70,29 @@ See also
 [`Plot`](@ref), [`histogram`](@ref), [`BarplotGraphics`](@ref)
 """
 function barplot(
-        text::AbstractVector{<:AbstractString},
-        heights::AbstractVector{<:Number};
-        border = :barplot,
-        color = :green,
-        out_stream::Union{Nothing,IO} = nothing,
-        width::Int = out_stream_width(out_stream),
-        symb = nothing,  # deprecated
-        symbols = ["■"],
-        xscale = identity,
-        xlabel = transform_name(xscale),
-        kw...)
-    length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
-    minimum(heights) >= 0 || throw(ArgumentError("All values have to be positive. Negative bars are not supported."))
+    text::AbstractVector{<:AbstractString},
+    heights::AbstractVector{<:Number};
+    border = :barplot,
+    color = :green,
+    out_stream::Union{Nothing,IO} = nothing,
+    width::Int = out_stream_width(out_stream),
+    symb = nothing,  # deprecated
+    symbols = ["■"],
+    xscale = :identity,
+    xlabel = transform_name(xscale),
+    kw...
+)
+    length(text) == length(heights) || throw(
+        DimensionMismatch("The given vectors must be of the same length")
+    )
+    minimum(heights) >= 0 || throw(
+        ArgumentError("All values have to be positive. Negative bars are not supported.")
+    )
 
-    area = BarplotGraphics(heights, width, xscale, color = color, symbols = _handle_deprecated_symb(symb, symbols))
+    area = BarplotGraphics(
+        heights, width, xscale;
+        color = color, symbols = _handle_deprecated_symb(symb, symbols)
+    )
     new_plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in 1:length(text)
         label!(new_plot, :l, i, text[i])
@@ -110,11 +118,16 @@ Mutating variant of `barplot`, in which the first parameter
 See [`barplot`](@ref) for more information.
 """
 function barplot!(
-        plot::Plot{<:BarplotGraphics},
-        text::AbstractVector{<:AbstractString},
-        heights::AbstractVector{<:Number})
-    length(text) == length(heights) || throw(DimensionMismatch("The given vectors must be of the same length"))
-    isempty(text) && throw(ArgumentError("Can't append empty array to barplot"))
+    plot::Plot{<:BarplotGraphics},
+    text::AbstractVector{<:AbstractString},
+    heights::AbstractVector{<:Number}
+)
+    length(text) == length(heights) || throw(
+        DimensionMismatch("The given vectors must be of the same length")
+    )
+    isempty(text) && throw(
+        ArgumentError("Can't append empty array to barplot")
+    )
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights)
     for i = 1:length(heights)
@@ -128,17 +141,19 @@ barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}) where {T, N <: Number} 
 )
 
 function barplot!(
-        plot::Plot{<:BarplotGraphics},
-        text::AbstractVector,
-        heights::AbstractVector{<:Number})
+    plot::Plot{<:BarplotGraphics},
+    text::AbstractVector,
+    heights::AbstractVector{<:Number}
+)
     text_str = map(string, text)
     barplot!(plot, text_str, heights)
 end
 
 function barplot!(
-        plot::Plot{<:BarplotGraphics},
-        label,
-        heights::Number)
+    plot::Plot{<:BarplotGraphics},
+    label,
+    heights::Number
+)
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights)
     label!(plot, :l, curidx + 1, string(label))

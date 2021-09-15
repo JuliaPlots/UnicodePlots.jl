@@ -72,14 +72,15 @@ See also
 [`Plot`](@ref), [`histogram`](@ref), [`BoxplotGraphics`](@ref)
 """
 function boxplot(
-        text::AbstractVector{<:AbstractString},
-        data::AbstractVector{<:AbstractArray{<:Number}};
-        border = :corners,
-        color::UserColorType = :green,
-        out_stream::Union{Nothing,IO} = nothing,
-        width::Int = out_stream_width(out_stream),
-        xlim = (0., 0.),
-        kw...)
+    text::AbstractVector{<:AbstractString},
+    data::AbstractVector{<:AbstractArray{<:Number}};
+    border = :corners,
+    color::UserColorType = :green,
+    out_stream::Union{Nothing,IO} = nothing,
+    width::Int = out_stream_width(out_stream),
+    xlim = (0, 0),
+    kw...
+)
     length(xlim) == 2 || throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
@@ -117,10 +118,9 @@ the existing plot to draw on.
 See `boxplot` for more information.
 """
 function boxplot!(
-        plot::Plot{<:BoxplotGraphics},
-        data::AbstractVector{<:Number};
-        name = " ",
-        kw...)
+    plot::Plot{<:BoxplotGraphics}, data::AbstractVector{<:Number};
+    name = " ", kw...
+)
     !isempty(data)|| throw(ArgumentError("Can't append empty array to boxplot"))
 
     # min_x, max_x = extend_limits(data, xlim)

@@ -14,11 +14,12 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     max_x::R
 
     function BoxplotGraphics{R}(
-            data::AbstractVector{R},
-            char_width::Int,
-            color::UserColorType,
-            min_x::R,
-            max_x::R) where R
+        data::AbstractVector{R},
+        char_width::Int,
+        color::UserColorType,
+        min_x::R,
+        max_x::R
+    ) where R
         char_width = max(char_width, 10)
         if min_x == max_x
             min_x = min_x - 1
@@ -40,14 +41,16 @@ end
 nrows(c::BoxplotGraphics) = 3*length(c.data)
 ncols(c::BoxplotGraphics) = c.char_width
 
-function BoxplotGraphics(
-        data::AbstractVector{R},
-        char_width::Int;
-        color::UserColorType = :green,
-        min_x::Number = minimum(data),
-        max_x::Number = maximum(data)) where {R <: Number}
-    BoxplotGraphics{R}(data, char_width, crayon_256_color(color), R(min_x), R(max_x))
-end
+BoxplotGraphics(
+    data::AbstractVector{R},
+    char_width::Int;
+    color::UserColorType = :green,
+    min_x::Number = minimum(data),
+    max_x::Number = maximum(data)
+) where {R <: Number} = BoxplotGraphics{R}(
+    data, char_width, crayon_256_color(color), R(min_x), R(max_x)
+)
+
 
 function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R <: Number}
     mi, ma = extrema(data)
