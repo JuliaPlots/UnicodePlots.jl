@@ -35,7 +35,7 @@ save(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color=:red, style=:post, title="My
 save(barplot(["Paris", "New York", "Moskau", "Madrid"], [2.244, 8.406, 11.92, 3.165], title="Population"), "barplot1")
 # Histogram
 save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:left), "histogram1")
-save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:right, xscale=log10), "histogram2")
+save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:right, xscale=:log10), "histogram2")
 # Boxplot
 save(boxplot([1, 3, 3, 4, 6, 10]), "boxplot1")
 save(boxplot(["one", "two"], [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]], title="Grouped Boxplot", xlabel="x"), "boxplot2")
@@ -46,7 +46,7 @@ plt = densityplot(randn(RNG, 1000), randn(RNG, 1000))
 save(densityplot!(plt, randn(RNG, 1000) .+ 2, randn(RNG, 1000) .+ 2), "densityplot1")
 # Heatmap Plot
 save(heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z"), "heatmap1")
-save(heatmap(collect(0:30) * collect(0:30)', xscale=.1, yscale=.1, xoffset=-1.5, colormap=:inferno), "heatmap2")
+save(heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno), "heatmap2")
 
 # Options
 save(lineplot(sin, 1:.5:20, width=60, border=:dotted), "width")
