@@ -174,10 +174,14 @@ function Plot(
                     colormap = colormap, colorbar = colorbar,
                     colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
 
-    min_x_str = compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
-    max_x_str = compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
-    min_y_str = compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
-    max_y_str = compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
+    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
+    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
+    base_x_str = base_x === nothing ? "" : "$(base_x)^"
+    base_y_str = base_y === nothing ? "" : "$(base_y)^"
+    min_x_str = base_x_str * compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
+    max_x_str = base_x_str * compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
+    min_y_str = base_y_str * compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
+    max_y_str = base_y_str * compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
     label!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
     label!(new_plot, :l, 1, max_y_str, color = :light_black)
     label!(new_plot, :bl, min_x_str, color = :light_black)

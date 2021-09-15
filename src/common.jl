@@ -33,6 +33,7 @@ const DOC_PLOT_PARAMS = """
 
 const FSCALES = (identity=identity, ln=log, log2=log2, log10=log10)  # forward
 const ISCALES = (identity=identity, ln=exp, log2=exp2, log10=exp10)  # inverse
+const BASES = (identity=nothing, ln="ℯ", log2="2", log10="10")
 
 fscale(x, s::Symbol; fscales=FSCALES) = fscales[s](x)
 iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)

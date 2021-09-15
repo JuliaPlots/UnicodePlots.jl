@@ -64,7 +64,7 @@ scatterplot(randn(50), randn(50), title = "My Scatterplot", border=:dotted)
 `xscale` and `yscale` are supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function
 
 ```julia
-scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10, border=:dotted)
+scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)
 ```
 ![Scatterplot Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot2.png)
 
