@@ -186,7 +186,7 @@ end
 end
 
 @testset "scales" begin
-    x = y = collect(1:100)
+    x = y = collect(10:10:1000)
     tmp = tempname()
     for s ∈ (:ln, :log2, :log10)
         fscale = UnicodePlots.FSCALES[s]
@@ -195,16 +195,19 @@ end
         ys = fscale.(y)
 
         # xscale
-        savefig(lineplot(xs, y, xlim=extrema(xs)), tmp; color=true)
-        test_ref(tmp, @show_col(lineplot(x, y, xscale=s)))
+        savefig(lineplot(xs, y, xlim=extrema(xs), labels=false), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, xscale=s, labels=false)))
 
         # yscale
-        savefig(lineplot(x, ys, ylim=extrema(ys)), tmp; color=true)
-        test_ref(tmp, @show_col(lineplot(x, y, yscale=s)))
+        savefig(lineplot(x, ys, ylim=extrema(ys), labels=false), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, yscale=s, labels=false)))
 
         # xscale and yscale
-        savefig(lineplot(xs, ys, xlim=extrema(xs), ylim=extrema(xs)), tmp; color=true)
-        test_ref(tmp, @show_col(lineplot(x, y, xscale=s, yscale=s)))
+        savefig(lineplot(xs, ys, xlim=extrema(xs), ylim=extrema(xs), labels=false), tmp; color=true)
+        test_ref(tmp, @show_col(lineplot(x, y, xscale=s, yscale=s, labels=false)))
+
+        # scale labels
+        test_ref("references/lineplot/$(s)_scale.txt", @show_col(lineplot(x, y, xscale=s, yscale=s)))
     end
 
     lineplot(1:10, 1:10, xscale=x->log10(x))  # arbitrary scale function
