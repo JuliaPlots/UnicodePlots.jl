@@ -230,12 +230,21 @@ parameters.
     The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:corners`, and `:none`.
 
   ```julia
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:bold)
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dashed)
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
+  ```
+  ![Border Screenshot1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_bold.png)
+  ```julia
+  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
+  ```
+  ![Border Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dashed.png)
+  ```julia
   lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dotted)
+  ```
+  ![Border Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dotted.png)
+  ```julia
   lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:none)
   ```
-    ![Border Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/border.png)
+  ![Border Screenshot4](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
 
 - `padding::Int = 1`:
 
@@ -294,7 +303,7 @@ The method `label!` is responsible for the setting all the textual decorations o
 
     - `row` can be between 1 and the number of character rows of the canvas
 
-![Label Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/annotate.png)
+![Label Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/decorate.png)
 
 - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kwargs...)`
     - `text` arbitrary annotation at position (x, y)
@@ -321,13 +330,13 @@ lines!(canvas, 0., 1., .5, 0., :yellow)   # virtual space
 pixel!(canvas, 5, 8, :red)                # pixel space
 ```
 
-![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/canvas.png)
+![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/canvas.png)
 
 You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
 As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
 
-![Blending Colors](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/1.x/braille.png)
+![Blending Colors](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/blending.png)
 
 At the moment there are the following types of Canvas implemented:
 
