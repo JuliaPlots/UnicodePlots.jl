@@ -159,13 +159,12 @@ function Plot(
 
     min_x, max_x = extend_limits(X, xlim, xscale)
     min_y, max_y = extend_limits(Y, ylim, yscale)
-    origin_x = min_x
-    origin_y = min_y
-    p_width = max_x - origin_x
-    p_height = max_y - origin_y
+
+    p_width = max_x - min_x
+    p_height = max_y - min_y
 
     canvas = C(width, height,
-               origin_x = origin_x, origin_y = origin_y,
+               origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)
     new_plot = Plot(canvas, title = title, margin = margin,
@@ -476,12 +475,10 @@ end
 
 function print_border(
     io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString,
-    border::Symbol = :solid, color::UserColorType = :light_black
+    bmap = bordermap[:solid], color::UserColorType = :light_black
 )
-    border === :none && return
-    b = bordermap[border]
     print(io, left_pad)
-    print_color(color, io, b[Symbol(loc, :l)], repeat(b[loc], length), b[Symbol(loc, :r)])
+    print_color(color, io, bmap[Symbol(loc, :l)], repeat(bmap[loc], length), bmap[Symbol(loc, :r)])
     print(io, right_pad)
     nothing
 end
@@ -522,18 +519,27 @@ end
 function Base.show(io::IO, p::Plot)
     c = p.graphics
     🗷 = Char(0x0020)  # blank outside canvas
-    🗹 = Char(typeof(c) <: BrailleCanvas ? 0x2800 : 🗷)  # blank inside canvas
+    🗹 = Char(c isa BrailleCanvas ? 0x2800 : 🗷)  # blank inside canvas
     ############################################################
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
     ############################################################
-    b = UnicodePlots.bordermap[p.border]
     border_length = ncols(c)
     p_width = border_length + 2  # left corner + border + right corner
 
+    bmap = bordermap[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
+
     # get length of largest strings to the left and right
-    max_len_l = p.show_labels && !isempty(p.labels_left)  ? maximum([length(_nocolor_string(l)) for l in values(p.labels_left)]) : 0
-    max_len_r = p.show_labels && !isempty(p.labels_right) ? maximum([length(_nocolor_string(l)) for l in values(p.labels_right)]) : 0
+    max_len_l = if p.show_labels && !isempty(p.labels_left)
+        maximum([length(_nocolor_string(l)) for l in values(p.labels_left)])
+    else
+        0
+    end
+    max_len_r = if p.show_labels && !isempty(p.labels_right)
+        maximum([length(_nocolor_string(l)) for l in values(p.labels_right)])
+    else
+        0
+    end
     if p.show_labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
@@ -566,7 +572,7 @@ function Base.show(io::IO, p::Plot)
         p_width = p_width, color = :bold
     )
     print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
-    print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', p.border)
+    print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
@@ -600,11 +606,11 @@ function Base.show(io::IO, p::Plot)
         end
         # print left border
         print(io, plot_padding)
-        print_color(:light_black, io, b[:l])
+        print_color(:light_black, io, bmap[:l])
         # print canvas row
         printrow(io, c, row)
         # print right label and padding
-        print_color(:light_black, io, b[:r])
+        print_color(:light_black, io, bmap[:r])
         if p.show_labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)
@@ -622,7 +628,7 @@ function Base.show(io::IO, p::Plot)
     end
 
     # draw bottom border and bottom labels  
-    print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, p.border)
+    print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
     if p.show_labels
         print_labels(io, :b, p, border_length - 2, '\n' * border_left_pad * 🗹, 🗹 * border_right_pad, 🗹)
         print_title(
