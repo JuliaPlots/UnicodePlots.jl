@@ -7,7 +7,7 @@ RNG = StableRNG(1337)
 function stable_sprand(r::AbstractRNG, m::Integer, n::Integer, density::AbstractFloat)
   I = Int[]
   J = Int[]
-  for li in randsubseq(r, 1:(m*n), density)
+  for li in randsubseq(r, 1:(m * n), density)
     j, i = divrem(li - 1, m)
     push!(I, i + 1)
     push!(J, j + 1)
@@ -51,4 +51,38 @@ save(heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, c
 # Options
 save(lineplot(sin, 1:.5:20, width=60, border=:dotted), "width")
 save(lineplot(sin, 1:.5:20, height=18, border=:dotted), "height")
+save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold), "border_bold")
+save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed), "border_dashed")
+save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dotted), "border_dotted")
+save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:none), "border_none")
 save(lineplot(sin, 1:.5:20, labels=false, border=:dotted), "labels")
+
+# Methods
+x = y = collect(1:10)
+plt = lineplot(x, y, canvas=DotCanvas, width=30, height=10)
+lineplot!(plt, x, reverse(y))
+title!(plt, "Plot Title")
+for loc in (:tl, :t, :tr, :bl, :b, :br)
+  label!(plt, loc, ":$(loc)")
+end
+label!(plt, :l, ":l")
+label!(plt, :r, ":r")
+for i in 1:10
+  label!(plt, :l, i, string(i))
+  label!(plt, :r, i, string(i))
+end
+save(plt, "decorate")
+
+# Low-level Interface
+canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
+lines!(canvas, 0., 0., 1., 1., :blue)
+points!(canvas, rand(RNG, 50), rand(RNG, 50), :red)
+lines!(canvas, 0., 1., .5, 0., :yellow)
+pixel!(canvas, 5, 8, :green)
+save(Plot(canvas, border=:dotted), "canvas")
+
+canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
+lines!(canvas, 0., 0., 1., 1., :blue)
+lines!(canvas, .25, 1., .5, 0., :yellow)
+lines!(canvas, .2, .8, 1., 0., :red)
+save(Plot(canvas, border=:dotted), "blending")
