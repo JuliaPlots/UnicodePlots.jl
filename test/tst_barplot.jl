@@ -44,6 +44,9 @@
     test_ref("references/barplot/ranges2.txt", @print_col(p))
 end
 
+struct Scale{T} r::T end
+(f::Scale)(x) = f.r * x  # functor
+
 @testset "keyword arguments" begin
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
@@ -52,6 +55,15 @@ end
         xscale = :log10,
     )
     test_ref("references/barplot/log10.txt", @print_col(p))
+
+    p = @inferred barplot(
+        [:a, :b, :c, :d, :e],
+        [0, 1, 10, 100, 1000],
+        title = "Logscale Plot",
+        xscale = Scale(π),
+    )
+    test_ref("references/barplot/functor.txt", @print_col(p))
+
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
@@ -71,6 +83,7 @@ end
         padding = 3,
     )
     test_ref("references/barplot/parameters1.txt", @print_col(p))
+
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
@@ -94,6 +107,7 @@ end
         width = 60
     )
     test_ref("references/barplot/parameters2.txt", @print_col(p))
+
     # same but with Char as symbols
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],

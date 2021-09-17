@@ -86,7 +86,7 @@ function histogram(
     hist::Histogram;
     symb = nothing,  # deprecated
     symbols = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"],
-    xscale::Union{Symbol,Function} = :identity,
+    xscale = :identity,
     xlabel = transform_name(xscale, "Frequency"),
     kw...
 )

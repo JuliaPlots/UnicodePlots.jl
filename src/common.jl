@@ -42,8 +42,8 @@ iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)
 fscale(x, f::Function) = f(x)
 iscale(x, f::Function) = f(x)
 
-function transform_name(tr::Union{Symbol,Function}, basename = "")
-    name = string(tr)
+function transform_name(tr, basename = "")
+    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
     name == "identity" && return basename
     name = occursin("#", name) ? "custom" : name
     string(basename, " [", name, "]")

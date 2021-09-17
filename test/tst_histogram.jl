@@ -1,6 +1,9 @@
 seed!(RNG, 1337)
 x = randn(RNG, 10000)
 
+struct Scale{T} r::T end
+(f::Scale)(x) = f.r * x  # functor
+
 @testset "default params" begin
     p = @inferred histogram(x)
     test_ref("references/histogram/default.txt", @print_col(p))
@@ -16,6 +19,8 @@ x = randn(RNG, 10000)
     test_ref("references/histogram/default_1e-2.txt", @print_col(p))
     p = @inferred histogram(x, xscale = :log10)
     test_ref("references/histogram/log10.txt", @print_col(p))
+    p = @inferred histogram(x, xscale = Scale(π))
+    test_ref("references/histogram/functor.txt", @print_col(p))
     p = @inferred histogram(x, xlabel = "custom label", xscale = :log10)
     test_ref("references/histogram/log10_label.txt", @print_col(p))
     p = @inferred histogram([0.1f0, 0.1f0, 0f0])
