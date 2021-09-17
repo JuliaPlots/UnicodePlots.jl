@@ -13,7 +13,7 @@ Usage
 
     Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
 
-    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, compact = false, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
 
 Arguments
 ==========
@@ -77,6 +77,7 @@ mutable struct Plot{T<:GraphicsArea}
     margin::Int
     padding::Int
     border::Symbol
+    compact::Bool
     labels_left::Dict{Int,String}
     colors_left::Dict{Int,JuliaColorType}
     labels_right::Dict{Int,String}
@@ -98,6 +99,7 @@ function Plot(
     ylabel::AbstractString = "",
     zlabel::AbstractString = "",
     border::Symbol = :solid,
+    compact::Bool = false,
     margin::Int = 3,
     padding::Int = 1,
     labels = true,
@@ -117,7 +119,7 @@ function Plot(
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
     Plot{T}(graphics, title, xlabel, ylabel, zlabel,
-            margin, padding, border,
+            margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
             decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
 end
@@ -135,6 +137,7 @@ function Plot(
     width::Int = 40,
     height::Int = 15,
     border::Symbol = :solid,
+    compact::Bool = false,
     xlim = (0, 0),
     ylim = (0, 0),
     margin::Int = 3,
@@ -146,7 +149,7 @@ function Plot(
     colorbar_lim = (0, 1),
     grid::Bool = true,
     min_width::Int = 5,
-    min_height::Int = 2
+    min_height::Int = 2,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 || throw(
         ArgumentError("xlim and ylim must be tuples or vectors of length 2")
@@ -167,8 +170,8 @@ function Plot(
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)
-    new_plot = Plot(canvas, title = title, margin = margin,
-                    padding = padding, border = border, labels = labels,
+    new_plot = Plot(canvas, title = title, margin = margin, padding = padding,
+                    border = border, compact = compact, labels = labels,
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
                     colormap = colormap, colorbar = colorbar,
                     colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
@@ -185,6 +188,10 @@ function Plot(
     label!(new_plot, :l, 1, max_y_str, color = :light_black)
     label!(new_plot, :bl, min_x_str, color = :light_black)
     label!(new_plot, :br, max_x_str, color = :light_black)
+    if compact
+        xlabel != "" && label!(new_plot, :b, xlabel)
+        ylabel != "" && label!(new_plot, :l, round(Int, nrows(canvas) / 2), ylabel)
+    end
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -540,7 +547,7 @@ function Base.show(io::IO, p::Plot)
     else
         0
     end
-    if p.show_labels && p.ylabel != ""
+    if !p.compact && p.show_labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
 
@@ -593,7 +600,7 @@ function Base.show(io::IO, p::Plot)
         # print left annotations
         print(io, repeat(🗷, p.margin))
         if p.show_labels
-            if row == y_lab_row
+            if !p.compact && row == y_lab_row
                 # print ylabel
                 print_color(:normal, io, p.ylabel)
                 print(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
@@ -631,7 +638,7 @@ function Base.show(io::IO, p::Plot)
     print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
     if p.show_labels
         print_labels(io, :b, p, border_length - 2, '\n' * border_left_pad * 🗹, 🗹 * border_right_pad, 🗹)
-        print_title(
+        p.compact || print_title(
             io, '\n' * border_left_pad, p.xlabel, border_right_pad, 🗹;
             p_width = p_width
         )
