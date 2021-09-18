@@ -16,6 +16,8 @@ const DOC_PLOT_PARAMS = """
   Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
   `:ascii`, and `:none`.
 
+- **`compact`** : Compact plot (labels), defaults to `false`.
+
 - **`margin`** : Number of empty characters to the left of the
   whole plot.
 

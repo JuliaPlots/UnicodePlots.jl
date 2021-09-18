@@ -221,9 +221,14 @@ parameters.
 
     Plotting range for the y coordinate
 
-- `margin::Int = 3`:
+- `labels::Bool = true`:
 
-    Number of empty characters to the left of the whole plot.
+    Can be used to hide the labels by setting `labels=false`.
+
+  ```julia
+  lineplot(sin, 1:.5:20, labels=false)
+  ```
+    ![Labels Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/labels.png)
 
 - `border::Symbol = :solid`:
 
@@ -246,18 +251,17 @@ parameters.
   ```
   ![Border Screenshot4](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
 
+- `compact::Bool = false`:
+    
+    Compact plot (labels), defaults to `false`.
+
+- `margin::Int = 3`:
+
+    Number of empty characters to the left of the whole plot.
+
 - `padding::Int = 1`:
 
     Space of the left and right of the plot between the labels and the canvas.
-
-- `labels::Bool = true`:
-
-    Can be used to hide the labels by setting `labels=false`.
-
-  ```julia
-  lineplot(sin, 1:.5:20, labels=false)
-  ```
-    ![Labels Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/labels.png)
 
 - `grid::Bool = true`:
 
