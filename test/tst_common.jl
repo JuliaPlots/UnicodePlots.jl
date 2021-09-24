@@ -61,3 +61,25 @@ end
         @test haskey(v, :b)
     end
 end
+
+@testset "miscellaneous" begin
+    @test UnicodePlots.char_marker('a') === 'a'
+    @test UnicodePlots.char_marker("a") === 'a'
+    @test UnicodePlots.char_marker(:+) === '+'
+
+    @test UnicodePlots.iterable([1, 2]) == [1, 2]
+    @test collect(Iterators.take(UnicodePlots.iterable(:abc), 2)) == [:abc, :abc]
+
+    @test UnicodePlots.fscale(1, :identity) === 1
+    @test UnicodePlots.iscale(1, :identity) === 1
+
+    @test UnicodePlots.fscale(10, :log10) ≈ 1
+    @test UnicodePlots.iscale(1, :log10) ≈ 10
+
+    @test UnicodePlots.fscale(2, :log2) ≈ 1
+    @test UnicodePlots.iscale(1, :log2) ≈ 2
+
+    @test UnicodePlots.fscale(ℯ, :ln) ≈ 1
+    @test UnicodePlots.iscale(1, :ln) ≈ ℯ
+end
+

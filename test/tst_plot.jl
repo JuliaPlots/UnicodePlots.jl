@@ -104,6 +104,8 @@ end
     @test @inferred(annotate!(p, 0.0, 1.0, "North West"; halign = :left)) === p
     test_ref("references/plot/annotations_BrailleCanvas.txt", @show_col(p))
 
+    @test @inferred(annotate!(p, 0.0, 0.0, 'c')) === p  # Char
+
     for sym in (:AsciiCanvas, :DotCanvas, :BlockCanvas)
         p = lineplot([-1, 1], [-1, 1], canvas = getproperty(UnicodePlots, sym))
         annotate!(p, +0, +0, "Origin")

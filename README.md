@@ -68,6 +68,14 @@ scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)
 ```
 ![Scatterplot Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot2.png)
 
+`marker` is supported, choose a `Char`, unit length `String`, or common symbol names such as `:circle` (more from `keys(UnicodePlots.MARKERS)`)
+One can also provide a vector of `marker`s and/or `color`s as in the following example:
+
+```julia
+scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
+```
+![Scatterplot Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot3.png)
+
 #### Lineplot
 
 ```julia

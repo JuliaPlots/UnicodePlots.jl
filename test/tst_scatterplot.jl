@@ -76,6 +76,20 @@ end
     test_ref("references/scatterplot/canvassize.txt", @show_col(p))
 end
 
+@testset "markers" begin
+    p = scatterplot(x, y, title = "Vector of markers", marker = [:circle, "!", '.', :star5, :vline], color = [:red, :green, :yellow, :blue, :cyan])
+    test_ref("references/scatterplot/markers_vector.txt", @show_col(p))
+
+    scatterplot(x, y, marker = :circle)
+
+    n = collect(1:length(UnicodePlots.MARKERS))
+    m = collect(keys(UnicodePlots.MARKERS))
+    for canvas ∈ (BrailleCanvas, DotCanvas, AsciiCanvas)
+        p = scatterplot(n, n, title = "Supported markers", marker = m)
+        test_ref("references/scatterplot/markers_$(canvas).txt", @show_col(p))
+    end
+end
+
 @testset "densityplot" begin
     seed!(RNG, 1338)
     dx, dy = randn(RNG, 1000), randn(RNG, 1000)
