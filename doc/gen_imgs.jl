@@ -25,6 +25,7 @@ save(lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line"), "li
 # scatterplot
 save(scatterplot(randn(RNG, 50), randn(RNG, 50), title="My Scatterplot", border=:dotted), "scatterplot1")
 save(scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted), "scatterplot2")
+save(scatterplot([1, 2, 3], [3, 4, 1], marker=:circle, border=:dotted), "scatterplot3")
 # lineplot
 save(lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted), "lineplot4")
 plt = lineplot([cos, sin], -π / 2, 2π, border=:dotted); save(plt, "lineplot5")
