@@ -69,8 +69,13 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
-    bar > 0 && print_color(:normal, io, " ", bar_lbl)
-    pan_len = max(max_bar_width + 1 + g.max_len - bar_head - length(bar_lbl), 0)
+    if bar >= 0
+        print_color(:normal, io, " ", bar_lbl)
+        len = length(bar_lbl)
+    else
+        len = -1
+    end
+    pan_len = max(max_bar_width + 1 + g.max_len - bar_head - len, 0)
     pad = repeat(" ", round(Int, pan_len))
     print(io, pad)
     nothing

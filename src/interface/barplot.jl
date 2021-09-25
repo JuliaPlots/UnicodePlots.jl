@@ -97,7 +97,7 @@ function barplot(
             if (n = length(lines)) > 1
                 append!(_text, lines)
                 for i in 1:n
-                    push!(_heights, i == n ? h : 0)
+                    push!(_heights, i == n ? h : -1)
                 end
             else
                 push!(_text, t)
