@@ -89,6 +89,24 @@ function barplot(
         ArgumentError("All values have to be positive. Negative bars are not supported.")
     )
 
+    if any('\n' in t for t in text)
+        _text = eltype(text)[]
+        _heights = eltype(heights)[]
+        for (t, h) in zip(text, heights)
+            lines = split(t, '\n')
+            if (n = length(lines)) > 1
+                append!(_text, lines)
+                for i in 1:n
+                    push!(_heights, i == n ? h : 0)
+                end
+            else
+                push!(_text, t)
+                push!(_heights, h)
+            end
+        end
+        text, heights = _text, _heights
+    end
+
     area = BarplotGraphics(
         heights, width, xscale;
         color = color, symbols = _handle_deprecated_symb(symb, symbols)
