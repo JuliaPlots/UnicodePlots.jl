@@ -7,9 +7,13 @@ const plane2_start = 0x20000
 const plane2_stop = 0x2FFFF
 
 # TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
-const unicode_table = Array{Char}(undef, plane0_stop - plane0_start + 1)
+const unicode_table = Array{Char}(undef, (plane0_stop - plane0_start + 1) + length(MARKERS))
 for i in plane0_start:plane0_stop
     unicode_table[i + 1] = Char(i)
+end
+
+for (j, i) in enumerate(plane1_start:plane1_start+(length(MARKERS) - 1))
+    unicode_table[i + 1] = MARKERS[j]
 end
 
 abstract type LookupCanvas <: Canvas end

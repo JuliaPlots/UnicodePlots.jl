@@ -212,3 +212,20 @@ function annotate!(
     end
     c
 end
+
+function annotate!(
+    c::Canvas,
+    x::Number,
+    y::Number,
+    text::Char,
+    color::UserColorType
+  )
+    xs = fscale(x, c.xscale)
+    ys = fscale(y, c.yscale)
+    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
+    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
+
+    char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
+    char_point!(c, char_x, char_y, text, color)
+    c
+end

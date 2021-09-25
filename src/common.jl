@@ -33,12 +33,47 @@ const DOC_PLOT_PARAMS = """
   for plotting.
 """
 
+const MarkerType = Union{Symbol,Char,AbstractString}
+const MARKERS = (
+    circle = '⚬',
+    rect = '▫',
+    diamond = '◇',
+    hexagon = '⬡',
+    cross = '✚',
+    xcross = '✖',
+    utriangle = '△',
+    dtriangle = '▽',
+    rtriangle = '▷',
+    ltriangle = '◁',
+    pentagon = '⬠',
+    star4 = '✦',
+    star5 = '★',
+    star6 = '✶',
+    star8 = '✴',
+    vline = '|',
+    hline = '―',
+    (+) = '+',
+    (x) = '⨯',
+)
+
+function char_marker(marker::MarkerType)::Char
+    m = if marker isa Symbol
+        get(MARKERS, marker, MARKERS[:circle])
+    else
+        length(marker) == 1 || throw(error("`marker` keyword has a non unit length"))
+        marker[1]
+    end
+end
+
+iterable(obj::AbstractVector) = obj
+iterable(obj) = Iterators.repeated(obj)
+
 const FSCALES = (identity=identity, ln=log, log2=log2, log10=log10)  # forward
 const ISCALES = (identity=identity, ln=exp, log2=exp2, log10=exp10)  # inverse
 const BASES = (identity=nothing, ln="ℯ", log2="2", log10="10")
 
-fscale(x, s::Symbol; fscales=FSCALES) = fscales[s](x)
-iscale(x, s::Symbol; iscales=ISCALES) = iscales[s](x)
+fscale(x, s::Symbol) = FSCALES[s](x)
+iscale(x, s::Symbol) = ISCALES[s](x)
 
 # support arbitrary scale functions
 fscale(x, f::Function) = f(x)

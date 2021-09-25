@@ -434,7 +434,7 @@ See also
 [`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text::AbstractString; color=:normal, kwargs...)
+function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text::Union{Char,AbstractString}; color=:normal, kwargs...)
   color = color == :auto ? next_color!(plot) : color
   annotate!(plot.graphics, x, y, text, color; kwargs...)
   plot

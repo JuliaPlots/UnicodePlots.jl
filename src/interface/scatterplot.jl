@@ -15,7 +15,7 @@ ordering.
 Usage
 ======
 
-    scatterplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    scatterplot([x], y; name = "", marker = :pixel, title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
 
 Arguments
 ==========
@@ -25,13 +25,13 @@ Arguments
 
 - **`y`** : The vertical position for each point.
 
-- **`name`** : Annotation of the current drawing to be displayed
-  on the right
+- **`name`** : Annotation of the current drawing to be displayed on the right
+
+- **`marker`** : Choose a marker from $(keys(MARKERS)), a `Char`, a unit length `String` or a vector of these
 
 $DOC_PLOT_PARAMS
 
-- **`height`** : Number of character rows that should be used
-  for plotting.
+- **`height`** : Number of character rows that should be used for plotting.
 
 - **`xlim`** : Plotting range for the x axis.
   `(0, 0)` stands for automatic.
@@ -88,21 +88,30 @@ See also
 """
 function scatterplot(
     x::AbstractVector, y::AbstractVector;
-    canvas::Type = BrailleCanvas, color::UserColorType = :auto, name = "", kw...
+    canvas::Type = BrailleCanvas, color::Union{UserColorType,AbstractVector} = :auto,
+    marker::Union{MarkerType,AbstractVector} = :pixel, name = "", kw...
 )
     new_plot = Plot(x, y, canvas; kw...)
-    scatterplot!(new_plot, x, y; color = color, name = name)
+    scatterplot!(new_plot, x, y; color = color, name = name, marker = marker)
 end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 function scatterplot!(
     plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector;
-    color::UserColorType = :auto, name = ""
+    color::Union{UserColorType,AbstractVector} = :auto,
+    marker::Union{MarkerType,AbstractVector} = :pixel, name = ""
 )
     color = (color == :auto) ? next_color!(plot) : color
-    name == "" || label!(plot, :r, string(name), color)
-    points!(plot, x, y, color)
+    name == "" || label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
+    if marker ∈ (:pixel, :auto)
+        points!(plot, x, y, color)
+    else
+        for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
+            annotate!(plot, xi, yi, char_marker(mi); color=ci)
+        end
+    end
+    plot
 end
 
 scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(
