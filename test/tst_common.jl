@@ -39,7 +39,8 @@ end
 end
 
 @testset "bordermap" begin
-    @test length(keys(UnicodePlots.bordermap)) == 9
+    bmap_keys = keys(UnicodePlots.bordermap)
+    @test length(bmap_keys) == 9
     @test haskey(UnicodePlots.bordermap, :none)
     @test haskey(UnicodePlots.bordermap, :bnone)
     @test haskey(UnicodePlots.bordermap, :solid)
@@ -49,7 +50,7 @@ end
     @test haskey(UnicodePlots.bordermap, :dotted)
     @test haskey(UnicodePlots.bordermap, :dashed)
     @test haskey(UnicodePlots.bordermap, :ascii)
-    for (k, v) in UnicodePlots.bordermap
+    for (k, v) in zip(bmap_keys, UnicodePlots.bordermap)
         @test length(keys(v)) == 8
         @test haskey(v, :tl)
         @test haskey(v, :tr)

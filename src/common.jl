@@ -5,32 +5,28 @@ const DOC_PLOT_PARAMS = """
 
 - **`ylabel`** : Text to display on the y axis of the plot
 
-- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10), or scale function e.g. `x -> log10(x)`
+- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10),
+  or scale function e.g. `x -> log10(x)`
 
 - **`yscale`** : Y-axis scale
 
-- **`labels`** : Boolean. Can be used to hide the labels by
-  setting `labels = false`.
+- **`labels`** : Boolean. Can be used to hide the labels by setting `labels = false`.
 
 - **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`,
-  `:ascii`, and `:none`.
+  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
 - **`compact`** : Compact plot (labels), defaults to `false`.
 
-- **`margin`** : Number of empty characters to the left of the
-  whole plot.
+- **`margin`** : Number of empty characters to the left of the whole plot.
 
-- **`padding`** : Space of the left and right of the plot between
-  the labels and the canvas.
+- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
 - **`color`** : Color of the drawing.
-  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255` for Color256 palette,
+  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`,
+  `:normal`, an integer in the range `0`-`255` for Color256 palette,
   or a tuple of three integers as RGB components.
 
-- **`width`** : Number of characters per row that should be used
-  for plotting.
+- **`width`** : Number of characters per row that should be used for plotting.
 """
 
 const MarkerType = Union{Symbol,Char,AbstractString}
@@ -57,7 +53,7 @@ const MARKERS = (
 )
 
 function char_marker(marker::MarkerType)::Char
-    m = if marker isa Symbol
+    if marker isa Symbol
         get(MARKERS, marker, MARKERS[:circle])
     else
         length(marker) == 1 || throw(error("`marker` keyword has a non unit length"))
@@ -155,97 +151,107 @@ function sorted_keys_values(dict::Dict; k2s=true)
     first.(keys_vals), last.(keys_vals)
 end
 
-const bordermap = Dict{Symbol,Dict{Symbol,Char}}()
-const border_solid  = Dict{Symbol,Char}()
-const border_corners = Dict{Symbol,Char}()
-const border_barplot = Dict{Symbol,Char}()
-const border_bold   = Dict{Symbol,Char}()
-const border_bnone = Dict{Symbol,Char}()
-const border_none   = Dict{Symbol,Char}()
-const border_dashed = Dict{Symbol,Char}()
-const border_dotted = Dict{Symbol,Char}()
-const border_ascii  = Dict{Symbol,Char}()
-border_solid[:tl] = '┌'
-border_solid[:tr] = '┐'
-border_solid[:bl] = '└'
-border_solid[:br] = '┘'
-border_solid[:t] = '─'
-border_solid[:l] = '│'
-border_solid[:b] = '─'
-border_solid[:r] = '│'
-border_corners[:tl] = '┌'
-border_corners[:tr] = '┐'
-border_corners[:bl] = '└'
-border_corners[:br] = '┘'
-border_corners[:t] = ' '
-border_corners[:l] = ' '
-border_corners[:b] = ' '
-border_corners[:r] = ' '
-border_barplot[:tl] = '┌'
-border_barplot[:tr] = '┐'
-border_barplot[:bl] = '└'
-border_barplot[:br] = '┘'
-border_barplot[:t] = ' '
-border_barplot[:l] = '┤'
-border_barplot[:b] = ' '
-border_barplot[:r] = ' '
-border_bold[:tl] = '┏'
-border_bold[:tr] = '┓'
-border_bold[:bl] = '┗'
-border_bold[:br] = '┛'
-border_bold[:t] = '━'
-border_bold[:l] = '┃'
-border_bold[:b] = '━'
-border_bold[:r] = '┃'
-border_bnone[:tl] = Char(0x2800)
-border_bnone[:tr] = Char(0x2800)
-border_bnone[:bl] = Char(0x2800)
-border_bnone[:br] = Char(0x2800)
-border_bnone[:t] = Char(0x2800)
-border_bnone[:l] = Char(0x2800)
-border_bnone[:b] = Char(0x2800)
-border_bnone[:r] = Char(0x2800)
-border_none[:tl] = ' '
-border_none[:tr] = ' '
-border_none[:bl] = ' '
-border_none[:br] = ' '
-border_none[:t] = ' '
-border_none[:l] = ' '
-border_none[:b] = ' '
-border_none[:r] = ' '
-border_dashed[:tl] = '┌'
-border_dashed[:tr] = '┐'
-border_dashed[:bl] = '└'
-border_dashed[:br] = '┘'
-border_dashed[:t] = '╌'
-border_dashed[:l] = '┊'
-border_dashed[:b] = '╌'
-border_dashed[:r] = '┊'
-border_dotted[:tl] = '⡤'
-border_dotted[:tr] = '⢤'
-border_dotted[:bl] = '⠓'
-border_dotted[:br] = '⠚'
-border_dotted[:t] = '⠤'
-border_dotted[:l] = '⡇'
-border_dotted[:b] = '⠒'
-border_dotted[:r] = '⢸'
-border_ascii[:tl] = '+'
-border_ascii[:tr] = '+'
-border_ascii[:bl] = '+'
-border_ascii[:br] = '+'
-border_ascii[:t] = '-'
-border_ascii[:l] = '|'
-border_ascii[:b] = '-'
-border_ascii[:r] = '|'
-bordermap[:solid]   = border_solid
-bordermap[:corners] = border_corners
-bordermap[:barplot] = border_barplot
-bordermap[:bold]    = border_bold
-bordermap[:none]    = border_none
-bordermap[:bnone]   = border_bnone
-bordermap[:dashed]  = border_dashed
-bordermap[:dotted]  = border_dotted
-bordermap[:ascii]   = border_ascii
+const border_solid = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '─',
+    l = '│',
+    b = '─',
+    r = '│',
+)
+const border_corners = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const border_barplot = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = '┤',
+    b = ' ',
+    r = ' ',
+)
+const border_bold = (
+    tl = '┏',
+    tr = '┓',
+    bl = '┗',
+    br = '┛',
+    t = '━',
+    l = '┃',
+    b = '━',
+    r = '┃',
+)
+const border_none = (
+    tl = ' ',
+    tr = ' ',
+    bl = ' ',
+    br = ' ',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const border_bnone = (
+    tl = Char(0x2800),
+    tr = Char(0x2800),
+    bl = Char(0x2800),
+    br = Char(0x2800),
+    t = Char(0x2800),
+    l = Char(0x2800),
+    b = Char(0x2800),
+    r = Char(0x2800),
+)
+const border_dashed = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '╌',
+    l = '┊',
+    b = '╌',
+    r = '┊',
+)
+const border_dotted = (
+    tl = '⡤',
+    tr = '⢤',
+    bl = '⠓',
+    br = '⠚',
+    t = '⠤',
+    l = '⡇',
+    b = '⠒',
+    r = '⢸',
+)
+const border_ascii = (
+    tl = '+',
+    tr = '+',
+    bl = '+',
+    br = '+',
+    t = '-',
+    l = '|',
+    b = '-',
+    r = '|',
+)
+const bordermap = (
+    solid   = border_solid,
+    corners = border_corners,
+    barplot = border_barplot,
+    bold    = border_bold,
+    none    = border_none,
+    bnone   = border_bnone,
+    dashed  = border_dashed,
+    dotted  = border_dotted,
+    ascii   = border_ascii,
+)
 
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
 const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
@@ -288,9 +294,9 @@ out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stre
 
 function _handle_deprecated_symb(symb, symbols)
     if symb === nothing
-        return symbols
+        symbols
     else
         Base.depwarn("The keyword `symb` is deprecated in favor of `symbols`", :BarplotGraphics)
-        return [symb]
+        [symb]
     end
 end
