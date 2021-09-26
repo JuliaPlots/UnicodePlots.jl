@@ -25,7 +25,7 @@ tests = [
 ]
 
 const RNG = StableRNG(1337)
-const T_SZ = (24, 80)
+const T_SZ = (24, 80)  # terminal size
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
@@ -57,8 +57,10 @@ function stable_sprand(r::AbstractRNG, m::Integer, n::Integer, density::Abstract
   sparse(I, J, V)
 end
 
-for test in tests
-    @testset "$test" begin
-        include(test)
+withenv("FORCE_COLOR"=>"X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+    for test in tests
+        @testset "$test" begin
+            include(test)
+        end
     end
 end

@@ -268,17 +268,10 @@ function crayon_256_color(color::UserColorType)::ColorType
     Crayons.val(ansicolor)
 end
 
-function julia_color(color::UserColorType)::JuliaColorType
-    if color isa Nothing
-        :normal
-    elseif color isa Symbol
-        color
-    elseif color isa Integer
-        Int(color)
-    else
-        julia_color(crayon_256_color(color))
-    end
-end
+julia_color(color::Integer)::JuliaColorType = Int(color)
+julia_color(color::Nothing)::JuliaColorType = :normal
+julia_color(color::Symbol)::JuliaColorType = color
+julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
 @inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
     if color === nothing || colors[x, y] === nothing || force
