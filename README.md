@@ -2,12 +2,8 @@
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html)
+[![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/Evizero/UnicodePlots.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/Evizero/UnicodePlots.jl?branch=master)
-
-| Julia   | CI |
-| ------- | -- |
-| v1      | [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml) |
-| nightly | [![CI (Julia nightly)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci_julia_nightly.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci_julia_nightly.yml) |
 
 Advanced Unicode plotting library designed for use in Julia's REPL.
 
