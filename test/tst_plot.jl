@@ -82,6 +82,9 @@ end
     ylab = "ylabel!(plot, text)"
     @test @inferred(ylabel!(p, ylab)) === p
     @test @inferred(ylabel(p)) == ylab
+    zlab = "zlabel!(plot, text)"
+    @test @inferred(zlabel!(p, zlab)) === p
+    @test @inferred(zlabel(p)) == zlab
 
     test_ref("references/plot/full_deco.txt", @show_col(p))
     tmp = tempname()

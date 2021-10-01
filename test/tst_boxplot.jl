@@ -32,6 +32,8 @@ end
     test_ref("references/boxplot/multi2.txt", @show_col(p))
     @test @inferred(boxplot!(p, [4,2,2.5,4,14], name = "last one")) === p
     test_ref("references/boxplot/multi3.txt", @show_col(p))
+    p = @inferred boxplot([[1,2,3,4,5], [2,3,4,5,6,7,8,9]])
+    test_ref("references/boxplot/multi4.txt", @show_col(p))
 end
 
 @testset "colors" begin

@@ -82,5 +82,16 @@ end
 
     @test UnicodePlots.fscale(ℯ, :ln) ≈ 1
     @test UnicodePlots.iscale(1, :ln) ≈ ℯ
+
+    @test UnicodePlots.fscale(1, x->x) === 1
+    @test UnicodePlots.iscale(1, x->x) === 1
+
+    @test UnicodePlots.out_stream_width(nothing) == 40
+    @test UnicodePlots.out_stream_height(nothing) == 15
+
+    @test UnicodePlots.julia_color(100) == 100
+    @test UnicodePlots.julia_color(:red) == :red
+    @test UnicodePlots.julia_color(nothing) == :normal
+    @test UnicodePlots.julia_color((50, 100, 150)) == 67
 end
 
