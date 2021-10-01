@@ -118,10 +118,15 @@ function Plot(
     colors_right = Dict{Int,JuliaColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
-    Plot{T}(graphics, title, xlabel, ylabel, zlabel,
+    p = Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
             decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
+    if compact
+        xlabel != "" && label!(p, :b, xlabel)
+        ylabel != "" && label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
+    end
+    p
 end
 
 function Plot(
@@ -188,10 +193,6 @@ function Plot(
     label!(new_plot, :l, 1, max_y_str, color = :light_black)
     label!(new_plot, :bl, min_x_str, color = :light_black)
     label!(new_plot, :br, max_x_str, color = :light_black)
-    if compact
-        xlabel != "" && label!(new_plot, :b, xlabel)
-        ylabel != "" && label!(new_plot, :l, round(Int, nrows(canvas) / 2), ylabel)
-    end
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -320,20 +321,19 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
                     plot.colors_left[row] = julia_color(color)
-                    return plot
+                    break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
                     plot.colors_right[row] = julia_color(color)
-                    return plot
+                    break
                 end
             end
         end
     else
         plot.decorations[loc] = value
         plot.colors_deco[loc] = julia_color(color)
-        return plot
     end
     plot
 end

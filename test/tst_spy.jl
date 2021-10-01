@@ -1,5 +1,8 @@
 @testset "sizing" begin
     seed!(RNG, 1337)
+    p = @inferred spy(stable_sprand(RNG, 0, 0, .1))
+    test_ref("references/spy/default_0x0.txt", @show_col(p, :displaysize=>T_SZ))
+    seed!(RNG, 1337)
     p = @inferred spy(stable_sprand(RNG, 10, 10, .15))
     @test p isa Plot
     test_ref("references/spy/default_10x10.txt", @show_col(p, :displaysize=>T_SZ))

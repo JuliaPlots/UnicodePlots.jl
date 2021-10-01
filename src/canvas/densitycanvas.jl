@@ -82,7 +82,7 @@ function printrow(io::IO, c::DensityCanvas, row::Int)
     y = row
     den_sign_count = length(signs)
     val_scale = (den_sign_count - 1) / c.max_density
-    for x in 1:ncols(c)
+    @inbounds for x in 1:ncols(c)
         den_index = round(Int, c.grid[x,y] * val_scale, RoundNearestTiesUp) + 1
         print_color(c.colors[x,y], io, signs[den_index])
     end

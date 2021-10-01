@@ -26,6 +26,9 @@ points!(canvas, .5, .9)
 
     p = @inferred Plot(canvas, xlabel = "x", ylabel= "y")
     test_ref("references/plot/xylabel.txt", @show_col(p))
+
+    p = @inferred Plot(canvas, xlabel = "x", ylabel= "y", compact = true)
+    test_ref("references/plot/xylabel_compact.txt", @show_col(p))
 end
 
 @testset "padding" begin
@@ -118,5 +121,10 @@ end
         annotate!(p, -1, +0, "West"; halign = :left)
         annotate!(p, -1, +1, "North West"; halign = :left)
         test_ref("references/plot/annotations_$sym.txt", @show_col(p))
+    end
+
+    p = lineplot([-1, 1], [-1, 1])
+    for h in (:right, :left, :center, :hcenter), v in (:top, :bottom, :center, :vcenter)
+        annotate!(p, 0, 0, "Origin"; halign = h, valign = v)
     end
 end

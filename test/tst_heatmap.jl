@@ -42,6 +42,12 @@ end
     end
     p = @inferred heatmap(x, colormap=reverse(UnicodePlots.COLOR_MAP_DATA[:viridis]))
     test_ref("references/heatmap/colormap_$(size(x, 1))x$(size(x, 2))_reverse_viridis.txt", @show_col(p, :displaysize=>T_SZ))
+
+    seed!(RNG, 1337)
+    M = Matrix{RGB{Float32}}(undef, 20, 20)
+    @. M = RGB(rand(RNG), rand(RNG), rand(RNG))
+    p = @inferred heatmap(M)  # RGB Matrix
+    test_ref("references/heatmap/rgb.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "axis limits" begin

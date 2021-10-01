@@ -22,4 +22,10 @@ end
       @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, i, "$i", color=:green)
       @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, i, "$i", :yellow)
     end
+
+    @test_logs (:warn, r"`UnicodePlots.savefig`.+text") savefig(p, tempname() * ".png")
+end
+
+@testset "spy" begin
+    @test_logs (:warn, r"`color = :automatic`.+deprecated") spy(stable_sprand(RNG, 10, 10, .15), color=:automatic)
 end
