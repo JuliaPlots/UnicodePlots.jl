@@ -128,6 +128,7 @@ end
     test_ref("references/barplot/edgecase_zeros.txt", @print_col(p))
     p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
     test_ref("references/barplot/edgecase_onelarge.txt", @print_col(p))
+    barplot("one", 1)
 end
 
 @testset "colors" begin

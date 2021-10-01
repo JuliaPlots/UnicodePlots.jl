@@ -455,16 +455,6 @@ function points!(plot::Plot{<:Canvas}, args...; kwargs...)
     plot
 end
 
-function gridpoint_char!(plot::Plot{<:Canvas}, args...; kwargs...)
-  gridpoint_char!(plot.graphics, args...; kwargs...)
-  plot
-end
-
-function point_char!(plot::Plot{<:Canvas}, args...; kwargs...)
-  point_char!(plot.graphics, args...; kwargs...)
-  plot
-end
-
 function print_title(
     io::IO, left_pad::AbstractString, title::AbstractString, right_pad::AbstractString, blank::Char;
     p_width::Int = 0, color = :normal
