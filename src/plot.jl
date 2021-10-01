@@ -103,8 +103,8 @@ function Plot(
     margin::Int = 3,
     padding::Int = 1,
     labels = true,
-    colormap = nothing,
-    colorbar = false,
+    colormap::Any = nothing,
+    colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
     colorbar_lim = (0, 1),
     ignored...
@@ -148,8 +148,8 @@ function Plot(
     margin::Int = 3,
     padding::Int = 1,
     labels::Bool = true,
-    colormap = nothing,
-    colorbar = false,
+    colormap::Any = nothing,
+    colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
     colorbar_lim = (0, 1),
     grid::Bool = true,
@@ -180,7 +180,6 @@ function Plot(
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
                     colormap = colormap, colorbar = colorbar,
                     colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
-
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     base_x_str = base_x === nothing ? "" : "$(base_x)^"
@@ -585,7 +584,7 @@ function Base.show(io::IO, p::Plot)
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     # plot all rows
-    for row in 1:(nr = nrows(c))
+    for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
         left_col  = get(p.colors_left,  row, :light_black)
@@ -631,7 +630,7 @@ function Base.show(io::IO, p::Plot)
                 (min_z_str, max_z_str), plot_padding, p.zlabel, cbar_max_len, 🗷
             )
         end
-        row < nr && println(io)
+        row < nrows(c) && println(io)
     end
 
     # draw bottom border and bottom labels  

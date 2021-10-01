@@ -14,7 +14,7 @@ Usage
 
     heatmap(z::AbstractMatrix; title = "", out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0,
             xlabel = "", ylabel = "", zlabel = "", labels = true,
-            border = :solid, colormap = :viridis, colorbar_border = :solid, show_colorbar = :true,
+            border = :solid, colormap = :viridis, colorbar_border = :solid, colorbar = :true,
             xfact = 0, yfact = 0, xlim = (0, 0), ylim = (0, 0), zlim = (0, 0),
             xoffset = 0.0, yoffset = 0.0, margin = 3, padding = 1)
 
@@ -124,7 +124,7 @@ function heatmap(
         noextrema = false
     catch
     end
-    if zlim != (0., 0.)
+    if zlim != (0, 0)
         noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(z))"))
         minz, maxz = zlim
     end
@@ -153,25 +153,27 @@ function heatmap(
     # ensure plot height is big enough
     height = min(max_height, max(height, nrows))
 
-    # for small plots, don't show colorbar by default
     if height < 7
-        show_colorbar = !noextrema && get(kw, :colorbar, false)
-    # show colorbar by default, unless set to false, or labels == false
+        # for small plots, don't show colorbar by default
+        colorbar = !noextrema && get(kw, :colorbar, false)
     else
-        show_colorbar = !noextrema && get(kw, :colorbar, labels)
+        # show colorbar by default, unless set to false, or labels == false
+        colorbar = !noextrema && get(kw, :colorbar, labels)
     end
+    kw = (; kw..., colorbar=colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0., 0.]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0., 0.]
-    new_plot = Plot(xs, ys, HeatmapCanvas;
-                    grid = false, colorbar = show_colorbar,
-                    colormap = colormap, colorbar_lim = (minz, maxz),
-                    ylim = ylim, xlim = xlim, labels = labels,
-                    width = width, height = height, min_width = 1, min_height = 1,
-                    kw...)
+    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
+    new_plot = Plot(
+        xs, ys, HeatmapCanvas;
+        grid = false, colormap = colormap, colorbar = colorbar, colorbar_lim = (minz, maxz),
+        ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
+        min_width = 1, min_height = 1, kw...
+    )
     for row = 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
-        points!(new_plot, X, repeat([Y[row]], length(X)), Z)
+        YY = repeat([Y[row]], length(X))
+        points!(new_plot, X, YY, Z)
     end
     new_plot
 end
