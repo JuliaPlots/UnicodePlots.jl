@@ -103,8 +103,8 @@ function Plot(
     margin::Int = 3,
     padding::Int = 1,
     labels = true,
-    colormap = nothing,
-    colorbar = false,
+    colormap::Any = nothing,
+    colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
     colorbar_lim = (0, 1),
     ignored...
@@ -118,10 +118,15 @@ function Plot(
     colors_right = Dict{Int,JuliaColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
-    Plot{T}(graphics, title, xlabel, ylabel, zlabel,
+    p = Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
             decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
+    if compact
+        xlabel != "" && label!(p, :b, xlabel)
+        ylabel != "" && label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
+    end
+    p
 end
 
 function Plot(
@@ -143,8 +148,8 @@ function Plot(
     margin::Int = 3,
     padding::Int = 1,
     labels::Bool = true,
-    colormap = nothing,
-    colorbar = false,
+    colormap::Any = nothing,
+    colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
     colorbar_lim = (0, 1),
     grid::Bool = true,
@@ -175,7 +180,6 @@ function Plot(
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
                     colormap = colormap, colorbar = colorbar,
                     colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
-
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     base_x_str = base_x === nothing ? "" : "$(base_x)^"
@@ -188,10 +192,6 @@ function Plot(
     label!(new_plot, :l, 1, max_y_str, color = :light_black)
     label!(new_plot, :bl, min_x_str, color = :light_black)
     label!(new_plot, :br, max_x_str, color = :light_black)
-    if compact
-        xlabel != "" && label!(new_plot, :b, xlabel)
-        ylabel != "" && label!(new_plot, :l, round(Int, nrows(canvas) / 2), ylabel)
-    end
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
@@ -320,20 +320,19 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
                     plot.colors_left[row] = julia_color(color)
-                    return plot
+                    break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
                     plot.colors_right[row] = julia_color(color)
-                    return plot
+                    break
                 end
             end
         end
     else
         plot.decorations[loc] = value
         plot.colors_deco[loc] = julia_color(color)
-        return plot
     end
     plot
 end
@@ -585,7 +584,7 @@ function Base.show(io::IO, p::Plot)
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     # plot all rows
-    for row in 1:(nr = nrows(c))
+    for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
         left_col  = get(p.colors_left,  row, :light_black)
@@ -631,7 +630,7 @@ function Base.show(io::IO, p::Plot)
                 (min_z_str, max_z_str), plot_padding, p.zlabel, cbar_max_len, 🗷
             )
         end
-        row < nr && println(io)
+        row < nrows(c) && println(io)
     end
 
     # draw bottom border and bottom labels  

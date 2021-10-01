@@ -1,6 +1,9 @@
 *.jl.cov
 *.jl.mem
+*.cov
+*.swp
+
 /Manifest.toml
 /test/Manifest.toml
+
 .DS_Store
-*.swp

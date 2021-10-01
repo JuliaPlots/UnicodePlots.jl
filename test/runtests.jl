@@ -2,6 +2,7 @@ using UnicodePlots, ReferenceTests, Test
 using ReferenceTests: BeforeAfterFull
 using Dates: Date, Day
 using SparseArrays
+using ColorTypes
 using StableRNGs
 using StatsBase
 using Random
@@ -21,7 +22,7 @@ tests = [
     "tst_spy.jl",
     "tst_boxplot.jl",
     "tst_heatmap.jl",
-    "tst_deprecated.jl",
+    "tst_deprecated_warns.jl",
 ]
 
 const RNG = StableRNG(1337)

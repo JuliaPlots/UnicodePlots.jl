@@ -1061,15 +1061,12 @@ function rgb2ansii(rgb)
 end
 
 function heatmapcolor(z, minz, maxz, cmap)
-    if minz == maxz
-        i = 0
+    i = if minz == maxz
+        0
     else
-        i = round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+        round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
     end
-    rgb = cmap[i + 1]
-    rgb2ansii(rgb)
+    rgb2ansii(cmap[i + 1])
 end
 
-function rgbimgcolor(z)
-    rgb2ansii([z.r, z.g, z.b])
-end
+rgbimgcolor(z) = rgb2ansii((z.r, z.g, z.b))

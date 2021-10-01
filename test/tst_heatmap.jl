@@ -42,6 +42,12 @@ end
     end
     p = @inferred heatmap(x, colormap=reverse(UnicodePlots.COLOR_MAP_DATA[:viridis]))
     test_ref("references/heatmap/colormap_$(size(x, 1))x$(size(x, 2))_reverse_viridis.txt", @show_col(p, :displaysize=>T_SZ))
+
+    seed!(RNG, 1337)
+    rgb = rand(RNG, 20, 20, 3)
+    img = RGB.(rgb[:, :, 1], rgb[:, :, 2], rgb[:, :, 3])
+    p = @inferred heatmap(img)  # RGB Matrix
+    test_ref("references/heatmap/rgb.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "axis limits" begin
@@ -71,6 +77,9 @@ end
     test_ref("references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xlim_1_50.txt", @show_col(p, :displaysize=>T_SZ))
     p = @inferred heatmap(x, xlim=[1, 50], ylim=[1, 50])
     test_ref("references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_xlim_1_50_ylim_1_50.txt", @show_col(p, :displaysize=>T_SZ))
+    zmax = 2 * maximum(x)
+    p = @inferred heatmap(x, zlim=[0, zmax])
+    test_ref("references/heatmap/limits_$(size(x, 1))x$(size(x, 2))_zlim_0_$zmax.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "all zero values" begin
