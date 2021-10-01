@@ -90,7 +90,7 @@ end
 function printrow(io::IO, c::BrailleCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
-    @inbounds for x in 1:ncols(c)
+    for x in 1:ncols(c)
         print_color(c.colors[x,y], io, c.grid[x,y])
     end
     nothing

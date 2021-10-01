@@ -40,7 +40,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
         y -= 1
     end
     iscolor = get(io, :color, false)
-    @inbounds for x in 1:ncols(c)
+    for x in 1:ncols(c)
         if iscolor
             fgcol = _toCrayon(c.colors[x, y])
             if (y - 1) > 0

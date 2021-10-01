@@ -20,7 +20,7 @@ points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal) = point
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    @inbounds for I in eachindex(X, Y)
+    for I in eachindex(X, Y)
         points!(c, X[I], Y[I], color)
     end
     c
@@ -30,7 +30,7 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::Abstrac
     (length(X) == length(color) && length(X) == length(Y)) || throw(
         DimensionMismatch("X, Y, and color must be the same length")
     )
-    @inbounds for i in 1:length(X)
+    for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
     end
     c
@@ -92,7 +92,7 @@ lines!(
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    @inbounds for i in 1:(length(X)-1)
+    for i in 1:(length(X)-1)
         if !(isfinite(X[i]) && isfinite(X[i+1]) && isfinite(Y[i]) && isfinite(Y[i+1]))
             continue
         end
