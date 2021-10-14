@@ -5,13 +5,12 @@
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml)
 [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl)
 
-Advanced Unicode plotting library designed for use in Julia's REPL.
+Advanced Unicode plotting library designed for use in Julia's REPL. `UnicodePlots` is integrated in [Plots](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](http://docs.juliaplots.org/latest/generated/unicodeplots/#unicodeplots-ref17).
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without much
-verbosity. Here is a list of the main high-level functions for
-common scenarios:
+There are a couple of ways to generate typical plots without much verbosity.
+Here is a list of the main high-level functions for common scenarios:
 
   - Scatterplot
   - Lineplot
@@ -32,10 +31,8 @@ plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my 
 
 ![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot1.png)
 
-There are other types of `Canvas` available (see section
-"Low-level Interface"). In some situations, such as printing to
-a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might
-lead to better results.
+There are other types of `Canvas` available (see section "Low-level Interface").
+In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results.
 
 ```julia
 lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y", canvas = DotCanvas, border = :ascii)
