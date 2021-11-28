@@ -86,23 +86,52 @@ roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 compact_repr(num::Number) = repr(num, context=:compact => true)
 
 ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x,m) = (
+round_up_tick(x, m) = (
     x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
 )
-round_down_tick(x,m) = (
+round_down_tick(x, m) = (
     x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
 )
-round_up_subtick(x,m) = (
+round_up_subtick(x, m) = (
     x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
 )
-round_down_subtick(x,m) = (
+round_down_subtick(x, m) = (
     x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
 )
 float_round_log10(x::F,m) where {F<:AbstractFloat} = (
-    x == 0 ? F(0) : (x > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
+    x == 0 ? F(0) : (x  > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
 )
-float_round_log10(x::Integer,m) = float_round_log10(float(x), m)
+float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
+
+const SUPERSCRIPT = Dict(
+    # '.' => '‧',  # U+2027: Hyphenation Point
+    # '.' => '˙',  # U+02D9: Dot Above
+    # '.' => '⸳',  # U+2E33: Raised Dot
+    # '.' => '⋅',  # U+22C5: Dot Operator
+    # '.' => '·',  # U+00B7: Middle Dot
+    '.' => '⸱',  # U+2E31: Word Separator Middle Dot
+    '-' => '⁻',
+    '+' => '⁺',
+    '0' => '⁰',
+    '1' => '¹',
+    '2' => '²',
+    '3' => '³',
+    '4' => '⁴',
+    '5' => '⁵',
+    '6' => '⁶',
+    '7' => '⁷',
+    '8' => '⁸',
+    '9' => '⁹',
+)
+
+function superscript(s::AbstractString)
+    v = collect(s)
+    for (i, k) in enumerate(v)
+        v[i] = get(SUPERSCRIPT, k, k)
+    end
+    String(v)
+end
 
 function plotting_range(xmin, xmax)
     diff = xmax - xmin

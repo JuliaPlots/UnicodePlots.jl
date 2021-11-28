@@ -102,7 +102,7 @@ function Plot(
     compact::Bool = false,
     margin::Int = 3,
     padding::Int = 1,
-    labels = true,
+    labels::Bool = true,
     colormap::Any = nothing,
     colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
@@ -148,6 +148,7 @@ function Plot(
     margin::Int = 3,
     padding::Int = 1,
     labels::Bool = true,
+    unicode_exponent::Bool = true,
     colormap::Any = nothing,
     colorbar::Bool = false,
     colorbar_border::Symbol = :solid,
@@ -182,16 +183,17 @@ function Plot(
                     colorbar_border = colorbar_border, colorbar_lim = colorbar_lim)
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
-    base_x_str = base_x === nothing ? "" : "$(base_x)^"
-    base_y_str = base_y === nothing ? "" : "$(base_y)^"
-    min_x_str = base_x_str * compact_repr(roundable(min_x) ? round(Int, min_x, RoundNearestTiesUp) : min_x)
-    max_x_str = base_x_str * compact_repr(roundable(max_x) ? round(Int, max_x, RoundNearestTiesUp) : max_x)
-    min_y_str = base_y_str * compact_repr(roundable(min_y) ? round(Int, min_y, RoundNearestTiesUp) : min_y)
-    max_y_str = base_y_str * compact_repr(roundable(max_y) ? round(Int, max_y, RoundNearestTiesUp) : max_y)
-    label!(new_plot, :l, nrows(canvas), min_y_str, color = :light_black)
-    label!(new_plot, :l, 1, max_y_str, color = :light_black)
-    label!(new_plot, :bl, min_x_str, color = :light_black)
-    label!(new_plot, :br, max_x_str, color = :light_black)
+    m_x, M_x, m_y, M_y = map(v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v), (min_x, max_x, min_y, max_y))
+    if unicode_exponent
+        m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
+        m_y, M_y = map(v -> base_y !== nothing ? superscript(v) : v, (m_y, M_y))
+    end
+    base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
+    base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
+    label!(new_plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
+    label!(new_plot, :l, 1, base_y_str * M_y, color = :light_black)
+    label!(new_plot, :bl, base_x_str * m_x, color = :light_black)
+    label!(new_plot, :br, base_x_str * M_x, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
