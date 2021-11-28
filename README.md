@@ -32,7 +32,7 @@ plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my 
 ![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot1.png)
 
 There are other types of `Canvas` available (see section "Low-level Interface").
-In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results.
+In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
 
 ```julia
 lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line", xlabel = "x", ylabel = "y", canvas = DotCanvas, border = :ascii)
@@ -40,7 +40,7 @@ lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title = "Example Plot", name = "my line",
 
 ![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot2.png)
 
-Some plot methods have a mutating variant that ends with a exclamation mark.
+Some plot methods have a mutating variant that ends with a exclamation mark:
 
 ```julia
 lineplot!(plt, [0, 4, 8], [10, 1, 10], color = :blue, name = "other line")
@@ -55,12 +55,19 @@ scatterplot(randn(50), randn(50), title = "My Scatterplot", border=:dotted)
 ```
 ![Scatterplot Screenshot1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot1.png)
 
-`xscale` and `yscale` are supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function
+`xscale` and `yscale` are supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function:
 
 ```julia
 scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)
 ```
 ![Scatterplot Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot2.png)
+
+For the axis scale exponent, one can revert to using `ASCII` characters instead of `Unicode` ones using the keyword `unicode_exponent=false`:
+
+```julia
+scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)
+```
+![Scatterplot Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot3.png)
 
 `marker` is supported, choose a `Char`, unit length `String`, or common symbol names such as `:circle` (more from `keys(UnicodePlots.MARKERS)`)
 One can also provide a vector of `marker`s and/or `color`s as in the following example:
@@ -68,7 +75,7 @@ One can also provide a vector of `marker`s and/or `color`s as in the following e
 ```julia
 scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
 ```
-![Scatterplot Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot3.png)
+![Scatterplot Screenshot4](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot4.png)
 
 #### Lineplot
 
@@ -77,14 +84,14 @@ lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot", border=:dotted)
 ```
 ![Lineplot Screenshot1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot4.png)
 
-It's also possible to specify a function and a range.
+It's also possible to specify a function and a range:
 
 ```julia
 plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)
 ```
 ![Lineplot Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot5.png)
 
-You can also plot lines by specifying an intercept and slope
+You can also plot lines by specifying an intercept and slope:
 
 ```julia
 lineplot!(plt, -0.5, .2, name = "line")
@@ -101,7 +108,7 @@ stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color = :red, style = :post, title = "M
 
 #### Barplot
 
-Accepts either two vectors or a dictionary
+Accepts either two vectors or a dictionary:
 
 ```julia
 barplot(["Paris", "New York", "Moskau", "Madrid"],
@@ -120,7 +127,7 @@ histogram(randn(1000) .* 0.1, nbins = 15, closed = :left)
 ```
 ![Histogram Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/histogram1.png)
 
-The `histogram` function also supports axis scaling using the parameter `xscale`.
+The `histogram` function also supports axis scaling using the parameter `xscale`:
 
 ```julia
 histogram(randn(1000) .* 0.1, nbins = 15, closed = :right, xscale=:log10)
@@ -166,9 +173,8 @@ The `heatmap` function also supports axis scaling using the parameters `xfact`, 
 
 The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
-In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable
-the colorbar and configure its border. The `zlabel` option and `zlabel!` method
-may be used to set the z axis (colorbar) label.
+In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable the colorbar and configure its border.
+The `zlabel` option and `zlabel!` method may be used to set the z axis (colorbar) label.
 
 ```julia
 heatmap(collect(0:30) * collect(0:30)', xfact=0.1, yfact=0.1, xoffset=-1.5, colormap=:inferno)
@@ -178,8 +184,7 @@ heatmap(collect(0:30) * collect(0:30)', xfact=0.1, yfact=0.1, xoffset=-1.5, colo
 
 ### Options
 
-All plots support the set (or a subset) of the following named
-parameters.
+All plots support the set (or a subset) of the following named parameters:
 
 - `title::String = ""`:
 
@@ -316,7 +321,7 @@ The method `label!` is responsible for the setting all the textual decorations o
 
 ## Know Issues
 
-Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border vs canvas).
+Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border versus canvas).
 Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or use `border=:dotted` keyword argument in the plots.
 For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.netlify.app/faq/#can_i_use_this_font_in_a_jupyter_notebook_and_how_do_i_do_it).
 
@@ -366,9 +371,7 @@ At the moment there are the following types of Canvas implemented:
 
 ## Installation
 
-To install UnicodePlots, start up Julia and type the following
-code-snipped into the REPL. It makes use of the native Julia
-package manger.
+To install UnicodePlots, start up Julia and type the following code-snipped into the REPL (makes use of the native Julia package manager):
 
 ```julia
 using Pkg
@@ -385,7 +388,7 @@ cd doc
 bash gen_imgs.sh
 ```
 
-will regenerate the images for inclusion in `README.md` with root url https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs.
+will regenerate the images for inclusion in `README.md` with root (prefix) url https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs.
 
 ## License
 
