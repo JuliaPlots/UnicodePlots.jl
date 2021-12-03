@@ -352,26 +352,26 @@ As you can see, one issue that arises when multiple pixel are represented by one
 At the moment there are the following types of Canvas implemented:
 
   - **BrailleCanvas**:
-    This type of canvas is probably the one with the highest resolution for Unicode plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
+    This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixel. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
 
   - **BlockCanvas**:
-    This canvas is also Unicode-based. It has half the resolution of the BrailleCanvas. In contrast to BrailleCanvas, the pixels don't have visible spacing between them. This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
+    This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 
   - **HeatmapCanvas**:
-    This canvas is also Unicode-based. It has half the resolution of the BlockCanvas. This canvas effectively turns every character into 2 color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of y coordinates being displayed.
+    This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of y coordinates being displayed.
 
   - **AsciiCanvas** and **DotCanvas**:
-    These two canvas utilizes only standard ASCII character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+    These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
   - **DensityCanvas**:
-    Unlike the BrailleCanvas, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+    Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 
   - **BarplotGraphics**:
     This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object
 
 ## Installation
 
-To install UnicodePlots, start up Julia and type the following code-snipped into the REPL (makes use of the native Julia package manager):
+To install UnicodePlots, start up Julia and type the following code snippet into the REPL (makes use of the native Julia package manager `Pkg`):
 
 ```julia
 using Pkg
@@ -379,15 +379,13 @@ Pkg.add("UnicodePlots")
 ```
 
 ## Documentation update
-Documentation data is stored in the `uncicodeplots-docs` branch of this repository.
+Documentation data is stored in the `unicodeplots-docs` branch of this repository.
 
 The following:
-
 ```bash
 cd doc
 bash gen_imgs.sh
 ```
-
 will regenerate the images for inclusion in `README.md` with root (prefix) url https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs.
 
 ## License
