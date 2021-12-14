@@ -152,7 +152,15 @@ boxplot(["one", "two"], [[1,2,3,4,5], [2,3,4,5,6,7,8,9]], title="Grouped Boxplot
 using SparseArrays
 spy(sprandn(50, 120, .05), border=:dotted)
 ```
-![Spy Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/spy1.png)
+![Spy Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/spy1.png)
+
+Plotting the zeros pattern is also possible using `zeros=true`:
+
+```julia
+using SparseArrays
+spy(sprandn(50, 120, .9), zeros=true, border=:dotted)
+```
+![Spy Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/spy2.png)
 
 #### Density Plot
 

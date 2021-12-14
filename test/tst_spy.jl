@@ -47,4 +47,7 @@ end
     seed!(RNG, 1337)
     p = spy(stable_sprand(RNG, 200, 200, .001), title="Custom Title", canvas=DotCanvas, border=:ascii)
     test_ref("references/spy/parameters_200x200_dotcanvas.txt", @show_col(p, :displaysize=>T_SZ))
+    seed!(RNG, 1337)
+    p = spy(stable_sprand(RNG, 200, 200, .99), zeros=true)
+    test_ref("references/spy/parameters_200x200_zeros.txt", @show_col(p, :displaysize=>T_SZ))
 end

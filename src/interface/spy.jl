@@ -17,7 +17,7 @@ plot withing the bounding box specified by `maxwidth` and
 Usage
 ======
 
-    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing,width = 0, height = 0, canvas = BrailleCanvas, grid = true)
+    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0, canvas = BrailleCanvas, zeros = false)
 
 Arguments
 ==========
@@ -55,6 +55,8 @@ Arguments
   used for plotting. `0` stands for automatic.
 
 - **`canvas`** : The type of canvas that should be used for drawing.
+
+- **`zeros`** : Show zeros pattern instead of nonzeros (default).
 
 Returns
 ========
@@ -100,7 +102,23 @@ See also
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-spy(A::AbstractMatrix; kwargs...) = spy(size(A)..., _findnz(A)...; kwargs...)
+
+function spy(A::AbstractMatrix; kwargs...)
+    rows, cols, vals = _strict_non_zeros(_findnz(A)...)
+    if get(kwargs, :zeros, false)
+        I = CartesianIndex.(zip(rows, cols))  # non zeros
+        Z = CartesianIndices(axes(A))[InvertedIndex(I)]  # zeros
+        rows, cols = getindex.(Z, 1), getindex.(Z, 2)
+        vals = zeros(eltype(vals), length(rows))
+    end
+    spy(size(A)..., rows, cols, vals; kwargs...)
+end
+
+function _strict_non_zeros(rows, cols, vals)
+    # findnz(A) returns stored zeros, ignore those
+    I = findall(!iszero, vals)
+    rows[I], cols[I], vals[I]
+end
 
 function spy(
     nrow::Int,
@@ -118,6 +136,7 @@ function spy(
     padding::Int = 1,
     color::UserColorType = :auto,
     canvas::Type{T} = BrailleCanvas,
+    zeros::Bool = false,
     kw...
 ) where {T <: Canvas}
     if color == :automatic
@@ -130,36 +149,32 @@ function spy(
     )
     can = T(width, height, width  = Float64(ncol) + 1, height = Float64(nrow) + 1)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
-    height = nrows(plot.graphics)
-    width = ncols(plot.graphics)
-    plot = if color != :auto
-        points!(
-            plot, convert(Vector{Float64}, cols),
-            nrow + 1 .- convert(Vector{Float64}, rows), color
-        )
+
+    if color != :auto
+        points!(plot, cols, nrow + 1 .- rows, color)
+        label!(plot, :r, 1, zeros ? "= 0" : "≠ 0", color)
     else
-        pos_idx = vals .> 0
-        neg_idx = (!).(pos_idx)
-        pos_cols = cols[pos_idx]
-        pos_rows = rows[pos_idx]
-        neg_cols = cols[neg_idx]
-        neg_rows = rows[neg_idx]
-        points!(
-            plot, convert(Vector{Float64}, pos_cols),
-            nrow + 1 .- convert(Vector{Float64}, pos_rows), :red
-        )
-        points!(
-            plot, convert(Vector{AbstractFloat}, neg_cols),
-            nrow + 1 .- convert(Vector{Float64}, neg_rows), :blue
-        )
-        label!(plot, :r, 1, "> 0", :red)
-        label!(plot, :r, 2, "< 0", :blue)
+        if zeros
+            points!(plot, cols, nrow + 1 .- rows, :green)
+            label!(plot, :r, 1, "= 0", :green)
+        else
+            pos_idx = vals .> 0
+            neg_idx = (!).(pos_idx)
+            pos_cols = cols[pos_idx]
+            pos_rows = rows[pos_idx]
+            neg_cols = cols[neg_idx]
+            neg_rows = rows[neg_idx]
+            points!(plot, pos_cols, nrow + 1 .- pos_rows, :red)
+            points!(plot, neg_cols, nrow + 1 .- neg_rows, :blue)
+            label!(plot, :r, 1, "> 0", :red)
+            label!(plot, :r, 2, "< 0", :blue)
+        end
     end
     label!(plot, :l, 1, "1", :light_black)
-    label!(plot, :l, height, string(nrow), :light_black)
+    label!(plot, :l, nrows(plot.graphics), string(nrow), :light_black)
     label!(plot, :bl, "1", :light_black)
     label!(plot, :br, string(ncol), :light_black)
-    xlabel!(plot, string("nz = ", length(vals)))
+    haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), zeros ? " zeros" : " nonzeros"))
     return plot
 end
 
