@@ -175,7 +175,7 @@ densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```julia
 heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 ```
-![Heatmap Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap1.png)
+![Heatmap Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap1.png)
 
 The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
 
@@ -250,21 +250,21 @@ All plots support the set (or a subset) of the following named parameters:
     The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:corners`, and `:none`.
 
   ```julia
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
+  lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
   ```
-  ![Border Screenshot1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_bold.png)
+  ![Border Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_bold.png)
   ```julia
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
+  lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
   ```
-  ![Border Screenshot2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dashed.png)
+  ![Border Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dashed.png)
   ```julia
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dotted)
+  lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)
   ```
-  ![Border Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dotted.png)
+  ![Border Screenshot 3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_dotted.png)
   ```julia
-  lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:none)
+  lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)
   ```
-  ![Border Screenshot4](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
+  ![Border Screenshot 4](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
 
 - `compact::Bool = false`:
     

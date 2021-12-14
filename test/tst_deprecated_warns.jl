@@ -27,5 +27,5 @@ end
 end
 
 @testset "spy" begin
-    @test_logs (:warn, r"`color = :automatic`.+deprecated") spy(stable_sprand(RNG, 10, 10, .15), color=:automatic)
+    @test_logs (:warn, r"`color = :automatic`.+deprecated") spy(_stable_sprand(RNG, 10, 10, .15), color=:automatic)
 end
