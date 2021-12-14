@@ -107,7 +107,8 @@ function spy(A::AbstractMatrix; kwargs...)
     rows, cols, vals = _strict_non_zeros(_findnz(A)...)
     if get(kwargs, :zeros, false)
         I = CartesianIndex.(zip(rows, cols))  # non zeros
-        Z = CartesianIndices(axes(A))[InvertedIndex(I)]  # zeros
+        mask = trues(size(A)); mask[I] .= false
+        Z = CartesianIndices(axes(A))[mask]  # zeros
         rows, cols = getindex.(Z, 1), getindex.(Z, 2)
         vals = zeros(eltype(vals), length(rows))
     end

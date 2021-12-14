@@ -4,7 +4,6 @@ using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
-using InvertedIndices
 
 export
     GraphicsArea,

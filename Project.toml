@@ -10,12 +10,10 @@ Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-InvertedIndices = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
 
 [compat]
 Crayons = "4.0"
 StatsBase = "0.32, 0.33"
-InvertedIndices = "1.0"
 julia = "1"
 
 [extras]
