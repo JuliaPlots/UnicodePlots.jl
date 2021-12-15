@@ -56,7 +56,7 @@ Arguments
 
 - **`canvas`** : The type of canvas that should be used for drawing.
 
-- **`zeros`** : Show zeros pattern instead of nonzeros (default).
+- **`show_zeros`** : Show zeros pattern instead of default nonzeros.
 
 Returns
 ========
@@ -105,7 +105,7 @@ See also
 
 function spy(A::AbstractMatrix; kwargs...)
     rows, cols, vals = _strict_non_zeros(_findnz(A)...)
-    if get(kwargs, :zeros, false)
+    if get(kwargs, :show_zeros, false)
         I = CartesianIndex.(zip(rows, cols))  # non zeros
         mask = trues(size(A)); mask[I] .= false
         Z = CartesianIndices(axes(A))[mask]  # zeros
@@ -137,7 +137,7 @@ function spy(
     padding::Int = 1,
     color::UserColorType = :auto,
     canvas::Type{T} = BrailleCanvas,
-    zeros::Bool = false,
+    show_zeros::Bool = false,
     kw...
 ) where {T <: Canvas}
     if color == :automatic
@@ -153,9 +153,9 @@ function spy(
 
     if color != :auto
         points!(plot, cols, nrow + 1 .- rows, color)
-        label!(plot, :r, 1, zeros ? "= 0" : "≠ 0", color)
+        label!(plot, :r, 1, show_zeros ? "= 0" : "≠ 0", color)
     else
-        if zeros
+        if show_zeros
             points!(plot, cols, nrow + 1 .- rows, :green)
             label!(plot, :r, 1, "= 0", :green)
         else
@@ -175,7 +175,7 @@ function spy(
     label!(plot, :l, nrows(plot.graphics), string(nrow), :light_black)
     label!(plot, :bl, "1", :light_black)
     label!(plot, :br, string(ncol), :light_black)
-    haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), zeros ? " zeros" : " nonzeros"))
+    haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
     return plot
 end
 

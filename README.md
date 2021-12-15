@@ -154,11 +154,11 @@ spy(sprandn(50, 120, .05), border=:dotted)
 ```
 ![Spy Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/spy1.png)
 
-Plotting the zeros pattern is also possible using `zeros=true`:
+Plotting the zeros pattern is also possible using `show_zeros=true`:
 
 ```julia
 using SparseArrays
-spy(sprandn(50, 120, .9), zeros=true, border=:dotted)
+spy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)
 ```
 ![Spy Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/spy2.png)
 
