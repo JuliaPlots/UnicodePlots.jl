@@ -1,20 +1,7 @@
-using UnicodePlots
-using SparseArrays
-using StableRNGs
-using Random
+using UnicodePlots, StableRNGs
+include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
 RNG = StableRNG(1337)
-function stable_sprand(r::AbstractRNG, m::Integer, n::Integer, density::AbstractFloat)
-  I = Int[]
-  J = Int[]
-  for li in randsubseq(r, 1:(m * n), density)
-    j, i = divrem(li - 1, m)
-    push!(I, i + 1)
-    push!(J, j + 1)
-  end
-  V = rand(r, length(I))
-  return sparse(I, J, V)
-end
 
 save(p, nm) = savefig(p, "imgs/$(ARGS[1])/$(nm).txt"; color=true)
 
@@ -42,7 +29,8 @@ save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:right, xscale=:log10), 
 save(boxplot([1, 3, 3, 4, 6, 10]), "boxplot1")
 save(boxplot(["one", "two"], [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]], title="Grouped Boxplot", xlabel="x"), "boxplot2")
 # Sparsity Pattern
-save(spy(stable_sprand(RNG, 50, 120, .05), border=:dotted), "spy1")
+save(spy(_stable_sprand(RNG, 50, 120, .05), border=:dotted), "spy1")
+save(spy(sprandn(50, 120, .9), show_zeros=true, border=:dotted), "spy2")
 # Density Plot
 plt = densityplot(randn(RNG, 1000), randn(RNG, 1000))
 save(densityplot!(plt, randn(RNG, 1000) .+ 2, randn(RNG, 1000) .+ 2), "densityplot1")
@@ -53,10 +41,10 @@ save(heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, c
 # Options
 save(lineplot(sin, 1:.5:20, width=60, border=:dotted), "width")
 save(lineplot(sin, 1:.5:20, height=18, border=:dotted), "height")
-save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold), "border_bold")
-save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed), "border_dashed")
-save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:dotted), "border_dotted")
-save(lineplot([-1.,2, 3, 7], [1.,2, 9, 4], border=:none), "border_none")
+save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold), "border_bold")
+save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed), "border_dashed")
+save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted), "border_dotted")
+save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none), "border_none")
 save(lineplot(sin, 1:.5:20, labels=false, border=:dotted), "labels")
 
 # Methods
