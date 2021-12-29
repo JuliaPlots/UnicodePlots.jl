@@ -5,7 +5,9 @@
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml)
 [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl)
 
-Advanced Unicode plotting library designed for use in Julia's REPL. `UnicodePlots` is integrated in [Plots](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](http://docs.juliaplots.org/latest/generated/unicodeplots/#unicodeplots-ref17).
+Advanced Unicode plotting library designed for use in Julia's `REPL`.
+
+`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](http://docs.juliaplots.org/latest/generated/unicodeplots/#unicodeplots-ref17).
 
 ## High-level Interface
 
@@ -37,7 +39,8 @@ In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas`
 
 ```julia
 lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
-         title="Example Plot", name="my line", xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
+         title="Example Plot", name="my line",
+         xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
 ```
 
 ![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/lineplot2.png)
@@ -71,7 +74,7 @@ scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_expon
 ```
 ![Scatterplot Screenshot3](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/scatterplot3.png)
 
-`marker` is supported, choose a `Char`, unit length `String`, or common symbol names such as `:circle` (more from `keys(UnicodePlots.MARKERS)`)
+Using a `marker` is supported, choose a `Char`, a unit length `String` or a symbol name such as `:circle` (more from `keys(UnicodePlots.MARKERS)`).
 One can also provide a vector of `marker`s and/or `color`s as in the following example:
 
 ```julia
@@ -141,7 +144,7 @@ histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)
 #### Boxplot
 
 ```julia
-boxplot([1,3,3,4,6,10])
+boxplot([1, 3, 3, 4, 6, 10])
 ```
 ![Boxplot Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/boxplot1.png)
 
@@ -236,11 +239,11 @@ All plots support the set (or a subset) of the following named parameters:
 
 - `xlim::Vector=[0, 1]`:
 
-    Plotting range for the x coordinate
+    Plotting range for the x coordinate.
 
 - `ylim::Vector=[0, 1]`:
 
-    Plotting range for the y coordinate
+    Plotting range for the y coordinate.
 
 - `labels::Bool=true`:
 
@@ -286,7 +289,7 @@ All plots support the set (or a subset) of the following named parameters:
 
 - `grid::Bool=true`:
 
-    Can be used to hide the gridlines at the origin
+    Can be used to hide the gridlines at the origin.
 
 - `color::Symbol=:auto`:
 
@@ -294,11 +297,11 @@ All plots support the set (or a subset) of the following named parameters:
 
 - `canvas::Type=BrailleCanvas`:
 
-    The type of canvas that should be used for drawing (see section "Low-level Interface")
+    The type of canvas that should be used for drawing (see section "Low-level Interface").
 
 - `symbols::AbstractVector{String}=["▪"]`:
 
-    Barplot only. Specifies the characters that should be used to render the bars
+    Barplot only. Specifies the characters that should be used to render the bars.
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
 
