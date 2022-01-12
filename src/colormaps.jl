@@ -1060,7 +1060,7 @@ function rgb2ansii(rgb)
     r * 36 + g * 6 + b + 16
 end
 
-function heatmapcolor(z, minz, maxz, cmap)
+function cmapcolor(z, minz, maxz, cmap)
     i = if minz == maxz
         0
     else
@@ -1068,5 +1068,12 @@ function heatmapcolor(z, minz, maxz, cmap)
     end
     rgb2ansii(cmap[i + 1])
 end
+
+function func_cmapcolor(cmap::Symbol)
+  cdata = COLOR_MAP_DATA[cmap]
+  (z, minz, maxz) -> cmapcolor(z, minz, maxz, cdata)
+end
+
+func_cmapcolor(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, maxz, cmap)
 
 rgbimgcolor(z) = rgb2ansii((z.r, z.g, z.b))

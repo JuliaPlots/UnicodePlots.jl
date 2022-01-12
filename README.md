@@ -24,6 +24,7 @@ Here is a list of the main high-level functions for common scenarios:
   - Sparsity Pattern
   - Density Plot
   - Heatmap
+  - Contour
 
 Here is a quick hello world example of a typical use-case:
 
@@ -199,6 +200,20 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 ```
 
 ![Heatmap Screenshot 2](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap2.png)
+
+#### Contour Plot
+```julia
+x = 1:0.5:20
+y = 1:0.5:10
+f(x, y) = (3x + y ^ 2) * abs(sin(x) + cos(y))
+X = repeat(reshape(x, 1, :), length(y), 1)
+Y = repeat(y, 1, length(x))
+z = collect(map(f, X, Y))
+contour(x, y, z)
+```
+![Contour Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/contour1.png)
+
+The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`.
 
 ### Options
 

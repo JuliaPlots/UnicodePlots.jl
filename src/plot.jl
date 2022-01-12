@@ -139,6 +139,7 @@ function Plot(
     zlabel::AbstractString = "",
     xscale::Union{Symbol,Function} = :identity,
     yscale::Union{Symbol,Function} = :identity,
+    force::Bool = false,
     width::Int = 40,
     height::Int = 15,
     border::Symbol = :solid,
@@ -172,7 +173,7 @@ function Plot(
     p_width = max_x - min_x
     p_height = max_y - min_y
 
-    canvas = C(width, height,
+    canvas = C(width, height, force = force,
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)

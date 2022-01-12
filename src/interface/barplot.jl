@@ -1,5 +1,5 @@
 """
-    barplot(text, heights; nargs...)
+    barplot(text, heights; kwargs...)
 
 Description
 ============

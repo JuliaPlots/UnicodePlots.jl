@@ -1,5 +1,5 @@
 """
-`heatmap(z; nargs...)` → `Plot`
+    heatmap(z; kwargs...)
 
 Description
 ============
@@ -130,14 +130,10 @@ function heatmap(
     end
 
     # if z is an rgb image, translate the colors directly to the terminal
-    if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
-        colormap = (z, minz, maxz) -> rgbimgcolor(z)
-    elseif colormap isa Symbol
-        cdata = COLOR_MAP_DATA[colormap]
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    elseif typeof(colormap) <: AbstractVector
-        cdata = colormap
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    colormap = if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
+        (z, minz, maxz) -> rgbimgcolor(z)
+    else
+        func_cmapcolor(colormap)
     end
 
     nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
