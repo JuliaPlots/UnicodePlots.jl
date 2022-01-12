@@ -32,8 +32,9 @@ Arguments
   evaluated, and drawn as a path from `start` to `stop`
   (numbers in the domain).
 
-- **`name`** : Annotation of the current drawing to be displayed
-  on the right.
+- **`name`** : Annotation of the current drawing to be displayed on the right.
+
+- **`head_tail`** : Pass the symbol `:head`, `:tail` or `:both` to color the head/tail of the line with the complement of the chosen color.
 
 $DOC_PLOT_PARAMS
 
@@ -96,13 +97,14 @@ function lineplot(
         y::AbstractVector;
         canvas::Type = BrailleCanvas,
         color::UserColorType = :auto,
-        name = "",
+        name::AbstractString = "",
+        head_tail::Union{Nothing,Symbol} = nothing,
         kw...)
     idx = map(x, y) do i, j
         isfinite(i) && isfinite(j)
     end
     new_plot = Plot(x[idx], y[idx], canvas; kw...)
-    lineplot!(new_plot, x, y; color = color, name = name)
+    lineplot!(new_plot, x, y; color = color, name = name, head_tail = head_tail)
 end
 
 lineplot(y::AbstractVector; kw...) = lineplot(axes(y, 1), y; kw...)
@@ -112,10 +114,18 @@ function lineplot!(
         x::AbstractVector,
         y::AbstractVector;
         color::UserColorType = :auto,
-        name = "")
+        name::AbstractString = "",
+        head_tail::Union{Nothing,Symbol} = nothing)
     color = color == :auto ? next_color!(plot) : color
     name == "" || label!(plot, :r, string(name), color)
     lines!(plot, x, y, color)
+    (length(x) == 0 || length(y) == 0) && return plot
+    if head_tail in (:head, :both)
+        points!(plot, last(x), last(y), abs(255 - crayon_256_color(color)))
+    elseif head_tail in (:tail, :both)
+        points!(plot, first(x), first(y), abs(255 - crayon_256_color(color)))
+    end
+    plot
 end
 
 lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = lineplot!(
