@@ -42,7 +42,7 @@ withenv("FORCE_COLOR"=>"X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/1
         "tst_spy.jl",
         "tst_boxplot.jl",
         "tst_heatmap.jl",
-        "tst_contour.jl",
+        "tst_contourplot.jl",
         "tst_deprecated_warns.jl",
     )
         @testset "$test" begin

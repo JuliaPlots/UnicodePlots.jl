@@ -13,12 +13,12 @@ end
 
 @testset "colormap" begin
     colormap = "cividis"
-    p = @inferred contour(exp_data()...; colormap = Symbol(colormap))
-    test_ref("references/contour/exp_$colormap.txt", @show_col(p, :displaysize=>T_SZ))
+    p = @inferred contourplot(exp_data()...; colormap = Symbol(colormap))
+    test_ref("references/contourplot/exp_$colormap.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "levels" begin
     levels = 5
-    p = @inferred contour(exp_data()...; levels = levels)
-    test_ref("references/contour/exp_$(levels)levels.txt", @show_col(p, :displaysize=>T_SZ))
+    p = @inferred contourplot(exp_data()...; levels = levels)
+    test_ref("references/contourplot/exp_$(levels)levels.txt", @show_col(p, :displaysize=>T_SZ))
 end

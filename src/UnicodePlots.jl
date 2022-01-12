@@ -50,7 +50,7 @@ export
     histogram,
     densityplot, densityplot!,
     heatmap,
-    contour,
+    contourplot,
     spy,
     boxplot, boxplot!,
 
@@ -74,7 +74,7 @@ include("canvas/heatmapcanvas.jl")
 include("plot.jl")
 include("colormaps.jl")
 include("interface/barplot.jl")
-include("interface/contour.jl")
+include("interface/contourplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
 include("interface/lineplot.jl")

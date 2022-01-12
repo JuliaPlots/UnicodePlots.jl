@@ -1,5 +1,5 @@
 """
-    contour(x, y, z; kwargs...)
+    contourplot(x, y, z; kwargs...)
 
 Description
 ============
@@ -8,7 +8,7 @@ Draws a contour plot on a new canvas. `levels` controls the number of contour le
 
 Usage
 =====
-    contour(x, y, z; kwargs...)
+    contourplot(x, y, z; kwargs...)
 
 Arguments
 =========
@@ -36,17 +36,17 @@ Author(s)
 - T Bltg (https://github.com/t-bltg)
 """
 
-function contour(
+function contourplot(
     x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
     canvas::Type = BrailleCanvas, name::AbstractString = "", levels::Integer = 10, colormap = :viridis,
     force = true, grid = false, kw...
 )   
     # NOTE: force the colors (avoid color blend on contour lines)
     new_plot = Plot(collect(extrema(x)), collect(extrema(y)), canvas; force = force, grid = grid, kw...)
-    contour!(new_plot, x, y, z; name = name, levels = levels, colormap = colormap)
+    contourplot!(new_plot, x, y, z; name = name, levels = levels, colormap = colormap)
 end
 
-function contour!(
+function contourplot!(
     plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
     name::AbstractString = "", levels::Integer = 10, colormap = :viridis, 
 )
