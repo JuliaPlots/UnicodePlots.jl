@@ -1,24 +1,23 @@
-exp_data() = begin
-    # credit: matplotlib.org/stable/gallery/images_contours_and_fields/contour_demo.html
-    δ = .025
-    x = range(-3, 3; step=δ)
-    y = range(-2, 3; step=δ)
+gaussian_2d() = begin
+    x = -3:.01:3
+    y = -7:.01:3
 
-    X = repeat(reshape(x, 1, :), length(y), 1)
+    X = repeat(x', length(y), 1)
     Y = repeat(y, 1, length(x))
 
-    z = 2(exp.(-X.^2 - Y.^2) - exp.(-(X .- 1).^2 - (Y .- 1).^2))
-    x, y, z
+    g(x, y, x₀=0, y₀=-2, σx=1, σy=2) = exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
+
+    x, y, map(g, X, Y)
 end
 
 @testset "colormap" begin
-    colormap = "cividis"
-    p = @inferred contourplot(exp_data()...; colormap = Symbol(colormap))
-    test_ref("references/contourplot/exp_$colormap.txt", @show_col(p, :displaysize=>T_SZ))
+    colormap = :cividis
+    p = @inferred contourplot(gaussian_2d()...; colormap = colormap)
+    test_ref("references/contourplot/gauss_$colormap.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "levels" begin
-    levels = 5
-    p = @inferred contourplot(exp_data()...; levels = levels)
-    test_ref("references/contourplot/exp_$(levels)levels.txt", @show_col(p, :displaysize=>T_SZ))
+    levels = 3
+    p = @inferred contourplot(gaussian_2d()...; levels = levels)
+    test_ref("references/contourplot/gauss_$(levels)levels.txt", @show_col(p, :displaysize=>T_SZ))
 end
