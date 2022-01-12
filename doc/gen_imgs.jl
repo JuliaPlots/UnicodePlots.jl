@@ -9,42 +9,49 @@ save(p, nm) = savefig(p, "imgs/$(ARGS[1])/$(nm).txt"; color=true)
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example Plot", name="my line", xlabel="x", ylabel="y", border=:dotted); save(plt, "lineplot1")
 save(lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example Plot", name="my line", xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii), "lineplot2")
 save(lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line"), "lineplot3")
-# scatterplot
+# Scatter Plot
 save(scatterplot(randn(RNG, 50), randn(RNG, 50), title="My Scatterplot", border=:dotted), "scatterplot1")
 save(scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted), "scatterplot2")
 save(scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false), "scatterplot3")
 save(scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted), "scatterplot4")
-# lineplot
+# Line Plot
 save(lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted), "lineplot4")
 plt = lineplot([cos, sin], -π / 2, 2π, border=:dotted); save(plt, "lineplot5")
 save(lineplot!(plt, -.5, .2, name="line"), "lineplot6")
-# Staircase plot
+# Staircase Plot
 save(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], color=:red, style=:post, title="My Staircase Plot", border=:dotted), "stairs1")
-# Barplot
+# Bar Plot
 save(barplot(["Paris", "New York", "Moskau", "Madrid"], [2.244, 8.406, 11.92, 3.165], title="Population"), "barplot1")
 # Histogram
 save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:left), "histogram1")
 save(histogram(randn(RNG, 1000) .* .1, nbins=15, closed=:right, xscale=:log10), "histogram2")
-# Boxplot
+# Box Plot
 save(boxplot([1, 3, 3, 4, 6, 10]), "boxplot1")
 save(boxplot(["one", "two"], [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]], title="Grouped Boxplot", xlabel="x"), "boxplot2")
 # Sparsity Pattern
 save(spy(_stable_sprand(RNG, 50, 120, .05), border=:dotted), "spy1")
-save(spy(sprandn(50, 120, .9), show_zeros=true, border=:dotted), "spy2")
+save(spy(_stable_sprand(RNG, 50, 120, .9), show_zeros=true, border=:dotted), "spy2")
 # Density Plot
 plt = densityplot(randn(RNG, 1000), randn(RNG, 1000))
 save(densityplot!(plt, randn(RNG, 1000) .+ 2, randn(RNG, 1000) .+ 2), "densityplot1")
 # Heatmap Plot
 save(heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z"), "heatmap1")
 save(heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno), "heatmap2")
+# Contour Plot
+let x = -3:.1:3, y = -7:.1:3
+  X = repeat(x', length(y), 1)
+  Y = repeat(y, 1, length(x))
+  g(x, y, x₀=0, y₀=-2, σx=1, σy=2) = exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
+  save(contourplot(x, y, map(g, X, Y), levels = 3, border=:dotted), "contourplot1")
+end
 
 # Options
 save(lineplot(sin, 1:.5:20, width=60, border=:dotted), "width")
 save(lineplot(sin, 1:.5:20, height=18, border=:dotted), "height")
-save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold), "border_bold")
-save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed), "border_dashed")
-save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted), "border_dotted")
-save(lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none), "border_none")
+save(lineplot([-1., 2, 3, 7], [1., 2, 9, 4], canvas=DotCanvas, border=:bold), "border_bold")
+save(lineplot([-1., 2, 3, 7], [1., 2, 9, 4], canvas=DotCanvas, border=:dashed), "border_dashed")
+save(lineplot([-1., 2, 3, 7], [1., 2, 9, 4], border=:dotted), "border_dotted")
+save(lineplot([-1., 2, 3, 7], [1., 2, 9, 4], border=:none), "border_none")
 save(lineplot(sin, 1:.5:20, labels=false, border=:dotted), "labels")
 
 # Methods
