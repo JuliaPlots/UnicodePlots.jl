@@ -1307,11 +1307,7 @@ COLOR_MAP_DATA = Dict(
     :cividis  => _cividis_data,
 )
 
-function closestansiicolor(c)
-    tc = [0, 95, 135, 175, 215, 255]
-    _, i = findmin(abs.(c .- tc))
-    i - 1
-end
+closestansiicolor(c) = argmin(abs.(c .- UInt8[0, 95, 135, 175, 215, 255])) - 1
 
 function rgb2ansii(rgb)
     r, g, b = closestansiicolor.([round(Int, 255c) for c in rgb])

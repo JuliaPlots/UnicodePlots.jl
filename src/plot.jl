@@ -121,7 +121,7 @@ function Plot(
     p = Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
-            decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
+            decorations, colors_deco, labels && graphics.visible, colormap, colorbar, colorbar_border, colorbar_lim, 0)
     if compact
         xlabel != "" && label!(p, :b, xlabel)
         ylabel != "" && label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
@@ -570,10 +570,8 @@ function Base.show(io::IO, p::Plot)
         io, border_left_pad, p.title, border_right_pad * '\n', 🗹;
         p_width = p_width, color = :bold
     )
-    if c.visible
-        print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
-        print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
-    end
+    print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
+    c.visible && print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
@@ -582,20 +580,20 @@ function Base.show(io::IO, p::Plot)
 
     # plot all rows
     for row in 1:nrows(c)
-        # Current labels to left and right of the row and their length
-        left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :light_black)
-        right_str = get(p.labels_right, row, "")
-        right_col = get(p.colors_right, row, :light_black)
-        left_len  = length(_nocolor_string(left_str))
-        right_len = length(_nocolor_string(right_str))
-        if !get(io, :color, false)
-            left_str  = _nocolor_string(left_str)
-            right_str = _nocolor_string(right_str)
-        end
         # print left annotations
         print(io, repeat(🗷, p.margin))
         if p.show_labels
+            # current labels to left and right of the row and their length
+            left_str  = get(p.labels_left,  row, "")
+            left_col  = get(p.colors_left,  row, :light_black)
+            right_str = get(p.labels_right, row, "")
+            right_col = get(p.colors_right, row, :light_black)
+            left_len  = length(_nocolor_string(left_str))
+            right_len = length(_nocolor_string(right_str))
+            if !get(io, :color, false)
+                left_str  = _nocolor_string(left_str)
+                right_str = _nocolor_string(right_str)
+            end
             if !p.compact && row == y_lab_row
                 # print ylabel
                 print_color(:normal, io, p.ylabel)

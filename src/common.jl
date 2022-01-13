@@ -133,36 +133,36 @@ function superscript(s::AbstractString)
     String(v)
 end
 
-function plotting_range(xmin, xmax)
+function plotting_range(xmin::T, xmax::U) where {T, U}
     diff = xmax - xmin
     xmax = round_up_tick(xmax, diff)
     xmin = round_down_tick(xmin, diff)
-    Float64(xmin), Float64(xmax)
+    float(T)(xmin), float(U)(xmax)
 end
 
-function plotting_range_narrow(xmin, xmax)
+function plotting_range_narrow(xmin::T, xmax::U) where {T, U}
     diff = xmax - xmin
     xmax = round_up_subtick(xmax, diff)
     xmin = round_down_subtick(xmin, diff)
-    Float64(xmin), Float64(xmax)
+    float(T)(xmin), float(U)(xmax)
 end
 
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
-function extend_limits(vec, limits, scale::Union{Symbol,Function})
-    mi, ma = map(Float64, extrema(limits))
-    if mi == 0 && ma == 0
-        mi, ma = map(Float64, extrema(vec))
+function extend_limits(vec::AbstractVector{T}, limits, scale::Union{Symbol,Function}) where T
+    mi, ma = map(float(T), extrema(limits))
+    if mi == 0 && ma == 0 && length(vec) > 0
+        mi, ma = map(float(T), extrema(vec))
     end
     diff = ma - mi
     if diff == 0
         ma = mi + 1
         mi = mi - 1
     end
-    if string(scale) != "identity"
-        return fscale(mi, scale), fscale(ma, scale)
+    return if string(scale) != "identity"
+        fscale(mi, scale), fscale(ma, scale)
     else
-        return all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+        all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
 end
 
@@ -172,7 +172,7 @@ function sorted_keys_values(dict::Dict; k2s=true)
     if k2s  # check and force key type to be of AbstractString type if necessary
         kt, vt = eltype(dict).types
         if !(kt <: AbstractString)
-            dict = Dict(string(k) => v  for (k, v) in pairs(dict))
+            dict = Dict(string(k) => v for (k, v) in pairs(dict))
         end
     end
     keys_vals = sort_by_keys(dict)
@@ -285,7 +285,7 @@ const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed
 const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
 const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
 
-const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
+const color_cycle = (:green, :blue, :red, :magenta, :yellow, :cyan)
 
 print_color(color::UserColorType, io::IO, args...) = printstyled(
     io, string(args...); color = julia_color(color)
