@@ -109,10 +109,15 @@ end
     test_ref("references/heatmap/parameters_10x10_yfact_inferno.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
-@testset "squareness" begin
+@testset "squareness (aspect ratio)" begin
     seed!(RNG, 1337)
-    for m in 1:maximum(T_SZ)
+    for m in 1:minimum(T_SZ)
         p = @inferred heatmap(randn(RNG, m, m))
         @test size(p.graphics.grid) == (m, m)
+    end
+    for m in minimum(T_SZ):maximum(T_SZ)
+        p = @inferred heatmap(randn(RNG, m, m))
+        s1, s2 = size(p.graphics.grid)
+        @test s1 == s2
     end
 end

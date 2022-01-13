@@ -143,18 +143,25 @@ function heatmap(
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
 
-    # NOTE: since we want to display 2 colors on a HeatmapCanvas (one for each half block),
-    # we use 2nr as nrows input for `get_canvas_dimensions_for_matrix`
-    width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, 2nr, nc, max_width, max_height, width, height, margin, padding, out_stream
+    width, height, max_width, max_height, data_aspect = get_canvas_dimensions_for_matrix(
+        HeatmapCanvas, nr, nc, max_width, max_height, width, height, margin, padding, out_stream
     )
 
-    if height < 7
+    # ensure plot is big enough
+    if data_aspect && aspect_ratio == 1  # square matrix should remain as is
+        min_side = min(max_height, max_width)
+        height = min(min_side, max(height, nr))
+        width = min(min_side, max(width, nc))
+    else
+        height = min(max_height, max(height, nr))
+    end
+
+    colorbar = if height < 7
         # for small plots, don't show colorbar by default
-        colorbar = !noextrema && get(kw, :colorbar, false)
+        !noextrema && get(kw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        colorbar = !noextrema && get(kw, :colorbar, labels)
+        !noextrema && get(kw, :colorbar, labels)
     end
     kw = (; kw..., colorbar=colorbar)
 
@@ -174,4 +181,3 @@ function heatmap(
     end
     plot
 end
-

@@ -120,15 +120,13 @@ function get_canvas_dimensions_for_matrix(
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
 
-    if nrow == 0 && ncol == 0
-        return 0, 0, maxwidth, maxheight
-    end
+    (nrow == 0 && ncol == 0) && (return 0, 0, maxwidth, maxheight)
 
     # Check if the size of the plot should be derived from the matrix
     # Note: if both width and height are 0, it means that there are no
     #       constraints and the plot should resemble the structure of
     #       the matrix as close as possible
-    if width == 0 && height == 0
+    if (data_aspect = width == 0 && height == 0)
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
         if min_canvheight > min_canvwidth
@@ -149,11 +147,10 @@ function get_canvas_dimensions_for_matrix(
     elseif width > 0 && height == 0
         height = min(width / aspect_ratio, maxheight)
     end
-    char_width  = ceil(Int, width)
-    char_height = ceil(Int, height)
+    char_width  = round(Int, width)
+    char_height = round(Int, height)
 
-    @show char_width, char_height, maxwidth, maxheight
-    char_width, char_height, maxwidth, maxheight
+    char_width, char_height, maxwidth, maxheight, data_aspect
 end
 
 

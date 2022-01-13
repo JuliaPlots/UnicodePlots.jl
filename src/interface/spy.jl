@@ -144,7 +144,8 @@ function spy(
         Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
         color = :auto
     end
-    width, height, _, _ = get_canvas_dimensions_for_matrix(
+
+    width, height = get_canvas_dimensions_for_matrix(
         canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
         extra_rows = 9, extra_cols = 6
     )
