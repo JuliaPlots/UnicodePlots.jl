@@ -1327,11 +1327,13 @@ function cmapcolor(z, minz, maxz, cmap)
     rgb2ansii(cmap[i + 1])
 end
 
-function func_cmapcolor(cmap::Symbol)
+function colormap_callback(cmap::Symbol)
   cdata = COLOR_MAP_DATA[cmap]
   (z, minz, maxz) -> cmapcolor(z, minz, maxz, cdata)
 end
 
-func_cmapcolor(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, maxz, cmap)
+colormap_callback(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, maxz, cmap)
+colormap_callback(cmap::Nothing) = nothing
+colormap_callback(cmap::Function) = cmap
 
 rgbimgcolor(z) = rgb2ansii((z.r, z.g, z.b))

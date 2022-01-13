@@ -36,7 +36,8 @@ function CreateLookupCanvas(
         ::Type{T},
         char_width::Int,
         char_height::Int;
-        force::Bool = false,
+        blend::Bool = true,
+        visible::Bool = true,
         origin_x::Number = 0.,
         origin_y::Number = 0.,
         width::Number = 1.,
@@ -53,7 +54,7 @@ function CreateLookupCanvas(
     pixel_height = char_height * y_pixel_per_char(T)
     grid   = fill(0x00, char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    T(grid, colors, force, pixel_width, pixel_height,
+    T(grid, colors, blend, visible, pixel_width, pixel_height,
       Float64(origin_x), Float64(origin_y),
       Float64(width), Float64(height), xscale, yscale)
 end
@@ -78,8 +79,8 @@ function pixel!(c::T, pixel_x::Int, pixel_y::Int, color::UserColorType) where {T
     0 <= pixel_y <= pixel_height(c) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
     grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
-    force = !(color isa Symbol) || c.force  # don't attempt to blend colors if they have been explicitly specified
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color), force)
+    blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color), blend)
     c
 end
 

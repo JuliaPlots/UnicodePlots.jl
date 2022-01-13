@@ -41,16 +41,16 @@ Author(s)
 function contourplot(
     x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
     canvas::Type = BrailleCanvas, name::AbstractString = "", levels::Integer = 5, colormap = :viridis,
-    force = true, grid = false, colorbar = true, kw...
+    blend = false, grid = false, colorbar = true, kw...
 )   
-    colormap = func_cmapcolor(colormap)
+    callback = colormap_callback(colormap)
     new_plot = Plot(
         collect(extrema(x)),
         collect(extrema(y)), canvas;
-        force = force, grid = grid, colorbar = colorbar, colormap = colormap,
+        blend = blend, grid = grid, colorbar = colorbar, colormap = callback,
         kw...
     )
-    contourplot!(new_plot, x, y, z; name = name, levels = levels, colormap = colormap)
+    contourplot!(new_plot, x, y, z; name = name, levels = levels, colormap = callback)
 end
 
 function contourplot!(
@@ -59,11 +59,11 @@ function contourplot!(
 )
     name == "" || label!(plot, :r, string(name))
 
-    colormap = colormap isa Function ? colormap : func_cmapcolor(colormap)
+    callback = colormap_callback(colormap)
     minz, maxz = extrema(z)
 
     for cl in Contour.levels(Contour.contours(y, x, z, levels))
-        color = colormap(Contour.level(cl), minz, maxz)
+        color = callback(Contour.level(cl), minz, maxz)
         for line in Contour.lines(cl)
             lineplot!(plot, reverse(Contour.coordinates(line))..., color=color)
         end

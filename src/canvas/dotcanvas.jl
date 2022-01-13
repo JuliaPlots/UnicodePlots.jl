@@ -24,7 +24,8 @@ instead.
 struct DotCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
-    force::Bool
+    blend::Bool
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -46,7 +47,7 @@ DotCanvas(args...; nargs...) = CreateLookupCanvas(DotCanvas, args...; nargs...)
 function char_point!(c::DotCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)
         c.grid[char_x,char_y] = n_dot + char
-        set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.force)
+        set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     end
     c
 end

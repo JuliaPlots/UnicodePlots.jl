@@ -95,5 +95,9 @@ end
     @test UnicodePlots.julia_color((50, 100, 150)) == 67
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
+
+    @test UnicodePlots.colormap_callback(() -> nothing) isa Function
+    @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
+    @test UnicodePlots.colormap_callback(nothing) === nothing
 end
 

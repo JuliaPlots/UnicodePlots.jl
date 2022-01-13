@@ -231,7 +231,7 @@ function annotate!(
 end
 
 function printcolorbarrow(
-    io::IO, c::Canvas, row::Int, colormap::Any, border::Symbol,
+    io::IO, c::Canvas, row::Int, colormap::Function, border::Symbol,
     lim, lim_str, plot_padding, zlabel, max_len, blank::Char
 )
     b = bordermap[border]

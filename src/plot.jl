@@ -139,11 +139,11 @@ function Plot(
     zlabel::AbstractString = "",
     xscale::Union{Symbol,Function} = :identity,
     yscale::Union{Symbol,Function} = :identity,
-    force::Bool = false,
     width::Int = 40,
     height::Int = 15,
     border::Symbol = :solid,
     compact::Bool = false,
+    blend::Bool = true,
     xlim = (0, 0),
     ylim = (0, 0),
     margin::Int = 3,
@@ -173,7 +173,7 @@ function Plot(
     p_width = max_x - min_x
     p_height = max_y - min_y
 
-    canvas = C(width, height, force = force,
+    canvas = C(width, height, blend = blend, visible = width > 0 && height > 0,
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)
@@ -570,11 +570,15 @@ function Base.show(io::IO, p::Plot)
         io, border_left_pad, p.title, border_right_pad * '\n', 🗹;
         p_width = p_width, color = :bold
     )
-    print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
-    print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
+    if c.visible
+        print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
+        print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
+    end
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
+
+    callback = colormap_callback(p.colormap)
 
     # plot all rows
     for row in 1:nrows(c)
@@ -603,13 +607,15 @@ function Base.show(io::IO, p::Plot)
             # print the left annotation
             print_color(left_col, io, left_str)
         end
-        # print left border
-        print(io, plot_padding)
-        print_color(:light_black, io, bmap[:l])
-        # print canvas row
-        printrow(io, c, row)
-        # print right label and padding
-        print_color(:light_black, io, bmap[:r])
+        if c.visible
+            # print left border
+            print(io, plot_padding)
+            print_color(:light_black, io, bmap[:l])
+            # print canvas row
+            printrow(io, c, row)
+            # print right label and padding
+            print_color(:light_black, io, bmap[:r])
+        end
         if p.show_labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)
@@ -619,7 +625,7 @@ function Base.show(io::IO, p::Plot)
         if p.show_colorbar
             print(io, plot_padding)
             printcolorbarrow(
-                io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim,
+                io, c, row, callback, p.colorbar_border, p.colorbar_lim,
                 (min_z_str, max_z_str), plot_padding, p.zlabel, cbar_max_len, 🗷
             )
         end
@@ -627,7 +633,7 @@ function Base.show(io::IO, p::Plot)
     end
 
     # draw bottom border and bottom labels  
-    print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
+    c.visible && print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
     if p.show_labels
         print_labels(io, :b, p, border_length - 2, '\n' * border_left_pad * 🗹, 🗹 * border_right_pad, 🗹)
         p.compact || print_title(
