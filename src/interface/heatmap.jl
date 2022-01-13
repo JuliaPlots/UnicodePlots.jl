@@ -80,78 +80,74 @@ See also
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
 function heatmap(
-    z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
+    A::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
     out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
-    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true, kw...
+    padding::Int = 1, colormap = :viridis, xfact = 0, yfact = 0, labels = true, kw...
 )
-    nrows = size(z, 1)
-    ncols = size(z, 2)
+    nr = size(A, 1)
+    nc = size(A, 2)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xfact
+    X = xfact == 0 ? collect(1:nc) : collect(0:(nc-1)) .* xfact
     X .+= xoffset
-    xfact = xfact == 0 ? 1 : xfact
-    Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yfact
+    xfact == 0 && (xfact = 1)
+    Y = yfact == 0 ? collect(1:nr) : collect(0:(nr-1)) .* yfact
     Y .+= yoffset
-    yfact = yfact == 0 ? 1 : yfact
+    yfact == 0 && (yfact = 1)
 
     # set the axis limits automatically
-    if xlim == (0, 0) && length(X) > 0
-        xlim = extrema(X)
-    end
-    if ylim == (0, 0) && length(Y) > 0
-        ylim = extrema(Y)
-    end
+    (xlim == (0, 0) && length(X) > 0) && (xlim = extrema(X))
+    (ylim == (0, 0) && length(Y) > 0) && (ylim = extrema(Y))
 
-    # select a subset of z based on the supplied limits
+    # select a subset of A based on the supplied limits
     firstx = findfirst(x -> x >= xlim[1], X)
     lastx = findlast(x -> x <= xlim[2], X)
     xrange = (firstx == nothing || lastx == nothing) ? (1:0) : (firstx:lastx)
     firsty = findfirst(y -> y >= ylim[1], Y)
     lasty = findlast(y -> y <= ylim[2], Y)
     yrange = (firsty == nothing || lasty == nothing) ? (1:0) : (firsty:lasty)
-    z = z[yrange, xrange]
+    A = A[yrange, xrange]
     X = X[xrange]
     Y = Y[yrange]
 
-    # allow z to be an array over which min and max is not defined,
+    # allow A to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
-    minz, maxz = (0, 0)
+    minz, maxz = 0, 0
     noextrema = true
     try
-        minz, maxz = extrema(z)
+        minz, maxz = extrema(A)
         noextrema = false
     catch
     end
     if zlim != (0, 0)
-        noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(z))"))
+        noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(A))"))
         minz, maxz = zlim
     end
 
-    # if z is an rgb image, translate the colors directly to the terminal
-    if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
-        colormap = (z, minz, maxz) -> rgbimgcolor(z)
+    # if A is an rgb image, translate the colors directly to the terminal
+    if length(A) > 0 && all(x -> x in fieldnames(eltype(A)), [:r, :g, :b])
+        colormap = (A, minz, maxz) -> rgbimgcolor(A)
     elseif colormap isa Symbol
         cdata = COLOR_MAP_DATA[colormap]
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+        colormap = (A, minz, maxz) -> heatmapcolor(A, minz, maxz, cdata)
     elseif typeof(colormap) <: AbstractVector
         cdata = colormap
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+        colormap = (A, minz, maxz) -> heatmapcolor(A, minz, maxz, cdata)
     end
 
-    nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
-    ncols = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
-    aspect_ratio = ncols / nrows
+    nr = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
+    nc = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
+    aspect_ratio = nc / nr
 
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
-    width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, out_stream
-    )
 
-    # ensure plot height is big enough
-    height = min(max_height, max(height, nrows))
+    # NOTE: since we want to display 2 colors on a HeatmapCanvas (one for each half block),
+    # we use 2nr as nrows input for `get_canvas_dimensions_for_matrix`
+    width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
+        HeatmapCanvas, 2nr, nc, max_width, max_height, width, height, margin, padding, out_stream
+    )
 
     if height < 7
         # for small plots, don't show colorbar by default
@@ -162,19 +158,20 @@ function heatmap(
     end
     kw = (; kw..., colorbar=colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
-    new_plot = Plot(
+    xs = length(X) > 0 ? [X[1], X[end]] : eltype(X)[0, 0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : eltype(Y)[0, 0]
+
+    plot = Plot(
         xs, ys, HeatmapCanvas;
         grid = false, colormap = colormap, colorbar = colorbar, colorbar_lim = (minz, maxz),
         ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
         min_width = 1, min_height = 1, kw...
     )
     for row = 1:length(Y)
-        Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
-        YY = repeat([Y[row]], length(X))
-        points!(new_plot, X, YY, Z)
+        Z = Int[colormap(vec, minz, maxz) for vec in A[row, :]]
+        Y′ = repeat([Y[row]], length(X))
+        points!(plot, X, Y′, Z)
     end
-    new_plot
+    plot
 end
 
