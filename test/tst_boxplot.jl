@@ -40,6 +40,6 @@ end
     p = @inferred boxplot(["one", "two"], [[1,2,3], [4,5,6]], color=214)
     test_ref("references/boxplot/col1.txt", @show_col(p))
 
-    p = @inferred boxplot(["one", "two"], [[1,2,3], [4,5,6]], color=(187,0,187))
+    p = @inferred boxplot(["one", "two"], [[1,2,3], [4,5,6]], color=(187, 0, 187))
     test_ref("references/boxplot/col2.txt", @show_col(p))
 end

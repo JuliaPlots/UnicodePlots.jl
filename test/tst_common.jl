@@ -92,9 +92,9 @@ end
     @test UnicodePlots.julia_color(100) == 100
     @test UnicodePlots.julia_color(:red) == :red
     @test UnicodePlots.julia_color(nothing) == :normal
-    @test UnicodePlots.julia_color((50, 100, 150)) == 67
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
+    @test UnicodePlots.superscript("+2") == "⁺²"
 
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function

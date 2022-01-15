@@ -124,16 +124,16 @@ end
 
 @testset "edge cases" begin
     @test_throws ArgumentError barplot([:a, :b], [-1, 2])
-    p = barplot([5,4,3,2,1], [0,0,0,0,0])
+    p = barplot([5, 4, 3, 2, 1], [0, 0, 0, 0, 0])
     test_ref("references/barplot/edgecase_zeros.txt", @print_col(p))
-    p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
+    p = barplot([:a,:b,:c,:d], [1, 1, 1, 1_000_000])
     test_ref("references/barplot/edgecase_onelarge.txt", @print_col(p))
     barplot("one", 1)
 end
 
 @testset "colors" begin
-    p = barplot(["B","A"], [2,1], color=9)
+    p = barplot(["B","A"], [2, 1], color=9)
     test_ref("references/barplot/col1.txt", @print_col(p))
-    p = barplot(["B","A"], [2,1], color=(200,50,0))
+    p = barplot(["B","A"], [2, 1], color=(200, 50, 0))
     test_ref("references/barplot/col2.txt", @print_col(p))
 end

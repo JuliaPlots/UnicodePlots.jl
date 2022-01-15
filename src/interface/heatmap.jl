@@ -167,7 +167,7 @@ function heatmap(
         min_width = 1, min_height = 1, kw...
     )
     for row = 1:length(Y)
-        Z = Int[callback(zi, minz, maxz) for zi in z[row, :]]
+        Z = UserColorType[callback(zi, minz, maxz) for zi in z[row, :]]
         YY = repeat([Y[row]], length(X))
         points!(new_plot, X, YY, Z)
     end
