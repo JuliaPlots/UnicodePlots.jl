@@ -26,17 +26,17 @@ const HALF_BLOCK = '▄'
 
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
-HeatmapCanvas(args...; kwargs...) = CreateLookupCanvas(
-    HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...
-)
+function HeatmapCanvas(args...; kwargs...)
+    c = CreateLookupCanvas(HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...)
+    fill!(c.colors, 0)  # black background by default
+    c
+end
 
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    y = 2*row
+    y = 2row
     # extend the plot upwards by half a row
-    if isodd(size(grid(c), 2))
-        y -= 1
-    end
+    isodd(size(grid(c), 2)) && (y -= 1)
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
@@ -49,9 +49,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
             print(io, HALF_BLOCK)
         end
     end
-    if iscolor
-        print(io, Crayon(reset=true))
-    end
+    iscolor && print(io, Crayon(reset=true))
     nothing
 end
 
@@ -81,14 +79,15 @@ function printcolorbarrow(
             bgcol = colormap(1, 1, 1)
             fgcol = bgcol
         else  # otherwise, blend from min to max
-            n = 2*(nrows(c) - 2)
+            n = 2(nrows(c) - 2)
             r = row - 2
-            bgcol = colormap(n - (2*r),     1, n)
-            fgcol = colormap(n - (2*r + 1), 1, n)
+            bgcol = colormap(n - 2r,     1, n)
+            fgcol = colormap(n - 2r - 1, 1, n)
         end
-        print_color(fgcol, io, HALF_BLOCK; bgcol = bgcol)
-        print(io, HALF_BLOCK)
-        print(io, Crayon(reset=true))
+        @assert 0 <= fgcol <= 255
+        @assert 0 <= bgcol <= 255
+        print_color(UInt32(fgcol + THRESHOLD), io, HALF_BLOCK; bgcol = UInt32(bgcol + THRESHOLD))
+        print(io, HALF_BLOCK, Crayon(reset=true))
         print_color(BORDER_COLOR[], io, b[:r])
         print(io, plot_padding)
         # print z label

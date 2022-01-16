@@ -13,15 +13,13 @@ function Base.print(io::IO, c::GraphicsArea)
 end
 
 function Base.show(io::IO, c::GraphicsArea)
-    b = border_solid
-    border_length = ncols(c)
-    print_border(io, :t, border_length, "", '\n', b, BORDER_COLOR[])
+    print_border(io, :t, ncols(c), "", '\n', border_solid, BORDER_COLOR[])
     for row in 1:nrows(c)
-        print_color(BORDER_COLOR[], io, b[:l])
+        print_color(BORDER_COLOR[], io, border_solid[:l])
         printrow(io, c, row)
-        print_color(BORDER_COLOR[], io, b[:r])
+        print_color(BORDER_COLOR[], io, border_solid[:r])
         row < nrows(c) && println(io)
     end
-    print_border(io, :b, border_length, '\n', "", b, BORDER_COLOR[])
+    print_border(io, :b, ncols(c), '\n', "", border_solid, BORDER_COLOR[])
     nothing
 end

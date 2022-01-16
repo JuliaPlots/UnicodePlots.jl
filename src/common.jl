@@ -284,62 +284,64 @@ const bordermap = (
 const BORDER_COLOR = Ref(:light_black)
 
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
-const BaseColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl), used for annotations, ...
+const BaseColorType = Union{Symbol,Int}  # color type for Base.printstyled (defined in base/util.jl)
 const ColorType = Union{Nothing,UInt32}  # internal UnicodePlots color type (canvas)
+
 const THRESHOLD = UInt32(256^3)
+const CRAYONS_FAST = Ref(true)
+const COLORMODE = Ref(Crayons.COLORS_256)
 
 const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
 
-@inline r32(r::Integer)::UInt32 = (r & 0xffffff) << 16
-@inline g32(g::Integer)::UInt32 = (g & 0xffffff) << 8
-@inline b32(b::Integer)::UInt32 = (b & 0xffffff)
+rgb2ansi(v::Integer) = v >= THRESHOLD ? v - THRESHOLD : v
 
-@inline red(c::UInt32)::UInt8 = (c >> 16) & 0xff
-@inline grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
-@inline blu(c::UInt32)::UInt8 = c & 0xff
+r32(r::Integer)::UInt32 = (r & 0xffffff) << 16
+g32(g::Integer)::UInt32 = (g & 0xffffff) << 8
+b32(b::Integer)::UInt32 = (b & 0xffffff)
 
-@inline blend_colors(a::UInt32, b::UInt32)::UInt32 = (
+red(c::UInt32)::UInt8 = (c >> 16) & 0xff
+grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
+blu(c::UInt32)::UInt8 = c & 0xff
+
+blend_colors(a::UInt32, b::UInt32)::UInt32 = (
     if a < THRESHOLD && b < THRESHOLD 
         r32(floor(UInt32, √(red(a)^2 + red(b)^2))) +
         g32(floor(UInt32, √(grn(a)^2 + grn(b)^2))) +
         b32(floor(UInt32, √(blu(a)^2 + blu(b)^2)))
     else
-        THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
+        THRESHOLD + (UInt8(a |> rgb2ansi) | UInt8(b |> rgb2ansi))
+    end
+)
+
+crayon_color(::Missing) = Crayons.ANSIColor()
+crayon_color(::Nothing) = Crayons.ANSIColor()
+crayon_color(color::UInt32) = (
+    if (cm = COLORMODE[]) == Crayons.COLORS_24BIT
+        Crayons.ANSIColor(Crayons._torgb(color |> rgb2ansi)..., cm)
+    else
+        Crayons.ANSIColor(color |> rgb2ansi, cm)
     end
 )
 
 print_color(color::BaseColorType, io::IO, args...) = printstyled(io, args...; color = color)
-print_color(color::Nothing, io::IO, args...) = printstyled(io, args...; color = :normal)
-
-@inline validate_base(color::ColorType)::BaseColorType =
-    color === nothing ? :normal : Int(color >= THRESHOLD ? color - THRESHOLD : color)
-
-@inline validate_crayon(color::ColorType)::ColorType =
-    color === nothing ? UInt32(0) : color >= THRESHOLD ? color - THRESHOLD : color
-
-@inline crayon_ansi(color::ColorType) = (
-    if (cm = COLORMODE[]) == Crayons.COLORS_24BIT
-        Crayons.ANSIColor(Crayons._torgb(validate_crayon(color))..., cm)
-    else
-        Crayons.ANSIColor(validate_crayon(color), cm)
-    end
-)
 
 function print_color(color::ColorType, io::IO, args...; bgcol = missing)
     if color !== nothing && color >= THRESHOLD  # ansi - 4bit or 8bit
         if bgcol === missing
-            printstyled(io, args...; color = validate_base(color))
+            printstyled(io, args...; color = Int(color |> rgb2ansi))
         else
-            print_color(validate_crayon(color), io, args...; bgcol = validate_crayon(bgcol))
+            print_color(color |> rgb2ansi, io, args...; bgcol = bgcol |> rgb2ansi)
         end
     else  # true color - 24bit
-        fgcol = crayon_ansi(color)
-        bgcol = bgcol === missing ? Crayons.ANSIColor() : crayon_ansi(bgcol)
-        c = Crayon(fgcol, bgcol, (Crayons.ANSIStyle() for _ in 1:9)...)
-        if false
-            print(io, Crayons.CSI)
-            Crayons._print(io, c)
-            print(io, Crayons.END_ANSI, args...)
+        c = Crayon(crayon_color(color), crayon_color(bgcol), (Crayons.ANSIStyle() for _ in 1:9)...)
+        if CRAYONS_FAST[]  # bypass crayons checks (_have_color, _force_color)
+            if Crayons.anyactive(c)
+                print(io, Crayons.CSI)
+                Crayons._print(io, c)
+                print(io, Crayons.END_ANSI, args...)
+            else
+                print(io, args...)
+            end
         else
             print(io, c, args...)
         end
@@ -347,8 +349,9 @@ function print_color(color::ColorType, io::IO, args...; bgcol = missing)
     return
 end
 
-@inline ignored_color(color::UserColorType) =
-    color === nothing || color === :normal || color === :default || color === :nothing
+ignored_color(color::Symbol) = color === :normal || color === :default || color === :nothing
+ignored_color(::Nothing) = true
+ignored_color(::Any) = false
 
 function ansi_8bit_color(color::UserColorType)::ColorType
     ignored_color(color) && return nothing
@@ -362,7 +365,7 @@ function ansi_8bit_color(color::UserColorType)::ColorType
     else
         throw(error("unsupported"))
     end
-    THRESHOLD + col  # 0-255 ansi stored in a UInt32
+    UInt32(THRESHOLD + col)  # 0-255 ansi stored in a UInt32
 end
 
 function ansi_24bit_color(color::UserColorType)::ColorType
@@ -380,14 +383,12 @@ function ansi_24bit_color(color::UserColorType)::ColorType
     UInt32(col)
 end
 
-const COLORMODE = Ref(Crayons.COLORS_256)
-
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
-colormode_8bit() = COLORMODE[] = Crayons.COLORS_256
 colormode_24bit() = COLORMODE[] = Crayons.COLORS_24BIT
+colormode_8bit() = COLORMODE[] = Crayons.COLORS_256
 
-__init__() = is_24bit_supported() && colormode_24bit()
+# __init__() = is_24bit_supported() && colormode_24bit()  # NOTE: enable later when 24bit is fully tested
 
 ansi_color(color::UserColorType) = COLORMODE[] == Crayons.COLORS_24BIT ? ansi_24bit_color(color) : ansi_8bit_color(color)
 

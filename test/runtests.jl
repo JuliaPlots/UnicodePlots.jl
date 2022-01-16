@@ -31,19 +31,21 @@ end
 withenv("FORCE_COLOR"=>"X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
 
     UnicodePlots.colormode_8bit()  # NOTE: for now only test 8bit mode
+    UnicodePlots.CRAYONS_FAST[] = false  # safe mode
+
     for test in (
         "tst_common.jl",
         "tst_issues.jl",
         "tst_graphics.jl",
         "tst_canvas.jl",
         "tst_plot.jl",
-        "tst_barplot.jl",
-        "tst_histogram.jl",
         "tst_scatterplot.jl",
         "tst_lineplot.jl",
-        "tst_spy.jl",
+        "tst_barplot.jl",
         "tst_boxplot.jl",
+        "tst_histogram.jl",
         "tst_heatmap.jl",
+        "tst_spy.jl",
         "tst_deprecated_warns.jl",
     )
         @testset "$test" begin
