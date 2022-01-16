@@ -6,40 +6,40 @@ struct Scale{T} r::T end
 
 @testset "default params" begin
     p = @inferred histogram(x)
-    test_ref("references/histogram/default.txt", @print_col(p))
-    test_ref("references/histogram/default_nocolor.txt", @print_nocol(p))
+    test_ref("histogram/default.txt", @print_col(p))
+    test_ref("histogram/default_nocolor.txt", @print_nocol(p))
     p = @inferred histogram(x, closed = :left)
-    test_ref("references/histogram/default.txt", @print_col(p))
+    test_ref("histogram/default.txt", @print_col(p))
     hist = fit(Histogram, x, closed = :left)
     p = @inferred histogram(hist)
-    test_ref("references/histogram/default.txt", @print_col(p))
+    test_ref("histogram/default.txt", @print_col(p))
     p = @inferred histogram(x*100)
-    test_ref("references/histogram/default_1e2.txt", @print_col(p))
+    test_ref("histogram/default_1e2.txt", @print_col(p))
     p = @inferred histogram(x*0.01)
-    test_ref("references/histogram/default_1e-2.txt", @print_col(p))
+    test_ref("histogram/default_1e-2.txt", @print_col(p))
     p = @inferred histogram(x, xscale = :log10)
-    test_ref("references/histogram/log10.txt", @print_col(p))
+    test_ref("histogram/log10.txt", @print_col(p))
     p = @inferred histogram(x, xscale = Scale(π))
-    test_ref("references/histogram/functor.txt", @print_col(p))
+    test_ref("histogram/functor.txt", @print_col(p))
     p = @inferred histogram(x, xlabel = "custom label", xscale = :log10)
-    test_ref("references/histogram/log10_label.txt", @print_col(p))
+    test_ref("histogram/log10_label.txt", @print_col(p))
     p = @inferred histogram([0.1f0, 0.1f0, 0f0])
-    test_ref("references/histogram/float32.txt", @print_col(p))
+    test_ref("histogram/float32.txt", @print_col(p))
     p = @inferred histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
-    test_ref("references/histogram/nonuniformbins.txt", @print_col(p))
+    test_ref("histogram/nonuniformbins.txt", @print_col(p))
     x2 = copy(reshape(x, (1, length(x), 1, 1)))
     p = @inferred Plot histogram(x2)
-    test_ref("references/histogram/default.txt", @print_col(p))
+    test_ref("histogram/default.txt", @print_col(p))
     p = @inferred histogram(Histogram(1:15., vcat(collect(1:13), 400)))
-    test_ref("references/histogram/fraction.txt", @print_col(p))
+    test_ref("histogram/fraction.txt", @print_col(p))
 end
 
 @testset "hist params" begin
     hist = fit(Histogram, x, nbins = 5, closed = :right)
     p = @inferred histogram(hist)
-    test_ref("references/histogram/hist_params.txt", @print_col(p))
+    test_ref("histogram/hist_params.txt", @print_col(p))
     p = @inferred histogram(x, nbins = 5, closed = :right)
-    test_ref("references/histogram/hist_params.txt", @print_col(p))
+    test_ref("histogram/hist_params.txt", @print_col(p))
 end
 
 @testset "keyword arguments" begin
@@ -51,7 +51,7 @@ end
         margin = 7,
         padding = 3,
     )
-    test_ref("references/histogram/parameters1.txt", @print_col(p))
+    test_ref("histogram/parameters1.txt", @print_col(p))
     p = @inferred histogram(
         x,
         title = "My Histogram",
@@ -61,7 +61,7 @@ end
         padding = 3,
         labels = false,
     )
-    test_ref("references/histogram/parameters1_nolabels.txt", @print_col(p))
+    test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
     p = @inferred histogram(
         x,
@@ -72,7 +72,7 @@ end
         symbols = ["="],
         width = 50
     )
-    test_ref("references/histogram/parameters2.txt", @print_col(p))
+    test_ref("histogram/parameters2.txt", @print_col(p))
     # same but with Char as symbols
 
     p = @inferred histogram(
@@ -84,7 +84,7 @@ end
         symbols = ['='],
         width = 50
     )
-    test_ref("references/histogram/parameters2.txt", @print_col(p))
+    test_ref("histogram/parameters2.txt", @print_col(p))
 
     # colors
     p = @inferred histogram(
@@ -92,12 +92,12 @@ end
         title = "Gray color",
         color = 240,
     )
-    test_ref("references/histogram/col1.txt", @print_col(p))
+    test_ref("histogram/col1.txt", @print_col(p))
 
     p = @inferred histogram(
         x,
         title = "Green color",
         color = (50,100,50),
     )
-    test_ref("references/histogram/col2.txt", @print_col(p))
+    test_ref("histogram/col2.txt", @print_col(p))
 end

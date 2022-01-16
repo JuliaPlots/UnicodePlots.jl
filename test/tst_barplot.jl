@@ -1,47 +1,47 @@
 @testset "positional types" begin
     dct = Dict("foo" => 37, "bar" => 23)
     p = @inferred Plot barplot(dct)
-    test_ref("references/barplot/default.txt", @print_col(p))
-    test_ref("references/barplot/default.txt", @show_col(p))
-    test_ref("references/barplot/nocolor.txt", @show_nocol(p))
+    test_ref("barplot/default.txt", @print_col(p))
+    test_ref("barplot/default.txt", @show_col(p))
+    test_ref("barplot/nocolor.txt", @show_nocol(p))
 
     dct = Dict("foo" => 37., :bar => 23., 2.1 => 10)
     p = @inferred Plot barplot(dct)
-    test_ref("references/barplot/default_mixed.txt", @print_col(p))
+    test_ref("barplot/default_mixed.txt", @print_col(p))
 
     dct = Dict(:foo => 37, :bar => 23)
     p = @inferred Plot barplot(dct)
-    test_ref("references/barplot/default.txt", @print_col(p))
+    test_ref("barplot/default.txt", @print_col(p))
 
     p = @inferred barplot([:bar, :foo], Int16[23, 37])
-    test_ref("references/barplot/default.txt", @print_col(p))
+    test_ref("barplot/default.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
-    test_ref("references/barplot/default.txt", @print_col(p))
+    test_ref("barplot/default.txt", @print_col(p))
     @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
     @test_throws MethodError barplot!(p, ["zoom"], [90.])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
     @test @inferred(barplot!(p, ["zoom"], [90])) === p
-    test_ref("references/barplot/default2.txt", @print_col(p))
+    test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
     @test @inferred(barplot!(p, :zoom, 90.)) === p
-    test_ref("references/barplot/default2.txt", @print_col(p))
+    test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
     @test_throws MethodError barplot!(p, Dict("zoom" => 90.))
     @test @inferred(barplot!(p, Dict("zoom" => 90))) === p
-    test_ref("references/barplot/default2.txt", @print_col(p))
+    test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
     @test @inferred(barplot!(p, Dict(:zoom => 90))) === p
-    test_ref("references/barplot/default2.txt", @print_col(p))
+    test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(2:6, 11:15)
-    test_ref("references/barplot/ranges.txt", @print_col(p))
+    test_ref("barplot/ranges.txt", @print_col(p))
     @test @inferred(barplot!(p, 9:10, 20:21)) === p
-    test_ref("references/barplot/ranges2.txt", @print_col(p))
+    test_ref("barplot/ranges2.txt", @print_col(p))
 end
 
 struct Scale{T} r::T end
@@ -54,7 +54,7 @@ struct Scale{T} r::T end
         title = "Logscale Plot",
         xscale = :log10,
     )
-    test_ref("references/barplot/log10.txt", @print_col(p))
+    test_ref("barplot/log10.txt", @print_col(p))
 
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
@@ -62,7 +62,7 @@ struct Scale{T} r::T end
         title = "Logscale Plot",
         xscale = Scale(π),
     )
-    test_ref("references/barplot/functor.txt", @print_col(p))
+    test_ref("barplot/functor.txt", @print_col(p))
 
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
@@ -71,7 +71,7 @@ struct Scale{T} r::T end
         xlabel = "custom label",
         xscale = :log10,
     )
-    test_ref("references/barplot/log10_label.txt", @print_col(p))
+    test_ref("barplot/log10_label.txt", @print_col(p))
 
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
@@ -82,7 +82,7 @@ struct Scale{T} r::T end
         margin = 7,
         padding = 3,
     )
-    test_ref("references/barplot/parameters1.txt", @print_col(p))
+    test_ref("barplot/parameters1.txt", @print_col(p))
 
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
@@ -94,7 +94,7 @@ struct Scale{T} r::T end
         padding = 3,
         labels = false,
     )
-    test_ref("references/barplot/parameters1_nolabels.txt", @print_col(p))
+    test_ref("barplot/parameters1_nolabels.txt", @print_col(p))
 
     p = @inferred barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
@@ -106,7 +106,7 @@ struct Scale{T} r::T end
         symbols = ["="],
         width = 60
     )
-    test_ref("references/barplot/parameters2.txt", @print_col(p))
+    test_ref("barplot/parameters2.txt", @print_col(p))
 
     # same but with Char as symbols
     p = @inferred barplot(
@@ -119,21 +119,21 @@ struct Scale{T} r::T end
         symbols = ['='],
         width = 60
     )
-    test_ref("references/barplot/parameters2.txt", @print_col(p))
+    test_ref("barplot/parameters2.txt", @print_col(p))
 end
 
 @testset "edge cases" begin
     @test_throws ArgumentError barplot([:a, :b], [-1, 2])
     p = barplot([5,4,3,2,1], [0,0,0,0,0])
-    test_ref("references/barplot/edgecase_zeros.txt", @print_col(p))
+    test_ref("barplot/edgecase_zeros.txt", @print_col(p))
     p = barplot([:a,:b,:c,:d], [1,1,1,1000000])
-    test_ref("references/barplot/edgecase_onelarge.txt", @print_col(p))
+    test_ref("barplot/edgecase_onelarge.txt", @print_col(p))
     barplot("one", 1)
 end
 
 @testset "colors" begin
     p = barplot(["B","A"], [2,1], color=9)
-    test_ref("references/barplot/col1.txt", @print_col(p))
+    test_ref("barplot/col1.txt", @print_col(p))
     p = barplot(["B","A"], [2,1], color=(200,50,0))
-    test_ref("references/barplot/col2.txt", @print_col(p))
+    test_ref("barplot/col2.txt", @print_col(p))
 end

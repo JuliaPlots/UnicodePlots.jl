@@ -86,7 +86,7 @@ function printcolorbarrow(
         end
         @assert 0 <= fgcol <= 255
         @assert 0 <= bgcol <= 255
-        print_color(UInt32(fgcol + THRESHOLD), io, HALF_BLOCK; bgcol = UInt32(bgcol + THRESHOLD))
+        print_color(UInt32(fgcol), io, HALF_BLOCK; bgcol = UInt32(bgcol))
         print(io, HALF_BLOCK, Crayon(reset=true))
         print_color(BORDER_COLOR[], io, b[:r])
         print(io, plot_padding)

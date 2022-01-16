@@ -89,10 +89,6 @@ end
     @test UnicodePlots.out_stream_width(nothing) == 40
     @test UnicodePlots.out_stream_height(nothing) == 15
 
-    # @test UnicodePlots.julia_color(100) == 100
-    # @test UnicodePlots.julia_color(:red) == :red
-    # @test UnicodePlots.julia_color(nothing) == :normal
-
     @test UnicodePlots.ansi_8bit_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_8bit_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_8bit_color(:red) == UnicodePlots.THRESHOLD + 0x01
