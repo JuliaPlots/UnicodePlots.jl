@@ -30,8 +30,8 @@ end
 
 withenv("FORCE_COLOR"=>"X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     for test in (
-        "tst_issues.jl",
         "tst_common.jl",
+        "tst_issues.jl",
         "tst_graphics.jl",
         "tst_canvas.jl",
         "tst_plot.jl",

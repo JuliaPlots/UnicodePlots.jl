@@ -98,9 +98,9 @@ function boxplot(
     min_x_str = compact_repr(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
     mean_x_str = compact_repr(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
     max_x_str = compact_repr(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
-    label!(new_plot, :bl, min_x_str, color = :light_black)
-    label!(new_plot, :b,  mean_x_str, color = :light_black)
-    label!(new_plot, :br, max_x_str, color = :light_black)
+    label!(new_plot, :bl, min_x_str, color = BORDER_COLOR[])
+    label!(new_plot, :b,  mean_x_str, color = BORDER_COLOR[])
+    label!(new_plot, :br, max_x_str, color = BORDER_COLOR[])
 
     for (i, name) in enumerate(text)
         # Find end of last 3-line region, then add 2 for center of current

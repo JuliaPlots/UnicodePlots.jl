@@ -48,7 +48,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
     pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
     grid = fill(Char(0x2800), char_width, char_height)
-    colors = fill(nothing, char_width, char_height)
+    colors = fill(typemax(ColorType), char_width, char_height)
     BrailleCanvas(grid, colors,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
@@ -75,14 +75,14 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     0 <= pixel_y <= c.pixel_height || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x,char_y] = Char(UInt64(c.grid[char_x,char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
-    set_color!(c.colors, char_x, char_y, crayon_8bit_color(color))
+    set_color!(c.colors, char_x, char_y, ansi_color(color))
     c
 end
 
 function char_point!(c::BrailleCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)
         c.grid[char_x,char_y] = char
-        set_color!(c.colors, char_x, char_y, crayon_8bit_color(color))
+        set_color!(c.colors, char_x, char_y, ansi_color(color))
     end
     c
 end
@@ -91,7 +91,7 @@ function printrow(io::IO, c::BrailleCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_color(c.colors[x,y], io, c.grid[x,y])
+        print_color(c.colors[x, y], io, c.grid[x, y])
     end
     nothing
 end

@@ -5,6 +5,8 @@ using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 
+import Crayons: ANSIColor
+
 export
     GraphicsArea,
         Canvas,

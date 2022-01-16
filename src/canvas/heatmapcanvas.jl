@@ -70,18 +70,18 @@ function printcolorbarrow(
     if row == 1
         label = lim_str[2]
         # print top border and maximum z value
-        print_color(:light_black, io, b[:tl], b[:t], b[:t], b[:tr])
+        print_color(BORDER_COLOR[], io, b[:tl], b[:t], b[:t], b[:tr])
         print(io, plot_padding)
-        print_color(:light_black, io, label)
+        print_color(BORDER_COLOR[], io, label)
     elseif row == nrows(c)
         label = lim_str[1]
         # print bottom border and minimum z value
-        print_color(:light_black, io, b[:bl], b[:b], b[:b], b[:br])
+        print_color(BORDER_COLOR[], io, b[:bl], b[:b], b[:b], b[:br])
         print(io, plot_padding)
-        print_color(:light_black, io, label)
+        print_color(BORDER_COLOR[], io, label)
     else
         # print gradient
-        print_color(:light_black, io, b[:l])
+        print_color(BORDER_COLOR[], io, b[:l])
         # if min and max are the same, single color
         if min_z == max_z
             bgcol = colormap(1, 1, 1)
@@ -96,7 +96,7 @@ function printcolorbarrow(
         print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
         print(io, HALF_BLOCK)
         print(io, Crayon(reset=true))
-        print_color(:light_black, io, b[:r])
+        print_color(BORDER_COLOR[], io, b[:r])
         print(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1

@@ -177,4 +177,3 @@ function heatmap(
     end
     new_plot
 end
-

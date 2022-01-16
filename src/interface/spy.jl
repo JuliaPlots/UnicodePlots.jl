@@ -171,10 +171,10 @@ function spy(
             label!(plot, :r, 2, "< 0", :blue)
         end
     end
-    label!(plot, :l, 1, "1", :light_black)
-    label!(plot, :l, nrows(plot.graphics), string(nrow), :light_black)
-    label!(plot, :bl, "1", :light_black)
-    label!(plot, :br, string(ncol), :light_black)
+    label!(plot, :l, 1, "1", BORDER_COLOR[])
+    label!(plot, :l, nrows(plot.graphics), string(nrow), BORDER_COLOR[])
+    label!(plot, :bl, "1", BORDER_COLOR[])
+    label!(plot, :br, string(ncol), BORDER_COLOR[])
     haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
     return plot
 end

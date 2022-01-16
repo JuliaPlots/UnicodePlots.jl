@@ -48,8 +48,8 @@ function DensityCanvas(char_width::Int, char_height::Int;
     char_height = max(char_height, 5)
     pixel_width = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
-    grid = fill(0, char_width, char_height)
-    colors = fill(nothing, char_width, char_height)
+    colors = fill(typemax(ColorType), char_width, char_height)
+    colors = Array{ColorType}(undef, char_width, char_height)
     DensityCanvas(grid, colors,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
@@ -72,7 +72,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x,char_y] += 1
     c.max_density = max(c.max_density, c.grid[char_x,char_y])
-    set_color!(c.colors, char_x, char_y, crayon_8bit_color(color))
+    set_color!(c.colors, char_x, char_y, ansi_color(color))
     c
 end
 

@@ -79,11 +79,11 @@ mutable struct Plot{T<:GraphicsArea}
     border::Symbol
     compact::Bool
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,JuliaColorType}
+    colors_left::Dict{Int,BaseColorType}
     labels_right::Dict{Int,String}
-    colors_right::Dict{Int,JuliaColorType}
+    colors_right::Dict{Int,BaseColorType}
     decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,JuliaColorType}
+    colors_deco::Dict{Symbol,BaseColorType}
     show_labels::Bool
     colormap::Any
     show_colorbar::Bool
@@ -113,11 +113,11 @@ function Plot(
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,JuliaColorType}()
+    colors_left = Dict{Int,BaseColorType}()
     labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,JuliaColorType}()
+    colors_right = Dict{Int,BaseColorType}()
     decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,JuliaColorType}()
+    colors_deco = Dict{Symbol,BaseColorType}()
     p = Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
@@ -190,19 +190,19 @@ function Plot(
     end
     base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
     base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-    label!(new_plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
-    label!(new_plot, :l, 1, base_y_str * M_y, color = :light_black)
-    label!(new_plot, :bl, base_x_str * m_x, color = :light_black)
-    label!(new_plot, :br, base_x_str * M_x, color = :light_black)
+    label!(new_plot, :l, nrows(canvas), base_y_str * m_y, color = BORDER_COLOR[])
+    label!(new_plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
+    label!(new_plot, :bl, base_x_str * m_x, color = BORDER_COLOR[])
+    label!(new_plot, :br, base_x_str * M_x, color = BORDER_COLOR[])
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
-                points!(new_plot, i, 0., :normal)
+                points!(new_plot, i, 0., nothing)
             end
         end
         if min_x < 0 < max_x
             for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
-                points!(new_plot, 0., i, :normal)
+                points!(new_plot, 0., i, nothing)
             end
         end
     end
@@ -321,20 +321,20 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
             if loc == :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
-                    plot.colors_left[row] = julia_color(color)
+                    plot.colors_left[row] = base_color(color)
                     break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
-                    plot.colors_right[row] = julia_color(color)
+                    plot.colors_right[row] = base_color(color)
                     break
                 end
             end
         end
     else
         plot.decorations[loc] = value
-        plot.colors_deco[loc] = julia_color(color)
+        plot.colors_deco[loc] = base_color(color)
     end
     plot
 end
@@ -345,10 +345,10 @@ function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserCo
 end
 
 label!(
-    plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal
+    plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType = :normal
 ) = label!(plot, loc, value, color)
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType=:normal)
+function annotate!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType = :normal)
     Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
     label!(plot, loc, value, color)
 end
@@ -356,10 +356,10 @@ end
 function label!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, color::UserColorType)
     if loc == :l
         plot.labels_left[row] = value
-        plot.colors_left[row] = julia_color(color)
+        plot.colors_left[row] = base_color(color)
     elseif loc == :r
         plot.labels_right[row] = value
-        plot.colors_right[row] = julia_color(color)
+        plot.colors_right[row] = base_color(color)
     else
         throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
     end
@@ -372,11 +372,11 @@ function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString, col
 end
 
 label!(
-    plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal
+    plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType = :normal
 ) = label!(plot, loc, row, value, color)
 
 
-function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType=:normal)
+function annotate!(plot::Plot, loc::Symbol, row::Int, value::AbstractString; color::UserColorType = :normal)
     Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
     label!(plot, loc, row, value, color)
 end
@@ -435,7 +435,7 @@ See also
 [`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text::Union{Char,AbstractString}; color=:normal, kwargs...)
+function annotate!(plot::Plot{<:Canvas}, x::Number, y::Number, text::Union{Char,AbstractString}; color = :normal, kwargs...)
   color = color == :auto ? next_color!(plot) : color
   annotate!(plot.graphics, x, y, text, color; kwargs...)
   plot
@@ -473,7 +473,7 @@ end
 
 function print_border(
     io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString,
-    bmap = bordermap[:solid], color::UserColorType = :light_black
+    bmap = bordermap[:solid], color::UserColorType = BORDER_COLOR[]
 )
     print(io, left_pad)
     print_color(color, io, bmap[Symbol(loc, :l)], repeat(bmap[loc], length), bmap[Symbol(loc, :r)])
@@ -490,11 +490,11 @@ function print_labels(
     lloc = Symbol(mloc, :l)
     rloc = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
-    left_col  = get(p.colors_deco, lloc, :light_black)
+    left_col  = get(p.colors_deco, lloc, BORDER_COLOR[])
     mid_str   = get(p.decorations, mloc, "")
-    mid_col   = get(p.colors_deco, mloc, :light_black)
+    mid_col   = get(p.colors_deco, mloc, BORDER_COLOR[])
     right_str = get(p.decorations, rloc, "")
-    right_col = get(p.colors_deco, rloc, :light_black)
+    right_col = get(p.colors_deco, rloc, BORDER_COLOR[])
     if left_str != "" || right_str != "" || mid_str != ""
         left_len  = length(left_str)
         mid_len   = length(mid_str)
@@ -579,9 +579,9 @@ function Base.show(io::IO, p::Plot)
     for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
         left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :light_black)
+        left_col  = get(p.colors_left,  row, BORDER_COLOR[])
         right_str = get(p.labels_right, row, "")
-        right_col = get(p.colors_right, row, :light_black)
+        right_col = get(p.colors_right, row, BORDER_COLOR[])
         left_len  = length(_nocolor_string(left_str))
         right_len = length(_nocolor_string(right_str))
         if !get(io, :color, false)
@@ -604,11 +604,11 @@ function Base.show(io::IO, p::Plot)
         end
         # print left border
         print(io, plot_padding)
-        print_color(:light_black, io, bmap[:l])
+        print_color(BORDER_COLOR[], io, bmap[:l])
         # print canvas row
         printrow(io, c, row)
         # print right label and padding
-        print_color(:light_black, io, bmap[:r])
+        print_color(BORDER_COLOR[], io, bmap[:r])
         if p.show_labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)

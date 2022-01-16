@@ -54,7 +54,7 @@ BlockCanvas(args...; nargs...) = CreateLookupCanvas(BlockCanvas, args...; nargs.
 function char_point!(c::BlockCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)
         c.grid[char_x,char_y] = n_block + char
-        set_color!(c.colors, char_x, char_y, crayon_8bit_color(color))
+        set_color!(c.colors, char_x, char_y, ansi_color(color))
     end
     c
 end
