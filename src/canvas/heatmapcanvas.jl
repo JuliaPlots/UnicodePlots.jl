@@ -30,8 +30,6 @@ HeatmapCanvas(args...; kwargs...) = CreateLookupCanvas(
     HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...
 )
 
-_toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
-
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = 2*row
@@ -44,8 +42,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
         if iscolor
             if (y - 1) > 0
                 print_color(c.colors[x, y], io, HALF_BLOCK; bgcol = c.colors[x, y - 1])
-            # for odd numbers of rows, only print the foreground for the top row
-            else
+            else  # for odd numbers of rows, only print the foreground for the top row
                 print_color(c.colors[x, y], io, HALF_BLOCK)
             end
         else
@@ -80,12 +77,10 @@ function printcolorbarrow(
     else
         # print gradient
         print_color(BORDER_COLOR[], io, b[:l])
-        # if min and max are the same, single color
-        if min_z == max_z
+        if min_z == max_z  # if min and max are the same, single color
             bgcol = colormap(1, 1, 1)
             fgcol = bgcol
-        # otherwise, blend from min to max
-        else
+        else  # otherwise, blend from min to max
             n = 2*(nrows(c) - 2)
             r = row - 2
             bgcol = colormap(n - (2*r),     1, n)

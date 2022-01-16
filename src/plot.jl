@@ -472,7 +472,7 @@ function print_title(
 end
 
 function print_border(
-    io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString,
+    io::IO, loc::Symbol, length::Int, left_pad, right_pad,
     bmap = bordermap[:solid], color::UserColorType = BORDER_COLOR[]
 )
     print(io, left_pad)

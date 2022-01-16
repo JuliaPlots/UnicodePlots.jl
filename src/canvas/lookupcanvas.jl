@@ -51,7 +51,7 @@ function CreateLookupCanvas(
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid = fill(0x00, char_width, char_height)
-    colors = fill(typemax(ColorType), char_width, char_height)
+    colors = fill(nothing, char_width, char_height)
     T(grid, colors, pixel_width, pixel_height,
       Float64(origin_x), Float64(origin_y),
       Float64(width), Float64(height), xscale, yscale)
