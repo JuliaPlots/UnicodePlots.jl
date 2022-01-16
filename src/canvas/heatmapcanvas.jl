@@ -42,13 +42,11 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
-            fgcol = _toCrayon(c.colors[x, y])
             if (y - 1) > 0
-                bgcol = _toCrayon(c.colors[x, y - 1])
-                print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
+                print_color(c.colors[x, y], io, HALF_BLOCK; bgcol = c.colors[x, y - 1])
             # for odd numbers of rows, only print the foreground for the top row
             else
-                print(io, Crayon(foreground=fgcol), HALF_BLOCK)
+                print_color(c.colors[x, y], io, HALF_BLOCK)
             end
         else
             print(io, HALF_BLOCK)
@@ -93,7 +91,7 @@ function printcolorbarrow(
             bgcol = colormap(n - (2*r),     1, n)
             fgcol = colormap(n - (2*r + 1), 1, n)
         end
-        print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
+        print_color(fgcol, io, HALF_BLOCK; bgcol = bgcol)
         print(io, HALF_BLOCK)
         print(io, Crayon(reset=true))
         print_color(BORDER_COLOR[], io, b[:r])

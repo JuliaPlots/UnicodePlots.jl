@@ -29,6 +29,8 @@ macro print_nocol(p, kv...)
 end
 
 withenv("FORCE_COLOR"=>"X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+
+    UnicodePlots.colormode_8bit()  # NOTE: for now only test 8bit mode
     for test in (
         "tst_common.jl",
         "tst_issues.jl",

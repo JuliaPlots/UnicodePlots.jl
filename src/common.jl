@@ -572,11 +572,21 @@ end
 print_color(color::BaseColorType, io::IO, args...) = printstyled(io, args...; color = color)
 # print_color(color::Nothing, io::IO, args...) = print(io, args...)
 
-function print_color(color::ColorType, io::IO, args...)
+validate_base(color::ColorType) = color == typemax(ColorType) ? :normal : Int(color - THRESHOLD)
+validate_crayon(color::ColorType) = color == typemax(ColorType) ? ColorType(0) : color - THRESHOLD
+
+function print_color(color::ColorType, io::IO, args...; bgcol = nothing)
     if color >= THRESHOLD  # ansi - 4bit or 8bit
-        print_color(color == typemax(UInt32) ? :normal : Int(color - THRESHOLD), io, args...)
+        if bgcol === nothing
+            printstyled(io, args...; color = validate_base(color))
+        else
+            print_color(validate_crayon(color), io, args...; bgcol = validate_crayon(bgcol))
+        end
     else  # true color - 24bit
-        c = Crayon(ANSIColor(Crayons._torgb(color)..., Crayons.COLORS_24BIT), ANSIColor(), (Crayons.ANSIStyle() for _ in 1:9)...)
+        fgcol = Crayons.ANSIColor(Crayons._torgb(color)..., COLORMODE[])
+        bgcol = bgcol === nothing ? Crayons.ANSIColor() : Crayons.ANSIColor(Crayons._torgb(bgcol)..., COLORMODE[])
+        # @show fgcol bgcol
+        c = Crayon(fgcol, bgcol, (Crayons.ANSIStyle() for _ in 1:9)...)
         if true
             print(io, Crayons.CSI)
             Crayons._print(io, c)
@@ -618,13 +628,16 @@ function ansi_24bit_color(color::UserColorType)::UInt32
     UInt32(col)
 end
 
-use_24bit = Ref(false)
+const COLORMODE = Ref(Crayons.COLORS_256)
 
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
-__init__() = use_24bit[] = is_24bit_supported()
+colormode_8bit() = COLORMODE[] = Crayons.COLORS_256
+colormode_24bit() = COLORMODE[] = Crayons.COLORS_24BIT
 
-ansi_color(color::UserColorType) = use_24bit[] ? ansi_24bit_color(color) : ansi_8bit_color(color)
+__init__() = is_24bit_supported() && colormode_24bit()
+
+ansi_color(color::UserColorType) = COLORMODE[] == Crayons.COLORS_24BIT ? ansi_24bit_color(color) : ansi_8bit_color(color)
 
 base_color(color::Integer)::BaseColorType = (@assert 0 <= color <= 255; Int(color))
 base_color(color::Nothing)::BaseColorType = :normal
