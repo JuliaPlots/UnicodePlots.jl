@@ -33,7 +33,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
                 percentile(data, 75),
                 maximum(data)
             )],
-            crayon_256_color(color), char_width, min_x, max_x
+            crayon_8bit_color(color), char_width, min_x, max_x
         )
     end
 end
@@ -48,7 +48,7 @@ BoxplotGraphics(
     min_x::Number = minimum(data),
     max_x::Number = maximum(data)
 ) where {R <: Number} = BoxplotGraphics{R}(
-    data, char_width, crayon_256_color(color), R(min_x), R(max_x)
+    data, char_width, crayon_8bit_color(color), R(min_x), R(max_x)
 )
 
 

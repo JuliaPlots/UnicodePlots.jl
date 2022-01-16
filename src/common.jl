@@ -291,7 +291,18 @@ print_color(color::UserColorType, io::IO, args...) = printstyled(
     io, string(args...); color = julia_color(color)
 )
 
-function crayon_256_color(color::UserColorType)::ColorType
+function crayon_8bit_color(color::UserColorType)::ColorType
+    color in (:normal, :default, :nothing, nothing) && return nothing
+    ansicolor = Crayons._parse_color(color)
+    if ansicolor.style == Crayons.COLORS_16
+        return Crayons.val(ansicolor) % 60
+    elseif ansicolor.style == Crayons.COLORS_24BIT
+        return Crayons.val(Crayons.to_256_colors(ansicolor))
+    end
+    Crayons.val(ansicolor)
+end
+
+function crayon_24bit_color(color::UserColorType)::ColorType
     color in (:normal, :default, :nothing, nothing) && return nothing
     ansicolor = Crayons._parse_color(color)
     if ansicolor.style == Crayons.COLORS_16
@@ -305,7 +316,7 @@ end
 julia_color(color::Integer)::JuliaColorType = Int(color)
 julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
-julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
+julia_color(color)::JuliaColorType = julia_color(crayon_8bit_color(color))
 
 @inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
     if color === nothing || colors[x, y] === nothing || force

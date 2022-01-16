@@ -129,7 +129,7 @@ AsciiCanvas(args...; nargs...) = CreateLookupCanvas(AsciiCanvas, args...; nargs.
 function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)
         c.grid[char_x,char_y] = n_ascii + char
-        set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+        set_color!(c.colors, char_x, char_y, crayon_8bit_color(color))
     end
     c
 end
