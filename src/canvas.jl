@@ -268,7 +268,7 @@ function printcolorbarrow(
         # print z label
         if row == div(nrows(c), 2) + 1
             label = zlabel
-            print(io, label)            
+            print(io, label)
         end
     end
     print(io, repeat(blank, max_len - length(label)))
