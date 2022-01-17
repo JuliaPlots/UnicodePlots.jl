@@ -294,6 +294,10 @@ All plots support the set (or a subset) of the following named parameters:
     
     Compact plot (labels), defaults to `false`.
 
+- `blend::Bool=true`:
+    
+    Blend colors on the underlying canvas, defaults to `true`.
+
 - `margin::Int=3`:
 
     Number of empty characters to the left of the whole plot.
@@ -377,7 +381,7 @@ pixel!(canvas, 5, 8, :red)                 # pixel space
 
 You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
-As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
+As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
 
 ![Blending Colors](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/blending.png)
 

@@ -17,6 +17,8 @@ const DOC_PLOT_PARAMS = """
 
 - **`compact`** : Compact plot (labels), defaults to `false`.
 
+- **`blend`** : Blend colors on the underlying canvas, defaults to `true`.
+
 - **`margin`** : Number of empty characters to the left of the whole plot.
 
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
