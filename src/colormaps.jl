@@ -1049,18 +1049,14 @@ COLOR_MAP_DATA = Dict(
     :plasma  => _plasma_data
 )
 
-function closestansiicolor(c)
-    tc = [0, 95, 135, 175, 215, 255]
-    _, i = findmin(abs.(c .- tc))
-    i - 1
-end
+closestansiicolor(c) = argmin(abs.(c .- UInt8[0, 95, 135, 175, 215, 255])) - 1
 
 function rgb2ansii(rgb)
-    r, g, b = closestansiicolor.([round(Int, c * 255) for c in rgb])
+    r, g, b = map(c -> closestansiicolor(round(Int, 255c)), rgb)
     r * 36 + g * 6 + b + 16
 end
 
-function heatmapcolor(z, minz, maxz, cmap)
+function cmapcolor(z, minz, maxz, cmap)
     i = if minz == maxz
         0
     else
@@ -1068,5 +1064,14 @@ function heatmapcolor(z, minz, maxz, cmap)
     end
     rgb2ansii(cmap[i + 1])
 end
+
+function colormap_callback(cmap::Symbol)
+  cdata = COLOR_MAP_DATA[cmap]
+  (z, minz, maxz) -> cmapcolor(z, minz, maxz, cdata)
+end
+
+colormap_callback(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, maxz, cmap)
+colormap_callback(cmap::Nothing) = nothing
+colormap_callback(cmap::Function) = cmap
 
 rgbimgcolor(z) = rgb2ansii((z.r, z.g, z.b))

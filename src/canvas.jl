@@ -229,3 +229,48 @@ function annotate!(
     char_point!(c, char_x, char_y, text, color)
     c
 end
+
+function printcolorbarrow(
+    io::IO, c::Canvas, row::Int, colormap::Any, border::Symbol,
+    lim, lim_str, plot_padding, zlabel, max_len, blank::Char
+)
+    b = bordermap[border]
+    min_z, max_z = lim
+    label = ""
+    if row == 1
+        label = lim_str[2]
+        # print top border and maximum z value
+        print_color(:light_black, io, b[:tl], b[:t], b[:t], b[:tr])
+        print(io, plot_padding)
+        print_color(:light_black, io, label)
+    elseif row == nrows(c)
+        label = lim_str[1]
+        # print bottom border and minimum z value
+        print_color(:light_black, io, b[:bl], b[:b], b[:b], b[:br])
+        print(io, plot_padding)
+        print_color(:light_black, io, label)
+    else
+        # print gradient
+        print_color(:light_black, io, b[:l])
+        if min_z == max_z  # if min and max are the same, single color
+            fgcol = bgcol = colormap(1, 1, 1)
+        else  # otherwise, blend from min to max
+            n = 2(nrows(c) - 2)
+            r = row - 2
+            bgcol = colormap(n - 2r,     1, n)
+            fgcol = colormap(n - 2r - 1, 1, n)
+        end
+        print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
+        print(io, HALF_BLOCK)
+        print(io, Crayon(reset=true))
+        print_color(:light_black, io, b[:r])
+        print(io, plot_padding)
+        # print z label
+        if row == div(nrows(c), 2) + 1
+            label = zlabel
+            print(io, label)            
+        end
+    end
+    print(io, repeat(blank, max_len - length(label)))
+    nothing
+end
