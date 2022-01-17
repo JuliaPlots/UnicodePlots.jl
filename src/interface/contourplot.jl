@@ -38,7 +38,7 @@ Author(s)
 - T Bltg (https://github.com/t-bltg)
 """
 function contourplot(
-    x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
+    x::AbstractVector, y::AbstractVector, A::AbstractMatrix;
     canvas::Type = BrailleCanvas, name::AbstractString = "", levels::Integer = 5, colormap = :viridis,
     blend = false, grid = false, colorbar = true, kw...
 )   
@@ -49,23 +49,28 @@ function contourplot(
         blend = blend, grid = grid, colorbar = colorbar, colormap = callback,
         kw...
     )
-    contourplot!(new_plot, x, y, z; name = name, levels = levels, colormap = callback)
+    contourplot!(new_plot, x, y, A; name = name, levels = levels, colormap = callback)
 end
 
 function contourplot!(
-    plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
+    plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector, A::AbstractMatrix;
     name::AbstractString = "", levels::Integer = 5, colormap = :viridis, 
 )
     name == "" || label!(plot, :r, string(name))
 
     plot.colormap = callback = colormap_callback(colormap)
-    minz, maxz = extrema(z)
+    minz, maxz = extrema(A)
 
-    for cl in Contour.levels(Contour.contours(y, x, z, levels))
+    for cl in Contour.levels(Contour.contours(y, x, A, levels))
         color = callback(Contour.level(cl), minz, maxz)
         for line in Contour.lines(cl)
-            lineplot!(plot, reverse(Contour.coordinates(line))..., color=color)
+            yi, xi = Contour.coordinates(line)
+            lineplot!(plot, xi, yi, color=color)
         end
     end
     plot
 end
+
+"image interface (flips the y axis)"
+contourplot(A::AbstractMatrix; kwargs...) =
+    contourplot(collect(1:size(A, 2)), collect(1:size(A, 1)) |> reverse, A; kwargs...)
