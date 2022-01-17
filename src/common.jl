@@ -307,8 +307,8 @@ julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
 julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
-@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType; force::Bool=false)
-    if color === nothing || colors[x, y] === nothing || force
+@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType, blend::Bool)
+    if color === nothing || colors[x, y] === nothing || !blend
         colors[x, y] = color
     else
         colors[x, y] |= color

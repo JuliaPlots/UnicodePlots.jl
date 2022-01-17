@@ -4,6 +4,7 @@ using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
+import Contour
 
 export
     GraphicsArea,
@@ -45,6 +46,7 @@ export
     barplot, barplot!,
     lineplot, lineplot!,
     scatterplot, scatterplot!,
+    contourplot, contourplot!,
     stairs, stairs!,
     histogram,
     densityplot, densityplot!,
@@ -74,6 +76,7 @@ include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
+include("interface/contourplot.jl")
 include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")

@@ -23,6 +23,7 @@ Here is a list of the main high-level functions for common scenarios:
   - Boxplot (horizontal)
   - Sparsity Pattern
   - Density Plot
+  - Contour Plot
   - Heatmap
 
 Here is a quick hello world example of a typical use-case:
@@ -179,6 +180,19 @@ plt = densityplot(randn(1000), randn(1000))
 densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
 ![Density Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/densityplot1.png)
+
+#### Contour Plot
+```julia
+x = -3:.1:3
+y = -7:.1:3
+X = repeat(x', length(y), 1)
+Y = repeat(y, 1, length(x))
+g(x, y, x₀=0, y₀=-2, σx=1, σy=2) = exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
+contourplot(x, y, map(g, X, Y), levels = 3)
+```
+![Contourplot Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/contourplot1.png)
+
+The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar = false`.
 
 #### Heatmap Plot
 
