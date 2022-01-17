@@ -108,11 +108,13 @@ function get_canvas_dimensions_for_matrix(
     width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
     extra_rows::Int = 0, extra_cols::Int = 0
 ) where {T <: Canvas}
-    canvheight = nrow / y_pixel_per_char(T)
-    canvwidth  = ncol / x_pixel_per_char(T)
-    aspect_ratio = canvwidth / canvheight
-    min_canvheight = ceil(Int, canvheight)
-    min_canvwidth  = ceil(Int, canvwidth)
+    canv_height = nrow / y_pixel_per_char(T)
+    canv_width  = ncol / x_pixel_per_char(T)
+    # e.g. heatmap(collect(1:2) * collect(1:2)') with nrow = 2, ncol = 2
+    # on a HeatmapCanvas, x_pixel_per_char = 1 and y_pixel_per_char = 2, hence the canvas aspect ratio (canv_ar) is 2
+    canv_ar = canv_width / canv_height
+    min_canv_height = ceil(Int, canv_height)
+    min_canv_width  = ceil(Int, canv_width)
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
@@ -126,31 +128,31 @@ function get_canvas_dimensions_for_matrix(
     # Note: if both width and height are 0, it means that there are no
     #       constraints and the plot should resemble the structure of
     #       the matrix as close as possible
-    if (data_aspect = width == 0 && height == 0)
+    if (data_based_ar = width == 0 && height == 0)
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
-        if min_canvheight > min_canvwidth
+        if min_canv_height > min_canv_width
             # long matrix (according to pixel density)
-            width  = min(min_canvheight * aspect_ratio, maxwidth)
-            height = min(width / aspect_ratio, maxheight)
-            width  = min(height * aspect_ratio, maxwidth)
+            width  = min(min_canv_height * canv_ar, maxwidth)
+            height = min(width / canv_ar, maxheight)
+            width  = min(height * canv_ar, maxwidth)
         else
             # wide matrix
-            height = min(min_canvwidth / aspect_ratio, maxheight)
-            width  = min(height * aspect_ratio, maxwidth)
-            height = min(width / aspect_ratio, maxheight)
+            height = min(min_canv_width / canv_ar, maxheight)
+            width  = min(height * canv_ar, maxwidth)
+            height = min(width / canv_ar, maxheight)
         end
     end
 
     if width == 0 && height > 0
-        width  = min(height * aspect_ratio, maxwidth)
+        width  = min(height * canv_ar, maxwidth)
     elseif width > 0 && height == 0
-        height = min(width / aspect_ratio, maxheight)
+        height = min(width / canv_ar, maxheight)
     end
     char_width  = round(Int, width)
     char_height = round(Int, height)
 
-    char_width, char_height, maxwidth, maxheight, data_aspect
+    char_width, char_height, maxwidth, maxheight, data_based_ar
 end
 
 

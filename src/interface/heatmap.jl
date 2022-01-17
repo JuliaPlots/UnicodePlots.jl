@@ -138,17 +138,17 @@ function heatmap(
 
     nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
     ncols = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
-    aspect_ratio = ncols / nrows
+    data_ar = ncols / nrows  # data aspect ratio
 
-    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
-    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
+    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * data_ar)) : width
+    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
 
-    width, height, max_width, max_height, data_aspect = get_canvas_dimensions_for_matrix(
+    width, height, max_width, max_height, data_based_ar = get_canvas_dimensions_for_matrix(
         HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, out_stream
     )
 
     # ensure plot is big enough
-    if data_aspect && aspect_ratio == 1  # square matrix should remain as is
+    if data_based_ar && data_ar ≈ 1  # square matrix should remain as is
         min_side = min(max_height, max_width)
         height = min(min_side, max(height, nrows))
         width = min(min_side, max(width, ncols))
