@@ -130,14 +130,10 @@ function heatmap(
     end
 
     # if z is an rgb image, translate the colors directly to the terminal
-    if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
-        colormap = (z, minz, maxz) -> rgbimgcolor(z)
-    elseif colormap isa Symbol
-        cdata = COLOR_MAP_DATA[colormap]
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
-    elseif typeof(colormap) <: AbstractVector
-        cdata = colormap
-        colormap = (z, minz, maxz) -> heatmapcolor(z, minz, maxz, cdata)
+    callback = if length(z) > 0 && all(x -> x in fieldnames(eltype(z)), [:r, :g, :b])
+        (z, minz, maxz) -> rgbimgcolor(z)
+    else
+        colormap_callback(colormap)
     end
 
     nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
@@ -166,14 +162,16 @@ function heatmap(
     ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
     new_plot = Plot(
         xs, ys, HeatmapCanvas;
-        grid = false, colormap = colormap, colorbar = colorbar, colorbar_lim = (minz, maxz),
+        grid = false, colormap = callback, colorbar = colorbar, colorbar_lim = (minz, maxz),
         ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
         min_width = 1, min_height = 1, kw...
     )
     for row = 1:length(Y)
-        Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
-        YY = repeat([Y[row]], length(X))
-        points!(new_plot, X, YY, Z)
+        points!(new_plot,
+            X,
+            fill(Y[row], length(X)),
+            UserColorType[callback(v, minz, maxz) for v in z[row, :]]
+        )
     end
     new_plot
 end

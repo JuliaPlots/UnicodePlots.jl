@@ -576,6 +576,8 @@ function Base.show(io::IO, p::Plot)
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
+    callback = colormap_callback(p.colormap)
+
     # plot all rows
     for row in 1:nrows(c)
         # Current labels to left and right of the row and their length
@@ -619,7 +621,7 @@ function Base.show(io::IO, p::Plot)
         if p.show_colorbar
             print(io, plot_padding)
             printcolorbarrow(
-                io, c, row, p.colormap, p.colorbar_border, p.colorbar_lim,
+                io, c, row, callback, p.colorbar_border, p.colorbar_lim,
                 (min_z_str, max_z_str), plot_padding, p.zlabel, cbar_max_len, 🗷
             )
         end
