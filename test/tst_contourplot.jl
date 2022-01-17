@@ -11,7 +11,7 @@ end
 end
 
 @testset "number of levels" begin
-    levels = 3
+    levels = 5
     p = @inferred contourplot(gaussian_2d()...; levels = levels)
     test_ref("references/contourplot/gauss_$(levels)levels.txt", @show_col(p))
 end
