@@ -111,10 +111,15 @@ function get_canvas_dimensions_for_matrix(
     canv_height = nrow / y_pixel_per_char(T)
     canv_width  = ncol / x_pixel_per_char(T)
     # e.g. heatmap(collect(1:2) * collect(1:2)') with nrow = 2, ncol = 2
-    # on a HeatmapCanvas, x_pixel_per_char = 1 and y_pixel_per_char = 2, hence the canvas aspect ratio (canv_ar) is 2
+    # on a HeatmapCanvas, x_pixel_per_char = 1 and y_pixel_per_char = 2
+    # hence the canvas aspect ratio (canv_ar) is 2
     canv_ar = canv_width / canv_height
+
+    # min_canv_height := minimal number of y canvas characters
+    # (holding y_pixel_per_char pixels) to represent the input data
     min_canv_height = ceil(Int, canv_height)
     min_canv_width  = ceil(Int, canv_width)
+
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
@@ -122,7 +127,9 @@ function get_canvas_dimensions_for_matrix(
     maxheight = maxheight > 0 ? maxheight : term_height - height_diff
     maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
 
-    (nrow == 0 && ncol == 0) && (return 0, 0, maxwidth, maxheight)
+    if nrow == 0 && ncol == 0
+        return 0, 0, maxwidth, maxheight
+    end
 
     # Check if the size of the plot should be derived from the matrix
     # Note: if both width and height are 0, it means that there are no
@@ -149,10 +156,11 @@ function get_canvas_dimensions_for_matrix(
     elseif width > 0 && height == 0
         height = min(width / canv_ar, maxheight)
     end
-    char_width  = round(Int, width)
-    char_height = round(Int, height)
+    width  = round(Int, width)
+    height = round(Int, height)
 
-    char_width, char_height, maxwidth, maxheight, data_based_ar
+    # the canvas will target a (height, width) grid to represent the input data
+    width, height, maxwidth, maxheight, data_based_ar
 end
 
 

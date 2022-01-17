@@ -82,7 +82,7 @@ See also
 function heatmap(
     z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
     out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
-    padding::Int = 1, colormap = :viridis, xfact = 0, yfact = 0, labels = true, kw...
+    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true, kw...
 )
     nrows = size(z, 1)
     ncols = size(z, 2)
@@ -91,14 +91,18 @@ function heatmap(
     # otherwise, start axis labels at zero
     X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xfact
     X .+= xoffset
-    xfact == 0 && (xfact = 1)
+    xfact = xfact == 0 ? 1 : xfact
     Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yfact
     Y .+= yoffset
-    yfact == 0 && (yfact = 1)
+    yfact = yfact == 0 ? 1 : yfact
 
     # set the axis limits automatically
-    (xlim == (0, 0) && length(X) > 0) && (xlim = extrema(X))
-    (ylim == (0, 0) && length(Y) > 0) && (ylim = extrema(Y))
+    if xlim == (0, 0) && length(X) > 0
+        xlim = extrema(X)
+    end
+    if ylim == (0, 0) && length(Y) > 0
+        ylim = extrema(Y)
+    end
 
     # select a subset of z based on the supplied limits
     firstx = findfirst(x -> x >= xlim[1], X)
@@ -113,7 +117,7 @@ function heatmap(
 
     # allow z to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
-    minz, maxz = 0, 0
+    minz, maxz = (0, 0)
     noextrema = true
     try
         minz, maxz = extrema(z)
@@ -156,18 +160,17 @@ function heatmap(
         height = min(max_height, max(height, nrows))
     end
 
-    colorbar = if height < 7
+    if height < 7
         # for small plots, don't show colorbar by default
-        !noextrema && get(kw, :colorbar, false)
+        colorbar = !noextrema && get(kw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        !noextrema && get(kw, :colorbar, labels)
+        colorbar = !noextrema && get(kw, :colorbar, labels)
     end
     kw = (; kw..., colorbar=colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : eltype(X)[0, 0]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : eltype(Y)[0, 0]
-
+    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
     new_plot = Plot(
         xs, ys, HeatmapCanvas;
         grid = false, colormap = colormap, colorbar = colorbar, colorbar_lim = (minz, maxz),
@@ -181,3 +184,4 @@ function heatmap(
     end
     new_plot
 end
+

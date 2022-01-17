@@ -144,12 +144,11 @@ function spy(
         Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
         color = :auto
     end
-
     width, height = get_canvas_dimensions_for_matrix(
         canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
         extra_rows = 9, extra_cols = 6
     )
-    can = T(width, height, width = float(ncol) + 1, height = float(nrow) + 1)
+    can = T(width, height, width  = Float64(ncol) + 1, height = Float64(nrow) + 1)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto

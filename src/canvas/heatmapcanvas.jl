@@ -39,7 +39,6 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     if isodd(size(grid(c), 2))
         y -= 1
     end
-
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
