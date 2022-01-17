@@ -575,7 +575,7 @@ function Base.show(io::IO, p::Plot)
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
-    callback = p.show_colorbar ? colormap_callback(p.colormap) : nothing
+    callback = colormap_callback(p.colormap)
 
     # plot all rows
     for row in 1:nrows(c)

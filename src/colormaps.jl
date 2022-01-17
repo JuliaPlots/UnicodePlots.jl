@@ -1387,7 +1387,13 @@ const COLOR_MAP_DATA = Dict(
     :jet => _jet_data,
 )
 
-closestansiicolor(c) = argmin(abs.(c .- UInt8[0, 95, 135, 175, 215, 255])) - 1
+const _cube_colors = UInt8[0, 95, 135, 175, 215, 255]
+
+if VERSION >= v"1.7"
+    closestansiicolor(c) = argmin(v->abs(c - v), _cube_colors) - 1
+else
+    closestansiicolor(c) = argmin(map(v -> abs(c - v), _cube_colors)) - 1
+end
 
 function rgb2ansii(rgb)
     r, g, b = map(c -> closestansiicolor(round(Int, 255c)), rgb)
