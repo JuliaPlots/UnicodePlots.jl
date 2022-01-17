@@ -8,7 +8,7 @@
 
 Advanced Unicode plotting library designed for use in Julia's `REPL`.
 
-`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](http://docs.juliaplots.org/latest/generated/unicodeplots/#unicodeplots-ref17).
+`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/generated/unicodeplots/#unicodeplots-ref17).
 
 ## High-level Interface
 
