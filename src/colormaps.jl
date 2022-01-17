@@ -1387,17 +1387,18 @@ const COLOR_MAP_DATA = Dict(
     :jet => _jet_data,
 )
 
-const _cube_colors = UInt8[0, 95, 135, 175, 215, 255]
+const _cube_colors = [0, 95, 135, 175, 215, 255]
 
 if VERSION >= v"1.7"
-    closestansiicolor(c) = argmin(v->abs(c - v), _cube_colors) - 1
+    closest_cube_color(c) = argmin(abs(c - v) for v in  _cube_colors) - 1
 else
-    closestansiicolor(c) = argmin(map(v -> abs(c - v), _cube_colors)) - 1
+    closest_cube_color(c) = argmin(map(v -> abs(c - v), _cube_colors)) - 1
 end
 
-function rgb2ansii(rgb)
-    r, g, b = map(c -> closestansiicolor(round(Int, 255c)), rgb)
-    r * 36 + g * 6 + b + 16
+"returns the closest ansi color code from the 6x6x6 cube, in the range 16 - 231"
+function rgb2ansi(rgb)
+    r, g, b = (closest_cube_color(round(Int, 255c)) for c in rgb)
+    16 + 36r + 6g + b
 end
 
 function cmapcolor(z, minz, maxz, cmap)
@@ -1406,7 +1407,7 @@ function cmapcolor(z, minz, maxz, cmap)
     else
         round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
     end
-    rgb2ansii(cmap[i + 1])
+    rgb2ansi(cmap[i + 1])
 end
 
 function colormap_callback(cmap::Symbol)
@@ -1418,4 +1419,4 @@ colormap_callback(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, 
 colormap_callback(cmap::Nothing) = nothing
 colormap_callback(cmap::Function) = cmap
 
-rgbimgcolor(z) = rgb2ansii((z.r, z.g, z.b))
+rgbimgcolor(z) = rgb2ansi((z.r, z.g, z.b))

@@ -231,7 +231,7 @@ function annotate!(
 end
 
 function printcolorbarrow(
-    io::IO, c::Canvas, row::Int, colormap::Union{Function,AbstractVector}, border::Symbol,
+    io::IO, c::Canvas, row::Int, colormap::Function, border::Symbol,
     lim, lim_str, plot_padding, zlabel, max_len, blank::Char
 )
     b = bordermap[border]
@@ -260,9 +260,10 @@ function printcolorbarrow(
             bgcol = colormap(n - 2r,     1, n)
             fgcol = colormap(n - 2r - 1, 1, n)
         end
-        print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
-        print(io, HALF_BLOCK)
-        print(io, Crayon(reset=true))
+        print(
+            io, Crayon(foreground=fgcol, background=bgcol),
+            HALF_BLOCK, HALF_BLOCK, Crayon(reset=true)
+        )
         print_color(:light_black, io, b[:r])
         print(io, plot_padding)
         # print z label
