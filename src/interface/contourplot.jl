@@ -37,7 +37,6 @@ Author(s)
 
 - T Bltg (https://github.com/t-bltg)
 """
-
 function contourplot(
     x::AbstractVector, y::AbstractVector, z::AbstractMatrix;
     canvas::Type = BrailleCanvas, name::AbstractString = "", levels::Integer = 5, colormap = :viridis,
