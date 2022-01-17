@@ -120,10 +120,11 @@ function lineplot!(
     name == "" || label!(plot, :r, string(name), color)
     lines!(plot, x, y, color)
     (length(x) == 0 || length(y) == 0) && return plot
+    head_tail_color = (col = crayon_256_color(color)) === nothing ? nothing : ~col
     if head_tail in (:head, :both)
-        points!(plot, last(x), last(y), abs(255 - crayon_256_color(color)))
+        points!(plot, last(x), last(y), head_tail_color)
     elseif head_tail in (:tail, :both)
-        points!(plot, first(x), first(y), abs(255 - crayon_256_color(color)))
+        points!(plot, first(x), first(y), head_tail_color)
     end
     plot
 end
