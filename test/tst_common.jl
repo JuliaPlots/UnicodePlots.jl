@@ -95,5 +95,18 @@ end
     @test UnicodePlots.julia_color((50, 100, 150)) == 67
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
+    @test UnicodePlots.superscript("+2") == "⁺²"
+
+    @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa Function
+    @test UnicodePlots.colormap_callback(() -> nothing) isa Function
+    @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
+    @test UnicodePlots.colormap_callback(nothing) === nothing
+
+    # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+    @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black
+    @test UnicodePlots.rgb2ansi((1, 0, 0)) == 196  # red
+    @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
+    @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
+    @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
 end
 
