@@ -58,6 +58,8 @@ Arguments
 
 - **`show_zeros`** : Show zeros pattern instead of default nonzeros.
 
+- **`correct_aspect_ratio`** : Correct for terminal aspect ratio
+
 Returns
 ========
 
@@ -138,6 +140,7 @@ function spy(
     color::UserColorType = :auto,
     canvas::Type{T} = BrailleCanvas,
     show_zeros::Bool = false,
+    correct_aspect_ratio::Bool = false,
     kw...
 ) where {T <: Canvas}
     if color == :automatic
@@ -145,10 +148,11 @@ function spy(
         color = :auto
     end
     width, height = get_canvas_dimensions_for_matrix(
-        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
+        canvas, nrow, ncol, maxwidth, maxheight,
+        width, height, margin, padding, out_stream, correct_aspect_ratio;
         extra_rows = 9, extra_cols = 6
     )
-    can = T(width, height, width  = Float64(ncol) + 1, height = Float64(nrow) + 1)
+    can = T(width, height, width  = 1. + ncol, height = 1. + nrow)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto

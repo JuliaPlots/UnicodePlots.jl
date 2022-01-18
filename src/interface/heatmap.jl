@@ -63,6 +63,8 @@ Arguments
 
 - **`labels`** : Can be used to hide the labels by setting `labels=false`.
 
+- **`correct_aspect_ratio`** : Correct for terminal aspect ratio
+
 Returns
 ========
 
@@ -82,7 +84,8 @@ See also
 function heatmap(
     z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
     out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
-    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true, kw...
+    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true,
+    correct_aspect_ratio::Bool = false, kw...
 )
     nrows = size(z, 1)
     ncols = size(z, 2)
@@ -147,18 +150,11 @@ function heatmap(
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * data_ar)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
 
+    # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
     width, height, max_width, max_height, data_based_ar = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, out_stream
+        HeatmapCanvas, 2nrows, ncols, max_width, max_height,
+        width, height, margin, padding, out_stream, correct_aspect_ratio;
     )
-
-    # ensure plot is big enough
-    if data_based_ar && data_ar ≈ 1  # square matrix should remain as is
-        min_side = min(max_height, max_width)
-        height = min(min_side, max(height, nrows))
-        width = min(min_side, max(width, ncols))
-    else
-        height = min(max_height, max(height, nrows))
-    end
 
     if height < 7
         # for small plots, don't show colorbar by default
@@ -171,17 +167,18 @@ function heatmap(
 
     xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
     ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
-    new_plot = Plot(
+    plot = Plot(
         xs, ys, HeatmapCanvas;
         grid = false, colormap = colormap, colorbar = colorbar, colorbar_lim = (minz, maxz),
         ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
         min_width = 1, min_height = 1, kw...
     )
+
     for row = 1:length(Y)
         Z = Int[colormap(zi, minz, maxz) for zi in z[row, :]]
         YY = repeat([Y[row]], length(X))
-        points!(new_plot, X, YY, Z)
+        points!(plot, X, YY, Z)
     end
-    new_plot
+    plot
 end
 

@@ -1,3 +1,15 @@
+@testset "aspect ratio" begin
+    @test spy(rand(2, 2)).graphics.grid  |> size == (5, 2)  # 2 + (2x1) = 5 (columns padding)
+    @test spy(rand(4, 4)).graphics.grid  |> size == (5, 2)
+    @test spy(rand(8, 4)).graphics.grid  |> size == (5, 2)
+    @test spy(rand(12, 4)).graphics.grid |> size == (5, 3)
+    @test spy(rand(8, 8)).graphics.grid  |> size == (5, 2)
+    @test spy(rand(8, 12)).graphics.grid |> size == (6, 2)
+    seed!(RNG, 1337)
+    p = @inferred spy(_stable_sprand(RNG, 80, 80, .15), correct_aspect_ratio=true)
+    test_ref("references/spy/corrected_aspect_ratio_80x80_.txt", @show_col(p, :displaysize=>T_SZ))
+end
+
 @testset "sizing" begin
     seed!(RNG, 1337)
     p = @inferred spy(_stable_sprand(RNG, 0, 0, .1))
