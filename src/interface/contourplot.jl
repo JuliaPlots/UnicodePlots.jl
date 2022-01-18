@@ -1,40 +1,19 @@
 """
     contourplot(x, y, A; kwargs...)
 
-Description
-============
+Draws a contour plot on a new canvas.
 
-Draws a contour plot on a new canvas. `levels` controls the number of contour levels.
-
-Usage
-=====
-    contourplot(x, y, A; kwargs...)
-
-Arguments
-=========
-
-- **`levels`** : The number of contour levels. 
-
-- **`colormap`** : The colormap to use for the contour lines. 
-
-- **`colorbar`** : Toggle the colorbar. 
-
+# Arguments
+- `levels`: the number of contour levels. 
+- `colormap`: the colormap to use for the contour lines. 
+- `colorbar`: toggle the colorbar. 
 $DOC_PLOT_PARAMS
+- `height`: number of character rows that should be used for plotting.
+- `xlim`: plotting range for the x axis. `(0, 0)` stands for automatic.
+- `ylim`: plotting range for the y axis. `(0, 0)` stands for automatic.
+- `grid`: if `true`, draws grid-lines at the origin.
 
-- **`height`** : Number of character rows that should be used
-  for plotting.
-
-- **`xlim`** : Plotting range for the x axis.
-  `(0, 0)` stands for automatic.
-
-- **`ylim`** : Plotting range for the y axis.
-  `(0, 0)` stands for automatic.
-
-- **`grid`** : If `true`, draws grid-lines at the origin.
-
-Author(s)
-==========
-
+# Author(s)
 - T Bltg (https://github.com/t-bltg)
 """
 function contourplot(
@@ -74,10 +53,7 @@ end
 """
     contourplot(A; kwargs...)
 
-Description
-============
-
-Contour an image (flips the y axis)
+Contour plot for images (flips the y axis by default)
 """
 contourplot(A::AbstractMatrix; kwargs...) =
     contourplot(axes(A, 2) |> collect, axes(A, 1) |> collect |> reverse, A; kwargs...)
