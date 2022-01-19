@@ -135,7 +135,7 @@ function get_canvas_dimensions_for_matrix(
     # Note: if both width and height are 0, it means that there are no
     #       constraints and the plot should resemble the structure of
     #       the matrix as close as possible
-    if (data_based_ar = width == 0 && height == 0)
+    if width == 0 && height == 0
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
         if min_canv_height > min_canv_width
@@ -161,7 +161,7 @@ function get_canvas_dimensions_for_matrix(
     height = round(Int, height / (fix_ar ? ASPECT_RATIO : 1))  # optional terminal aspect ratio (4:3) correction
 
     # the canvas will target a (height, width) grid to represent the input data
-    width, height, max_width, max_height, data_based_ar
+    width, height, max_width, max_height
 end
 
 
