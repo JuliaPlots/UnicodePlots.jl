@@ -320,7 +320,16 @@ julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
     nothing
 end
 
-out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (40, 15) : displaysize(out_stream)
+# standard terminals seem to respect a 4:3 aspect ratio
+# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
+# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
+const ASPECT_RATIO = 4 / 3
+
+# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
+const DEFAULT_HEIGHT = Ref(15)
+const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
+
+out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
 out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
 out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
 

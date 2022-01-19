@@ -104,22 +104,31 @@ end
 lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) = lines!(c, X, Y, color)
 
 function get_canvas_dimensions_for_matrix(
-    canvas::Type{T}, nrow::Int, ncol::Int, maxwidth::Int, maxheight::Int,
-    width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO};
-    extra_rows::Int = 0, extra_cols::Int = 0
+    canvas::Type{T}, nrow::Int, ncol::Int, max_width::Int, max_height::Int,
+    width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO},
+    fix_ar::Bool; extra_rows = 0, extra_cols = 0
 ) where {T <: Canvas}
-    min_canvheight = ceil(Int, nrow / y_pixel_per_char(T))
-    min_canvwidth  = ceil(Int, ncol / x_pixel_per_char(T))
-    aspect_ratio = min_canvwidth / min_canvheight
+    canv_height = nrow / y_pixel_per_char(T)
+    canv_width  = ncol / x_pixel_per_char(T)
+    # e.g. heatmap(collect(1:2) * collect(1:2)') with nrow = 2, ncol = 2
+    # on a HeatmapCanvas, x_pixel_per_char = 1 and y_pixel_per_char = 2
+    # hence the canvas aspect ratio (canv_ar) is 2
+    canv_ar = canv_width / canv_height
+
+    # min_canv_height := minimal number of y canvas characters
+    # (holding y_pixel_per_char pixels) to represent the input data
+    min_canv_height = ceil(Int, canv_height)
+    min_canv_width  = ceil(Int, canv_width)
+
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
     term_height, term_width = out_stream === nothing ? displaysize() : displaysize(out_stream)
-    maxheight = maxheight > 0 ? maxheight : term_height - height_diff
-    maxwidth  = maxwidth > 0 ? maxwidth : term_width - width_diff
+    max_height = max_height > 0 ? max_height : term_height - height_diff
+    max_width  = max_width > 0 ? max_width : term_width - width_diff
 
     if nrow == 0 && ncol == 0
-        return 0, 0, maxwidth, maxheight
+        return 0, 0, max_width, max_height
     end
 
     # Check if the size of the plot should be derived from the matrix
@@ -129,41 +138,30 @@ function get_canvas_dimensions_for_matrix(
     if width == 0 && height == 0
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
-        if min_canvheight > min_canvwidth
+        if min_canv_height > min_canv_width
             # long matrix (according to pixel density)
-            height = min_canvheight
-            width  = height * aspect_ratio
-            if width > maxwidth
-                width  = maxwidth
-                height = width / aspect_ratio
-            end
-            if height > maxheight
-                height = maxheight
-                width  = min(height * aspect_ratio, maxwidth)
-            end
+            width  = min(min_canv_height * canv_ar, max_width)
+            height = min(width / canv_ar, max_height)
+            width  = min(height * canv_ar, max_width)
         else
             # wide matrix
-            width  = min_canvwidth
-            height = width / aspect_ratio
-            if height > maxheight
-                height = maxheight
-                width  = height * aspect_ratio
-            end
-            if width > maxwidth
-                width = maxwidth
-                height = min(width / aspect_ratio, maxheight)
-            end
+            height = min(min_canv_width / canv_ar, max_height)
+            width  = min(height * canv_ar, max_width)
+            height = min(width / canv_ar, max_height)
         end
     end
-    if width == 0 && height > 0
-        width  = min(height * aspect_ratio, maxwidth)
-    elseif width > 0 && height == 0
-        height = min(width / aspect_ratio, maxheight)
-    end
-    width  = round(Int, width)
-    height = round(Int, height)
 
-    width, height, maxwidth, maxheight
+    if width == 0 && height > 0
+        width  = min(height * canv_ar, max_width)
+    elseif width > 0 && height == 0
+        height = min(width / canv_ar, max_height)
+    end
+
+    width  = round(Int, width)
+    height = round(Int, height / (fix_ar ? ASPECT_RATIO : 1))  # optional terminal aspect ratio (4:3) correction
+
+    # the canvas will target a (height, width) grid to represent the input data
+    width, height, max_width, max_height
 end
 
 

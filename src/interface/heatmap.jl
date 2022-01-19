@@ -63,6 +63,8 @@ Arguments
 
 - **`labels`** : Can be used to hide the labels by setting `labels=false`.
 
+- **`fix_ar`** : Fix terminal aspect ratio (experimental)
+
 Returns
 ========
 
@@ -82,7 +84,8 @@ See also
 function heatmap(
     z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
     out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
-    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true, kw...
+    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true,
+    fix_ar::Bool = false, kw...
 )
     nrows = size(z, 1)
     ncols = size(z, 2)
@@ -138,16 +141,16 @@ function heatmap(
 
     nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
     ncols = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
-    aspect_ratio = ncols / nrows
+    data_ar = ncols / nrows  # data aspect ratio
 
-    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * aspect_ratio)) : width
-    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / aspect_ratio)) : height
+    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * data_ar)) : width
+    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
+
+    # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
     width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, nrows, ncols, max_width, max_height, width, height, margin, padding, out_stream
+        HeatmapCanvas, 2nrows, ncols, max_width, max_height,
+        width, height, margin, padding, out_stream, fix_ar
     )
-
-    # ensure plot height is big enough
-    height = min(max_height, max(height, nrows))
 
     if height < 7
         # for small plots, don't show colorbar by default
@@ -160,19 +163,20 @@ function heatmap(
 
     xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
     ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
-    new_plot = Plot(
+    plot = Plot(
         xs, ys, HeatmapCanvas;
         grid = false, colormap = callback, colorbar = colorbar, colorbar_lim = (minz, maxz),
         ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
         min_width = 1, min_height = 1, kw...
     )
+
     for row = 1:length(Y)
-        points!(new_plot,
+        points!(plot,
             X,
             fill(Y[row], length(X)),
             UserColorType[callback(v, minz, maxz) for v in z[row, :]]
         )
     end
-    new_plot
+    plot
 end
 

@@ -58,6 +58,8 @@ Arguments
 
 - **`show_zeros`** : Show zeros pattern instead of default nonzeros.
 
+- **`fix_ar`** : Fix terminal aspect ratio (experimental)
+
 Returns
 ========
 
@@ -138,17 +140,19 @@ function spy(
     color::UserColorType = :auto,
     canvas::Type{T} = BrailleCanvas,
     show_zeros::Bool = false,
+    fix_ar::Bool = false,
     kw...
 ) where {T <: Canvas}
     if color == :automatic
         Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
         color = :auto
     end
-    width, height, _, _ = get_canvas_dimensions_for_matrix(
-        canvas, nrow, ncol, maxwidth, maxheight, width, height, margin, padding, out_stream;
+    width, height = get_canvas_dimensions_for_matrix(
+        canvas, nrow, ncol, maxwidth, maxheight,
+        width, height, margin, padding, out_stream, fix_ar;
         extra_rows = 9, extra_cols = 6
     )
-    can = T(width, height, width  = Float64(ncol) + 1, height = Float64(nrow) + 1)
+    can = T(width, height, width  = 1. + ncol, height = 1. + nrow)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto

@@ -1,3 +1,12 @@
+@testset "aspect ratio" begin
+    for i in 1:minimum(T_SZ)
+        @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
+    end
+    seed!(RNG, 1337)
+    p = @inferred heatmap(collect(1:30) * collect(1:30)', fix_ar=true)
+    test_ref("references/heatmap/fix_aspect_ratio_30x30.txt", @show_col(p, :displaysize=>T_SZ))
+end
+
 @testset "sizing" begin
     for dims in (
         (0, 0), (1, 1), (2, 1), (1, 2), (2, 2), (3, 6), (6, 3), (9, 4), (4, 9),
@@ -107,4 +116,17 @@ end
     seed!(RNG, 1337)
     p = @inferred heatmap(randn(RNG, 10, 10), yfact=1, colormap=:inferno)
     test_ref("references/heatmap/parameters_10x10_yfact_inferno.txt", @show_col(p, :displaysize=>T_SZ))
+end
+
+@testset "squareness (aspect ratio)" begin
+    seed!(RNG, 1337)
+    for m in 1:minimum(T_SZ)
+        p = @inferred heatmap(randn(RNG, m, m))
+        @test size(p.graphics.grid) == (m, m)
+    end
+    for m in minimum(T_SZ):maximum(T_SZ)
+        p = @inferred heatmap(randn(RNG, m, m))
+        s1, s2 = size(p.graphics.grid)
+        @test s1 == s2
+    end
 end
