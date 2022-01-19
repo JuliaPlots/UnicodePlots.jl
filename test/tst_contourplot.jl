@@ -23,6 +23,6 @@ end
 end
 
 @testset "function" begin
-    p = @inferred contourplot(-3:.1:3, -3:.1:4, (x, y) -> (exp(-x^2 - y^2) + exp(-(x - 1)^2 - 2(y - 2)^2))^2)
+    p = @inferred contourplot(-3:.01:3, -3:.01:4, (x, y) -> (exp(-x^2 - y^2) + exp(-(x - 1)^2 - 2(y - 2)^2))^2)
     test_ref("references/contourplot/function_contour.txt", @show_col(p))
 end
