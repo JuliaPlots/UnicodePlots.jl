@@ -38,12 +38,7 @@ save(densityplot!(plt, randn(RNG, 1000) .+ 2, randn(RNG, 1000) .+ 2), "densitypl
 save(heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z"), "heatmap1")
 save(heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno), "heatmap2")
 # Contour Plot
-let x = -3:.1:3, y = -7:.1:3
-  X = repeat(x', length(y), 1)
-  Y = repeat(y, 1, length(x))
-  g(x, y, x₀=0, y₀=-2, σx=1, σy=2) = exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
-  save(contourplot(x, y, map(g, X, Y), levels = 3, border=:dotted), "contourplot1")
-end
+save(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted), "contourplot1")
 
 # Options
 save(lineplot(sin, 1:.5:20, width=60, border=:dotted), "width")
