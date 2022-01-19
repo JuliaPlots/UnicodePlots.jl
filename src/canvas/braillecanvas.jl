@@ -13,6 +13,7 @@ struct BrailleCanvas <: Canvas
     grid::Array{Char,2}
     colors::Array{ColorType,2}
     blend::Bool
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -37,6 +38,7 @@ end
 
 function BrailleCanvas(char_width::Int, char_height::Int;
                        blend::Bool = true,
+                       visible::Bool = true,
                        origin_x::Number = 0.,
                        origin_y::Number = 0.,
                        width::Number  = 1.,
@@ -51,8 +53,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
     grid = fill(Char(0x2800), char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    BrailleCanvas(grid, colors, blend,
-                  pixel_width, pixel_height,
+    BrailleCanvas(grid, colors, blend, visible, pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height), xscale, yscale)
 end

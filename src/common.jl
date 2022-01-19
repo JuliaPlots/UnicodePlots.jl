@@ -29,6 +29,10 @@ const DOC_PLOT_PARAMS = """
   or a tuple of three integers as RGB components.
 
 - **`width`** : Number of characters per row that should be used for plotting.
+
+- **`colorbar_lim`**: Colorbar limit, defaults to (0, 1).
+
+- **`colorbar_border`**: Colorbar border, defaults to `:solid`.
 """
 
 const MarkerType = Union{Symbol,Char,AbstractString}

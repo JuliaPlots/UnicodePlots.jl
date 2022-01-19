@@ -121,7 +121,7 @@ function Plot(
     p = Plot{T}(graphics, title, xlabel, ylabel, zlabel,
             margin, padding, border, compact,
             labels_left, colors_left, labels_right, colors_right,
-            decorations, colors_deco, labels, colormap, colorbar, colorbar_border, colorbar_lim, 0)
+            decorations, colors_deco, labels && graphics.visible, colormap, colorbar, colorbar_border, colorbar_lim, 0)
     if compact
         xlabel != "" && label!(p, :b, xlabel)
         ylabel != "" && label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
@@ -173,7 +173,7 @@ function Plot(
     p_width = max_x - min_x
     p_height = max_y - min_y
 
-    canvas = C(width, height, blend = blend,
+    canvas = C(width, height, blend = blend, visible = width > 0 && height > 0,
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)
@@ -571,7 +571,7 @@ function Base.show(io::IO, p::Plot)
         p_width = p_width, color = :bold
     )
     print_labels(io, :t, p, border_length - 2, border_left_pad * 🗹, 🗹 * border_right_pad * '\n', 🗹)
-    print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
+    c.visible && print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
@@ -580,20 +580,20 @@ function Base.show(io::IO, p::Plot)
 
     # plot all rows
     for row in 1:nrows(c)
-        # Current labels to left and right of the row and their length
-        left_str  = get(p.labels_left,  row, "")
-        left_col  = get(p.colors_left,  row, :light_black)
-        right_str = get(p.labels_right, row, "")
-        right_col = get(p.colors_right, row, :light_black)
-        left_len  = length(_nocolor_string(left_str))
-        right_len = length(_nocolor_string(right_str))
-        if !get(io, :color, false)
-            left_str  = _nocolor_string(left_str)
-            right_str = _nocolor_string(right_str)
-        end
         # print left annotations
         print(io, repeat(🗷, p.margin))
         if p.show_labels
+            # Current labels to left and right of the row and their length
+            left_str  = get(p.labels_left,  row, "")
+            left_col  = get(p.colors_left,  row, :light_black)
+            right_str = get(p.labels_right, row, "")
+            right_col = get(p.colors_right, row, :light_black)
+            left_len  = length(_nocolor_string(left_str))
+            right_len = length(_nocolor_string(right_str))
+            if !get(io, :color, false)
+                left_str  = _nocolor_string(left_str)
+                right_str = _nocolor_string(right_str)
+            end
             if !p.compact && row == y_lab_row
                 # print ylabel
                 print_color(:normal, io, p.ylabel)
@@ -605,13 +605,15 @@ function Base.show(io::IO, p::Plot)
             # print the left annotation
             print_color(left_col, io, left_str)
         end
-        # print left border
-        print(io, plot_padding)
-        print_color(:light_black, io, bmap[:l])
-        # print canvas row
-        printrow(io, c, row)
-        # print right label and padding
-        print_color(:light_black, io, bmap[:r])
+        if c.visible
+            # print left border
+            print(io, plot_padding)
+            print_color(:light_black, io, bmap[:l])
+            # print canvas row
+            printrow(io, c, row)
+            # print right label and padding
+            print_color(:light_black, io, bmap[:r])
+        end
         if p.show_labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)
@@ -629,7 +631,7 @@ function Base.show(io::IO, p::Plot)
     end
 
     # draw bottom border and bottom labels  
-    print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
+    c.visible && print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
     if p.show_labels
         print_labels(io, :b, p, border_length - 2, '\n' * border_left_pad * 🗹, 🗹 * border_right_pad, 🗹)
         p.compact || print_title(

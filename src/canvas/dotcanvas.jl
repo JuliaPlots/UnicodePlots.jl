@@ -25,6 +25,7 @@ struct DotCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
     blend::Bool
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64

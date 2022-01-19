@@ -13,6 +13,7 @@ mutable struct DensityCanvas <: Canvas
     grid::Array{UInt,2}
     colors::Array{ColorType,2}
     blend::Bool
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -38,6 +39,7 @@ end
 
 function DensityCanvas(char_width::Int, char_height::Int;
                        blend::Bool = true,
+                       visible::Bool = true,
                        origin_x::Number = 0.,
                        origin_y::Number = 0.,
                        width::Number = 1.,
@@ -52,7 +54,7 @@ function DensityCanvas(char_width::Int, char_height::Int;
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
     grid = fill(0, char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    DensityCanvas(grid, colors, blend,
+    DensityCanvas(grid, colors, blend, visible,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height),

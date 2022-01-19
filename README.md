@@ -322,6 +322,14 @@ All plots support the set (or a subset) of the following named parameters:
 
     Barplot only. Specifies the characters that should be used to render the bars.
 
+- `colorbar_lim`
+    
+    Colorbar limit, defaults to (0, 1).
+
+- `colorbar_border`
+
+    Colorbar border, defaults to `:solid`.
+
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
 
 ### Methods
