@@ -21,3 +21,8 @@ end
     contourplot!(p, gaussian_2d(; σx = .5, σy = .25)...; levels = 1, colormap = :magma)
     test_ref("references/contourplot/gauss_nested.txt", @show_col(p))
 end
+
+@testset "function" begin
+    p = @inferred contourplot(-3:.1:3, -3:.1:4, (x, y) -> (exp(-x^2 - y^2) + exp(-(x - 1)^2 - 2(y - 2)^2))^2)
+    test_ref("references/contourplot/function_contour.txt", @show_col(p))
+end

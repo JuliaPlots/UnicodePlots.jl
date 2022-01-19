@@ -1,38 +1,38 @@
 const DOC_PLOT_PARAMS = """
-- **`title`** : Text to display on the top of the plot.
+- **`title`** : text to display on the top of the plot.
 
-- **`xlabel`** : Text to display on the x axis of the plot
+- **`xlabel`** : text to display on the `x` axis of the plot.
 
-- **`ylabel`** : Text to display on the y axis of the plot
+- **`ylabel`** : text to display on the `y` axis of the plot.
 
-- **`xscale`** : X-axis scale (:identity, :ln, :log2, :log10),
-  or scale function e.g. `x -> log10(x)`
+- **`xscale`** : `x`-axis scale `(:identity, :ln, :log2, :log10)`,
+  or scale function e.g. `x -> log10(x)`.
 
-- **`yscale`** : Y-axis scale
+- **`yscale`** : `y`-axis scale.
 
-- **`labels`** : Boolean. Can be used to hide the labels by setting `labels = false`.
+- **`labels`** : can be used to hide the labels by setting `labels = false`.
 
-- **`border`** : The style of the bounding box of the plot.
+- **`border`** : the style of the bounding box of the plot.
   Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
 
-- **`compact`** : Compact plot (labels), defaults to `false`.
+- **`compact`** : compact plot (labels), defaults to `false`.
 
-- **`blend`** : Blend colors on the underlying canvas, defaults to `true`.
+- **`blend`** : blend colors on the underlying canvas, defaults to `true`.
 
-- **`margin`** : Number of empty characters to the left of the whole plot.
+- **`margin`** : number of empty characters to the left of the whole plot.
 
 - **`padding`** : Space of the left and right of the plot between the labels and the canvas.
 
-- **`color`** : Color of the drawing.
+- **`color`** : color of the drawing.
   Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`,
   `:normal`, an integer in the range `0`-`255` for Color256 palette,
   or a tuple of three integers as RGB components.
 
-- **`width`** : Number of characters per row that should be used for plotting.
+- **`colorbar_lim`** : colorbar limit, defaults to `(0, 1)`.
 
-- **`colorbar_lim`**: Colorbar limit, defaults to (0, 1).
+- **`colorbar_border`** : colorbar border, defaults to `:solid`.
 
-- **`colorbar_border`**: Colorbar border, defaults to `:solid`.
+- **`width`** : number of characters per row that should be used for plotting.
 """
 
 const MarkerType = Union{Symbol,Char,AbstractString}
