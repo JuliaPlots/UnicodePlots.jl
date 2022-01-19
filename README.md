@@ -23,6 +23,7 @@ Here is a list of the main high-level functions for common scenarios:
   - Boxplot (horizontal)
   - Sparsity Pattern
   - Density Plot
+  - Contour Plot
   - Heatmap
 
 Here is a quick hello world example of a typical use-case:
@@ -180,6 +181,14 @@ densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
 ![Density Screenshot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/densityplot1.png)
 
+#### Contour Plot
+```julia
+contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))
+```
+![Contourplot Screenshot 1](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/contourplot1.png)
+
+The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar=false`.
+
 #### Heatmap Plot
 
 ```julia
@@ -280,6 +289,10 @@ All plots support the set (or a subset) of the following named parameters:
     
     Compact plot (labels), defaults to `false`.
 
+- `blend::Bool=true`:
+    
+    Blend colors on the underlying canvas, defaults to `true`.
+
 - `margin::Int=3`:
 
     Number of empty characters to the left of the whole plot.
@@ -375,7 +388,7 @@ pixel!(canvas, 5, 8, :red)                 # pixel space
 
 You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
-As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group.
+As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
 
 ![Blending Colors](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/blending.png)
 

@@ -143,6 +143,7 @@ function Plot(
     height::Int = DEFAULT_HEIGHT[],
     border::Symbol = :solid,
     compact::Bool = false,
+    blend::Bool = true,
     xlim = (0, 0),
     ylim = (0, 0),
     margin::Int = 3,
@@ -172,7 +173,7 @@ function Plot(
     p_width = max_x - min_x
     p_height = max_y - min_y
 
-    canvas = C(width, height, visible = width > 0 && height > 0,
+    canvas = C(width, height, blend = blend, visible = width > 0 && height > 0,
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)

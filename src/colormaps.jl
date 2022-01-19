@@ -1403,11 +1403,11 @@ end
 
 function cmapcolor(z, minz, maxz, cmap)
     i = if minz == maxz
-        0
+        1
     else
-        round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+        1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
     end
-    rgb2ansi(cmap[i + 1])
+    rgb2ansi(cmap[i])
 end
 
 function colormap_callback(cmap::Symbol)

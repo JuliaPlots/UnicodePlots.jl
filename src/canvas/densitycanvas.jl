@@ -12,6 +12,7 @@ the canvas can thus draw the density of datapoints.
 mutable struct DensityCanvas <: Canvas
     grid::Array{UInt,2}
     colors::Array{ColorType,2}
+    blend::Bool
     visible::Bool
     pixel_width::Int
     pixel_height::Int
@@ -37,6 +38,7 @@ end
 @inline y_pixel_per_char(::Type{DensityCanvas}) = 2
 
 function DensityCanvas(char_width::Int, char_height::Int;
+                       blend::Bool = true,
                        visible::Bool = true,
                        origin_x::Number = 0.,
                        origin_y::Number = 0.,
@@ -52,7 +54,7 @@ function DensityCanvas(char_width::Int, char_height::Int;
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
     grid = fill(0, char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    DensityCanvas(grid, colors, visible,
+    DensityCanvas(grid, colors, blend, visible,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height),
@@ -74,7 +76,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x,char_y] += 1
     c.max_density = max(c.max_density, c.grid[char_x,char_y])
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color))
+    set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     c
 end
 
