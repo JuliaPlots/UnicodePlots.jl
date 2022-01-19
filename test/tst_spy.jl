@@ -6,8 +6,8 @@
     @test spy(rand(8, 8)).graphics.grid  |> size == (5, 2)
     @test spy(rand(8, 12)).graphics.grid |> size == (6, 2)
     seed!(RNG, 1337)
-    p = @inferred spy(_stable_sprand(RNG, 80, 80, .15), correct_aspect_ratio=true)
-    test_ref("references/spy/corrected_aspect_ratio_80x80_.txt", @show_col(p, :displaysize=>T_SZ))
+    p = @inferred spy(_stable_sprand(RNG, 80, 80, .15), fix_ar=true)
+    test_ref("references/spy/fix_aspect_ratio_80x80_.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "sizing" begin

@@ -3,8 +3,8 @@
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
     seed!(RNG, 1337)
-    p = @inferred heatmap(collect(1:30) * collect(1:30)', correct_aspect_ratio=true)
-    test_ref("references/heatmap/corrected_aspect_ratio_30x30.txt", @show_col(p, :displaysize=>T_SZ))
+    p = @inferred heatmap(collect(1:30) * collect(1:30)', fix_ar=true)
+    test_ref("references/heatmap/fix_aspect_ratio_30x30.txt", @show_col(p, :displaysize=>T_SZ))
 end
 
 @testset "sizing" begin

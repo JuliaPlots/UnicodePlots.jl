@@ -63,7 +63,7 @@ Arguments
 
 - **`labels`** : Can be used to hide the labels by setting `labels=false`.
 
-- **`correct_aspect_ratio`** : Correct for terminal aspect ratio
+- **`fix_ar`** : Fix terminal aspect ratio (experimental)
 
 Returns
 ========
@@ -85,7 +85,7 @@ function heatmap(
     z::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
     out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
     padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true,
-    correct_aspect_ratio::Bool = false, kw...
+    fix_ar::Bool = false, kw...
 )
     nrows = size(z, 1)
     ncols = size(z, 2)
@@ -149,7 +149,7 @@ function heatmap(
     # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
     width, height, max_width, max_height, data_based_ar = get_canvas_dimensions_for_matrix(
         HeatmapCanvas, 2nrows, ncols, max_width, max_height,
-        width, height, margin, padding, out_stream, correct_aspect_ratio
+        width, height, margin, padding, out_stream, fix_ar
     )
 
     if height < 7

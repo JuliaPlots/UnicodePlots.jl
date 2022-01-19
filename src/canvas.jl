@@ -106,7 +106,7 @@ lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :
 function get_canvas_dimensions_for_matrix(
     canvas::Type{T}, nrow::Int, ncol::Int, max_width::Int, max_height::Int,
     width::Int, height::Int, margin::Int, padding::Int, out_stream::Union{Nothing,IO},
-    correct_aspect_ratio::Bool; extra_rows = 0, extra_cols = 0
+    fix_ar::Bool; extra_rows = 0, extra_cols = 0
 ) where {T <: Canvas}
     canv_height = nrow / y_pixel_per_char(T)
     canv_width  = ncol / x_pixel_per_char(T)
@@ -158,7 +158,7 @@ function get_canvas_dimensions_for_matrix(
     end
 
     width  = round(Int, width)
-    height = round(Int, height / (correct_aspect_ratio ? ASPECT_RATIO[] : 1))  # optional terminal aspect ratio (4:3) correction
+    height = round(Int, height / (fix_ar ? ASPECT_RATIO : 1))  # optional terminal aspect ratio (4:3) correction
 
     # the canvas will target a (height, width) grid to represent the input data
     width, height, max_width, max_height, data_based_ar

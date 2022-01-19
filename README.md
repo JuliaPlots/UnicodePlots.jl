@@ -344,7 +344,7 @@ Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or us
 For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.netlify.app/faq/#can_i_use_this_font_in_a_jupyter_notebook_and_how_do_i_do_it).
 
 (Experimental) Terminals seem to respect a standard aspect ratio of `4:3`, hence a square matrix does not often look square in the terminal.
-As a fix, you can pass `correct_aspect_ratio=true` to `spy` or `heatmap` in order to recover a unit aspect ratio.
+You can pass `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio.
 This keyword is experimental and might be unnecessary in future versions.
 
 ## Low-level Interface
