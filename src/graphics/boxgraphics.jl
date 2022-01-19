@@ -10,12 +10,14 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
     color::ColorType
     char_width::Int
+    visible::Bool
     min_x::R
     max_x::R
 
     function BoxplotGraphics{R}(
         data::AbstractVector{R},
         char_width::Int,
+        visible::Bool,
         color::UserColorType,
         min_x::R,
         max_x::R
@@ -33,7 +35,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
                 percentile(data, 75),
                 maximum(data)
             )],
-            crayon_256_color(color), char_width, min_x, max_x
+            crayon_256_color(color), char_width, visible, min_x, max_x
         )
     end
 end
@@ -44,11 +46,12 @@ ncols(c::BoxplotGraphics) = c.char_width
 BoxplotGraphics(
     data::AbstractVector{R},
     char_width::Int;
+    visible::Bool = true,
     color::UserColorType = :green,
     min_x::Number = minimum(data),
     max_x::Number = maximum(data)
 ) where {R <: Number} = BoxplotGraphics{R}(
-    data, char_width, crayon_256_color(color), R(min_x), R(max_x)
+    data, char_width, visible, crayon_256_color(color), R(min_x), R(max_x)
 )
 
 

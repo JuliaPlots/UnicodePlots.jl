@@ -12,6 +12,7 @@ that can individually be manipulated using binary operations.
 struct BrailleCanvas <: Canvas
     grid::Array{Char,2}
     colors::Array{ColorType,2}
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
@@ -35,6 +36,7 @@ end
 @inline y_pixel_per_char(::Type{BrailleCanvas}) = 4
 
 function BrailleCanvas(char_width::Int, char_height::Int;
+                       visible::Bool = true,
                        origin_x::Number = 0.,
                        origin_y::Number = 0.,
                        width::Number  = 1.,
@@ -49,7 +51,7 @@ function BrailleCanvas(char_width::Int, char_height::Int;
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
     grid = fill(Char(0x2800), char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    BrailleCanvas(grid, colors,
+    BrailleCanvas(grid, colors, visible,
                   pixel_width, pixel_height,
                   Float64(origin_x), Float64(origin_y),
                   Float64(width), Float64(height), xscale, yscale)

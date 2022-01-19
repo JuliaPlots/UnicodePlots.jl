@@ -108,6 +108,7 @@ instead.
 struct AsciiCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
+    visible::Bool
     pixel_width::Int
     pixel_height::Int
     origin_x::Float64
