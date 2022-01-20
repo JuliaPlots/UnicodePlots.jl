@@ -1,4 +1,4 @@
-# https://en.wikipedia.org/wiki/Plane_(Unicode)
+# en.wikipedia.org/wiki/Plane_(Unicode)
 const plane0_start = 0x00000
 const plane0_stop = 0x0FFFF
 const plane1_start = 0x10000

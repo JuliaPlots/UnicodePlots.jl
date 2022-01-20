@@ -1,8 +1,7 @@
 """
-    barplot(text, heights; nargs...)
+    barplot(text, heights; kwargs...)
 
-Description
-============
+# Description
 
 Draws a horizontal barplot. It uses the first parameter (`text`)
 to denote the names for the bars, and the second parameter
@@ -12,44 +11,32 @@ using a dictionary `dict`. In that case, the keys will be used as
 the names and the values, which have to be numeric, will be used
 as the heights of the bars.
 
-Usage
-======
+# Usage
 
     barplot(text, heights; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
 
     barplot(dict; kwargs...)
 
-Arguments
-==========
+# Arguments
 
-- **`text`** : The labels / captions of the bars.
+$(arguments(
+    (
+        text = "the labels / captions of the bars",
+        heights = "the values / heights of the bars",
+        dict = "a dictonary in which the keys will be used as `text` and the values will be used as `heights`",
+        xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
+    ); remove = (:xlim, :ylim, :height, :grid), add = (:symbols,),
+))
 
-- **`heights`** : The values / heights of the bars.
+# Returns
 
-- **`dict`** : A dictonary in which the keys will be used
-  as `text` and the values will be utilized as `heights`.
+A plot object of type `Plot{BarplotGraphics}`.
 
-- **`xscale`** : Function or Symbol to transform the bar length before plotting.
-  This effectively scales the x-axis without influencing the captions
-  of the individual bars. e.g. use `xscale = :log10` for logscale.
+# Author(s)
 
-$DOC_PLOT_PARAMS
+- Christof Stocker (github.com/Evizero)
 
-- **`symbols`** : Specifies the characters that should be used to
-  render the bars
-
-Returns
-========
-
-A plot object of type `Plot{BarplotGraphics}`
-
-Author(s)
-==========
-
-- Christof Stocker (Github: https://github.com/Evizero)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> barplot(["Paris", "New York", "Moskau", "Madrid"],
@@ -64,8 +51,7 @@ julia> barplot(["Paris", "New York", "Moskau", "Madrid"],
                        population [in mil]
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`histogram`](@ref), [`BarplotGraphics`](@ref)
 """
@@ -128,7 +114,7 @@ end
 
 
 """
-    barplot!(plot, text, heights) -> plot
+    barplot!(plot, text, heights)
 
 Mutating variant of `barplot`, in which the first parameter
 (`plot`) specifies the existing plot to draw additional bars on.

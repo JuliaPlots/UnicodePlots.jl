@@ -51,7 +51,7 @@ end
 @inline lookup_encode(c::BlockCanvas) = block_signs
 @inline lookup_decode(c::BlockCanvas) = block_decode
 
-BlockCanvas(args...; nargs...) = CreateLookupCanvas(BlockCanvas, args...; nargs...)
+BlockCanvas(args...; kwargs...) = CreateLookupCanvas(BlockCanvas, args...; kwargs...)
 
 function char_point!(c::BlockCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)

@@ -1,61 +1,44 @@
 """
     histogram(data; kwargs...)
 
-Description
-============
+# Description
 
 Draws a horizontal histogram of the given `data`. The positional
 parameter `data` can either be a `StatsBase.Histogram`, or some
-`AbstractArray`. In the later case the `Histogram` will be
-fitted automatically.
+`AbstractArray`. In the later case the `Histogram` will be fitted automatically.
 
 Note internally that `histogram` is a simply wrapper for
-[`barplot`](@ref), which means that it supports the same keyword
-arguments.
+[`barplot`](@ref), which means that it supports the same keyword arguments.
 
-Usage
-======
+# Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
     histogram(hist; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ["▇"])
 
-Arguments
-==========
+# Arguments
 
-- **`x`** : Array of numbers for which the histogram should be computed.
+$(arguments(
+    (
+        x = "array of numbers for which the histogram should be computed",
+        nbins = "approximate number of bins that should be used",
+        closed = "if `:left` (default), the bin intervals are left-closed ``[a, b)``; if `:right`, intervals are right-closed ``(a, b]``",
+        xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
+        hist = "a fitted `StatsBase.Histogram` that should be plotted",
+    ); add = (:symbols,)
+))
 
-- **`nbins`** : The approximate number of bins that should be used.
+# Returns
 
-- **`closed`** : If `:left` (the default), the bin intervals are
-  left-closed ``[a,b)``; if `:right`, intervals are right-closed
-  ``(a,b]``.
+A plot object of type `Plot{BarplotGraphics}`.
 
-- **`hist`** : A fitted `StatsBase.Histogram` that should be plotted.
+# Author(s)
 
-- **`xscale`** : Function or Symbol to transform the bar length before plotting.
-  This effectively scales the x-axis without influencing the captions
-  of the individual bars. e.g. use `xscale = :log10` for logscale.
+- Iain Dunning (github.com/IainNZ)
+- Christof Stocker (github.com/Evizero)
+- Kenta Sato (github.com/bicycle1885)
 
-$DOC_PLOT_PARAMS
-
-- **`symbols`** : Specifies the characters that should be used to
-  render the individual bars.
-
-Returns
-========
-
-A plot object of type `Plot{BarplotGraphics}`
-
-Author(s)
-==========
-
-- Iain Dunning (Github: https://github.com/IainNZ)
-- Christof Stocker (Github: https://github.com/Evizero)
-- Kenta Sato (Github: https://github.com/bicycle1885)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
@@ -77,8 +60,7 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
                                   Frequency
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """

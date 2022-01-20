@@ -126,7 +126,7 @@ end
 @inline lookup_encode(c::AsciiCanvas) = ascii_signs
 @inline lookup_decode(c::AsciiCanvas) = ascii_decode
 
-AsciiCanvas(args...; nargs...) = CreateLookupCanvas(AsciiCanvas, args...; nargs...)
+AsciiCanvas(args...; kwargs...) = CreateLookupCanvas(AsciiCanvas, args...; kwargs...)
 
 function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_x, char_y)

@@ -56,6 +56,7 @@ export
 
     savefig
 
+include("docs.jl")
 include("common.jl")
 
 include("graphics.jl")

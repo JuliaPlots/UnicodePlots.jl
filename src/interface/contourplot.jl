@@ -1,19 +1,19 @@
 """
     contourplot(x, y, A; kwargs...)
 
-Draws a contour plot on a new canvas. `A` can be a `Matrix` or a `Function` evaluated as `f(x, y)`.
+Draws a contour plot on a new canvas.
 
 # Arguments
-- **`levels`** : the number of contour levels. 
-- **`colormap`** : the colormap to use for the contour lines. 
-- **`colorbar`** : toggle the colorbar. 
-$DOC_PLOT_PARAMS
-- **`height`**: number of character rows that should be used for plotting.
-- **`xlim`**: plotting range for the x axis. `(0, 0)` stands for automatic.
-- **`ylim`**: plotting range for the y axis. `(0, 0)` stands for automatic.
-- **`grid`**: if `true`, draws grid-lines at the origin.
+
+$(arguments(
+    (
+        A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
+        levels = "the number of contour levels",
+    ); add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid)
+))
 
 # Author(s)
+
 - T Bltg (github.com/t-bltg)
 """
 function contourplot(

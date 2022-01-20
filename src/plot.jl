@@ -1,48 +1,26 @@
 """
-    Plot(graphics; nargs...)
+    Plot(graphics; kwargs...)
 
-Description
-============
+# Description
 
 Decoration for objects that are `GraphicsArea` (or `Canvas`).
 It is used to surround the inner `GraphicsArea` object with
 additional information such as a title, border, and axis labels.
 
-Usage
-======
+# Usage
 
     Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
 
-    Plot(x, y, canvastype; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, compact = false, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvas; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, compact = false, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
 
-Arguments
-==========
+# Arguments
 
-- **`graphics`** : The `GraphicsArea` (e.g. a subtype of
-  `Canvas`) that the plot should decorate.
+$(arguments(
+    (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
+    add=(:x, :y, :canvas)
+))
 
-- **`x`** : The horizontal position for each point.
-
-- **`y`** : The vertical position for each point.
-
-- **`canvastype`** : The type of canvas that should be used for
-  drawing.
-
-$DOC_PLOT_PARAMS
-
-- **`height`** : Number of character rows that should be used
-  for plotting.
-
-- **`xlim`** : Plotting range for the x axis.
-  `[0, 0]` stands for automatic.
-
-- **`ylim`** : Plotting range for the y axis.
-  `[0, 0]` stands for automatic.
-
-- **`grid`** : If `true`, draws grid-lines at the origin.
-
-Methods
-========
+# Methods
 
 - `title!(plot::Plot, title::String)`
 
@@ -57,12 +35,10 @@ Methods
 - `label!(plot::Plot, where::Symbol, row::Int, value::String)`
 
 Author(s)
-==========
 
-- Christof Stocker (Github: https://github.com/Evizero)
+- Christof Stocker (github.com/Evizero)
 
-see also
-=========
+# See also
 
 [`scatterplot`](@ref), [`lineplot`](@ref),
 [`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
@@ -225,7 +201,7 @@ Alternatively, the title can be changed with `title!`.
 title(plot::Plot) = plot.title
 
 """
-    title!(plot, newtitle) -> plot
+    title!(plot, newtitle)
 
 Sets a new title for the given plot.
 Alternatively, the current title can be
@@ -245,7 +221,7 @@ Alternatively, the x-label can be changed with `xlabel!`
 xlabel(plot::Plot) = plot.xlabel
 
 """
-    xlabel!(plot, newlabel) -> plot
+    xlabel!(plot, newlabel)
 
 Sets a new x-label for the given plot.
 Alternatively, the current label can be
@@ -265,7 +241,7 @@ Alternatively, the y-label can be changed with `ylabel!`
 ylabel(plot::Plot) = plot.ylabel
 
 """
-    ylabel!(plot, newlabel) -> plot
+    ylabel!(plot, newlabel)
 
 Sets a new y-label for the given plot.
 Alternatively, the current label can be
@@ -285,7 +261,7 @@ Alternatively, the z-label can be changed with `zlabel!`
 zlabel(plot::Plot) = plot.zlabel
 
 """
-    zlabel!(plot, newlabel) -> plot
+    zlabel!(plot, newlabel)
 
 Sets a new z-label (colorbar label) for the given plot.
 Alternatively, the current label can be
@@ -301,17 +277,15 @@ end
 
     label!(plot, where, row, value, [color])
 
-This method is responsible for the setting
-all the textual decorations of a plot.
+This method is responsible for the setting all the textual decorations of a plot.
 
 Note that `where` can be any of: `:tl` (top-left),
 `:t` (top-center), `:tr` (top-right),
 `:bl` (bottom-left), `:b` (bottom-center),
 `:br` (bottom-right), `:l` (left), `:r` (right).
 
-If `where` is either `:l`, or `:r`, then `row`
-can be between 1 and the number of character rows
-of the plots canvas.
+If `where` is either `:l`, or `:r`, then `row` can be between 1
+and the number of character rows of the plots canvas.
 """
 function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
     loc ∉ (:t, :b, :l, :r, :tl, :tr, :bl, :br) && throw(
@@ -385,24 +359,15 @@ end
 """
     annotate!(plot, x, y, text; kwargs...)
 
-Description
-============
+# Description
 
 Adds text to the plot at the position `(x, y)`.
 
-Arguments
-==========
+# Arguments
 
-- **`x`** : The horizontal position of the text.
+$(arguments((; text = "a string of text"); default = (), add = (:x, :y, :color)))
 
-- **`y`** : The vertical position of the text.
-
-- **`text`** : A string of text.
-
-- **`color`** : The color of the text.
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> plt = lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot");
@@ -429,8 +394,7 @@ julia> annotate!(plt, 5, 5, "My text")
        ⠀1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀7⠀
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`lineplot`](@ref), [`scatterplot`](@ref),
 [`stairs`](@ref), [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),

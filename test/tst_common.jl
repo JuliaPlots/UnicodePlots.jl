@@ -108,5 +108,7 @@ end
     @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
     @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
     @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
+
+    @test UnicodePlots.arguments() isa String  # coverage
 end
 

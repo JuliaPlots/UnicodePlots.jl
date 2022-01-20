@@ -1,8 +1,7 @@
 """
     spy(A; kwargs...)
 
-Description
-============
+# Description
 
 Plots the sparsity pattern for the given matrix `A`. This means
 that a scatterplot that resembles the matrix is drawn, in which
@@ -11,69 +10,36 @@ only the pixel for non-zero elements of the matrix are set.
 If the parameters `width` and `height` are not explicitly
 specified, then the function will attempt to preserve the aspect
 ratio of the matrix, while also attempting to fit the resulting
-plot withing the bounding box specified by `maxwidth` and
-`maxheight`
+plot withing the bounding box specified by `maxwidth` and `maxheight`.
 
-Usage
-======
+# Usage
 
     spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0, canvas = BrailleCanvas, zeros = false)
 
-Arguments
-==========
+# Arguments
 
-- **`A`** : The matrix of interest for which non-zero elements
-  should be drawn
+$(arguments(
+    (
+        A = "matrix of interest for which non-zero elements should be drawn",
+        maxwidth = "maximum number of characters per row that should be used for plotting",
+        maxheight = "maximum number of character rows that should be used for plotting",
+        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
+        height = "exact number of character rows that should be used for plotting (`0` stands for automatic)",
+        show_zeros = "show zeros pattern instead of default nonzeros",
+    ); add=(:fix_ar, :canvas),
+))
 
-- **`maxwidth`** : Maximum number of characters per row that
-  should be used for plotting
+# Returns
 
-- **`maxheight`** : Maximum number of character rows that should
-  be used for plotting.
+A plot object of type `Plot{T<:Canvas}`.
 
-- **`title`** : Text to display on the top of the plot.
+# Author(s)
 
-- **`labels`** : Boolean. Can be used to hide the labels by
-  setting `labels = false`.
+- Dominique Orban (github.com/dpo)
+- Christof Stocker (github.com/Evizero)
+- Jake Bolewski (github.com/jakebolewski)
 
-- **`border`** : The style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-- **`margin`** : Number of empty characters to the left of the
-  whole plot.
-
-- **`padding`** : Space of the left and right of the plot between
-  the labels and the canvas.
-
-- **`color`** : Color of the drawing.
-  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`,
-  `:magenta`, `:white`, `:normal`.
-
-- **`width`** : Exact number of characters per row that should be
-  used for plotting. `0` stands for automatic.
-
-- **`height`** : Exact number of character rows that should be
-  used for plotting. `0` stands for automatic.
-
-- **`canvas`** : The type of canvas that should be used for drawing.
-
-- **`show_zeros`** : Show zeros pattern instead of default nonzeros.
-
-- **`fix_ar`** : Fix terminal aspect ratio (experimental)
-
-Returns
-========
-
-A plot object of type `Plot{T<:Canvas}`
-
-Author(s)
-==========
-
-- Dominique Orban (Github: https://github.com/dpo)
-- Christof Stocker (Github: https://github.com/Evizero)
-- Jake Bolewski (Github: https://github.com/jakebolewski)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> spy(sprandn(50, 120, .05))
@@ -97,14 +63,12 @@ julia> spy(sprandn(50, 120, .05))
                                nz = 275
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`scatterplot`](@ref),
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-
 function spy(A::AbstractMatrix; kwargs...)
     rows, cols, vals = _strict_non_zeros(_findnz(A)...)
     if get(kwargs, :show_zeros, false)
