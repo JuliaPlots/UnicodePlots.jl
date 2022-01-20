@@ -14,7 +14,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Contour = "0.5"
-Crayons = "4.0"
+Crayons = "4.1"
 StatsBase = "0.32, 0.33"
 julia = "1"
 

@@ -92,7 +92,7 @@ end
     @test UnicodePlots.julia_color(100) == 100
     @test UnicodePlots.julia_color(:red) == :red
     @test UnicodePlots.julia_color(nothing) == :normal
-    @test UnicodePlots.julia_color((50, 100, 150)) == 67
+    @test UnicodePlots.julia_color((0, 135, 95)) == 29
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"
