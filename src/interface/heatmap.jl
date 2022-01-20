@@ -94,10 +94,10 @@ function heatmap(
     # otherwise, start axis labels at zero
     X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xfact
     X .+= xoffset
-    xfact = xfact == 0 ? 1 : xfact
+    xfact == 0 && (xfact = 1)
     Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yfact
     Y .+= yoffset
-    yfact = yfact == 0 ? 1 : yfact
+    yfact == 0 && (yfact = 1)
 
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
@@ -152,12 +152,12 @@ function heatmap(
         width, height, margin, padding, out_stream, fix_ar
     )
 
-    if height < 7
+    colorbar = if height < 7
         # for small plots, don't show colorbar by default
-        colorbar = !noextrema && get(kw, :colorbar, false)
+        !noextrema && get(kw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        colorbar = !noextrema && get(kw, :colorbar, labels)
+        !noextrema && get(kw, :colorbar, labels)
     end
     kw = (; kw..., colorbar=colorbar)
 

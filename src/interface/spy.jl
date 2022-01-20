@@ -180,7 +180,7 @@ function spy(
     label!(plot, :bl, "1", :light_black)
     label!(plot, :br, string(ncol), :light_black)
     haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
-    return plot
+    plot
 end
 
 function _findnz(A::AbstractMatrix)

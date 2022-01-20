@@ -5,6 +5,7 @@ remove_extra_newlines = true
 whitespace_in_kwargs = true
 always_use_return = false
 conditional_to_if = false
+align_struct_field = true
 align_conditional = true
 align_assignment = true
 align_pair_arrow = true

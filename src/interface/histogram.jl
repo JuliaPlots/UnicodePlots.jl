@@ -18,7 +18,7 @@ Usage
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ["▇"])
+    histogram(hist; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ['▇'])
 
 Arguments
 ==========
@@ -85,7 +85,7 @@ See also
 function histogram(
     hist::Histogram;
     symb = nothing,  # deprecated
-    symbols = ["▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"],
+    symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
     xscale = :identity,
     xlabel = transform_name(xscale, "Frequency"),
     kw...

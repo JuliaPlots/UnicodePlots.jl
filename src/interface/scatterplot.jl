@@ -91,8 +91,8 @@ function scatterplot(
     canvas::Type = BrailleCanvas, color::Union{UserColorType,AbstractVector} = :auto,
     marker::Union{MarkerType,AbstractVector} = :pixel, name = "", kw...
 )
-    new_plot = Plot(x, y, canvas; kw...)
-    scatterplot!(new_plot, x, y; color = color, name = name, marker = marker)
+    plot = Plot(x, y, canvas; kw...)
+    scatterplot!(plot, x, y; color = color, name = name, marker = marker)
 end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)

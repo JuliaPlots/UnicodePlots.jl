@@ -111,8 +111,8 @@ function compute_stair_lines(
     style::Symbol
 )
     if style == :post
-        x_vex = similar(X, length(X) * 2 - 1)
-        y_vex = similar(Y, length(X) * 2 - 1)
+        x_vex = similar(X, 2length(X) - 1)
+        y_vex = similar(Y, 2length(X) - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
         o = 0
@@ -125,8 +125,8 @@ function compute_stair_lines(
         end
         return x_vex, y_vex
     elseif style == :pre
-        x_vex = zeros(length(X) * 2 - 1)
-        y_vex = zeros(length(X) * 2 - 1)
+        x_vex = zeros(2length(X) - 1)
+        y_vex = zeros(2length(X) - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
         o = 0

@@ -177,7 +177,7 @@ function Plot(
                origin_x = min_x, origin_y = min_y,
                width = p_width, height = p_height,
                xscale = xscale, yscale = yscale)
-    new_plot = Plot(canvas, title = title, margin = margin, padding = padding,
+    plot = Plot(canvas, title = title, margin = margin, padding = padding,
                     border = border, compact = compact, labels = labels,
                     xlabel = xlabel, ylabel = ylabel, zlabel = zlabel,
                     colormap = colormap, colorbar = colorbar,
@@ -191,28 +191,28 @@ function Plot(
     end
     base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
     base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-    label!(new_plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
-    label!(new_plot, :l, 1, base_y_str * M_y, color = :light_black)
-    label!(new_plot, :bl, base_x_str * m_x, color = :light_black)
-    label!(new_plot, :br, base_x_str * M_x, color = :light_black)
+    label!(plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
+    label!(plot, :l, 1, base_y_str * M_y, color = :light_black)
+    label!(plot, :bl, base_x_str * m_x, color = :light_black)
+    label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
         if min_y < 0 < max_y
             for i in range(min_x, stop=max_x, length=width * x_pixel_per_char(typeof(canvas)))
-                points!(new_plot, i, 0., :normal)
+                points!(plot, i, 0., :normal)
             end
         end
         if min_x < 0 < max_x
             for i in range(min_y, stop=max_y, length=height * y_pixel_per_char(typeof(canvas)))
-                points!(new_plot, 0., i, :normal)
+                points!(plot, 0., i, :normal)
             end
         end
     end
-    new_plot
+    plot
 end
 
 function next_color!(plot::Plot{<:GraphicsArea})
-    cur_color = color_cycle[plot.autocolor + 1]
-    plot.autocolor = ((plot.autocolor + 1) % length(color_cycle))
+    cur_color = COLOR_CYCLE[plot.autocolor + 1]
+    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE))
     cur_color
 end
 
@@ -474,7 +474,7 @@ end
 
 function print_border(
     io::IO, loc::Symbol, length::Int, left_pad::AbstractString, right_pad::AbstractString,
-    bmap = bordermap[:solid], color::UserColorType = :light_black
+    bmap = BORDERMAP[:solid], color::UserColorType = :light_black
 )
     print(io, left_pad)
     print_color(color, io, bmap[Symbol(loc, :l)], repeat(bmap[loc], length), bmap[Symbol(loc, :r)])
@@ -526,7 +526,7 @@ function Base.show(io::IO, p::Plot)
     border_length = ncols(c)
     p_width = border_length + 2  # left corner + border + right corner
 
-    bmap = bordermap[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
+    bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
 
     # get length of largest strings to the left and right
     max_len_l = if p.show_labels && !isempty(p.labels_left)

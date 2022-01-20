@@ -39,18 +39,18 @@ end
 end
 
 @testset "bordermap" begin
-    bmap_keys = keys(UnicodePlots.bordermap)
+    bmap_keys = keys(UnicodePlots.BORDERMAP)
     @test length(bmap_keys) == 9
-    @test haskey(UnicodePlots.bordermap, :none)
-    @test haskey(UnicodePlots.bordermap, :bnone)
-    @test haskey(UnicodePlots.bordermap, :solid)
-    @test haskey(UnicodePlots.bordermap, :corners)
-    @test haskey(UnicodePlots.bordermap, :barplot)
-    @test haskey(UnicodePlots.bordermap, :bold)
-    @test haskey(UnicodePlots.bordermap, :dotted)
-    @test haskey(UnicodePlots.bordermap, :dashed)
-    @test haskey(UnicodePlots.bordermap, :ascii)
-    for (k, v) in zip(bmap_keys, UnicodePlots.bordermap)
+    @test haskey(UnicodePlots.BORDERMAP, :none)
+    @test haskey(UnicodePlots.BORDERMAP, :bnone)
+    @test haskey(UnicodePlots.BORDERMAP, :solid)
+    @test haskey(UnicodePlots.BORDERMAP, :corners)
+    @test haskey(UnicodePlots.BORDERMAP, :barplot)
+    @test haskey(UnicodePlots.BORDERMAP, :bold)
+    @test haskey(UnicodePlots.BORDERMAP, :dotted)
+    @test haskey(UnicodePlots.BORDERMAP, :dashed)
+    @test haskey(UnicodePlots.BORDERMAP, :ascii)
+    for (k, v) in zip(bmap_keys, UnicodePlots.BORDERMAP)
         @test length(keys(v)) == 8
         @test haskey(v, :tl)
         @test haskey(v, :tr)

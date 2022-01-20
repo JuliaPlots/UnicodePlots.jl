@@ -232,7 +232,7 @@ function printcolorbarrow(
     io::IO, c::Canvas, row::Int, colormap::Function, border::Symbol,
     lim, lim_str, plot_padding, zlabel, max_len, blank::Char
 )
-    b = bordermap[border]
+    b = BORDERMAP[border]
     min_z, max_z = lim
     label = ""
     if row == 1

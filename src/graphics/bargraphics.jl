@@ -39,7 +39,7 @@ BarplotGraphics(
     transform = :identity;
     visible::Bool = true,
     color::UserColorType = :green,
-    symbols = ["■"]
+    symbols = ['■']
 ) where {R <: Number} = BarplotGraphics(bars, char_width, visible, crayon_256_color(color), symbols, transform)
 
 function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}) where {R <: Number}
@@ -78,8 +78,7 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
     else
         len = -1
     end
-    pan_len = max(max_bar_width + 1 + g.max_len - bar_head - len, 0)
-    pad = repeat(" ", round(Int, pan_len))
-    print(io, pad)
+    pad_len = max(max_bar_width + 1 + g.max_len - bar_head - len, 0)
+    print(io, repeat(" ", round(Int, pad_len)))
     nothing
 end

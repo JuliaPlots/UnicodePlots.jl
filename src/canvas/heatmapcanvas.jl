@@ -36,16 +36,16 @@ _toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
 
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    y = 2*row
+    y = 2row
+
     # extend the plot upwards by half a row
-    if isodd(size(grid(c), 2))
-        y -= 1
-    end
+    isodd(size(grid(c), 2)) && (y -= 1)
+
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
             fgcol = _toCrayon(c.colors[x, y])
-            if (y - 1) > 0
+            if y > 1
                 bgcol = _toCrayon(c.colors[x, y - 1])
                 print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
             # for odd numbers of rows, only print the foreground for the top row
@@ -56,8 +56,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
             print(io, HALF_BLOCK)
         end
     end
-    if iscolor
-        print(io, Crayon(reset=true))
-    end
+    iscolor && print(io, Crayon(reset=true))
+
     nothing
 end

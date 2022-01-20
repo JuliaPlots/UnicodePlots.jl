@@ -86,8 +86,8 @@ function densityplot(
     x::AbstractVector, y::AbstractVector;
     color::UserColorType = :auto, grid = false, name = "", kw...
 )
-    new_plot = Plot(x, y, DensityCanvas; grid = grid, kw...)
-    scatterplot!(new_plot, x, y; color = color, name = name)
+    plot = Plot(x, y, DensityCanvas; grid = grid, kw...)
+    scatterplot!(plot, x, y; color = color, name = name)
 end
 
 densityplot!(

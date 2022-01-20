@@ -1,4 +1,4 @@
-const den_signs = Ref([" ", "░", "▒", "▓", "█"])
+const den_signs = Ref([' ', '░', '▒', '▓', '█'])
 
 """
 Unlike the `BrailleCanvas`, the density canvas

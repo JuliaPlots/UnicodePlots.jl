@@ -15,7 +15,7 @@ as the heights of the bars.
 Usage
 ======
 
-    barplot(text, heights; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
+    barplot(text, heights; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ['■'])
 
     barplot(dict; kwargs...)
 
@@ -77,7 +77,7 @@ function barplot(
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = out_stream_width(out_stream),
     symb = nothing,  # deprecated
-    symbols = ["■"],
+    symbols = ['■'],
     xscale = :identity,
     xlabel = transform_name(xscale),
     kw...
@@ -111,11 +111,11 @@ function barplot(
         heights, width, xscale;
         color = color, symbols = _handle_deprecated_symb(symb, symbols)
     )
-    new_plot = Plot(area; border = border, xlabel = xlabel, kw...)
+    plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in 1:length(text)
-        label!(new_plot, :l, i, text[i])
+        label!(plot, :l, i, text[i])
     end
-    new_plot
+    plot
 end
 
 barplot(dict::Dict{T,N}; kw...) where {T, N <: Number} = barplot(sorted_keys_values(dict)...; kw...)

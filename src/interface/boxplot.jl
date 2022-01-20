@@ -92,21 +92,21 @@ function boxplot(
         addseries!(area, data[i])
     end
 
-    new_plot = Plot(area; border = border, kw...)
+    plot = Plot(area; border = border, kw...)
 
     mean_x = (min_x + max_x) / 2
     min_x_str = compact_repr(roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x)
     mean_x_str = compact_repr(roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x)
     max_x_str = compact_repr(roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x)
-    label!(new_plot, :bl, min_x_str, color = :light_black)
-    label!(new_plot, :b,  mean_x_str, color = :light_black)
-    label!(new_plot, :br, max_x_str, color = :light_black)
+    label!(plot, :bl, min_x_str, color = :light_black)
+    label!(plot, :b,  mean_x_str, color = :light_black)
+    label!(plot, :br, max_x_str, color = :light_black)
 
     for (i, name) in enumerate(text)
         # Find end of last 3-line region, then add 2 for center of current
-        length(name) > 0 && label!(new_plot, :l, (i-1)*3+2, name)
+        length(name) > 0 && label!(plot, :l, 3(i-1)+2, name)
     end
-    new_plot
+    plot
 end
 
 """

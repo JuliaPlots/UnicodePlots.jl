@@ -103,8 +103,8 @@ function lineplot(
     idx = map(x, y) do i, j
         isfinite(i) && isfinite(j)
     end
-    new_plot = Plot(x[idx], y[idx], canvas; kw...)
-    lineplot!(new_plot, x, y; color = color, name = name, head_tail = head_tail)
+    plot = Plot(x[idx], y[idx], canvas; kw...)
+    lineplot!(plot, x, y; color = color, name = name, head_tail = head_tail)
 end
 
 lineplot(y::AbstractVector; kw...) = lineplot(axes(y, 1), y; kw...)
@@ -143,9 +143,9 @@ function lineplot(
 ) where {D<:TimeType}
     d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
-    new_plot = lineplot(d, y; xlim = dlim, kw...)
-    label!(new_plot, :bl, string(xlim[1]), color = :light_black)
-    label!(new_plot, :br, string(xlim[2]), color = :light_black)
+    plot = lineplot(d, y; xlim = dlim, kw...)
+    label!(plot, :bl, string(xlim[1]), color = :light_black)
+    label!(plot, :br, string(xlim[2]), color = :light_black)
 end
 
 function lineplot!(
@@ -185,7 +185,7 @@ function lineplot(
 )
     y = Float64[f(i) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
-    new_plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
+    plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
 
 function lineplot(
@@ -223,7 +223,7 @@ function lineplot!(
     kw...
 )
     diff = abs(endx - startx)
-    x = startx:(diff/(3*ncols(plot.graphics))):endx
+    x = startx:(diff/(3ncols(plot.graphics))):endx
     lineplot!(plot, f, x; kw...)
 end
 
@@ -261,11 +261,11 @@ function _lineplot(
     name_is_vec  && (length(name)  == n || throw(DimensionMismatch("\"name\" must be a string or same length as the function vector")))
     tcolor = color_is_vec ? color[1] : color
     tname  = name_is_vec  ? name[1]  : name
-    new_plot = lineplot(F[1], args...; color = tcolor, name = tname, kw...)
+    plot = lineplot(F[1], args...; color = tcolor, name = tname, kw...)
     for i = 2:n
         tcolor = color_is_vec ? color[i] : color
         tname  = name_is_vec  ? name[i]  : name
-        lineplot!(new_plot, F[i], args...; color = tcolor, name = tname)
+        lineplot!(plot, F[i], args...; color = tcolor, name = tname)
     end
-    new_plot
+    plot
 end

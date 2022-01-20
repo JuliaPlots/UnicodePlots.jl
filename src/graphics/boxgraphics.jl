@@ -79,13 +79,13 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
 
     series_row = Int((row-1) % 3) + 1
 
-    min_char = ['╷', '├' , '╵'][series_row]
-    line_char = [' ', '─' , ' '][series_row]
-    left_box_char = ['┌', '┤' , '└'][series_row]
-    line_box_char = ['─', ' ' , '─'][series_row]
-    median_char = ['┬', '│' , '┴'][series_row]
-    right_box_char = ['┐', '├' , '┘'][series_row]
-    max_char = ['╷', '┤' , '╵'][series_row]
+    min_char = ('╷', '├' , '╵')[series_row]
+    line_char = (' ', '─' , ' ')[series_row]
+    left_box_char = ('┌', '┤' , '└')[series_row]
+    line_box_char = ('─', ' ' , '─')[series_row]
+    median_char = ('┬', '│' , '┴')[series_row]
+    right_box_char = ('┐', '├' , '┘')[series_row]
+    max_char = ('╷', '┤' , '╵')[series_row]
 
     line = [' ' for _ in 1:c.char_width]
 
