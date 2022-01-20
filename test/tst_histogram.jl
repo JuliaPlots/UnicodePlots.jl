@@ -92,6 +92,6 @@ end
     p = @inferred histogram(x, title = "Gray color", color = 240)
     test_ref("references/histogram/col1.txt", @print_col(p))
 
-    p = @inferred histogram(x, title = "Green color", color = (50, 100, 50))
+    p = @inferred histogram(x, title = "Green color", color = (0, 135, 95))
     test_ref("references/histogram/col2.txt", @print_col(p))
 end
