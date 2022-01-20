@@ -182,9 +182,9 @@ const SUPERSCRIPT = Dict(
 
 const COLOR_CYCLE = [:green, :blue, :red, :magenta, :yellow, :cyan]
 
-const FSCALES = (identity=identity, ln=log, log2=log2, log10=log10)  # forward
-const ISCALES = (identity=identity, ln=exp, log2=exp2, log10=exp10)  # inverse
-const BASES = (identity=nothing, ln="ℯ", log2="2", log10="10")
+const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
+const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
+const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 const MarkerType = Union{Symbol,Char,AbstractString}
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
@@ -227,26 +227,41 @@ function transform_name(tr, basename = "")
 end
 
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
-compact_repr(num::Number) = repr(num, context=:compact => true)
+compact_repr(num::Number) = repr(num, context = :compact => true)
 
-ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+ceil_neg_log10(x) =
+    roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
 round_up_tick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
+    x == 0 ? 0 :
+    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m)))
 )
 round_down_tick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
+    x == 0 ? 0 :
+    (x > 0 ? floor(x, digits = ceil_neg_log10(m)) : -ceil(-x, digits = ceil_neg_log10(m)))
 )
 round_up_subtick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
+    x == 0 ? 0 :
+    (
+        x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
+        -floor(-x, digits = ceil_neg_log10(m) + 1)
+    )
 )
 round_down_subtick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
+    x == 0 ? 0 :
+    (
+        x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
+        -ceil(-x, digits = ceil_neg_log10(m) + 1)
+    )
 )
-float_round_log10(x::F,m) where {F<:AbstractFloat} = (
-    x == 0 ? F(0) : (x  > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
+float_round_log10(x::F, m) where {F<:AbstractFloat} = (
+    x == 0 ? F(0) :
+    (
+        x > 0 ? round(x, digits = ceil_neg_log10(m) + 1)::F :
+        -round(-x, digits = ceil_neg_log10(m) + 1)::F
+    )
 )
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
-float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
+float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 
 function superscript(s::AbstractString)
     v = collect(s)
@@ -289,22 +304,21 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
     end
 end
 
-sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])
+sort_by_keys(dict::Dict) = sort!(collect(dict), by = x -> x[1])
 
-function sorted_keys_values(dict::Dict; k2s=true)
+function sorted_keys_values(dict::Dict; k2s = true)
     if k2s  # check and force key type to be of AbstractString type if necessary
         kt, vt = eltype(dict).types
         if !(kt <: AbstractString)
-            dict = Dict(string(k) => v  for (k, v) in pairs(dict))
+            dict = Dict(string(k) => v for (k, v) in pairs(dict))
         end
     end
     keys_vals = sort_by_keys(dict)
     first.(keys_vals), last.(keys_vals)
 end
 
-print_color(color::UserColorType, io::IO, args...) = printstyled(
-    io, string(args...); color = julia_color(color)
-)
+print_color(color::UserColorType, io::IO, args...) =
+    printstyled(io, string(args...); color = julia_color(color))
 
 function crayon_256_color(color::UserColorType)::ColorType
     color in (:normal, :default, :nothing, nothing) && return nothing
@@ -322,7 +336,13 @@ julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
 julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
-@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType, blend::Bool)
+@inline function set_color!(
+    colors::Array{ColorType,2},
+    x::Int,
+    y::Int,
+    color::ColorType,
+    blend::Bool,
+)
     if color === nothing || colors[x, y] === nothing || !blend
         colors[x, y] = color
     else
@@ -331,7 +351,8 @@ julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
     nothing
 end
 
-out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
+out_stream_size(out_stream::Union{Nothing,IO}) =
+    out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
 out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
 out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
 
@@ -339,7 +360,10 @@ function _handle_deprecated_symb(symb, symbols)
     if symb === nothing
         symbols
     else
-        Base.depwarn("The keyword `symb` is deprecated in favor of `symbols`", :BarplotGraphics)
+        Base.depwarn(
+            "The keyword `symb` is deprecated in favor of `symbols`",
+            :BarplotGraphics,
+        )
         [symb]
     end
 end

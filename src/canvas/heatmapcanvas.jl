@@ -29,7 +29,11 @@ const HALF_BLOCK = '▄'
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
 HeatmapCanvas(args...; kwargs...) = CreateLookupCanvas(
-    HeatmapCanvas, args...; min_char_width=1, min_char_height=1, kwargs...
+    HeatmapCanvas,
+    args...;
+    min_char_width = 1,
+    min_char_height = 1,
+    kwargs...,
 )
 
 _toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
@@ -47,16 +51,16 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
             fgcol = _toCrayon(c.colors[x, y])
             if y > 1
                 bgcol = _toCrayon(c.colors[x, y - 1])
-                print(io, Crayon(foreground=fgcol, background=bgcol), HALF_BLOCK)
-            # for odd numbers of rows, only print the foreground for the top row
+                print(io, Crayon(foreground = fgcol, background = bgcol), HALF_BLOCK)
+                # for odd numbers of rows, only print the foreground for the top row
             else
-                print(io, Crayon(foreground=fgcol), HALF_BLOCK)
+                print(io, Crayon(foreground = fgcol), HALF_BLOCK)
             end
         else
             print(io, HALF_BLOCK)
         end
     end
-    iscolor && print(io, Crayon(reset=true))
+    iscolor && print(io, Crayon(reset = true))
 
     nothing
 end

@@ -109,7 +109,8 @@ function spy(A::AbstractMatrix; kwargs...)
     rows, cols, vals = _strict_non_zeros(_findnz(A)...)
     if get(kwargs, :show_zeros, false)
         I = CartesianIndex.(zip(rows, cols))  # non zeros
-        mask = trues(size(A)); mask[I] .= false
+        mask = trues(size(A))
+        mask[I] .= false
         Z = CartesianIndices(axes(A))[mask]  # zeros
         rows, cols = getindex.(Z, 1), getindex.(Z, 2)
         vals = zeros(eltype(vals), length(rows))
@@ -129,30 +130,43 @@ function spy(
     rows::AbstractArray{<:Integer},
     cols::AbstractArray{<:Integer},
     vals::AbstractArray;
-    maxwidth::Int  = 0,
+    maxwidth::Int = 0,
     maxheight::Int = 0,
     title = "Sparsity Pattern",
     out_stream::Union{Nothing,IO} = nothing,
-    width::Int  = 0,
+    width::Int = 0,
     height::Int = 0,
-    margin::Int  = 3,
+    margin::Int = 3,
     padding::Int = 1,
     color::UserColorType = :auto,
     canvas::Type{T} = BrailleCanvas,
     show_zeros::Bool = false,
     fix_ar::Bool = false,
-    kw...
-) where {T <: Canvas}
+    kw...,
+) where {T<:Canvas}
     if color == :automatic
-        Base.depwarn("`color = :automatic` is deprecated, use `color = :auto` instead", :spy)
+        Base.depwarn(
+            "`color = :automatic` is deprecated, use `color = :auto` instead",
+            :spy,
+        )
         color = :auto
     end
     width, height = get_canvas_dimensions_for_matrix(
-        canvas, nrow, ncol, maxwidth, maxheight,
-        width, height, margin, padding, out_stream, fix_ar;
-        extra_rows = 9, extra_cols = 6
+        canvas,
+        nrow,
+        ncol,
+        maxwidth,
+        maxheight,
+        width,
+        height,
+        margin,
+        padding,
+        out_stream,
+        fix_ar;
+        extra_rows = 9,
+        extra_cols = 6,
     )
-    can = T(width, height, width  = 1. + ncol, height = 1. + nrow)
+    can = T(width, height, width = 1.0 + ncol, height = 1.0 + nrow)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto
@@ -179,7 +193,8 @@ function spy(
     label!(plot, :l, nrows(plot.graphics), string(nrow), :light_black)
     label!(plot, :bl, "1", :light_black)
     label!(plot, :br, string(ncol), :light_black)
-    haskey(kw, :xlabel) || xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
+    haskey(kw, :xlabel) ||
+        xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
     plot
 end
 

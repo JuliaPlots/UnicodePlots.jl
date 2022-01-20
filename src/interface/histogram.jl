@@ -88,7 +88,7 @@ function histogram(
     symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
     xscale = :identity,
     xlabel = transform_name(xscale, "Frequency"),
-    kw...
+    kw...,
 )
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
@@ -99,7 +99,7 @@ function histogram(
     for i in 1:length(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
-        val2 = float_round_log10(val1+binwidth, binwidth)
+        val2 = float_round_log10(val1 + binwidth, binwidth)
         a1 = Base.alignment(IOBuffer(), val1)
         a2 = Base.alignment(IOBuffer(), val2)
         pad_left = max(pad_left, a1[1], a2[1])
@@ -111,11 +111,13 @@ function histogram(
     for i in 1:length(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
-        val2 = float_round_log10(val1+binwidth, binwidth)
+        val2 = float_round_log10(val1 + binwidth, binwidth)
         a1 = Base.alignment(IOBuffer(), val1)
         a2 = Base.alignment(IOBuffer(), val2)
         labels[i] =
-            "\e[90m" * l_str * "\e[0m" *
+            "\e[90m" *
+            l_str *
+            "\e[0m" *
             repeat(" ", pad_left - a1[1]) *
             string(val1) *
             repeat(" ", pad_right - a1[2]) *
@@ -123,20 +125,28 @@ function histogram(
             repeat(" ", pad_left - a2[1]) *
             string(val2) *
             repeat(" ", pad_right - a2[2]) *
-            "\e[90m" * r_str * "\e[0m"
+            "\e[90m" *
+            r_str *
+            "\e[0m"
     end
     barplot(
-        labels, counts;
+        labels,
+        counts;
         symbols = _handle_deprecated_symb(symb, symbols),
-        xlabel = xlabel, xscale = xscale, kw...
+        xlabel = xlabel,
+        xscale = xscale,
+        kw...,
     )
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
     singleton_dims = Tuple([i for i in 1:ndims(x) if size(x, i) == 1])
-    x_plot = dropdims(x, dims=singleton_dims)
+    x_plot = dropdims(x, dims = singleton_dims)
     if bins !== nothing
-        Base.depwarn("The keyword parameter `bins` is deprecated, use `nbins` instead", :histogram)
+        Base.depwarn(
+            "The keyword parameter `bins` is deprecated, use `nbins` instead",
+            :histogram,
+        )
         hist = fit(Histogram, x_plot; nbins = bins, closed = closed)
     else
         hargs = filter(p -> p.first == :nbins, kw)
