@@ -17,16 +17,28 @@ $(arguments(
 - T Bltg (github.com/t-bltg)
 """
 function contourplot(
-    x::AbstractVector, y::AbstractVector, A::Union{Function,AbstractMatrix};
-    canvas::Type = BrailleCanvas, name::AbstractString = "", levels::Integer = 3, colormap = :viridis,
-    blend = false, grid = false, colorbar = true, kw...
-)   
+    x::AbstractVector,
+    y::AbstractVector,
+    A::Union{Function,AbstractMatrix};
+    canvas::Type = BrailleCanvas,
+    name::AbstractString = "",
+    levels::Integer = 3,
+    colormap = :viridis,
+    blend = false,
+    grid = false,
+    colorbar = true,
+    kw...,
+)
     callback = colormap_callback(colormap)
     plot = Plot(
         extrema(x) |> collect,
-        extrema(y) |> collect, canvas;
-        blend = blend, grid = grid, colorbar = colorbar, colormap = callback,
-        kw...
+        extrema(y) |> collect,
+        canvas;
+        blend = blend,
+        grid = grid,
+        colorbar = colorbar,
+        colormap = callback,
+        kw...,
     )
     if A isa Function
         X = repeat(x', length(y), 1)
@@ -37,8 +49,13 @@ function contourplot(
 end
 
 function contourplot!(
-    plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector, A::AbstractMatrix;
-    name::AbstractString = "", levels::Integer = 3, colormap = :viridis, 
+    plot::Plot{<:Canvas},
+    x::AbstractVector,
+    y::AbstractVector,
+    A::AbstractMatrix;
+    name::AbstractString = "",
+    levels::Integer = 3,
+    colormap = :viridis,
 )
     name == "" || label!(plot, :r, string(name))
 
@@ -49,7 +66,7 @@ function contourplot!(
         color = callback(Contour.level(cl), mA, MA)
         for line in Contour.lines(cl)
             yi, xi = Contour.coordinates(line)
-            lineplot!(plot, xi, yi, color=color)
+            lineplot!(plot, xi, yi, color = color)
         end
     end
     plot
@@ -75,4 +92,4 @@ axes(A, 1) │            │ y │
 ```
 """
 contourplot(A::AbstractMatrix; kwargs...) =
-    contourplot(axes(A, 2) |> collect, axes(A, 1) |> collect |> reverse, A; kwargs...)
+    contourplot(axes(A, 2) |> collect, axes(A, 1) |> reverse |> collect, A; kwargs...)

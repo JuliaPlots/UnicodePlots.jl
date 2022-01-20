@@ -1,4 +1,4 @@
-const den_signs = Ref([" ", "░", "▒", "▓", "█"])
+const den_signs = Ref([' ', '░', '▒', '▓', '█'])
 
 """
 Unlike the `BrailleCanvas`, the density canvas
@@ -37,15 +37,18 @@ end
 @inline x_pixel_per_char(::Type{DensityCanvas}) = 1
 @inline y_pixel_per_char(::Type{DensityCanvas}) = 2
 
-function DensityCanvas(char_width::Int, char_height::Int;
-                       blend::Bool = true,
-                       visible::Bool = true,
-                       origin_x::Number = 0.,
-                       origin_y::Number = 0.,
-                       width::Number = 1.,
-                       height::Number = 1.,
-                       xscale::Union{Symbol,Function} = :identity,
-                       yscale::Union{Symbol,Function} = :identity)
+function DensityCanvas(
+    char_width::Int,
+    char_height::Int;
+    blend::Bool = true,
+    visible::Bool = true,
+    origin_x::Number = 0.0,
+    origin_y::Number = 0.0,
+    width::Number = 1.0,
+    height::Number = 1.0,
+    xscale::Union{Symbol,Function} = :identity,
+    yscale::Union{Symbol,Function} = :identity,
+)
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
     char_width = max(char_width, 5)
@@ -54,11 +57,21 @@ function DensityCanvas(char_width::Int, char_height::Int;
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
     grid = fill(0, char_width, char_height)
     colors = fill(nothing, char_width, char_height)
-    DensityCanvas(grid, colors, blend, visible,
-                  pixel_width, pixel_height,
-                  Float64(origin_x), Float64(origin_y),
-                  Float64(width), Float64(height),
-                  xscale, yscale, 1)
+    DensityCanvas(
+        grid,
+        colors,
+        blend,
+        visible,
+        pixel_width,
+        pixel_height,
+        Float64(origin_x),
+        Float64(origin_y),
+        Float64(width),
+        Float64(height),
+        xscale,
+        yscale,
+        1,
+    )
 end
 
 function pixel_to_char_point(c::DensityCanvas, pixel_x::Number, pixel_y::Number)
@@ -74,8 +87,8 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     0 <= pixel_x <= c.pixel_width || return c
     0 <= pixel_y <= c.pixel_height || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
-    c.grid[char_x,char_y] += 1
-    c.max_density = max(c.max_density, c.grid[char_x,char_y])
+    c.grid[char_x, char_y] += 1
+    c.max_density = max(c.max_density, c.grid[char_x, char_y])
     set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     c
 end
@@ -87,8 +100,8 @@ function printrow(io::IO, c::DensityCanvas, row::Int)
     den_sign_count = length(signs)
     val_scale = (den_sign_count - 1) / c.max_density
     for x in 1:ncols(c)
-        den_index = round(Int, c.grid[x,y] * val_scale, RoundNearestTiesUp) + 1
-        print_color(c.colors[x,y], io, signs[den_index])
+        den_index = round(Int, c.grid[x, y] * val_scale, RoundNearestTiesUp) + 1
+        print_color(c.colors[x, y], io, signs[den_index])
     end
     nothing
 end

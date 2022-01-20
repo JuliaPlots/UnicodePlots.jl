@@ -50,12 +50,12 @@ function heatmap(
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols-1)) .* xfact
+    X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols - 1)) .* xfact
     X .+= xoffset
-    xfact = xfact == 0 ? 1 : xfact
-    Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows-1)) .* yfact
+    xfact == 0 && (xfact = 1)
+    Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows - 1)) .* yfact
     Y .+= yoffset
-    yfact = yfact == 0 ? 1 : yfact
+    yfact == 0 && (yfact = 1)
 
     # set the axis limits automatically
     if xlim == (0, 0) && length(X) > 0
@@ -106,35 +106,55 @@ function heatmap(
 
     # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
     width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
-        HeatmapCanvas, 2nrows, ncols, max_width, max_height,
-        width, height, margin, padding, out_stream, fix_ar
+        HeatmapCanvas,
+        2nrows,
+        ncols,
+        max_width,
+        max_height,
+        width,
+        height,
+        margin,
+        padding,
+        out_stream,
+        fix_ar,
     )
 
-    if height < 7
+    colorbar = if height < 7
         # for small plots, don't show colorbar by default
-        colorbar = !noextrema && get(kw, :colorbar, false)
+        !noextrema && get(kw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        colorbar = !noextrema && get(kw, :colorbar, labels)
+        !noextrema && get(kw, :colorbar, labels)
     end
-    kw = (; kw..., colorbar=colorbar)
+    kw = (; kw..., colorbar = colorbar)
 
     xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
     ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
     plot = Plot(
-        xs, ys, HeatmapCanvas;
-        grid = false, colormap = callback, colorbar = colorbar, colorbar_lim = (minz, maxz),
-        ylim = ylim, xlim = xlim, labels = labels, width = width, height = height,
-        min_width = 1, min_height = 1, kw...
+        xs,
+        ys,
+        HeatmapCanvas;
+        grid = false,
+        colormap = callback,
+        colorbar = colorbar,
+        colorbar_lim = (minz, maxz),
+        ylim = ylim,
+        xlim = xlim,
+        labels = labels,
+        width = width,
+        height = height,
+        min_width = 1,
+        min_height = 1,
+        kw...,
     )
 
-    for row = 1:length(Y)
-        points!(plot,
+    for row in 1:length(Y)
+        points!(
+            plot,
             X,
             fill(Y[row], length(X)),
-            UserColorType[callback(v, minz, maxz) for v in A[row, :]]
+            UserColorType[callback(v, minz, maxz) for v in A[row, :]],
         )
     end
     plot
 end
-
