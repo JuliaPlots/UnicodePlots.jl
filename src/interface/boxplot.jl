@@ -18,7 +18,7 @@ used as the labels.
 
 # Usage
     
-    boxplot([text], data; $(signature_kwargs(DEFAULT_KWARGS; add = ("color = :green",), remove = (:ylim, :height, :grid)))
+    boxplot([text], data; $(signature_kwargs((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
 
     boxplot(dict; kwargs...)
 
@@ -29,7 +29,7 @@ $(arguments(
         text = "the labels/captions of the boxes (optional)",
         data = "a vector of vectors, with each inner vector representing a data series (choose a vector of vectors over a matrix to allow series of different lengths)",
         dict = "a dictonary in which the keys will be used as `text` and the values will be used as `data`",
-    ); remove = (:ylim, :height, :grid)
+    ); remove = (:ylim, :yscale, :height, :grid)
 ))
 
 # Returns

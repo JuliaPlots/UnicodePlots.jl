@@ -13,7 +13,7 @@ ordering.
 
 # Usage
 
-    densityplot(x, y; $(signature_kwargs(DEFAULT_KWARGS); remove = (:grid,))
+    densityplot(x, y; $(signature_kwargs(; remove = (:grid,))))
 
 # Arguments
 
@@ -21,7 +21,7 @@ $(arguments(; add = (:x, :y), remove = (:grid,)))
 
 # Returns
 
-A plot object of type `Plot{DensityCanvas}`
+A plot object of type `Plot{DensityCanvas}`.
 
 # Author(s)
 

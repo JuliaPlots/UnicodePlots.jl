@@ -13,7 +13,7 @@ as the heights of the bars.
 
 # Usage
     
-    barplot(text, heights; $(signature_kwargs(("color = :green",), remove = (:xlim, :ylim, :height, :grid), add = (:symbols, ))))
+    barplot(text, heights; $(signature_kwargs((border = :barplot, color = :green,), remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,))))
 
     barplot(dict; kwargs...)
 
@@ -25,7 +25,7 @@ $(arguments(
         heights = "the values / heights of the bars",
         dict = "a dictonary in which the keys will be used as `text` and the values will be used as `heights`",
         xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
-    ); remove = (:xlim, :ylim, :height, :grid), add = (:symbols,),
+    ); remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,),
 ))
 
 # Returns

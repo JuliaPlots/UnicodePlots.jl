@@ -9,11 +9,7 @@ as x and y coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; title = "", out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0,
-            xlabel = "", ylabel = "", zlabel = "", labels = true,
-            border = :solid, colormap = :viridis, colorbar_border = :solid, colorbar = :true,
-            xfact = 0, yfact = 0, xlim = (0, 0), ylim = (0, 0), zlim = (0, 0),
-            xoffset = 0.0, yoffset = 0.0, margin = 3, padding = 1)
+    heatmap(A::AbstractMatrix; $(signature_kwargs((width = 0, height = 0, xfact = 0, yfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
 
 # Arguments
 
@@ -40,10 +36,23 @@ A plot object of type `Plot{HeatmapCanvas}`.
 `Plot`, `scatterplot`, `HeatmapCanvas`
 """
 function heatmap(
-    A::AbstractMatrix; xlim = (0, 0), ylim = (0, 0), zlim = (0, 0), xoffset = 0., yoffset = 0.,
-    out_stream::Union{Nothing,IO} = nothing, width::Int = 0, height::Int = 0, margin::Int = 3,
-    padding::Int = 1, colormap=:viridis, xfact=0, yfact=0, labels = true,
-    fix_ar::Bool = false, kw...
+    A::AbstractMatrix;
+    xlim = (0, 0),
+    ylim = (0, 0),
+    zlim = (0, 0),
+    xoffset = 0.0,
+    yoffset = 0.0,
+    out_stream::Union{Nothing,IO} = nothing,
+    width::Int = 0,
+    height::Int = 0,
+    margin::Int = 3,
+    padding::Int = 1,
+    colormap = :viridis,
+    xfact = 0,
+    yfact = 0,
+    labels = true,
+    fix_ar::Bool = false,
+    kw...,
 )
     nrows = size(A, 1)
     ncols = size(A, 2)
@@ -86,7 +95,8 @@ function heatmap(
     catch
     end
     if zlim != (0, 0)
-        noextrema && throw(ArgumentError("zlim cannot be set when the element type is $(eltype(A))"))
+        noextrema &&
+            throw(ArgumentError("zlim cannot be set when the element type is $(eltype(A))"))
         minz, maxz = zlim
     end
 

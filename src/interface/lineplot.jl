@@ -11,7 +11,7 @@ This means that the two vectors must be of the same length and ordering.
 
 # Usage
 
-    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = out_stream_width(out_stream), xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    lineplot([x], y; $(signature_kwargs(; add = (:canvas,)))
 
     lineplot(fun, [start], [stop]; kwargs...)
 

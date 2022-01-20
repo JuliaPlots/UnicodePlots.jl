@@ -9,15 +9,15 @@ additional information such as a title, border, and axis labels.
 
 # Usage
 
-    Plot(graphics; title = "", xlabel = "", ylabel = "", border = :solid, margin = 3, padding = 1, labels = true)
+    Plot(graphics; $(signature_kwargs(; default = (), add = (:title, :xlabel, :ylabel, :zlabel, :border, :margin, :padding, :compact, :labels))))
 
-    Plot(x, y, canvas; title = "", xlabel = "", ylabel = "", width = 40, height = 15, border = :solid, compact = false, xlim = (0, 0), ylim = (0, 0), margin = 3, padding = 1, labels = true, grid = true)
+    Plot(x, y, canvas; $(signature_kwargs()))
 
 # Arguments
 
 $(arguments(
     (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
-    add=(:x, :y, :canvas)
+    add = (:x, :y, :canvas)
 ))
 
 # Methods

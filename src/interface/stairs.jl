@@ -12,7 +12,7 @@ This means that the two vectors must be of the same length and ordering.
 
 # Usage
 
-    stairs(x, y; style = :post, name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    stairs(x, y; $(signature_kwargs((style = :post,); add = (:canvas,))))
 
 # Arguments
 

@@ -3,9 +3,9 @@
 
 # Description
 
-Draws a horizontal histogram of the given `data`. The positional
-parameter `data` can either be a `StatsBase.Histogram`, or some
-`AbstractArray`. In the later case the `Histogram` will be fitted automatically.
+Draws a horizontal histogram of the given `data`.
+The positional parameter `data` can either be a `StatsBase.Histogram`, or some `AbstractArray`.
+In the later case the `Histogram` will be fitted automatically.
 
 Note internally that `histogram` is a simply wrapper for
 [`barplot`](@ref), which means that it supports the same keyword arguments.
@@ -14,7 +14,7 @@ Note internally that `histogram` is a simply wrapper for
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = 40, symbols = ['▇'])
+    histogram(hist; $(signature_kwargs((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
 
 # Arguments
 

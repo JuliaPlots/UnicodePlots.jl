@@ -144,7 +144,7 @@ const SUPERSCRIPT = Dict(
 )
 #! format: on
 
-const COLOR_CYCLE = [:green, :blue, :red, :magenta, :yellow, :cyan]
+const COLOR_CYCLE = (:green, :blue, :red, :magenta, :yellow, :cyan)
 
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse

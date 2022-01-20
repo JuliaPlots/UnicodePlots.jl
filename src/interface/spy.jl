@@ -14,7 +14,7 @@ plot withing the bounding box specified by `maxwidth` and `maxheight`.
 
 # Usage
 
-    spy(A; maxwidth = 70, maxheight = 40, title = "Sparsity Pattern", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = 0, height = 0, canvas = BrailleCanvas, zeros = false)
+    spy(A; $(signature_kwargs((maxwidth = 0, maxheight = 0, title = "Sparsity Pattern", zeros = false); add=(:fix_ar, :canvas))))
 
 # Arguments
 

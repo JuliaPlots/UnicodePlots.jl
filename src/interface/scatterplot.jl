@@ -12,7 +12,7 @@ This means that the two vectors must be of the same length and ordering.
 
 # Usage
 
-    scatterplot([x], y; name = "", marker = :pixel, title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    scatterplot([x], y; $(signature_kwargs(; add = (:canvas,)))
 
 # Arguments
 

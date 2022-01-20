@@ -22,111 +22,98 @@ const DESCRIPTION = (
     zlim = "colormap scaled data range (`(0, 0)` stands for automatic)",
     colorbar = "toggle the colorbar",
     colormap = "choose from `:viridis`, `:plasma`, `:magma`, `:inferno`, `:cividis`, `:jet`, `:gray` (more from `keys(UnicodePlots.COLOR_MAP_DATA)`), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples",
-    colorbar_lim = "colorbar limit, defaults to `(0, 1)`",
+    colorbar_lim = "colorbar limit (defaults to `(0, 1)`)",
     colorbar_border = "style of the bounding box of the color bar (supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`)",
     canvas = "type of canvas that should be used for drawing",
     grid = "if `true`, draws grid-lines at the origin",
-    compact = "compact plot (labels), defaults to `false`",
-    blend = "blend colors on the underlying canvas, defaults to `true`",
+    compact = "compact plot labels (defaults to `false`)",
+    unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1` (defaults to `false`)",
+    blend = "blend colors on the underlying canvas (defaults to `true`)",
     fix_ar = "fix terminal aspect ratio (experimental)",
-    visible = "visible canvas (`true` by default)",
+    visible = "visible canvas (defaults to `true`)",
 )
 
-const Z_DESCRIPTION = (
-    :zlabel,
-    :zlim,
-    :colorbar,
-    :colormap,
-    :colorbar_lim,
-    :colorbar_border,
-)
+const Z_DESCRIPTION =
+    (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
 
 const SIGNATURE = (
     name = "\"\"",
     title = "\"\"",
-    xscale = ":identity",
-    yscale = ":identity",
-    title = "\"\"",
     xlabel = "\"\"",
     ylabel = "\"\"",
     zlabel = "\"\"",
-    labels = "true",
-    border = ":solid",
-    margin = "3",
-    padding = "1",
-    color = ":green",
-    symbols = "['■']",
-    width = "$(DEFAULT_WIDTH[])",
-    height = "$(DEFAULT_HEIGHT[])",
-    xlim = "(0, 0)",
-    ylim = "(0, 0)",
-    grid = "true",
+    xscale = :identity,
+    yscale = :identity,
+    labels = true,
+    border = :solid,
+    width = DEFAULT_WIDTH[],
+    height = DEFAULT_HEIGHT[],
+    xlim = (0, 0),
+    ylim = (0, 0),
+    zlim = (0, 0),
+    margin = 3,
+    padding = 1,
+    color = :green,
+    symbols = ['■'],
+    colorbar_lim = (0, 1),
+    colorbar_border = :solid,
+    colormap = :viridis,
+    colorbar = false,
+    unicode_exponent = false,
+    compact = false,
+    blend = true,
+    grid = true,
+)
+
+const DEFAULT_KWARGS = (
+    # does not have to stay ordered
+    :name,
+    :title,
+    :xlabel,
+    :ylabel,
+    :zlabel,
+    :xscale,
+    :yscale,
+    :labels,
+    :border,
+    :width,
+    :height,
+    :xlim,
+    :ylim,
+    :zlim,
+    :unicode_exponent,
+    :compact,
+    :blend,
+    :grid,
+    :padding,
+    :margin,
 )
 
 function signature_kwargs(
-    ;
-    default::Tuple = (
-        # does not have to stay ordered
-        :name,
-        :title,
-        :xlabel,
-        :ylabel,
-        :zlabel,
-        :xscale,
-        :yscale,
-        :labels,
-        :border,
-        :width,
-        :height,
-        :xlim,
-        :ylim,
-        :zlim,
-        :compact,
-        :grid,
-        :margin,
-        :padding,
-        :blend,
-    ),
+    mod::NamedTuple = NamedTuple();
+    default::Tuple = DEFAULT_KWARGS,
     add::Tuple = (),
     exclude::Tuple = (
-        :visible, :fix_ar,  # internals
+        :visible,
+        :fix_ar,  # internals
         Z_DESCRIPTION...,  # by default for 2D data
     ),
     remove::Tuple = (),
 )
+    stringify(a) = a isa Symbol ? a : a |> string
     sig = (; SIGNATURE..., mod...)
-    candidates = keys(desc) ∪ filter(x -> x ∈ add ∪ default, keys(SIGNATURE))
+    candidates = keys(mod) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KWARGS)
     keywords = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
-    join((k isa Symbol ? "$k = $(sig[k])" : k for k in keywords), ", ")
+    join((k isa Symbol ? "$k = $(sig[k] |> stringify)" : k for k in keywords), ", ")
 end
 
 function arguments(
     desc::NamedTuple = NamedTuple();
-    default::Tuple = (
-        # does not have to stay ordered
-        :name,
-        :title,
-        :xlabel,
-        :ylabel,
-        :zlabel,
-        :xscale,
-        :yscale,
-        :labels,
-        :border,
-        :width,
-        :height,
-        :xlim,
-        :ylim,
-        :zlim,
-        :compact,
-        :grid,
-        :margin,
-        :padding,
-        :blend,
-    ),
+    default::Tuple = DEFAULT_KWARGS,
     add::Tuple = (),
     exclude::Tuple = (
-        :visible, :fix_ar,  # internals
+        :visible,
+        :fix_ar,  # internals
         Z_DESCRIPTION...,  # by default for 2D data
     ),
     remove::Tuple = (),
@@ -141,5 +128,5 @@ function arguments(
     candidates = keys(desc) ∪ filter(x -> x ∈ add ∪ default, keys(DESCRIPTION))  # desc goes first !
     keywords = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(keywords)  # extra check
-    join(("- **`$k`** : $(get_description(k, all_desc))." for k ∈ keywords), '\n')
+    join(("- **`$k`** : $(get_description(k, all_desc))." for k in keywords), '\n')
 end
