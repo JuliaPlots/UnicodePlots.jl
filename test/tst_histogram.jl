@@ -1,7 +1,9 @@
 seed!(RNG, 1337)
 x = randn(RNG, 10000)
 
-struct Scale{T} r::T end
+struct Scale{T}
+    r::T
+end
 (f::Scale)(x) = f.r * x  # functor
 
 @testset "default params" begin
@@ -13,9 +15,9 @@ struct Scale{T} r::T end
     hist = fit(Histogram, x, closed = :left)
     p = @inferred histogram(hist)
     test_ref("references/histogram/default.txt", @print_col(p))
-    p = @inferred histogram(x*100)
+    p = @inferred histogram(x * 100)
     test_ref("references/histogram/default_1e2.txt", @print_col(p))
-    p = @inferred histogram(x*0.01)
+    p = @inferred histogram(x * 0.01)
     test_ref("references/histogram/default_1e-2.txt", @print_col(p))
     p = @inferred histogram(x, xscale = :log10)
     test_ref("references/histogram/log10.txt", @print_col(p))
@@ -23,14 +25,14 @@ struct Scale{T} r::T end
     test_ref("references/histogram/functor.txt", @print_col(p))
     p = @inferred histogram(x, xlabel = "custom label", xscale = :log10)
     test_ref("references/histogram/log10_label.txt", @print_col(p))
-    p = @inferred histogram([0.1f0, 0.1f0, 0f0])
+    p = @inferred histogram([0.1f0, 0.1f0, 0.0f0])
     test_ref("references/histogram/float32.txt", @print_col(p))
     p = @inferred histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
     test_ref("references/histogram/nonuniformbins.txt", @print_col(p))
     x2 = copy(reshape(x, (1, length(x), 1, 1)))
     p = @inferred Plot histogram(x2)
     test_ref("references/histogram/default.txt", @print_col(p))
-    p = @inferred histogram(Histogram(1:15., vcat(collect(1:13), 400)))
+    p = @inferred histogram(Histogram(1:15.0, vcat(collect(1:13), 400)))
     test_ref("references/histogram/fraction.txt", @print_col(p))
 end
 
@@ -70,7 +72,7 @@ end
         color = :yellow,
         border = :solid,
         symbols = ["="],
-        width = 50
+        width = 50,
     )
     test_ref("references/histogram/parameters2.txt", @print_col(p))
     # same but with Char as symbols
@@ -82,22 +84,14 @@ end
         color = :yellow,
         border = :solid,
         symbols = ['='],
-        width = 50
+        width = 50,
     )
     test_ref("references/histogram/parameters2.txt", @print_col(p))
 
     # colors
-    p = @inferred histogram(
-        x,
-        title = "Gray color",
-        color = 240,
-    )
+    p = @inferred histogram(x, title = "Gray color", color = 240)
     test_ref("references/histogram/col1.txt", @print_col(p))
 
-    p = @inferred histogram(
-        x,
-        title = "Green color",
-        color = (0,135,95),
-    )
+    p = @inferred histogram(x, title = "Green color", color = (0, 135, 95))
     test_ref("references/histogram/col2.txt", @print_col(p))
 end

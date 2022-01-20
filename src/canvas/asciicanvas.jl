@@ -1,6 +1,8 @@
-const ascii_signs = [0b100_000_000 0b000_100_000 0b000_000_100;
-                     0b010_000_000 0b000_010_000 0b000_000_010;
-                     0b001_000_000 0b000_001_000 0b000_000_001]
+const ascii_signs = [
+    0b100_000_000 0b000_100_000 0b000_000_100
+    0b010_000_000 0b000_010_000 0b000_000_010
+    0b001_000_000 0b000_001_000 0b000_000_001
+]
 
 const ascii_lookup = Dict{UInt16,Char}()
 ascii_lookup[0b101_000_000] = '"'
@@ -90,7 +92,7 @@ for i in 2:n_ascii
     ascii_decode[i] = min_char
 end
 
-ascii_decode[(n_ascii+1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16)-n_ascii)]
+ascii_decode[(n_ascii + 1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16) - n_ascii)]
 
 """
 As the name suggests the `AsciiCanvas` only uses
@@ -128,9 +130,15 @@ end
 
 AsciiCanvas(args...; nargs...) = CreateLookupCanvas(AsciiCanvas, args...; nargs...)
 
-function char_point!(c::AsciiCanvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+function char_point!(
+    c::AsciiCanvas,
+    char_x::Int,
+    char_y::Int,
+    char::Char,
+    color::UserColorType,
+)
     if checkbounds(Bool, c.grid, char_x, char_y)
-        c.grid[char_x,char_y] = n_ascii + char
+        c.grid[char_x, char_y] = n_ascii + char
         set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     end
     c

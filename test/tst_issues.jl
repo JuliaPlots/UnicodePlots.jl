@@ -1,11 +1,14 @@
 @testset "reported issues" begin
     @testset "barplot nl in text (#102)" begin
-        p = barplot(["I need a\nbreak", "I don't but could", :Hello, :Again], [30, 40, 20, 10])
+        p = barplot(
+            ["I need a\nbreak", "I don't but could", :Hello, :Again],
+            [30, 40, 20, 10],
+        )
         test_ref("references/issues/barplot_nl.txt", @show_col(p))
     end
 
     @testset "plot hang (tan → ∞) (#129)" begin
-        p = lineplot([cos, sin, tan], -π/2, 2π)
+        p = lineplot([cos, sin, tan], -π / 2, 2π)
         test_ref("references/issues/cos_sin_tan.txt", @show_col(p))
     end
 
@@ -16,7 +19,14 @@
     end
 
     @testset "isolated colorbar (#169)" begin
-        p = @inferred Plot([0], [0], colorbar=true, colormap=:cividis, width=0, min_width=0)
+        p = @inferred Plot(
+            [0],
+            [0],
+            colorbar = true,
+            colormap = :cividis,
+            width = 0,
+            min_width = 0,
+        )
         test_ref("references/issues/isolated_colorbar.txt", @show_col(p))
     end
 end

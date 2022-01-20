@@ -87,33 +87,40 @@ See also
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function scatterplot(
-    x::AbstractVector, y::AbstractVector;
-    canvas::Type = BrailleCanvas, color::Union{UserColorType,AbstractVector} = :auto,
-    marker::Union{MarkerType,AbstractVector} = :pixel, name = "", kw...
+    x::AbstractVector,
+    y::AbstractVector;
+    canvas::Type = BrailleCanvas,
+    color::Union{UserColorType,AbstractVector} = :auto,
+    marker::Union{MarkerType,AbstractVector} = :pixel,
+    name = "",
+    kw...,
 )
-    new_plot = Plot(x, y, canvas; kw...)
-    scatterplot!(new_plot, x, y; color = color, name = name, marker = marker)
+    plot = Plot(x, y, canvas; kw...)
+    scatterplot!(plot, x, y; color = color, name = name, marker = marker)
 end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 function scatterplot!(
-    plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractVector;
+    plot::Plot{<:Canvas},
+    x::AbstractVector,
+    y::AbstractVector;
     color::Union{UserColorType,AbstractVector} = :auto,
-    marker::Union{MarkerType,AbstractVector} = :pixel, name = ""
+    marker::Union{MarkerType,AbstractVector} = :pixel,
+    name = "",
 )
     color = (color == :auto) ? next_color!(plot) : color
-    name == "" || label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
+    name == "" ||
+        label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
     if marker ∈ (:pixel, :auto)
         points!(plot, x, y, color)
     else
         for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
-            annotate!(plot, xi, yi, char_marker(mi); color=ci)
+            annotate!(plot, xi, yi, char_marker(mi); color = ci)
         end
     end
     plot
 end
 
-scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) = scatterplot!(
-  plot, axes(y, 1), y; kw...
-)
+scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
+    scatterplot!(plot, axes(y, 1), y; kw...)

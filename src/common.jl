@@ -35,81 +35,129 @@ const DOC_PLOT_PARAMS = """
 - **`width`** : number of characters per row that should be used for plotting.
 """
 
-const MarkerType = Union{Symbol,Char,AbstractString}
+#! format: off
+const BORDER_SOLID = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '─',
+    l = '│',
+    b = '─',
+    r = '│',
+)
+const BORDER_CORNERS = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BARPLOT = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = '┤',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BOLD = (
+    tl = '┏',
+    tr = '┓',
+    bl = '┗',
+    br = '┛',
+    t = '━',
+    l = '┃',
+    b = '━',
+    r = '┃',
+)
+const BORDER_NONE = (
+    tl = ' ',
+    tr = ' ',
+    bl = ' ',
+    br = ' ',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BNONE = (
+    tl = Char(0x2800),
+    tr = Char(0x2800),
+    bl = Char(0x2800),
+    br = Char(0x2800),
+    t = Char(0x2800),
+    l = Char(0x2800),
+    b = Char(0x2800),
+    r = Char(0x2800),
+)
+const BORDER_DASHED = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '╌',
+    l = '┊',
+    b = '╌',
+    r = '┊',
+)
+const BORDER_DOTTED = (
+    tl = '⡤',
+    tr = '⢤',
+    bl = '⠓',
+    br = '⠚',
+    t = '⠤',
+    l = '⡇',
+    b = '⠒',
+    r = '⢸',
+)
+const BORDER_ASCII = (
+    tl = '+',
+    tr = '+',
+    bl = '+',
+    br = '+',
+    t = '-',
+    l = '|',
+    b = '-',
+    r = '|',
+)
+const BORDERMAP = (
+    solid   = BORDER_SOLID,
+    corners = BORDER_CORNERS,
+    barplot = BORDER_BARPLOT,
+    bold    = BORDER_BOLD,
+    none    = BORDER_NONE,
+    bnone   = BORDER_BNONE,
+    dashed  = BORDER_DASHED,
+    dotted  = BORDER_DOTTED,
+    ascii   = BORDER_ASCII,
+)
 const MARKERS = (
-    circle = '⚬',
-    rect = '▫',
-    diamond = '◇',
-    hexagon = '⬡',
-    cross = '✚',
-    xcross = '✖',
+    circle    = '⚬',
+    rect      = '▫',
+    diamond   = '◇',
+    hexagon   = '⬡',
+    cross     = '✚',
+    xcross    = '✖',
     utriangle = '△',
     dtriangle = '▽',
     rtriangle = '▷',
     ltriangle = '◁',
-    pentagon = '⬠',
-    star4 = '✦',
-    star5 = '★',
-    star6 = '✶',
-    star8 = '✴',
-    vline = '|',
-    hline = '―',
-    (+) = '+',
-    (x) = '⨯',
+    pentagon  = '⬠',
+    star4     = '✦',
+    star5     = '★',
+    star6     = '✶',
+    star8     = '✴',
+    vline     = '|',
+    hline     = '―',
+    (+)       = '+',
+    (x)       = '⨯',
 )
-
-function char_marker(marker::MarkerType)::Char
-    if marker isa Symbol
-        get(MARKERS, marker, MARKERS[:circle])
-    else
-        length(marker) == 1 || throw(error("`marker` keyword has a non unit length"))
-        marker[1]
-    end
-end
-
-iterable(obj::AbstractVector) = obj
-iterable(obj) = Iterators.repeated(obj)
-
-const FSCALES = (identity=identity, ln=log, log2=log2, log10=log10)  # forward
-const ISCALES = (identity=identity, ln=exp, log2=exp2, log10=exp10)  # inverse
-const BASES = (identity=nothing, ln="ℯ", log2="2", log10="10")
-
-fscale(x, s::Symbol) = FSCALES[s](x)
-iscale(x, s::Symbol) = ISCALES[s](x)
-
-# support arbitrary scale functions
-fscale(x, f::Function) = f(x)
-iscale(x, f::Function) = f(x)
-
-function transform_name(tr, basename = "")
-    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
-    name == "identity" && return basename
-    name = occursin("#", name) ? "custom" : name
-    string(basename, " [", name, "]")
-end
-
-roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
-compact_repr(num::Number) = repr(num, context=:compact => true)
-
-ceil_neg_log10(x) = roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)) : -floor(-x, digits=ceil_neg_log10(m)))
-)
-round_down_tick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)) : -ceil(-x, digits=ceil_neg_log10(m)))
-)
-round_up_subtick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? ceil(x, digits=ceil_neg_log10(m)+1) : -floor(-x, digits=ceil_neg_log10(m)+1))
-)
-round_down_subtick(x, m) = (
-    x == 0 ? 0 : (x > 0 ? floor(x, digits=ceil_neg_log10(m)+1) : -ceil(-x, digits=ceil_neg_log10(m)+1))
-)
-float_round_log10(x::F,m) where {F<:AbstractFloat} = (
-    x == 0 ? F(0) : (x  > 0 ? round(x, digits=ceil_neg_log10(m)+1)::F : -round(-x, digits=ceil_neg_log10(m)+1)::F)
-)
-float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
-float_round_log10(x) = x > 0 ? float_round_log10(x,x) : float_round_log10(x,-x)
-
 const SUPERSCRIPT = Dict(
     # '.' => '‧',  # U+2027: Hyphenation Point
     # '.' => '˙',  # U+02D9: Dot Above
@@ -130,6 +178,90 @@ const SUPERSCRIPT = Dict(
     '8' => '⁸',
     '9' => '⁹',
 )
+#! format: on
+
+const COLOR_CYCLE = [:green, :blue, :red, :magenta, :yellow, :cyan]
+
+const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
+const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
+const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
+
+const MarkerType = Union{Symbol,Char,AbstractString}
+const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
+const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
+
+# standard terminals seem to respect a 4:3 aspect ratio
+# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
+# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
+const ASPECT_RATIO = 4 / 3
+
+# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
+const DEFAULT_HEIGHT = Ref(15)
+const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
+
+function char_marker(marker::MarkerType)::Char
+    if marker isa Symbol
+        get(MARKERS, marker, MARKERS[:circle])
+    else
+        length(marker) == 1 || throw(error("`marker` keyword has a non unit length"))
+        marker[1]
+    end
+end
+
+iterable(obj::AbstractVector) = obj
+iterable(obj) = Iterators.repeated(obj)
+
+fscale(x, s::Symbol) = FSCALES[s](x)
+iscale(x, s::Symbol) = ISCALES[s](x)
+
+# support arbitrary scale functions
+fscale(x, f::Function) = f(x)
+iscale(x, f::Function) = f(x)
+
+function transform_name(tr, basename = "")
+    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
+    name == "identity" && return basename
+    name = occursin("#", name) ? "custom" : name
+    string(basename, " [", name, "]")
+end
+
+roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+compact_repr(num::Number) = repr(num, context = :compact => true)
+
+ceil_neg_log10(x) =
+    roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+round_up_tick(x, m) = (
+    x == 0 ? 0 :
+    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m)))
+)
+round_down_tick(x, m) = (
+    x == 0 ? 0 :
+    (x > 0 ? floor(x, digits = ceil_neg_log10(m)) : -ceil(-x, digits = ceil_neg_log10(m)))
+)
+round_up_subtick(x, m) = (
+    x == 0 ? 0 :
+    (
+        x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
+        -floor(-x, digits = ceil_neg_log10(m) + 1)
+    )
+)
+round_down_subtick(x, m) = (
+    x == 0 ? 0 :
+    (
+        x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
+        -ceil(-x, digits = ceil_neg_log10(m) + 1)
+    )
+)
+float_round_log10(x::F, m) where {F<:AbstractFloat} = (
+    x == 0 ? F(0) :
+    (
+        x > 0 ? round(x, digits = ceil_neg_log10(m) + 1)::F :
+        -round(-x, digits = ceil_neg_log10(m) + 1)::F
+    )
+)
+float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
+float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 
 function superscript(s::AbstractString)
     v = collect(s)
@@ -166,136 +298,27 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
         mi = mi - 1
     end
     if string(scale) != "identity"
-        return fscale(mi, scale), fscale(ma, scale)
+        fscale(mi, scale), fscale(ma, scale)
     else
-        return all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+        all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
 end
 
-sort_by_keys(dict::Dict) = sort!(collect(dict), by=x->x[1])
+sort_by_keys(dict::Dict) = sort!(collect(dict), by = x -> x[1])
 
-function sorted_keys_values(dict::Dict; k2s=true)
+function sorted_keys_values(dict::Dict; k2s = true)
     if k2s  # check and force key type to be of AbstractString type if necessary
         kt, vt = eltype(dict).types
         if !(kt <: AbstractString)
-            dict = Dict(string(k) => v  for (k, v) in pairs(dict))
+            dict = Dict(string(k) => v for (k, v) in pairs(dict))
         end
     end
     keys_vals = sort_by_keys(dict)
     first.(keys_vals), last.(keys_vals)
 end
 
-const border_solid = (
-    tl = '┌',
-    tr = '┐',
-    bl = '└',
-    br = '┘',
-    t = '─',
-    l = '│',
-    b = '─',
-    r = '│',
-)
-const border_corners = (
-    tl = '┌',
-    tr = '┐',
-    bl = '└',
-    br = '┘',
-    t = ' ',
-    l = ' ',
-    b = ' ',
-    r = ' ',
-)
-const border_barplot = (
-    tl = '┌',
-    tr = '┐',
-    bl = '└',
-    br = '┘',
-    t = ' ',
-    l = '┤',
-    b = ' ',
-    r = ' ',
-)
-const border_bold = (
-    tl = '┏',
-    tr = '┓',
-    bl = '┗',
-    br = '┛',
-    t = '━',
-    l = '┃',
-    b = '━',
-    r = '┃',
-)
-const border_none = (
-    tl = ' ',
-    tr = ' ',
-    bl = ' ',
-    br = ' ',
-    t = ' ',
-    l = ' ',
-    b = ' ',
-    r = ' ',
-)
-const border_bnone = (
-    tl = Char(0x2800),
-    tr = Char(0x2800),
-    bl = Char(0x2800),
-    br = Char(0x2800),
-    t = Char(0x2800),
-    l = Char(0x2800),
-    b = Char(0x2800),
-    r = Char(0x2800),
-)
-const border_dashed = (
-    tl = '┌',
-    tr = '┐',
-    bl = '└',
-    br = '┘',
-    t = '╌',
-    l = '┊',
-    b = '╌',
-    r = '┊',
-)
-const border_dotted = (
-    tl = '⡤',
-    tr = '⢤',
-    bl = '⠓',
-    br = '⠚',
-    t = '⠤',
-    l = '⡇',
-    b = '⠒',
-    r = '⢸',
-)
-const border_ascii = (
-    tl = '+',
-    tr = '+',
-    bl = '+',
-    br = '+',
-    t = '-',
-    l = '|',
-    b = '-',
-    r = '|',
-)
-const bordermap = (
-    solid   = border_solid,
-    corners = border_corners,
-    barplot = border_barplot,
-    bold    = border_bold,
-    none    = border_none,
-    bnone   = border_bnone,
-    dashed  = border_dashed,
-    dotted  = border_dotted,
-    ascii   = border_ascii,
-)
-
-const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
-const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
-const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
-
-const color_cycle = [:green, :blue, :red, :magenta, :yellow, :cyan]
-
-print_color(color::UserColorType, io::IO, args...) = printstyled(
-    io, string(args...); color = julia_color(color)
-)
+print_color(color::UserColorType, io::IO, args...) =
+    printstyled(io, string(args...); color = julia_color(color))
 
 function crayon_256_color(color::UserColorType)::ColorType
     color in (:normal, :default, :nothing, nothing) && return nothing
@@ -313,7 +336,13 @@ julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
 julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
-@inline function set_color!(colors::Array{ColorType,2}, x::Int, y::Int, color::ColorType, blend::Bool)
+@inline function set_color!(
+    colors::Array{ColorType,2},
+    x::Int,
+    y::Int,
+    color::ColorType,
+    blend::Bool,
+)
     if color === nothing || colors[x, y] === nothing || !blend
         colors[x, y] = color
     else
@@ -322,16 +351,8 @@ julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
     nothing
 end
 
-# standard terminals seem to respect a 4:3 aspect ratio
-# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
-# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
-const ASPECT_RATIO = 4 / 3
-
-# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
-const DEFAULT_HEIGHT = Ref(15)
-const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
-
-out_stream_size(out_stream::Union{Nothing,IO}) = out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
+out_stream_size(out_stream::Union{Nothing,IO}) =
+    out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
 out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
 out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
 
@@ -339,7 +360,10 @@ function _handle_deprecated_symb(symb, symbols)
     if symb === nothing
         symbols
     else
-        Base.depwarn("The keyword `symb` is deprecated in favor of `symbols`", :BarplotGraphics)
+        Base.depwarn(
+            "The keyword `symb` is deprecated in favor of `symbols`",
+            :BarplotGraphics,
+        )
         [symb]
     end
 end
