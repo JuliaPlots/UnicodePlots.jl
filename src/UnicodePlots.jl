@@ -56,8 +56,8 @@ export
 
     savefig
 
-include("docs.jl")
 include("common.jl")
+include("docs.jl")
 
 include("graphics.jl")
 include("graphics/bargraphics.jl")

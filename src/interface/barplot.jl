@@ -12,8 +12,8 @@ the names and the values, which have to be numeric, will be used
 as the heights of the bars.
 
 # Usage
-
-    barplot(text, heights; xscale = :identity, title = "", xlabel = "", ylabel = "", labels = true, border = :barplot, margin = 3, padding = 1, color = :green, width = out_stream_width(out_stream), symbols = ["■"])
+    
+    barplot(text, heights; $(signature_kwargs(("color = :green",), remove = (:xlim, :ylim, :height, :grid), add = (:symbols, ))))
 
     barplot(dict; kwargs...)
 

@@ -13,11 +13,11 @@ ordering.
 
 # Usage
 
-    densityplot(x, y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), grid = false)
+    densityplot(x, y; $(signature_kwargs(DEFAULT_KWARGS); remove = (:grid,))
 
 # Arguments
 
-$(arguments(; add = (:x, :y)))
+$(arguments(; add = (:x, :y), remove = (:grid,)))
 
 # Returns
 

@@ -17,8 +17,8 @@ the data series, and the keys, which have to be strings, will be
 used as the labels.
 
 # Usage
-
-    boxplot([text], data; title = "", xlabel = "", ylabel = "", labels = true, border = :corners, margin = 3, padding = 1, color = :green, width = 40, xlim)
+    
+    boxplot([text], data; $(signature_kwargs(DEFAULT_KWARGS; add = ("color = :green",), remove = (:ylim, :height, :grid)))
 
     boxplot(dict; kwargs...)
 

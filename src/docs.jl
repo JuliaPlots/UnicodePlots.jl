@@ -41,6 +41,65 @@ const Z_DESCRIPTION = (
     :colorbar_border,
 )
 
+const SIGNATURE = (
+    name = "\"\"",
+    title = "\"\"",
+    xscale = ":identity",
+    yscale = ":identity",
+    title = "\"\"",
+    xlabel = "\"\"",
+    ylabel = "\"\"",
+    zlabel = "\"\"",
+    labels = "true",
+    border = ":solid",
+    margin = "3",
+    padding = "1",
+    color = ":green",
+    symbols = "['■']",
+    width = "$(DEFAULT_WIDTH[])",
+    height = "$(DEFAULT_HEIGHT[])",
+    xlim = "(0, 0)",
+    ylim = "(0, 0)",
+    grid = "true",
+)
+
+function signature_kwargs(
+    ;
+    default::Tuple = (
+        # does not have to stay ordered
+        :name,
+        :title,
+        :xlabel,
+        :ylabel,
+        :zlabel,
+        :xscale,
+        :yscale,
+        :labels,
+        :border,
+        :width,
+        :height,
+        :xlim,
+        :ylim,
+        :zlim,
+        :compact,
+        :grid,
+        :margin,
+        :padding,
+        :blend,
+    ),
+    add::Tuple = (),
+    exclude::Tuple = (
+        :visible, :fix_ar,  # internals
+        Z_DESCRIPTION...,  # by default for 2D data
+    ),
+    remove::Tuple = (),
+)
+    sig = (; SIGNATURE..., mod...)
+    candidates = keys(desc) ∪ filter(x -> x ∈ add ∪ default, keys(SIGNATURE))
+    keywords = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
+    join((k isa Symbol ? "$k = $(sig[k])" : k for k in keywords), ", ")
+end
+
 function arguments(
     desc::NamedTuple = NamedTuple();
     default::Tuple = (
