@@ -61,8 +61,6 @@ export GraphicsArea,
     boxplot!,
     savefig
 
-include("constants.jl")
-include("description.jl")
 include("common.jl")
 
 include("graphics.jl")

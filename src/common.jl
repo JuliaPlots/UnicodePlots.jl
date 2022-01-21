@@ -1,7 +1,310 @@
+#! format: off
+const BORDER_SOLID = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '─',
+    l = '│',
+    b = '─',
+    r = '│',
+)
+const BORDER_CORNERS = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BARPLOT = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = ' ',
+    l = '┤',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BOLD = (
+    tl = '┏',
+    tr = '┓',
+    bl = '┗',
+    br = '┛',
+    t = '━',
+    l = '┃',
+    b = '━',
+    r = '┃',
+)
+const BORDER_NONE = (
+    tl = ' ',
+    tr = ' ',
+    bl = ' ',
+    br = ' ',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
+)
+const BORDER_BNONE = (
+    tl = Char(0x2800),
+    tr = Char(0x2800),
+    bl = Char(0x2800),
+    br = Char(0x2800),
+    t = Char(0x2800),
+    l = Char(0x2800),
+    b = Char(0x2800),
+    r = Char(0x2800),
+)
+const BORDER_DASHED = (
+    tl = '┌',
+    tr = '┐',
+    bl = '└',
+    br = '┘',
+    t = '╌',
+    l = '┊',
+    b = '╌',
+    r = '┊',
+)
+const BORDER_DOTTED = (
+    tl = '⡤',
+    tr = '⢤',
+    bl = '⠓',
+    br = '⠚',
+    t = '⠤',
+    l = '⡇',
+    b = '⠒',
+    r = '⢸',
+)
+const BORDER_ASCII = (
+    tl = '+',
+    tr = '+',
+    bl = '+',
+    br = '+',
+    t = '-',
+    l = '|',
+    b = '-',
+    r = '|',
+)
+const BORDERMAP = (
+    solid   = BORDER_SOLID,
+    corners = BORDER_CORNERS,
+    barplot = BORDER_BARPLOT,
+    bold    = BORDER_BOLD,
+    none    = BORDER_NONE,
+    bnone   = BORDER_BNONE,
+    dashed  = BORDER_DASHED,
+    dotted  = BORDER_DOTTED,
+    ascii   = BORDER_ASCII,
+)
+
+const MARKERS = (
+    circle    = '⚬',
+    rect      = '▫',
+    diamond   = '◇',
+    hexagon   = '⬡',
+    cross     = '✚',
+    xcross    = '✖',
+    utriangle = '△',
+    dtriangle = '▽',
+    rtriangle = '▷',
+    ltriangle = '◁',
+    pentagon  = '⬠',
+    star4     = '✦',
+    star5     = '★',
+    star6     = '✶',
+    star8     = '✴',
+    vline     = '|',
+    hline     = '―',
+    (+)       = '+',
+    (x)       = '⨯',
+)
+const SUPERSCRIPT = Dict(
+    # '.' => '‧',  # U+2027: Hyphenation Point
+    # '.' => '˙',  # U+02D9: Dot Above
+    # '.' => '⸳',  # U+2E33: Raised Dot
+    # '.' => '⋅',  # U+22C5: Dot Operator
+    # '.' => '·',  # U+00B7: Middle Dot
+    '.' => '⸱',  # U+2E31: Word Separator Middle Dot
+    '-' => '⁻',
+    '+' => '⁺',
+    '0' => '⁰',
+    '1' => '¹',
+    '2' => '²',
+    '3' => '³',
+    '4' => '⁴',
+    '5' => '⁵',
+    '6' => '⁶',
+    '7' => '⁷',
+    '8' => '⁸',
+    '9' => '⁹',
+)
+
+const COLOR_CYCLE = (:green, :blue, :red, :magenta, :yellow, :cyan)
+
+# standard terminals seem to respect a 4:3 aspect ratio
+# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
+# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
+const ASPECT_RATIO = 4 / 3
+
+# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
+const DEFAULT_HEIGHT = Ref(15)
+const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
+
 const MarkerType = Union{Symbol,Char,AbstractString}
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
 const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
 const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
+
+#! format: on
+
+##########################################################################################
+const DESCRIPTION = (
+    # NOTE: this named tuple has to stay ordered
+    x = "horizontal position for each point",
+    y = "vertical position for each point",
+    symbols = "specifies the characters that should be used to render the bars",
+    title = "text to display on the top of the plot",
+    name = "annotation of the current drawing to be displayed on the right",
+    xlabel = "text to display on the `x` axis of the plot",
+    ylabel = "text to display on the `y` axis of the plot",
+    zlabel = "text to display on the `z` axis (colorbar) of the plot",
+    xscale = "`x`-axis scale `(:identity, :ln, :log2, :log10)`, or scale function e.g. `x -> log10(x)`",
+    yscale = "`y`-axis scale",
+    labels = "used to hide the labels by setting `labels=false`",
+    border = "style of the bounding box of the plot, supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`",
+    margin = "number of empty characters to the left of the whole plot",
+    padding = "space of the left and right of the plot between the labels and the canvas",
+    color = "can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255`, or a tuple of `3` integers as `RGB` components",
+    width = "number of characters per row that should be used for plotting",
+    height = "number of character rows that should be used for plotting",
+    xlim = "plotting range for the `x` axis (`(0, 0)` stands for automatic)",
+    ylim = "plotting range for the `y` axis (`(0, 0)` stands for automatic)",
+    zlim = "colormap scaled data range (`(0, 0)` stands for automatic)",
+    colorbar = "toggle the colorbar",
+    colormap = "choose from `:viridis`, `:plasma`, `:magma`, `:inferno`, `:cividis`, `:jet`, `:gray` (more from `keys(UnicodePlots.COLOR_MAP_DATA)`), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples",
+    colorbar_lim = "colorbar limit (defaults to `(0, 1)`)",
+    colorbar_border = "style of the bounding box of the color bar (supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`)",
+    canvas = "type of canvas that should be used for drawing",
+    grid = "if `true`, draws grid-lines at the origin",
+    compact = "compact plot labels (defaults to `false`)",
+    unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1` (defaults to `false`)",
+    blend = "blend colors on the underlying canvas (defaults to `true`)",
+    fix_ar = "fix terminal aspect ratio (experimental)",
+    visible = "visible canvas (defaults to `true`)",
+)
+
+const Z_DESCRIPTION =
+    (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
+
+const SIGNATURE = (
+    x = Any[],
+    y = Any[],
+    canvas = :BrailleCanvas,
+    symbols = ['■'],
+    title = "\"\"",
+    name = "\"\"",
+    xlabel = "\"\"",
+    ylabel = "\"\"",
+    zlabel = "\"\"",
+    xscale = :identity,
+    yscale = :identity,
+    labels = true,
+    border = :solid,
+    width = DEFAULT_WIDTH[],
+    height = DEFAULT_HEIGHT[],
+    xlim = (0, 0),
+    ylim = (0, 0),
+    zlim = (0, 0),
+    margin = 3,
+    padding = 1,
+    color = :green,
+    colorbar_lim = (0, 1),
+    colorbar_border = :solid,
+    colormap = :viridis,
+    colorbar = false,
+    unicode_exponent = false,
+    compact = false,
+    blend = true,
+    grid = true,
+    # internals
+    visible = true,
+    fix_ar = false,
+)
+
+const DEFAULT_KWARGS = (
+    # does not have to stay ordered
+    :name,
+    :title,
+    :xlabel,
+    :ylabel,
+    :zlabel,
+    :xscale,
+    :yscale,
+    :labels,
+    :border,
+    :width,
+    :height,
+    :xlim,
+    :ylim,
+    :zlim,
+    :unicode_exponent,
+    :compact,
+    :blend,
+    :grid,
+    :padding,
+    :margin,
+)
+
+function signature_kwargs(
+    mod::NamedTuple = NamedTuple();
+    default::Tuple = DEFAULT_KWARGS,
+    add::Tuple = (),
+    exclude::Tuple = (
+        :visible,
+        :fix_ar,  # internals
+        Z_DESCRIPTION...,  # by default for 2D data
+    ),
+    remove::Tuple = (),
+)
+    stringify(a) = a isa Symbol ? a : a |> string
+    sig = (; SIGNATURE..., mod...)
+    candidates = keys(mod) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KWARGS)
+    keywords = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
+    join((k isa Symbol ? "$k = $(sig[k] |> stringify)" : k for k in keywords), ", ")
+end
+
+function arguments(
+    desc::NamedTuple = NamedTuple();
+    default::Tuple = DEFAULT_KWARGS,
+    add::Tuple = (),
+    exclude::Tuple = (
+        :visible,
+        :fix_ar,  # internals
+        Z_DESCRIPTION...,  # by default for 2D data
+    ),
+    remove::Tuple = (),
+)
+    get_description(n, d) = begin
+        str = d[n]
+        @assert str[1] === '`' || islowercase(str[1])  # description starts with a lowercase string, or `something`
+        @assert str[end] !== '.'  # trailing dot will be added later
+        str
+    end
+    all_desc = (; DESCRIPTION..., desc...)  # desc preempts defaults !
+    candidates = keys(desc) ∪ filter(x -> x ∈ add ∪ default, keys(DESCRIPTION))  # desc goes first !
+    keywords = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
+    @assert allunique(keywords)  # extra check
+    join(("- **`$k`** : $(get_description(k, all_desc))." for k in keywords), '\n')
+end
+##########################################################################################
+
+const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
+const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
+const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 function char_marker(marker::MarkerType)::Char
     if marker isa Symbol
