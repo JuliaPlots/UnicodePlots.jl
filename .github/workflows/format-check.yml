@@ -1,4 +1,4 @@
-name: format-check
+name: format
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  check:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,11 +21,11 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install JuliaFormatter and format
         run: |
-          julia  -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter"))'
-          julia  -e 'using JuliaFormatter; format(["src", "test"])'
+          julia -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter"))'
+          julia -e 'using JuliaFormatter; format(["src", "test"], verbose=true)'
       - name: Format check
         run: |
           julia -e '
