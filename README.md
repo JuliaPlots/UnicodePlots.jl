@@ -1,3 +1,4 @@
+<!-- WARNING: this file has been automatically generated, please update Unicodeplots/docs/generate_docs.jl instead, and run $ julia generate_docs.jl to render README.md !! -->
 # UnicodePlots
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md) [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html) [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml) [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl) [![UnicodePlots Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/UnicodePlots)](https://pkgs.genieframework.com?packages=UnicodePlots)
@@ -12,16 +13,16 @@ There are a couple of ways to generate typical plots without much verbosity.
 
 Here is a list of the main high-level functions for common scenarios:
 
-  * Scatterplot
-  * Lineplot
-  * Staircase Plot
-  * Barplot (horizontal)
-  * Histogram (horizontal)
-  * Boxplot (horizontal)
-  * Sparsity Pattern
-  * Density Plot
-  * Contour Plot
-  * Heatmap
+  * [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
+  * [`lineplot`](https://github.com/JuliaPlots/UnicodePlots.jl#lineplot) (Line Plot)
+  * [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
+  * [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
+  * [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal)
+  * [`boxplot`](https://github.com/JuliaPlots/UnicodePlots.jl#boxplot) (Box Plot - horizontal)
+  * [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
+  * [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
+  * [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
+  * [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -105,7 +106,7 @@ lineplot!(plt, -.5, .2, name="line")
 ```julia
 # supported style are :pre and :post
 stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
-        color=:red, style=:post, title="My Staircase Plot", border=:dotted)
+       color=:red, style=:post, title="My Staircase Plot", border=:dotted)
 ```
 ![Staircase](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/stairs1.png)
 
@@ -205,23 +206,21 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 
 All plots support the set (or a subset) of the following named parameters:
 
-  - `x::Array = Any[]`: horizontal position for each point.
-  - `y::Array = Any[]`: vertical position for each point.
   - `symbols::Array = ['■']`: specifies the characters that should be used to render the bars.
   - `title::String = ""`: text to display on the top of the plot.
   - `name::String = ""`: annotation of the current drawing to be displayed on the right.
   - `xlabel::String = ""`: text to display on the `x` axis of the plot.
   - `ylabel::String = ""`: text to display on the `y` axis of the plot.
   - `zlabel::String = ""`: text to display on the `z` axis (colorbar) of the plot.
-  - `xscale::Symbol = identity`: `x`-axis scale `(:identity, :ln, :log2, :log10)`, or scale function e.g. `x -> log10(x)`.
-  - `yscale::Symbol = identity`: `y`-axis scale.
+  - `xscale::Symbol = :identity`: `x`-axis scale `(:identity, :ln, :log2, :log10)`, or scale function e.g. `x -> log10(x)`.
+  - `yscale::Symbol = :identity`: `y`-axis scale.
   - `labels::Bool = true`: used to hide the labels by setting `labels=false`.
     ```julia
     lineplot(sin, 1:.5:20, labels=false, border=:dotted)
     ```
     ![Labels](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/labels.png)
     
-  - `border::Symbol = solid`: style of the bounding box of the plot, supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+  - `border::Symbol = :solid`: style of the bounding box of the plot, supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
     ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
     ```
@@ -242,16 +241,16 @@ All plots support the set (or a subset) of the following named parameters:
     ```
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
     
-  - `margin::Int64 = 3`: number of empty characters to the left of the whole plot.
-  - `padding::Int64 = 1`: space of the left and right of the plot between the labels and the canvas.
-  - `color::Symbol = green`: can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255`, or a tuple of `3` integers as `RGB` components.
-  - `width::Int64 = 40`: number of characters per row that should be used for plotting.
+  - `margin::Int = 3`: number of empty characters to the left of the whole plot.
+  - `padding::Int = 1`: space of the left and right of the plot between the labels and the canvas.
+  - `color::Symbol = :green`: can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255`, or a tuple of `3` integers as `RGB` components.
+  - `width::Int = 40`: number of characters per row that should be used for plotting.
     ```julia
     lineplot(sin, 1:.5:20, width=60, border=:dotted)
     ```
     ![Width](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/width.png)
     
-  - `height::Int64 = 15`: number of character rows that should be used for plotting.
+  - `height::Int = 15`: number of character rows that should be used for plotting.
     ```julia
     lineplot(sin, 1:.5:20, height=18, border=:dotted)
     ```
@@ -261,10 +260,10 @@ All plots support the set (or a subset) of the following named parameters:
   - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis (`(0, 0)` stands for automatic).
   - `zlim::Tuple = (0, 0)`: colormap scaled data range (`(0, 0)` stands for automatic).
   - `colorbar::Bool = false`: toggle the colorbar.
-  - `colormap::Symbol = viridis`: choose from `:viridis`, `:plasma`, `:magma`, `:inferno`, `:cividis`, `:jet`, `:gray` (more from `keys(UnicodePlots.COLOR_MAP_DATA)`), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
+  - `colormap::Symbol = :viridis`: choose from `:viridis`, `:plasma`, `:magma`, `:inferno`, `:cividis`, `:jet`, `:gray` (more from `keys(UnicodePlots.COLOR_MAP_DATA)`), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
   - `colorbar_lim::Tuple = (0, 1)`: colorbar limit (defaults to `(0, 1)`).
-  - `colorbar_border::Symbol = solid`: style of the bounding box of the color bar (supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`).
-  - `canvas::Symbol = BrailleCanvas`: type of canvas that should be used for drawing.
+  - `colorbar_border::Symbol = :solid`: style of the bounding box of the color bar (supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`).
+  - `canvas::DataType = BrailleCanvas`: type of canvas that should be used for drawing.
   - `grid::Bool = true`: if `true`, draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels (defaults to `false`).
   - `unicode_exponent::Bool = false`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1` (defaults to `false`).
@@ -338,13 +337,13 @@ The primary structures that do all the heavy lifting behind the curtain are subt
 Here is a simple example:
 
 ```julia
-canvas = BrailleCanvas(40, 10,                    # number of columns and rows (characters)
+canvas = BrailleCanvas(40, 15,                    # number of columns and rows (characters)
                        origin_x=0., origin_y=0.,  # position in virtual space
                        width=1., height=1.)       # size of the virtual space
-lines!(canvas, 0., 0., 1., 1., :blue)      # virtual space
-points!(canvas, rand(50), rand(50), :red)  # virtual space
-lines!(canvas, 0., 1., .5, 0., :yellow)    # virtual space
-pixel!(canvas, 5, 8, :red)                 # pixel space
+lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
+points!(canvas, randn(50), randn(50), :red)       # virtual space
+lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
+pixel!(canvas, 5, 8, :red)                        # pixel space
 Plot(canvas, border=:dotted)
 ```
 ![Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/canvas.png)

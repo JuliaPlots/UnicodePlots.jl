@@ -9,9 +9,9 @@ additional information such as a title, border, and axis labels.
 
 # Usage
 
-    Plot(graphics; $(signature_kwargs(; default = (), add = (:title, :xlabel, :ylabel, :zlabel, :border, :margin, :padding, :compact, :labels))))
+    Plot(graphics; $(keywords(; default = (), add = (:title, :xlabel, :ylabel, :zlabel, :border, :margin, :padding, :compact, :labels))))
 
-    Plot(x, y, canvas; $(signature_kwargs()))
+    Plot(x, y, canvas; $(keywords()))
 
 # Arguments
 

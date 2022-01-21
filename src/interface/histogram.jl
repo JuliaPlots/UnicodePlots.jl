@@ -14,7 +14,7 @@ Note internally that `histogram` is a simply wrapper for
 
     histogram(x; nbins, closed = :left, kwargs...)
 
-    histogram(hist; $(signature_kwargs((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
+    histogram(hist; $(keywords((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
 
 # Arguments
 

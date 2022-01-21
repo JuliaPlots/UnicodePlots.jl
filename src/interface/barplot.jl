@@ -13,7 +13,7 @@ as the heights of the bars.
 
 # Usage
     
-    barplot(text, heights; $(signature_kwargs((border = :barplot, color = :green,), remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,))))
+    barplot(text, heights; $(keywords((border = :barplot, color = :green,), remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,))))
 
     barplot(dict; kwargs...)
 

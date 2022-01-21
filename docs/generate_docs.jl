@@ -7,62 +7,62 @@ main() = begin
   ver = "2.x"
 
   exs = (
-    lineplot1 = (alt="Basic Canvas", code="""
+    lineplot1 = ("Basic Canvas", """
       using UnicodePlots
       plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
                      title="Example Plot", name="my line", xlabel="x", ylabel="y", border=:dotted)
       """),
-    lineplot2 = (alt="Basic Canvas", code="""
+    lineplot2 = ("Basic Canvas", """
       lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
                title="Example Plot", name="my line",
                xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
-    lineplot3 = (alt="Basic Canvas", code="""lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")"""),
-    scatterplot1 = (alt="Scatterplot", code="""scatterplot(randn(50), randn(50), title="My Scatterplot", border=:dotted)"""),
-    scatterplot2 = (alt="Scatterplot", code="scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)"),
-    scatterplot3 = (alt="Scatterplot", code="scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)"),
-    scatterplot4 = (alt="Scatterplot", code="""
+    lineplot3 = ("Basic Canvas", """lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")"""),
+    scatterplot1 = ("Scatterplot", """scatterplot(randn(50), randn(50), title="My Scatterplot", border=:dotted)"""),
+    scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)"),
+    scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)"),
+    scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1],
                   marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
       """),
-    lineplot4 = (alt="Lineplot", code="""lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted)"""),
-    lineplot5 = (alt="Lineplot", code="plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)"),
-    lineplot6 = (alt="Lineplot", code="""lineplot!(plt, -.5, .2, name="line")"""),
-    stairs1 = (alt="Staircase", code="""
+    lineplot4 = ("Lineplot", """lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted)"""),
+    lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)"),
+    lineplot6 = ("Lineplot", """lineplot!(plt, -.5, .2, name="line")"""),
+    stairs1 = ("Staircase", """
       # supported style are :pre and :post
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
-              color=:red, style=:post, title="My Staircase Plot", border=:dotted)
+             color=:red, style=:post, title="My Staircase Plot", border=:dotted)
       """),
-    barplot1 = (alt="Barplot", code="""
+    barplot1 = ("Barplot", """
       barplot(["Paris", "New York", "Moskau", "Madrid"],
               [2.244, 8.406, 11.92, 3.165],
               title="Population")
       """),
-    histogram1 = (alt="Histogram", code="histogram(randn(1000) .* .1, nbins=15, closed=:left)"),
-    histogram2 = (alt="Histogram", code="histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
-    boxplot1 = (alt="Boxplot", code="boxplot([1, 3, 3, 4, 6, 10])"),
-    boxplot2 = (alt="Boxplot", code="""
+    histogram1 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:left)"),
+    histogram2 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
+    boxplot1 = ("Boxplot", "boxplot([1, 3, 3, 4, 6, 10])"),
+    boxplot2 = ("Boxplot", """
       boxplot(["one", "two"],
               [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]],
               title="Grouped Boxplot", xlabel="x")
       """),
-    spy1 = (alt="Spy", code="using SparseArrays\nspy(sprandn(50, 120, .05), border=:dotted)"),
-    spy2 = (alt="Spy", code="using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)"),
-    densityplot1 = (alt="Densityplot", code="""
+    spy1 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .05), border=:dotted)"),
+    spy2 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)"),
+    densityplot1 = ("Densityplot", """
       plt = densityplot(randn(1000), randn(1000))
       densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
       """),
-    contourplot1 = (alt="Contourplot", code="contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
-    heatmap1 = (alt="Heatmap", code="""heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
-    heatmap2 = (alt="Heatmap", code="heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
-    width = (alt="Width", code="lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
-    height = (alt="Height", code="lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
-    labels = (alt="Labels", code="lineplot(sin, 1:.5:20, labels=false, border=:dotted)"),
-    border_bold = (alt="Border", code="lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
-    border_dashed = (alt="Border", code="lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
-    border_dotted = (alt="Border", code="lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"),
-    border_none = (alt="Border", code="lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
-    decorate = (alt="Decorate", code="""
+    contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
+    heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
+    heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
+    width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
+    height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
+    labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false, border=:dotted)"),
+    border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
+    border_dashed = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
+    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"),
+    border_none = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
+    decorate = ("Decorate", """
       x = y = collect(1:10)
       plt = lineplot(x, y, canvas=DotCanvas, width=30, height=10)
       lineplot!(plt, x, reverse(y))
@@ -78,17 +78,17 @@ main() = begin
       end
       plt
       """),
-    canvas = (alt="Canvas", code="""
-      canvas = BrailleCanvas(40, 10,                    # number of columns and rows (characters)
+    canvas = ("Canvas", """
+      canvas = BrailleCanvas(40, 15,                    # number of columns and rows (characters)
                              origin_x=0., origin_y=0.,  # position in virtual space
                              width=1., height=1.)       # size of the virtual space
-      lines!(canvas, 0., 0., 1., 1., :blue)      # virtual space
-      points!(canvas, rand(50), rand(50), :red)  # virtual space
-      lines!(canvas, 0., 1., .5, 0., :yellow)    # virtual space
-      pixel!(canvas, 5, 8, :red)                 # pixel space
+      lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
+      points!(canvas, randn(50), randn(50), :red)       # virtual space
+      lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
+      pixel!(canvas, 5, 8, :red)                        # pixel space
       Plot(canvas, border=:dotted)
       """),
-    blending = (alt="Blending", code="""
+    blending = ("Blending", """
       canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
       lines!(canvas, 0., 0., 1., 1., :blue)
       lines!(canvas, .25, 1., .5, 0., :yellow)
@@ -97,29 +97,37 @@ main() = begin
       """),
   )
 
-  examples = NamedTuple{keys(exs)}((MD(Paragraph(
-      "```julia\n$(rstrip(e.code))\n```\n![$(e.alt)]($docs_url/doc/imgs/$ver/$k.png)"
-    )) for (k, e) in pairs(exs))
+  examples = NamedTuple{keys(exs)}((
+      MD(Paragraph(
+        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/doc/imgs/$ver/$k.png)"
+      )) for (k, e) in pairs(exs)
+    )
   )
 
   tab = ' '^2
-  base_type(x) = string(typeof(x).name.name)
+
+  kw(x) = x isa Symbol ? string(':', x) : string(x)
+  base_type(x) = replace(string(typeof(x).name.name), "64" => "")
   indent(x, n) = repeat(tab, n) * join(split(x isa MD ? plain(x) : x, '\n'), '\n' * repeat(tab, n))
-  desc_ex(k, d, n=2) = if k in (:width, :height, :labels)
-    d * ".\n$(indent(getindex(examples, k), n))"
-  elseif k == :border
-    d * """.
-    $(indent(examples.border_bold, n))
-    $(indent(examples.border_dashed, n))
-    $(indent(examples.border_dotted, n))
-    $(indent(examples.border_none, n))"""
-  else
-    d * '.'
-  end
+  desc_ex(k, d, n=2) = (
+    if k == :border
+      join((
+        d,
+        indent(examples.border_bold, n),
+        indent(examples.border_dashed, n),
+        indent(examples.border_dotted, n),
+        indent(examples.border_none, n),
+      ), '\n')
+    elseif k in (:width, :height, :labels)
+      join((d, indent(getindex(examples, k), n)), '\n')
+    else
+      d
+    end
+  )
   description = join(
     (
-      "$tab- `$k::$(base_type(UnicodePlots.SIGNATURE[k])) = $(UnicodePlots.SIGNATURE[k])`: $(desc_ex(k, d))"
-      for (k, d) in pairs(UnicodePlots.DESCRIPTION)
+      "$tab- `$k::$(base_type(UnicodePlots.KEYWORDS[k])) = $(kw(UnicodePlots.KEYWORDS[k]))`: $(desc_ex(k, d * '.'))"
+      for (k, d) in pairs(UnicodePlots.DESCRIPTION) if k in keys(UnicodePlots.KEYWORDS)
     ), '\n'
   )
 
@@ -142,16 +150,16 @@ There are a couple of ways to generate typical plots without much verbosity.
 
 Here is a list of the main high-level functions for common scenarios:
 
-  - Scatterplot
-  - Lineplot
-  - Staircase Plot
-  - Barplot (horizontal)
-  - Histogram (horizontal)
-  - Boxplot (horizontal)
-  - Sparsity Pattern
-  - Density Plot
-  - Contour Plot
-  - Heatmap
+  - [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
+  - [`lineplot`](https://github.com/JuliaPlots/UnicodePlots.jl#lineplot) (Line Plot)
+  - [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
+  - [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
+  - [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal)
+  - [`boxplot`](https://github.com/JuliaPlots/UnicodePlots.jl#boxplot) (Box Plot - horizontal)
+  - [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
+  - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
+  - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
+  - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -377,7 +385,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     )
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
-      code = filter(x -> length(x) != 0 && !startswith(lstrip(x), "using"), [lstrip(c) for c in split(e.code, '\n')])
+      code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
       code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ") for c in code]
       println(io, "_ex_$i() = begin\n$(indent(join(code, '\n'), 1))\nend")
       println(io, "plt = _ex_$i(); save(plt, \"$k\")")
@@ -404,6 +412,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   plain_readme = plain(readme)
   write(stdout, plain_readme)
   open("../README.md", "w") do io
+    write(io, "<!-- WARNING: this file has been automatically generated, please update Unicodeplots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
     write(io, plain_readme)
   end
   return

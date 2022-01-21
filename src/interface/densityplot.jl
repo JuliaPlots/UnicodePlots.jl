@@ -13,7 +13,7 @@ ordering.
 
 # Usage
 
-    densityplot(x, y; $(signature_kwargs(; remove = (:grid,))))
+    densityplot(x, y; $(keywords(; remove = (:grid,))))
 
 # Arguments
 

@@ -9,7 +9,7 @@ as x and y coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; $(signature_kwargs((width = 0, height = 0, xfact = 0, yfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
+    heatmap(A::AbstractMatrix; $(keywords((width = 0, height = 0, xfact = 0, yfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
 
 # Arguments
 

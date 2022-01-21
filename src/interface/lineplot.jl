@@ -11,7 +11,7 @@ This means that the two vectors must be of the same length and ordering.
 
 # Usage
 
-    lineplot([x], y; $(signature_kwargs(; add = (:canvas,)))
+    lineplot([x], y; $(keywords(; add = (:canvas,)))
 
     lineplot(fun, [start], [stop]; kwargs...)
 

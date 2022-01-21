@@ -18,7 +18,7 @@ used as the labels.
 
 # Usage
     
-    boxplot([text], data; $(signature_kwargs((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
+    boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
 
     boxplot(dict; kwargs...)
 

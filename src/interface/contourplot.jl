@@ -5,7 +5,7 @@ Draws a contour plot on a new canvas.
 
 # Usage
 
-    contourplot(x, y, A; $(signature_kwargs(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    contourplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
