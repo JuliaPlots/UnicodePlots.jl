@@ -37,8 +37,12 @@ const Z_DESCRIPTION =
     (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
 
 const SIGNATURE = (
-    name = "\"\"",
+    x = Any[],
+    y = Any[],
+    canvas = :BrailleCanvas,
+    symbols = ['■'],
     title = "\"\"",
+    name = "\"\"",
     xlabel = "\"\"",
     ylabel = "\"\"",
     zlabel = "\"\"",
@@ -54,7 +58,6 @@ const SIGNATURE = (
     margin = 3,
     padding = 1,
     color = :green,
-    symbols = ['■'],
     colorbar_lim = (0, 1),
     colorbar_border = :solid,
     colormap = :viridis,
@@ -63,6 +66,9 @@ const SIGNATURE = (
     compact = false,
     blend = true,
     grid = true,
+    # internals
+    visible = true,
+    fix_ar = false,
 )
 
 const DEFAULT_KWARGS = (

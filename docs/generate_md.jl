@@ -1,9 +1,12 @@
 using Markdown
-import Markdown: Header, Image, Link, Paragraph, Code, tohtml, plain, MD
+import Markdown: MD, Paragraph, plain
+
+include("../src/constants.jl")
+include("../src/description.jl")
 
 main() = begin
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
-
+  github = Markdown.flavors[:github]
   exs = (
     lineplot1 = (alt="Basic Canvas", code="""
       using UnicodePlots
@@ -92,12 +95,22 @@ main() = begin
       """),
   )
 
-  examples = NamedTuple{keys(exs)}((MD(Paragraph("""
-    ```julia
-    $(e.code)
-    ```
-    ![$(e.alt)]($docs_url/doc/imgs/2.x/$k.png)""")) for (k, e) in zip(keys(exs), exs))
+  examples = NamedTuple{keys(exs)}((MD(github, Paragraph(
+      "```julia\n$(e.code)```\n![$(e.alt)]($docs_url/doc/imgs/2.x/$k.png)"
+    )) for (k, e) in zip(keys(exs), exs))
   )
+
+  base_type(x) = string(typeof(x).name.name)
+  desc_ex(k, d) = if k in (:width, :height, :labels)
+    "$d\n$(getindex(examples, k))"
+  elseif k == :border
+    "$d\n$(examples.border_bold)\n$(examples.border_dashed)\n$(examples.border_dotted)\n$(examples.border_none)"
+  else
+    d
+  end
+  description = join(("- `$k::$(base_type(SIGNATURE[k]))` = $(SIGNATURE[k])\n$(desc_ex(k, d))" for (k, d) in zip(keys(DESCRIPTION), DESCRIPTION)), '\n')
+
+  # println(description)
 
   readme = md"""
   # UnicodePlots
@@ -143,7 +156,7 @@ main() = begin
 
   Some plot methods have a mutating variant that ends with a exclamation mark:
 
-  $(examples.lineplot3])
+  $(examples.lineplot3)
 
   #### Scatterplot
 
@@ -232,99 +245,101 @@ main() = begin
 
   All plots support the set (or a subset) of the following named parameters:
 
+    $description
+
     - `title::String=""`:
 
       Text to display on the top of the plot.
 
-  - `name::String=""`:
+    - `name::String=""`:
 
-      Annotation of the current drawing to displayed on the right
+        Annotation of the current drawing to displayed on the right
 
-  - `xlabel::String=""`:
+    - `xlabel::String=""`:
 
-      Description on the x-axis
+        Description on the x-axis
 
-  - `ylabel::String=""`:
+    - `ylabel::String=""`:
 
-      Description on the y-axis
+        Description on the y-axis
 
-  - `width::Int=40`:
+    - `width::Int=40`:
 
-      Number of characters per row that should be used for plotting.
+        Number of characters per row that should be used for plotting.
 
-      $(examples.width)
+        $(examples.width)
 
-  - `height::Int=20`:
+    - `height::Int=20`:
 
-      Number of rows that should be used for plotting. Not applicable to `barplot`.
+        Number of rows that should be used for plotting. Not applicable to `barplot`.
 
-      $(examples.height)
+        $(examples.height)
 
-  - `xlim::Vector=[0, 1]`:
+    - `xlim::Vector=[0, 1]`:
 
-      Plotting range for the x coordinate.
+        Plotting range for the x coordinate.
 
-  - `ylim::Vector=[0, 1]`:
+    - `ylim::Vector=[0, 1]`:
 
-      Plotting range for the y coordinate.
+        Plotting range for the y coordinate.
 
-  - `labels::Bool=true`:
+    - `labels::Bool=true`:
 
-      Can be used to hide the labels by setting `labels=false`.
+        Can be used to hide the labels by setting `labels=false`.
 
-    $(examples.labels)
+      $(examples.labels)
 
-  - `border::Symbol=:solid`:
+    - `border::Symbol=:solid`:
 
-      The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:corners`, and `:none`.
+        The style of the bounding box of the plot. Supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:corners`, and `:none`.
 
-    $(examples.border_bold)
+      $(examples.border_bold)
 
-    $(examples.border_dashed)
+      $(examples.border_dashed)
 
-    $(examples.border_dotted)
+      $(examples.border_dotted)
 
-    $(examples.border_none)
+      $(examples.border_none)
 
-  - `compact::Bool=false`:
-      
-      Compact plot (labels), defaults to `false`.
+    - `compact::Bool=false`:
+        
+        Compact plot (labels), defaults to `false`.
 
-  - `blend::Bool=true`:
-      
-      Blend colors on the underlying canvas, defaults to `true`.
+    - `blend::Bool=true`:
+        
+        Blend colors on the underlying canvas, defaults to `true`.
 
-  - `margin::Int=3`:
+    - `margin::Int=3`:
 
-      Number of empty characters to the left of the whole plot.
+        Number of empty characters to the left of the whole plot.
 
-  - `padding::Int=1`:
+    - `padding::Int=1`:
 
-      Space of the left and right of the plot between the labels and the canvas.
+        Space of the left and right of the plot between the labels and the canvas.
 
-  - `grid::Bool=true`:
+    - `grid::Bool=true`:
 
-      Can be used to hide the gridlines at the origin.
+        Can be used to hide the gridlines at the origin.
 
-  - `color::Symbol=:auto`:
+    - `color::Symbol=:auto`:
 
-      Color of the drawing. Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`.
+        Color of the drawing. Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`.
 
-  - `canvas::Type=BrailleCanvas`:
+    - `canvas::Type=BrailleCanvas`:
 
-      The type of canvas that should be used for drawing (see section "Low-level Interface").
+        The type of canvas that should be used for drawing (see section "Low-level Interface").
 
-  - `symbols::AbstractVector{String}=['▪']`:
+    - `symbols::AbstractVector{String}=['▪']`:
 
-      Barplot only. Specifies the characters that should be used to render the bars.
+        Barplot only. Specifies the characters that should be used to render the bars.
 
-  - `colorbar_lim`
-      
-      Colorbar limit, defaults to (0, 1).
+    - `colorbar_lim`
+        
+        Colorbar limit, defaults to (0, 1).
 
-  - `colorbar_border`
+    - `colorbar_border`
 
-      Colorbar border, defaults to `:solid`.
+        Colorbar border, defaults to `:solid`.
 
   _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
 
@@ -354,7 +369,7 @@ main() = begin
 
       - `row` can be between 1 and the number of character rows of the canvas
 
-      $(examples.decorate)
+$(examples.decorate)
 
   - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kwargs...)`
       - `text` arbitrary annotation at position (x, y)
