@@ -7,6 +7,7 @@ into two pixels (top and bottom).
 struct HeatmapCanvas <: LookupCanvas
     grid::Array{UInt8,2}
     colors::Array{ColorType,2}
+    min_max::Tuple{UInt64,UInt64}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -23,13 +24,14 @@ const HALF_BLOCK = '▄'
 @inline x_pixel_per_char(::Type{HeatmapCanvas}) = 1
 @inline y_pixel_per_char(::Type{HeatmapCanvas}) = 2
 
-@inline lookup_encode(c::HeatmapCanvas) = [0 0; 1 1]
-@inline lookup_decode(c::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
+@inline lookup_encode(::HeatmapCanvas) = [0 0; 1 1]
+@inline lookup_decode(::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
 
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
 HeatmapCanvas(args...; kwargs...) = CreateLookupCanvas(
     HeatmapCanvas,
+    (0, 1),
     args...;
     min_char_width = 1,
     min_char_height = 1,

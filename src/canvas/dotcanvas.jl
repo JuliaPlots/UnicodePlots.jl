@@ -24,6 +24,7 @@ instead.
 struct DotCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
+    min_max::Tuple{UInt64,UInt64}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -39,10 +40,11 @@ end
 @inline x_pixel_per_char(::Type{DotCanvas}) = 1
 @inline y_pixel_per_char(::Type{DotCanvas}) = 2
 
-@inline lookup_encode(c::DotCanvas) = dot_signs
-@inline lookup_decode(c::DotCanvas) = dot_decode
+@inline lookup_encode(::DotCanvas) = dot_signs
+@inline lookup_decode(::DotCanvas) = dot_decode
 
-DotCanvas(args...; nargs...) = CreateLookupCanvas(DotCanvas, args...; nargs...)
+DotCanvas(args...; nargs...) =
+    CreateLookupCanvas(DotCanvas, (0b00, 0b11), args...; nargs...)
 
 function char_point!(
     c::DotCanvas,

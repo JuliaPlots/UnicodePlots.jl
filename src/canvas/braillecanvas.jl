@@ -93,8 +93,9 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     0 <= pixel_x <= c.pixel_width || return c
     0 <= pixel_y <= c.pixel_height || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    c.grid[char_x, char_y] =
-        Char(UInt64(c.grid[char_x, char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
+    if 0x2800 ≤ (val = UInt64(c.grid[char_x, char_y])) ≤ 0x28ff
+        c.grid[char_x, char_y] = Char(val | UInt64(braille_signs[char_x_off, char_y_off]))
+    end
     set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     c
 end
