@@ -7,7 +7,7 @@ into two pixels (top and bottom).
 struct HeatmapCanvas <: LookupCanvas
     grid::Array{UInt8,2}
     colors::Array{ColorType,2}
-    min_max::Tuple{UInt64,UInt64}
+    min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
     pixel_width::Int

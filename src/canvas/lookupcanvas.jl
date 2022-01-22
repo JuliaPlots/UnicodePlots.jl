@@ -97,7 +97,7 @@ function pixel!(
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
+    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] <= val <= c.min_max[2]
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
