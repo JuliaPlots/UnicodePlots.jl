@@ -19,14 +19,7 @@
     end
 
     @testset "isolated colorbar (#169)" begin
-        p = @inferred Plot(
-            [0],
-            [0],
-            colorbar = true,
-            colormap = :cividis,
-            width = 0,
-            min_width = 0,
-        )
+        p = @inferred Plot([0], [0], colorbar = true, colormap = :cividis, width = 0)
         test_ref("references/issues/isolated_colorbar.txt", @show_col(p))
     end
 end
