@@ -1,4 +1,4 @@
-# This file adapted from the following project: https://github.com/BIDS/colormap
+# This file adapted from the following project: github.com/BIDS/colormap
 
 # New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
 # and (in the case of viridis) Eric Firing.
@@ -12,7 +12,7 @@
 # to mpl-colormaps.
 #
 # You should have received a copy of the CC0 legalcode along with this
-# work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+# work.  If not, see <creativecommons.org/publicdomain/zero/1.0/>.
 
 const _magma_data = [
     (0.001462, 0.000466, 0.013866),
@@ -1309,7 +1309,7 @@ const _cividis_data = [
     (0.995737, 0.909344, 0.217772),
 ]
 
-# inspired from https://metacpan.org/pod/Term::Colormap
+# inspired from metacpan.org/pod/Term::Colormap
 const _jet_data = [
     (0.0, 0.0, 1.0),
     (0.0, 0.372549, 1.0),

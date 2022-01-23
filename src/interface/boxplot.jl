@@ -1,8 +1,7 @@
 """
     boxplot(data; kwargs...)
 
-Description
-============
+# Description
 
 Draws a box-and-whisker plot.
 
@@ -17,43 +16,31 @@ that case, the values, which have to be numeric, will be used as
 the data series, and the keys, which have to be strings, will be
 used as the labels.
 
-Usage
-======
+# Usage
+    
+    boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
 
-    boxplot([text], data; title = "", xlabel = "", ylabel = "", labels = true, border = :corners, margin = 3, padding = 1, color = :green, width = 40, xlim)
+    boxplot(dict; kwargs...)
 
-    boxplot(dictionary; nargs...)
+# Arguments
 
-Arguments
-==========
+$(arguments(
+    (
+        text = "the labels/captions of the boxes (optional)",
+        data = "a vector of vectors, with each inner vector representing a data series (choose a vector of vectors over a matrix to allow series of different lengths)",
+        dict = "a dictonary in which the keys will be used as `text` and the values will be used as `data`",
+    ); remove = (:ylim, :yscale, :height, :grid)
+))
 
-- **`text`** : Optional. The labels/captions of the boxes.
+# Returns
 
-- **`data`** : The data the box plot is based on. A vector of
-  vectors, with each inner vector representing a data series.
-  Choose a vector of vectors over a matrix to allow series of
-  different lengths.
+A plot object of type `Plot{BoxplotGraphics}`.
 
-- **`dictionary`** : A dictonary in which the keys will be used
-  as `text` and the values will be utilized as `data`.
+# Author(s)
 
-$DOC_PLOT_PARAMS
+- Matthew Lake (github.com/mgtlake)
 
-- **`xlim`** : Plotting range for the data axis.
-  `(0, 0)` stands for automatic.
-
-Returns
-========
-
-A plot object of type `Plot{BoxplotGraphics}`
-
-Author(s)
-==========
-
-- Matthew Lake (Github: https://github.com/mgtlake)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> boxplot([1, 2, 3, 7], title = "Test")
@@ -66,8 +53,7 @@ julia> boxplot([1, 2, 3, 7], title = "Test")
     1                   4                    7
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`histogram`](@ref), [`BoxplotGraphics`](@ref)
 """
@@ -78,7 +64,7 @@ function boxplot(
     color::UserColorType = :green,
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = out_stream_width(out_stream),
-    xlim = (0, 0),
+    xlim = KEYWORDS.xlim,
     kw...,
 )
     length(xlim) == 2 ||
@@ -116,17 +102,16 @@ function boxplot(
 end
 
 """
-`boxplot!(plot, data; nargs)` → `Plot`
+    boxplot!(plot, data; kwargs...)
 
-Mutating variant of `boxplot`, in which the first parameter (`plot`) specifies
-the existing plot to draw on.
+Mutating variant of `boxplot`, in which the first parameter (`plot`) specifies the existing plot to draw on.
 
 See `boxplot` for more information.
 """
 function boxplot!(
     plot::Plot{<:BoxplotGraphics},
     data::AbstractVector{<:Number};
-    name = " ",
+    name = KEYWORDS.name,
     kw...,
 )
     !isempty(data) || throw(ArgumentError("Can't append empty array to boxplot"))

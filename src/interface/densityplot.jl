@@ -1,58 +1,31 @@
 """
     densityplot(x, y; kwargs...)
 
-Description
-============
+# Description
 
 Draws a density plot for the given points.
 
-The first vector `x` should contain the horizontal
-positions for all the points. The second vector `y` should then
-contain the corresponding vertical positions respectively. This
-means that the two vectors must be of the same length and
-ordering.
+The first vector `x` should contain the horizontal positions for all the points.
+The second vector `y` should contain the corresponding vertical positions respectively.
+The two vectors must thus be of the same length and ordering.
 
-Usage
-======
+# Usage
 
-    densityplot(x, y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, width = 40, height = 15, xlim = (0, 0), ylim = (0, 0), grid = false)
+    densityplot(x, y; $(keywords(; remove = (:grid,))))
 
-Arguments
-==========
+# Arguments
 
-- **`x`** : The horizontal position for each point.
-  If omitted, the axes of `y` will be used as `x`.
+$(arguments(; add = (:x, :y), remove = (:grid,)))
 
-- **`y`** : The vertical position for each point.
+# Returns
 
-- **`name`** : Annotation of the current drawing to be displayed
-  on the right
+A plot object of type `Plot{DensityCanvas}`.
 
-$DOC_PLOT_PARAMS
+# Author(s)
 
-- **`height`** : Number of character rows that should be used
-  for plotting.
+- Christof Stocker (github.com/Evizero)
 
-- **`xlim`** : Plotting range for the x axis.
-  `(0, 0)` stands for automatic.
-
-- **`ylim`** : Plotting range for the y axis.
-  `(0, 0)` stands for automatic.
-
-- **`grid`** : If `true`, draws grid-lines at the origin.
-
-Returns
-========
-
-A plot object of type `Plot{DensityCanvas}`
-
-Author(s)
-==========
-
-- Christof Stocker (Github: https://github.com/Evizero)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
@@ -77,17 +50,16 @@ julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
         -3.4                                   2.9
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`scatterplot`](@ref), [`DensityCanvas`](@ref)
 """
 function densityplot(
     x::AbstractVector,
     y::AbstractVector;
-    color::UserColorType = :auto,
+    color::UserColorType = KEYWORDS.color,
     grid = false,
-    name = "",
+    name = KEYWORDS.name,
     kw...,
 )
     plot = Plot(x, y, DensityCanvas; grid = grid, kw...)

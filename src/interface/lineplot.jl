@@ -1,66 +1,40 @@
 """
     lineplot(x, y; kwargs...)
 
-Description
-============
+# Description
 
 Draws a path through the given points on a new canvas.
 
-The first (optional) vector `x` should contain the horizontal
-positions for all the points along the path. The second vector
-`y` should then contain the corresponding vertical positions
-respectively. This means that the two vectors must be of the same
-length and ordering.
+The first (optional) vector `x` should contain the horizontal positions for all the points along the path.
+The second vector `y` should then contain the corresponding vertical positions respectively.
+This means that the two vectors must be of the same length and ordering.
 
-Usage
-======
+# Usage
 
-    lineplot([x], y; name = "", title = "", xlabel = "", ylabel = "", labels = true, border = :solid, margin = 3, padding = 1, color = :auto, out_stream::Union{Nothing,IO} = nothing, width = out_stream_width(out_stream), xlim = (0, 0), ylim = (0, 0), canvas = BrailleCanvas, grid = true)
+    lineplot([x], y; $(keywords(; add = (:canvas,)))
 
     lineplot(fun, [start], [stop]; kwargs...)
 
-Arguments
-==========
+# Arguments
 
-- **`x`** : Optional. The horizontal position for each point.
-  Can be a real number or of type `TimeType`.
-  If omitted, the axes of `y` will be used as `x`.
+$(arguments(
+    (
+        fun = "a unary function ``f: R -> R`` that should be evaluated, and drawn as a path from `start` to `stop` (numbers in the domain)",
+        head_tail = "pass the symbol `:head`, `:tail` or `:both` to color the head/tail of the line with the complement of the chosen color",
+        x = "horizontal position for each point (can be a real number or of type `TimeType`), if omitted, the axes of `y` will be used as `x`",
+    ) ; add = (:x, :y, :canvas)
+))
 
-- **`y`** : The vertical position for each point.
+# Returns
 
-- **`fun`** : A unary function ``f: R -> R`` that should be
-  evaluated, and drawn as a path from `start` to `stop`
-  (numbers in the domain).
+A plot object of type `Plot{T<:Canvas}`.
 
-- **`name`** : Annotation of the current drawing to be displayed on the right.
+# Author(s)
 
-- **`head_tail`** : Pass the symbol `:head`, `:tail` or `:both` to color the head/tail of the line with the complement of the chosen color.
+- Christof Stocker (github.com/Evizero)
+- Milktrader (github.com/milktrader)
 
-$DOC_PLOT_PARAMS
-
-- **`xlim`** : Plotting range for the x axis.
-  `(0, 0)` stands for automatic.
-
-- **`ylim`** : Plotting range for the y axis.
-  `(0, 0)` stands for automatic.
-
-- **`canvas`** : The type of canvas that should be used for drawing.
-
-- **`grid`** : If `true`, draws grid-lines at the origin.
-
-Returns
-========
-
-A plot object of type `Plot{T<:Canvas}`
-
-Author(s)
-==========
-
-- Christof Stocker (Github: https://github.com/Evizero)
-- Milktrader (Github: https://github.com/milktrader)
-
-Examples
-=========
+# Examples
 
 ```julia-repl
 julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
@@ -85,8 +59,7 @@ julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
        1                                        7
 ```
 
-See also
-=========
+# See also
 
 [`Plot`](@ref), [`scatterplot`](@ref), [`stairs`](@ref),
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
@@ -95,9 +68,9 @@ See also
 function lineplot(
     x::AbstractVector,
     y::AbstractVector;
-    canvas::Type = BrailleCanvas,
-    color::UserColorType = :auto,
-    name::AbstractString = "",
+    canvas::Type = KEYWORDS.canvas,
+    color::UserColorType = KEYWORDS.color,
+    name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
     kw...,
 )
@@ -114,8 +87,8 @@ function lineplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector;
-    color::UserColorType = :auto,
-    name::AbstractString = "",
+    color::UserColorType = KEYWORDS.color,
+    name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
 )
     color = color == :auto ? next_color!(plot) : color
@@ -179,7 +152,7 @@ end
 function lineplot(
     f::Function,
     x::AbstractVector;
-    name = "",
+    name = KEYWORDS.name,
     xlabel = "x",
     ylabel = "f(x)",
     kw...,

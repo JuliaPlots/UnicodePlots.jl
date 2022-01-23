@@ -1,29 +1,58 @@
 """
     contourplot(x, y, A; kwargs...)
 
-Draws a contour plot on a new canvas. `A` can be a `Matrix` or a `Function` evaluated as `f(x, y)`.
+Draws a contour plot on a new canvas.
+
+# Usage
+
+    contourplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
-- **`levels`** : the number of contour levels. 
-- **`colormap`** : the colormap to use for the contour lines. 
-- **`colorbar`** : toggle the colorbar. 
-$DOC_PLOT_PARAMS
-- **`height`**: number of character rows that should be used for plotting.
-- **`xlim`**: plotting range for the x axis. `(0, 0)` stands for automatic.
-- **`ylim`**: plotting range for the y axis. `(0, 0)` stands for automatic.
-- **`grid`**: if `true`, draws grid-lines at the origin.
+
+$(arguments(
+    (
+        A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
+        levels = "the number of contour levels",
+    ); add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid)
+))
 
 # Author(s)
+
 - T Bltg (github.com/t-bltg)
+
+# Examples
+
+```julia-repl
+julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
+      ┌────────────────────────────────────────┐  ⠀⠀⠀⠀  
+    1 │⠀⠀⠀⠀⠀⠀⠀⠀⣀⠤⠒⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠒⠢⣄⡀⠀⠀⠀⠀⠀⠀⠀│  ┌──┐ 1
+      │⠀⠀⠀⠀⠀⡠⠔⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠱⠤⡀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⡰⠊⠀⠀⠀⠀⠀⠀⠀⠀⣀⠤⠔⠒⠒⠉⠉⠉⠉⠓⠒⠒⠤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠘⠢⡀⠀⠀│  │▄▄│  
+      │⠀⡰⠉⠀⠀⠀⠀⠀⠀⢀⡠⠒⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠑⠢⡀⠀⠀⠀⠀⠀⠀⠑⢆⠀│  │▄▄│  
+      │⡜⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠈⠢⡄⠀⠀⠀⠀⠀⠀⢣│  │▄▄│  
+      │⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⠀⠀⠀⢀⠔⠊⠁⠀⠀⠀⠀⠈⠙⠢⢄⠀⠀⠀⠀⠀⠀⠑⡄⠀⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⠀⢀⠇⠀⠀⠀⠀⠀⠀⡰⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢣⠀⠀⠀⠀⠀⠀⢘⡄⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠠⡃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢘⠄⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⠀⠘⡆⠀⠀⠀⠀⠀⠀⠣⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡜⠀⠀⠀⠀⠀⠀⢠⠃⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⠀⠀⠱⡀⠀⠀⠀⠀⠀⠀⠉⠒⣄⣀⠀⠀⠀⠀⢀⣀⠔⠉⠀⠀⠀⠀⠀⠀⢀⠎⠀⠀⠀⠀⠀⠀│  │▄▄│  
+      │⢇⠀⠀⠀⠀⠀⠀⠘⠦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⡠⠃⠀⠀⠀⠀⠀⠀⡰│  │▄▄│  
+      │⠈⠢⡀⠀⠀⠀⠀⠀⠀⠈⠒⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠋⠀⠀⠀⠀⠀⠀⢀⠖⠁│  │▄▄│  
+      │⠀⠀⠈⠱⣀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠒⠢⠤⢤⣀⣀⣀⣀⡠⠤⠤⠒⠊⠁⠀⠀⠀⠀⠀⠀⠀⢀⠔⠁⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⠀⠑⠦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠒⠁⠀⠀⠀⠀│  │▄▄│  
+   -1 │⠀⠀⠀⠀⠀⠀⠀⠀⠙⠒⠤⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠤⠔⠊⠁⠀⠀⠀⠀⠀⠀⠀│  └──┘ 0
+      └────────────────────────────────────────┘  ⠀⠀⠀⠀  
+      ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀  ⠀⠀⠀⠀  
+```
+
 """
 function contourplot(
     x::AbstractVector,
     y::AbstractVector,
     A::Union{Function,AbstractMatrix};
     canvas::Type = BrailleCanvas,
-    name::AbstractString = "",
+    name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
-    colormap = :viridis,
+    colormap = KEYWORDS.colormap,
     blend = false,
     grid = false,
     colorbar = true,

@@ -1,40 +1,3 @@
-const DOC_PLOT_PARAMS = """
-- **`title`** : text to display on the top of the plot.
-
-- **`xlabel`** : text to display on the `x` axis of the plot.
-
-- **`ylabel`** : text to display on the `y` axis of the plot.
-
-- **`xscale`** : `x`-axis scale `(:identity, :ln, :log2, :log10)`,
-  or scale function e.g. `x -> log10(x)`.
-
-- **`yscale`** : `y`-axis scale.
-
-- **`labels`** : can be used to hide the labels by setting `labels = false`.
-
-- **`border`** : the style of the bounding box of the plot.
-  Supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
-
-- **`compact`** : compact plot (labels), defaults to `false`.
-
-- **`blend`** : blend colors on the underlying canvas, defaults to `true`.
-
-- **`margin`** : number of empty characters to the left of the whole plot.
-
-- **`padding`** : Space of the left and right of the plot between the labels and the canvas.
-
-- **`color`** : color of the drawing.
-  Can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`,
-  `:normal`, an integer in the range `0`-`255` for Color256 palette,
-  or a tuple of three integers as RGB components.
-
-- **`colorbar_lim`** : colorbar limit, defaults to `(0, 1)`.
-
-- **`colorbar_border`** : colorbar border, defaults to `:solid`.
-
-- **`width`** : number of characters per row that should be used for plotting.
-"""
-
 #! format: off
 const BLANK = 0x0020
 const BLANK_BRAILLE = 0x2800
@@ -182,18 +145,7 @@ const SUPERSCRIPT = Dict(
     '8' => '⁸',
     '9' => '⁹',
 )
-#! format: on
-
-const COLOR_CYCLE = [:green, :blue, :red, :magenta, :yellow, :cyan]
-
-const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
-const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
-const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
-
-const MarkerType = Union{Symbol,Char,AbstractString}
-const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
-const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
-const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
+const COLOR_CYCLE = (:green, :blue, :red, :magenta, :yellow, :cyan)
 
 # standard terminals seem to respect a 4:3 aspect ratio
 # unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
@@ -203,6 +155,17 @@ const ASPECT_RATIO = 4 / 3
 # default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
+
+const MarkerType = Union{Symbol,Char,AbstractString}
+const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const JuliaColorType = Union{Symbol,Int}  # color type for printstyled (defined in base/util.jl)
+const ColorType = Union{Nothing,UInt8}  # internal UnicodePlots color type
+
+const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
+const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
+const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
+
+#! format: on
 
 function char_marker(marker::MarkerType)::Char
     if marker isa Symbol

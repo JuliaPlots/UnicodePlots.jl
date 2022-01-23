@@ -129,8 +129,8 @@ end
 @inline lookup_encode(::AsciiCanvas) = ascii_signs
 @inline lookup_decode(::AsciiCanvas) = ascii_decode
 
-AsciiCanvas(args...; nargs...) =
-    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; nargs...)
+AsciiCanvas(args...; kwargs...) =
+    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; kwargs...)
 
 function char_point!(
     c::AsciiCanvas,
