@@ -106,8 +106,6 @@ function main()
 
   tab = ' '^2
 
-  kw(x) = x isa Symbol ? string(':', x) : string(x)
-  base_type(x) = replace(string(typeof(x).name.name), "64" => "")
   indent(x, n) = repeat(tab, n) * join(split(x isa MD ? plain(x) : x, '\n'), '\n' * repeat(tab, n))
   desc_ex(k, d, n=2) = (
     if k == :border
@@ -126,7 +124,7 @@ function main()
   )
   description = join(
     (
-      "$tab- `$k::$(base_type(UnicodePlots.KEYWORDS[k])) = $(kw(UnicodePlots.KEYWORDS[k]))`: $(desc_ex(k, d * '.'))"
+      "$tab- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
       for (k, d) in pairs(UnicodePlots.DESCRIPTION) if k in keys(UnicodePlots.KEYWORDS)
     ), '\n'
   )
@@ -254,9 +252,9 @@ The `heatmap` function also supports axis scaling using the parameters `xfact`, 
 
 The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
-In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable the colorbar and configure its border.
+In addition, the `colorbar` and `colorbar_border` options may be used to toggle the colorbar and configure its border.
 
-The `zlabel` option and `zlabel!` method may be used to set the z axis (colorbar) label.
+The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
 $(examples.heatmap2)
 
@@ -333,7 +331,7 @@ The following types of `Canvas` are implemented:
     This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 
   - **HeatmapCanvas**:
-    This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of y coordinates being displayed.
+    This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
 
   - **AsciiCanvas** and **DotCanvas**:
     These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.

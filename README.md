@@ -193,9 +193,9 @@ The `heatmap` function also supports axis scaling using the parameters `xfact`, 
 
 The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
-In addition, the `colorbar` and `colorbar_border` options may be used to enable/disable the colorbar and configure its border.
+In addition, the `colorbar` and `colorbar_border` options may be used to toggle the colorbar and configure its border.
 
-The `zlabel` option and `zlabel!` method may be used to set the z axis (colorbar) label.
+The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
 ```julia
 heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)
@@ -206,21 +206,21 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 
 All plots support the set (or a subset) of the following named parameters:
 
-  - `symbols::Array = ['■']`: specifies the characters that should be used to render the bars.
-  - `title::String = ""`: text to display on the top of the plot.
-  - `name::String = ""`: annotation of the current drawing to be displayed on the right.
-  - `xlabel::String = ""`: text to display on the `x` axis of the plot.
-  - `ylabel::String = ""`: text to display on the `y` axis of the plot.
-  - `zlabel::String = ""`: text to display on the `z` axis (colorbar) of the plot.
-  - `xscale::Symbol = :identity`: `x`-axis scale `(:identity, :ln, :log2, :log10)`, or scale function e.g. `x -> log10(x)`.
+  - `symbols::Array = ['■']`: characters used to render the bars.
+  - `title::String = ""`: text displayed on top of the plot.
+  - `name::String = ""`: current drawing annotation displayed on the right.
+  - `xlabel::String = ""`: text displayed on the `x` axis of the plot.
+  - `ylabel::String = ""`: text displayed on the `y` axis of the plot.
+  - `zlabel::String = ""`: text displayed on the `z` axis (colorbar) of the plot.
+  - `xscale::Symbol = :identity`: `x`-axis scale (`:identity`, `:ln`, `:log2`, `:log10`), or scale function e.g. `x -> log10(x)`.
   - `yscale::Symbol = :identity`: `y`-axis scale.
-  - `labels::Bool = true`: used to hide the labels by setting `labels=false`.
+  - `labels::Bool = true`: show plot labels.
     ```julia
     lineplot(sin, 1:.5:20, labels=false, border=:dotted)
     ```
     ![Labels](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/labels.png)
     
-  - `border::Symbol = :solid`: style of the bounding box of the plot, supports `:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`.
+  - `border::Symbol = :solid`: plot bounding box style (`:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
     ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
     ```
@@ -242,34 +242,34 @@ All plots support the set (or a subset) of the following named parameters:
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/border_none.png)
     
   - `margin::Int = 3`: number of empty characters to the left of the whole plot.
-  - `padding::Int = 1`: space of the left and right of the plot between the labels and the canvas.
-  - `color::Symbol = :green`: can be any of `:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, an integer in the range `0`-`255`, or a tuple of `3` integers as `RGB` components.
-  - `width::Int = 40`: number of characters per row that should be used for plotting.
+  - `padding::Int = 1`: left and right space between the labels and the canvas.
+  - `color::Symbol = :auto`: choose from (`:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, `:auto`), use an integer in `[0-255]`, or provide `3` integers as `RGB` components.
+  - `width::Int = 40`: number of characters per canvas row.
     ```julia
     lineplot(sin, 1:.5:20, width=60, border=:dotted)
     ```
     ![Width](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/width.png)
     
-  - `height::Int = 15`: number of character rows that should be used for plotting.
+  - `height::Int = 15`: number of canvas rows.
     ```julia
     lineplot(sin, 1:.5:20, height=18, border=:dotted)
     ```
     ![Height](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/height.png)
     
   - `xlim::Tuple = (0, 0)`: plotting range for the `x` axis (`(0, 0)` stands for automatic).
-  - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis (`(0, 0)` stands for automatic).
-  - `zlim::Tuple = (0, 0)`: colormap scaled data range (`(0, 0)` stands for automatic).
+  - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis.
+  - `zlim::Tuple = (0, 0)`: colormap scaled data range.
   - `colorbar::Bool = false`: toggle the colorbar.
-  - `colormap::Symbol = :viridis`: choose from `:viridis`, `:plasma`, `:magma`, `:inferno`, `:cividis`, `:jet`, `:gray` (more from `keys(UnicodePlots.COLOR_MAP_DATA)`), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
-  - `colorbar_lim::Tuple = (0, 1)`: colorbar limit (defaults to `(0, 1)`).
-  - `colorbar_border::Symbol = :solid`: style of the bounding box of the color bar (supports `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, and `:none`).
-  - `canvas::DataType = BrailleCanvas`: type of canvas that should be used for drawing.
-  - `grid::Bool = true`: if `true`, draws grid-lines at the origin.
-  - `compact::Bool = false`: compact plot labels (defaults to `false`).
-  - `unicode_exponent::Bool = false`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1` (defaults to `false`).
-  - `blend::Bool = true`: blend colors on the underlying canvas (defaults to `true`).
+  - `colormap::Symbol = :viridis`: choose from (`:viridis`, `:cividis`, `:plasma`, `:jet`, `:gray`, `keys(UnicodePlots.COLOR_MAP_DATA)`...), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
+  - `colorbar_lim::Tuple = (0, 1)`: colorbar limit.
+  - `colorbar_border::Symbol = :solid`: color bar bounding box style (`:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
+  - `canvas::DataType = BrailleCanvas`: type of canvas used for drawing.
+  - `grid::Bool = true`: draws grid-lines at the origin.
+  - `compact::Bool = false`: compact plot labels.
+  - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
+  - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
-  - `visible::Bool = true`: visible canvas (defaults to `true`).
+  - `visible::Bool = true`: visible canvas.
 
 *Note*: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
 
@@ -365,7 +365,7 @@ The following types of `Canvas` are implemented:
 
   * **BrailleCanvas**: This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
   * **BlockCanvas**: This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
-  * **HeatmapCanvas**: This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of y coordinates being displayed.
+  * **HeatmapCanvas**: This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
   * **AsciiCanvas** and **DotCanvas**: These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
   * **DensityCanvas**: Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
   * **BarplotGraphics**: This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
