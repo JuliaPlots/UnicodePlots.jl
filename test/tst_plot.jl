@@ -145,3 +145,8 @@ end
         annotate!(p, 0, 0, "Origin"; halign = h, valign = v)
     end
 end
+
+@testset "invisible" begin
+    p = Plot([0], [0], width = 0)
+    @test !p.graphics.visible
+end
