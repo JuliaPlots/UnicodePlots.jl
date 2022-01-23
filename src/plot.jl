@@ -179,8 +179,8 @@ function Plot(
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    width = max(width, min_width)
+    length(X) == length(Y) || throw(DimensionMismatch("X and Y must have same length"))
+    (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
     min_x, max_x = extend_limits(X, xlim, xscale)
@@ -193,7 +193,7 @@ function Plot(
         width,
         height,
         blend = blend,
-        visible = width > 0 && height > 0,
+        visible = visible,
         origin_x = min_x,
         origin_y = min_y,
         width = p_width,
