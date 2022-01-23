@@ -56,7 +56,7 @@ function BrailleCanvas(
     char_height = max(char_height, 2)
     pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
-    grid = fill(Char(0x2800), char_width, char_height)
+    grid = fill(Char(BLANK_BRAILLE), char_width, char_height)
     colors = fill(nothing, char_width, char_height)
     BrailleCanvas(
         grid,
@@ -93,8 +93,9 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     0 <= pixel_x <= c.pixel_width || return c
     0 <= pixel_y <= c.pixel_height || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    c.grid[char_x, char_y] =
-        Char(UInt64(c.grid[char_x, char_y]) | UInt64(braille_signs[char_x_off, char_y_off]))
+    if BLANK_BRAILLE <= (val = UInt64(c.grid[char_x, char_y])) <= FULL_BRAILLE
+        c.grid[char_x, char_y] = Char(val | UInt64(braille_signs[char_x_off, char_y_off]))
+    end
     set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
     c
 end

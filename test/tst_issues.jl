@@ -19,7 +19,17 @@
     end
 
     @testset "isolated colorbar (#169)" begin
-        p = @inferred Plot([0], [0], colorbar = true, colormap = :cividis, width = 0)
+        p = Plot([0], [0], colorbar = true, colormap = :cividis, width = 0)
         test_ref("references/issues/isolated_colorbar.txt", @show_col(p))
+    end
+
+    @testset "steps (#211)" begin
+        x = 1:5
+        y = [1.0, 2.0, 3.0, 2.0, 1.0]
+        p = scatterplot(x, y, marker = :circle)
+        x = [1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 5.0]
+        y = [1.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 1.0, 1.0]
+        p = lineplot!(p, x, y)
+        test_ref("references/issues/steps.txt", @show_col(p))
     end
 end

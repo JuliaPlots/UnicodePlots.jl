@@ -35,6 +35,7 @@ using binary operations.
 struct BlockCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
+    min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -50,10 +51,11 @@ end
 @inline x_pixel_per_char(::Type{BlockCanvas}) = 2
 @inline y_pixel_per_char(::Type{BlockCanvas}) = 2
 
-@inline lookup_encode(c::BlockCanvas) = block_signs
-@inline lookup_decode(c::BlockCanvas) = block_decode
+@inline lookup_encode(::BlockCanvas) = block_signs
+@inline lookup_decode(::BlockCanvas) = block_decode
 
-BlockCanvas(args...; nargs...) = CreateLookupCanvas(BlockCanvas, args...; nargs...)
+BlockCanvas(args...; nargs...) =
+    CreateLookupCanvas(BlockCanvas, (0b0000, 0b1111), args...; nargs...)
 
 function char_point!(
     c::BlockCanvas,

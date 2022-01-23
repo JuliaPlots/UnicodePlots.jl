@@ -110,6 +110,7 @@ instead.
 struct AsciiCanvas <: LookupCanvas
     grid::Array{UInt16,2}
     colors::Array{ColorType,2}
+    min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -125,10 +126,11 @@ end
 @inline x_pixel_per_char(::Type{AsciiCanvas}) = 3
 @inline y_pixel_per_char(::Type{AsciiCanvas}) = 3
 
-@inline lookup_encode(c::AsciiCanvas) = ascii_signs
-@inline lookup_decode(c::AsciiCanvas) = ascii_decode
+@inline lookup_encode(::AsciiCanvas) = ascii_signs
+@inline lookup_decode(::AsciiCanvas) = ascii_decode
 
-AsciiCanvas(args...; nargs...) = CreateLookupCanvas(AsciiCanvas, args...; nargs...)
+AsciiCanvas(args...; nargs...) =
+    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; nargs...)
 
 function char_point!(
     c::AsciiCanvas,

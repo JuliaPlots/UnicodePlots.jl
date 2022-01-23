@@ -34,6 +34,7 @@ function lookup_decode end
 
 function CreateLookupCanvas(
     ::Type{T},
+    min_max,
     char_width::Int,
     char_height::Int;
     blend::Bool = true,
@@ -58,6 +59,7 @@ function CreateLookupCanvas(
     T(
         grid,
         colors,
+        min_max,
         blend,
         visible,
         pixel_width,
@@ -95,7 +97,9 @@ function pixel!(
     0 <= pixel_x <= pixel_width(c) || return c
     0 <= pixel_y <= pixel_height(c) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
+    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] <= val <= c.min_max[2]
+        grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
+    end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
     set_color!(c.colors, char_x, char_y, crayon_256_color(color), blend)
     c

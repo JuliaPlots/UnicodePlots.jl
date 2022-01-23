@@ -615,8 +615,8 @@ end
 
 function Base.show(io::IO, p::Plot)
     c = p.graphics
-    🗷 = Char(0x0020)  # blank outside canvas
-    🗹 = Char(c isa BrailleCanvas ? 0x2800 : 🗷)  # blank inside canvas
+    🗷 = Char(BLANK)  # blank outside canvas
+    🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
     ############################################################
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug

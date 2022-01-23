@@ -36,6 +36,10 @@ const DOC_PLOT_PARAMS = """
 """
 
 #! format: off
+const BLANK = 0x0020
+const BLANK_BRAILLE = 0x2800
+const FULL_BRAILLE = 0x28ff
+
 const BORDER_SOLID = (
     tl = '┌',
     tr = '┐',
@@ -87,14 +91,14 @@ const BORDER_NONE = (
     r = ' ',
 )
 const BORDER_BNONE = (
-    tl = Char(0x2800),
-    tr = Char(0x2800),
-    bl = Char(0x2800),
-    br = Char(0x2800),
-    t = Char(0x2800),
-    l = Char(0x2800),
-    b = Char(0x2800),
-    r = Char(0x2800),
+    tl = Char(BLANK_BRAILLE),
+    tr = Char(BLANK_BRAILLE),
+    bl = Char(BLANK_BRAILLE),
+    br = Char(BLANK_BRAILLE),
+    t = Char(BLANK_BRAILLE),
+    l = Char(BLANK_BRAILLE),
+    b = Char(BLANK_BRAILLE),
+    r = Char(BLANK_BRAILLE),
 )
 const BORDER_DASHED = (
     tl = '┌',
