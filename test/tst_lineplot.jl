@@ -251,3 +251,10 @@ end
     scl(x) = log(x)
     lineplot(1:10, 1:10, yscale = scl)
 end
+
+@testset "arrows" begin
+    p = lineplot([0.0, 1.0], [0.0, 1.0], head_tail = :head, name = "head", color = :red)
+    lineplot!(p, [0.0, 1.0], [1.0, 0.0], head_tail = :tail, name = "tail", color = :green)
+    lineplot!(p, [0.0, 1.0], [0.5, 0.5], head_tail = :both, name = "both", color = :blue)
+    test_ref("references/lineplot/arrows.txt", @show_col(p))
+end

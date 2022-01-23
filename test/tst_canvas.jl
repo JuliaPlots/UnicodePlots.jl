@@ -32,6 +32,10 @@ end
             @test @inferred(pixel_width(c)) === 30 * xres
             @test @inferred(pixel_height(c)) === 15 * yres
             @test @inferred(pixel_size(c)) === (pixel_width(c), pixel_height(c))
+            if T <: UnicodePlots.LookupCanvas  # coverage
+                @test length(UnicodePlots.lookup_encode(c)) > 0
+                @test length(UnicodePlots.lookup_decode(c)) > 0
+            end
         end
     end
 end
