@@ -83,7 +83,7 @@ function main()
                              origin_x=0., origin_y=0.,  # position in virtual space
                              width=1., height=1.)       # size of the virtual space
       lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
-      points!(canvas, randn(50), randn(50), :red)       # virtual space
+      points!(canvas, rand(50), rand(50), :red)         # virtual space
       lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
       pixel!(canvas, 5, 8, :red)                        # pixel space
       Plot(canvas, border=:dotted)
@@ -384,7 +384,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
-      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ") for c in code]
+      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ", r"\brand\b\(" => "rand(RNG, ") for c in code]
       println(io, "_ex_$i() = begin\n$(indent(join(code, '\n'), 1))\nend")
       println(io, "plt = _ex_$i(); save(plt, \"$k\")")
     end
