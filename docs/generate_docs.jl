@@ -163,7 +163,7 @@ Here is a quick hello world example of a typical use-case:
 
 $(examples.lineplot1)
 
-There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl/tree/docstring#low-level-interface)).
+There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
 
 In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
 
