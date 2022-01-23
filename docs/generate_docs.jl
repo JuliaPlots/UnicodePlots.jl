@@ -2,7 +2,7 @@ using UnicodePlots
 using Markdown
 import Markdown: MD, Paragraph, plain
 
-main() = begin
+function main()
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "2.x"
 
