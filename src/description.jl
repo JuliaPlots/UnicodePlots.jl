@@ -110,7 +110,7 @@ Adds default keywords to a function signature, in a docstring.
 
 - `extra::NamedTuple`: add extra keywords in the form `keyword=value`.
 - `default::Tuple`: default `UnicodePlots` keywords.
-- `add::Tuple`: add extra symbols, not listed in `default` but present in `DESCRIPTION`.
+- `add::Tuple`: add extra symbols, not listed in `default` but present in `KEYWORDS`.
 - `remove::Tuple`: remove symbols from `default`.
 """
 function keywords(
