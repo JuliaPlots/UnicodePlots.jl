@@ -109,8 +109,11 @@ end
     @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
     @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
     @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
+end
 
+@testset "docs" begin
     # coverage
     @test UnicodePlots.arguments() isa String
     @test UnicodePlots.keywords() isa String
+    @test UnicodePlots.default_with_type(:foo_bar) isa String
 end
