@@ -63,8 +63,8 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 function scatterplot(
     x::AbstractVector,
     y::AbstractVector;
-    canvas::Type = BrailleCanvas,
-    color::Union{UserColorType,AbstractVector} = :auto,
+    canvas::Type = KEYWORDS.canvas,
+    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
     kw...,
@@ -79,7 +79,7 @@ function scatterplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector;
-    color::Union{UserColorType,AbstractVector} = :auto,
+    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
 )

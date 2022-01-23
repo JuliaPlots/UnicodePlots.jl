@@ -25,9 +25,9 @@ function contourplot(
     y::AbstractVector,
     A::Union{Function,AbstractMatrix};
     canvas::Type = BrailleCanvas,
-    name::AbstractString = "",
+    name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
-    colormap = :viridis,
+    colormap = KEYWORDS.colormap,
     blend = false,
     grid = false,
     colorbar = true,

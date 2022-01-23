@@ -37,17 +37,17 @@ A plot object of type `Plot{HeatmapCanvas}`.
 """
 function heatmap(
     A::AbstractMatrix;
-    xlim = (0, 0),
-    ylim = (0, 0),
-    zlim = (0, 0),
+    xlim = KEYWORDS.xlim,
+    ylim = KEYWORDS.ylim,
+    zlim = KEYWORDS.zlim,
     xoffset = 0.0,
     yoffset = 0.0,
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = 0,
     height::Int = 0,
-    margin::Int = 3,
-    padding::Int = 1,
-    colormap = :viridis,
+    margin::Int = KEYWORDS.margin,
+    padding::Int = KEYWORDS.padding,
+    colormap = KEYWORDS.colormap,
     xfact = 0,
     yfact = 0,
     labels = true,

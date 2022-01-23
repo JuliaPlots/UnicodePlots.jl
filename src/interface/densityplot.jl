@@ -5,11 +5,9 @@
 
 Draws a density plot for the given points.
 
-The first vector `x` should contain the horizontal
-positions for all the points. The second vector `y` should then
-contain the corresponding vertical positions respectively. This
-means that the two vectors must be of the same length and
-ordering.
+The first vector `x` should contain the horizontal positions for all the points.
+The second vector `y` should contain the corresponding vertical positions respectively.
+The two vectors must thus be of the same length and ordering.
 
 # Usage
 
@@ -59,9 +57,9 @@ julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
 function densityplot(
     x::AbstractVector,
     y::AbstractVector;
-    color::UserColorType = :auto,
+    color::UserColorType = KEYWORDS.color,
     grid = false,
-    name = "",
+    name = KEYWORDS.name,
     kw...,
 )
     plot = Plot(x, y, DensityCanvas; grid = grid, kw...)

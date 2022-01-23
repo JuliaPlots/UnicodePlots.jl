@@ -63,8 +63,8 @@ function barplot(
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = out_stream_width(out_stream),
     symb = nothing,  # deprecated
-    symbols = ['■'],
-    xscale = :identity,
+    symbols = KEYWORDS.symbols,
+    xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale),
     kw...,
 )

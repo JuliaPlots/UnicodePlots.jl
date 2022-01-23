@@ -68,9 +68,9 @@ julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
 function lineplot(
     x::AbstractVector,
     y::AbstractVector;
-    canvas::Type = BrailleCanvas,
-    color::UserColorType = :auto,
-    name::AbstractString = "",
+    canvas::Type = KEYWORDS.canvas,
+    color::UserColorType = KEYWORDS.color,
+    name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
     kw...,
 )
@@ -87,8 +87,8 @@ function lineplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector;
-    color::UserColorType = :auto,
-    name::AbstractString = "",
+    color::UserColorType = KEYWORDS.color,
+    name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
 )
     color = color == :auto ? next_color!(plot) : color
@@ -152,7 +152,7 @@ end
 function lineplot(
     f::Function,
     x::AbstractVector;
-    name = "",
+    name = KEYWORDS.name,
     xlabel = "x",
     ylabel = "f(x)",
     kw...,

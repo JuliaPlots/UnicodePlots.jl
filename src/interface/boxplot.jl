@@ -64,7 +64,7 @@ function boxplot(
     color::UserColorType = :green,
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = out_stream_width(out_stream),
-    xlim = (0, 0),
+    xlim = KEYWORDS.xlim,
     kw...,
 )
     length(xlim) == 2 ||
@@ -111,7 +111,7 @@ See `boxplot` for more information.
 function boxplot!(
     plot::Plot{<:BoxplotGraphics},
     data::AbstractVector{<:Number};
-    name = " ",
+    name = KEYWORDS.name,
     kw...,
 )
     !isempty(data) || throw(ArgumentError("Can't append empty array to boxplot"))
