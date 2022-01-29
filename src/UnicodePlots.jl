@@ -4,6 +4,12 @@ using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
+
+using CoordinateTransformations: cameramap, PerspectiveMap, AffineMap
+using Rotations: RotXY
+using LinearAlgebra
+
+import MarchingCubes
 import Contour
 
 export GraphicsArea,
@@ -50,6 +56,8 @@ export GraphicsArea,
     scatterplot!,
     contourplot,
     contourplot!,
+    surfaceplot,
+    surfaceplot!,
     stairs,
     stairs!,
     histogram,
@@ -59,6 +67,11 @@ export GraphicsArea,
     spy,
     boxplot,
     boxplot!,
+    Orthographic,
+    Perspective,
+    draw_axes!,
+    lookat,
+    MVP,
     savefig
 
 include("common.jl")
@@ -77,6 +90,7 @@ include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
 
 include("description.jl")
+include("volume.jl")
 
 include("plot.jl")
 include("colormaps.jl")
