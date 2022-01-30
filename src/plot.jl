@@ -140,7 +140,8 @@ function validate_input(
     z::Union{AbstractVector{<:Number},Nothing} = nothing,
 )
     if z !== nothing
-        length(x) == length(y) == length(z) || throw(DimensionMismatch("x, y and z must have same length"))
+        length(x) == length(y) == length(z) ||
+            throw(DimensionMismatch("x, y and z must have same length"))
         idx = map(x, y, z) do i, j, k
             isfinite(i) && isfinite(j) && isfinite(k)
         end
@@ -183,7 +184,9 @@ function Plot(
     grid::Bool = KEYWORDS.grid,
     min_width::Int = 5,
     min_height::Int = 2,
-    transform::Union{MVP,Nothing} = nothing,
+    transform::Union{MVP,Symbol,Nothing} = nothing,
+    elevation::Number = KEYWORDS.elevation,
+    azimuth::Number = KEYWORDS.azimuth,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
@@ -191,14 +194,24 @@ function Plot(
     height = max(height, min_height)
 
     X, Y, Z = validate_input(X, Y, Z)
-    if transform !== nothing
-        (xscale !== :identity || yscale !== :identity) &&
-            throw(error("{x,y}scale are unsupported when using 3D"))
-        X, Y = transform(vcat(X', Y', Z'))
-    end
 
     min_x, max_x = extend_limits(X, xlim, xscale)
     min_y, max_y = extend_limits(Y, ylim, yscale)
+
+    if transform !== nothing
+        if transform isa Symbol
+            transform = MVP(
+                X, Y, Z;
+                projection = transform,
+                elevation = elevation,
+                azimuth = azimuth,
+            )
+        end
+        (xscale !== :identity || yscale !== :identity) &&
+            throw(error("{x,y}scale are unsupported when using 3D"))
+        X, Y = transform(vcat(X', Y', Z'))
+        grid = blend = false
+    end
 
     p_width = max_x - min_x
     p_height = max_y - min_y

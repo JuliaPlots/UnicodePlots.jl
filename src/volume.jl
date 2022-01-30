@@ -1,18 +1,39 @@
-translate_4x4(v) = [
+translate_4x4(v) = @SMatrix([
     1 0 0 v[1]
     0 1 0 v[2]
     0 0 1 v[3]
     0 0 0 1
-]
+])
 
 rotate_4x4(r) = cat(r, 1; dims = (1, 2))
 
-camera_4x4(l, u, f, eye) = [
+rot_x(θ) = @SMatrix([
+    1 0 0 0 
+    0 cosd(θ) -sind(θ) 0
+    0 sind(θ) +cosd(θ) 0
+    0 0 0 1
+])
+
+rot_y(θ) = @SMatrix([
+    +cosd(θ) 0 sind(θ) 0
+    0 1 0 0
+    -sind(θ) 0 cosd(θ) 0
+    0 0 0 1
+])
+
+rot_z(θ) = @SMatrix([
+    cosd(θ) -sind(θ) 0 0
+    sind(θ) +cosd(θ) 0 0
+    0 0 1 0
+    0 0 0 s1
+])
+
+camera_4x4(l, u, f, eye) = @SMatrix([
     l[1] l[2] l[3] -dot(l, eye)
     u[1] u[2] u[3] -dot(u, eye)
     f[1] f[2] f[3] -dot(f, eye)
     0 0 0 1
-]
+])
 
 """
   lookat(args...; kwargs...)
@@ -47,24 +68,24 @@ end
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
     *(
-        [
+        @SMatrix([
             2n/(r - l) 0 0 0
             0 2n/(t - b) 0 0
             0 0 1 0
             0 0 0 1
-        ],
-        [
+        ]),
+        @SMatrix([
             1 0 0 (r + l)/2n
             0 1 0 (t + b)/2n
             0 0 1 0
             0 0 0 1
-        ],
-        [
+        ]),
+        @SMatrix([
             1 0 0 0
             0 1 0 0
             0 0 (f + n)/(f - n) -2f * n/(f - n)
             0 0 1 0
-        ],
+        ]),
     )
 end
 
@@ -83,36 +104,41 @@ end
   - `f`: distance to the far depth clipping plane
 """
 ortho(l, r, b, t, n, f) = *(
-        [
-            2/(r - l) 0 0 0
-            0 2/(t - b) 0 0
-            0 0 2/(f - n) 0
-            0 0 0 1
-        ],
-        [
-            1 0 0 -(l + r)/2
-            0 1 0 -(t + b)/2
-            0 0 1 -(f + n)/2
-            0 0 0 1
-        ],
-    )
+    @SMatrix([
+        2/(r - l) 0 0 0
+        0 2/(t - b) 0 0
+        0 0 2/(f - n) 0
+        0 0 0 1
+    ]),
+    @SMatrix([
+        1 0 0 -(l + r)/2
+        0 1 0 -(t + b)/2
+        0 0 1 -(f + n)/2
+        0 0 0 1
+    ]),
+)
 
 abstract type Projection end
 
 struct Orthographic{T} <: Projection where {T}
     A::Matrix{T}
-    Orthographic(l::T, r::T, b::T, t::T, n::T, f::T) where {T} =
-        new{T}(ortho(l, r, b, t, n, f))
+    Orthographic(args::T...) where {T} = new{T}(ortho(args...))
 end
 
 struct Perspective{T} <: Projection where {T}
     A::Matrix{T}
-    Perspective(l::T, r::T, b::T, t::T, n::T, f::T) where {T} =
-        new{T}(frustum(l, r, b, t, n, f))
+    function Perspective(args::T...) where {T}
+        P = new{T}(frustum(args...))
+        P.A[1, 1] *= -1  # flip x
+        P.A[2, 2] *= -1  # flip y
+        P
+    end
 end
 
 """
-  MVP
+  MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection)
+  MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool)
+  MVP(x, y, z, p::Symbol = :orthographic, elevation = 30, azimuth = -37.5)
 
 # Description
 
@@ -123,6 +149,36 @@ struct MVP
     ortho::Bool
     MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection) =
         new(P.A * V * M, P isa Orthographic)
+    MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool) =
+        new(P * V * M, ortho)
+    function MVP(
+        x = nothing, y = nothing, z = nothing;
+        projection::Symbol = :orthographic, elevation::Number = 30, azimuth::Number = -37.5,
+        l = nothing, r = nothing, b = nothing, t = nothing, n = nothing, f = nothing
+    )
+        if (ortho = projection === :orthographic)
+            l_, r_ = x === nothing ? (-2., 2.) : 2 .* extrema(Float64, x)
+            b_, t_ = y === nothing ? (l_, r_) : 2 .* extrema(Float64, y)
+            n_, f_ = z === nothing ? (l_, r_) : 2 .* extrema(Float64, z)
+        else
+            l_, r_ = x === nothing ? (-1., 1.) : extrema(Float64, x)
+            b_, t_ = y === nothing ? (l_, r_) : extrema(Float64, y)
+            n_, f_ = 1., 100.
+        end
+        args = (
+            something(l, l_),
+            something(r, r_),
+            something(b, b_),
+            something(t, t_),
+            something(n, n_),
+            something(f, f_),
+        )
+        P = ortho ? Orthographic(args...) : Perspective(args...)
+        cam_pos = [0, 0, 0.5]
+        M = I * (rot_x(elevation) * rot_y(azimuth)) * I  # translate * rotate * scale
+        V = lookat(cam_pos)
+        new(P.A * V * M, ortho)
+    end
 end
 
 function (t::MVP)(a::AbstractMatrix)
@@ -163,8 +219,9 @@ zaxis(T, o, l) = axis(T, float(o), l, 3)
 Draws (x, y, z) cartesian coordinates axes in (R, G, B) colors.
 """
 function draw_axes!(p, o = [0, 0, 0], l = 0.5)
-    lineplot!(p, xaxis(p.transform, o, l)..., color = :red)
-    lineplot!(p, yaxis(p.transform, o, l)..., color = :green)
-    lineplot!(p, zaxis(p.transform, o, l)..., color = :blue)
+    origin = length(o) == 3 ? o : (inv(p.transform.A) * [o..., 0, 1])[1:3]
+    lineplot!(p, xaxis(p.transform, origin, l)..., color = :red)
+    lineplot!(p, yaxis(p.transform, origin, l)..., color = :green)
+    lineplot!(p, zaxis(p.transform, origin, l)..., color = :blue)
     p
 end

@@ -4,9 +4,6 @@ using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
-
-using CoordinateTransformations: cameramap, PerspectiveMap, AffineMap
-using Rotations: RotXY
 using LinearAlgebra
 using StaticArrays
 
@@ -68,10 +65,7 @@ export GraphicsArea,
     spy,
     boxplot,
     boxplot!,
-    Orthographic,
-    Perspective,
     draw_axes!,
-    lookat,
     MVP,
     savefig
 
@@ -99,6 +93,7 @@ include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
 include("interface/contourplot.jl")
+include("interface/surfaceplot.jl")
 include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")

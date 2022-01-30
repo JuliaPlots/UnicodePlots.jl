@@ -29,48 +29,62 @@ julia> surfaceplot(-1:.1:1, -1:.1:1, -1:.1:1, torus)
 ```
 """
 function surfaceplot(
-    x::AbstractVector,
-    y::AbstractVector,
-    z::AbstractVector,
-    V::Union{Function,AbstractArray},
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::AbstractVector{<:Number},
+    V::Union{Function,AbstractArray{<:Number}};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
+    color::UserColorType = KEYWORDS.color,
+    colormap = KEYWORDS.colormap,
+    transform::Union{MVP,Symbol} = :orthographic,
     isovalue::Number = 0,
-    elevation::Number = atand(1 / √2),
-    azimuth::Number = -45,
     kw...,
 )
     if V isa Function
-        X = repeat(x', length(y), 1)
-        Y = repeat(y, 1, length(x))
-        Z = nothing  # FIXME
+        xx = repeat(x', length(y), 1)
+        yy = repeat(y, 1, length(x))
+        X = repeat(xx, 1, 1, length(z))
+        Y = repeat(yy, 1, 1, length(z))
+        Z = zero(X)
+        for (i, v) ∈ enumerate(z)
+            Z[:, :, i] .= v
+        end
         V = map(V, X, Y, Z) |> Array
     end
+    callback = colormap_callback(colormap)
 
-    plot = Plot(x, y, z, canvas; kw...)
-    surfaceplot!(plot, x, y, z, V)
+    plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kw...)
+    surfaceplot!(plot, x, y, z, V; name = name, color = color, colormap = colormap, isovalue = isovalue)
 end
+
+tri2xyz(v1, v2, v3) = (
+    [v1[1], v2[1], v3[1], v1[1]],
+    [v1[2], v2[2], v3[2], v1[2]],
+    [v1[3], v2[3], v3[3], v1[3]],
+)
 
 function surfaceplot!(
     plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    z::AbstractVector,
-    V::AbstractArray,
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::AbstractVector{<:Number},
+    V::AbstractArray{<:Number};
     canvas::Type = BrailleCanvas,
+    color::UserColorType = KEYWORDS.color,
+    colormap = KEYWORDS.colormap,
     name::AbstractString = KEYWORDS.name,
     isovalue::Number = 0,
-    elevation::Number = atand(1 / √2),
-    azimuth::Number = -45,
 )
-    mc = MarchingCubes.MC(V, Int)
-    march(mc, isovalue)
+    plot.colormap = callback = colormap_callback(colormap)
 
-    # mc.triangles
-    # mc.vertices
-    # mc.normals
+    mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
+    MarchingCubes.march(mc, isovalue)
 
-    scatterplot()
+    # mc.triangles - mc.vertices - mc.normals
 
+    for t in mc.triangles
+        lineplot!(plot, tri2xyz(mc.vertices[t[1]], mc.vertices[t[2]], mc.vertices[t[3]])...; color = color, name = name)
+    end
     plot
 end

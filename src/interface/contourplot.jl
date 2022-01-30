@@ -45,9 +45,9 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
 ```
 """
 function contourplot(
-    x::AbstractVector,
-    y::AbstractVector,
-    A::Union{Function,AbstractMatrix};
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    A::Union{Function,AbstractMatrix{<:Number}};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
@@ -79,9 +79,9 @@ end
 
 function contourplot!(
     plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    A::AbstractMatrix;
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    A::AbstractMatrix{<:Number};
     name::AbstractString = "",
     levels::Integer = 3,
     colormap = :viridis,
