@@ -84,7 +84,7 @@ function contourplot!(
     A::AbstractMatrix{<:Number};
     name::AbstractString = "",
     levels::Integer = 3,
-    colormap = :viridis,
+    colormap = KEYWORDS.colormap,
 )
     name == "" || label!(plot, :r, string(name))
 

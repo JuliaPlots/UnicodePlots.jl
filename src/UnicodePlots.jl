@@ -56,6 +56,8 @@ export GraphicsArea,
     contourplot!,
     surfaceplot,
     surfaceplot!,
+    isosurface,
+    isosurface!,
     stairs,
     stairs!,
     histogram,
@@ -94,6 +96,7 @@ include("interface/histogram.jl")
 include("interface/scatterplot.jl")
 include("interface/contourplot.jl")
 include("interface/surfaceplot.jl")
+include("interface/isosurface.jl")
 include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")
