@@ -13,7 +13,7 @@ $(arguments(
     (
         A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
         levels = "the number of contour levels",
-    ); add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -43,7 +43,6 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
       └────────────────────────────────────────┘  ⠀⠀⠀⠀  
       ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀  ⠀⠀⠀⠀  
 ```
-
 """
 function contourplot(
     x::AbstractVector,
@@ -62,6 +61,7 @@ function contourplot(
     plot = Plot(
         extrema(x) |> collect,
         extrema(y) |> collect,
+        nothing,
         canvas;
         blend = blend,
         grid = grid,

@@ -11,13 +11,13 @@ additional information such as a title, border, and axis labels.
 
     Plot(graphics; $(keywords(; default = (), add = (:title, :xlabel, :ylabel, :zlabel, :border, :margin, :padding, :compact, :labels))))
 
-    Plot(x, y, canvas; $(keywords()))
+    Plot(x, y, z, canvas; $(keywords()))
 
 # Arguments
 
 $(arguments(
     (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
-    add = (:x, :y, :canvas)
+    add = (:x, :y, :z, :canvas)
 ))
 
 # Methods
@@ -66,6 +66,7 @@ mutable struct Plot{T<:GraphicsArea}
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
+    transform::Union{MVP,Nothing}
 end
 
 function Plot(
@@ -83,6 +84,7 @@ function Plot(
     colorbar_border::Symbol = KEYWORDS.colorbar_border,
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
+    transform::Union{MVP,Nothing} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
@@ -116,6 +118,7 @@ function Plot(
         colorbar_border,
         colorbar_lim,
         0,
+        transform,
     )
     if compact
         xlabel != "" && label!(p, :b, xlabel)
@@ -124,9 +127,37 @@ function Plot(
     p
 end
 
+"""
+    validate_input(args...; kwargs...)
+
+# Description
+
+Check for invalid input (length) and selects only finite input data.
+"""
+function validate_input(
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Union{AbstractVector{<:Number},Nothing} = nothing,
+)
+    if z !== nothing
+        length(x) == length(y) == length(z) || throw(DimensionMismatch("x, y and z must have same length"))
+        idx = map(x, y, z) do i, j, k
+            isfinite(i) && isfinite(j) && isfinite(k)
+        end
+        x[idx], y[idx], z[idx]
+    else
+        length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
+        idx = map(x, y) do i, j
+            isfinite(i) && isfinite(j)
+        end
+        x[idx], y[idx], z
+    end
+end
+
 function Plot(
     X::AbstractVector{<:Number},
     Y::AbstractVector{<:Number},
+    Z::Union{AbstractVector{<:Number},Nothing} = nothing,
     ::Type{C} = BrailleCanvas;
     title::AbstractString = KEYWORDS.title,
     xlabel::AbstractString = KEYWORDS.xlabel,
@@ -152,12 +183,19 @@ function Plot(
     grid::Bool = KEYWORDS.grid,
     min_width::Int = 5,
     min_height::Int = 2,
+    transform::Union{MVP,Nothing} = nothing,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must have same length"))
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
+
+    X, Y, Z = validate_input(X, Y, Z)
+    if transform !== nothing
+        (xscale !== :identity || yscale !== :identity) &&
+            throw(error("{x,y}scale are unsupported when using 3D"))
+        X, Y = transform(vcat(X', Y', Z'))
+    end
 
     min_x, max_x = extend_limits(X, xlim, xscale)
     min_y, max_y = extend_limits(Y, ylim, yscale)
@@ -192,6 +230,7 @@ function Plot(
         colorbar = colorbar,
         colorbar_border = colorbar_border,
         colorbar_lim = colorbar_lim,
+        transform = transform,
     )
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
@@ -483,18 +522,23 @@ function annotate!(
     plot
 end
 
+transform(tr, args...) = args  # catch all
+transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
+transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP, x, y, z::AbstractVector, args...) = (tr(vcat(x', y', z'))..., args...)
+
 function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
-    lines!(plot.graphics, args...; kwargs...)
+    lines!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
     plot
 end
 
 function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
-    pixel!(plot.graphics, args...; kwargs...)
+    pixel!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
     plot
 end
 
 function points!(plot::Plot{<:Canvas}, args...; kwargs...)
-    points!(plot.graphics, args...; kwargs...)
+    points!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
     plot
 end
 

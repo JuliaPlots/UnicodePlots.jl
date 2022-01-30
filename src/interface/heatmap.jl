@@ -143,6 +143,7 @@ function heatmap(
     plot = Plot(
         xs,
         ys,
+        nothing,
         HeatmapCanvas;
         grid = false,
         colormap = callback,

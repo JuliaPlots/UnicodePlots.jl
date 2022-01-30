@@ -8,6 +8,7 @@ using SparseArrays: AbstractSparseMatrix, findnz
 using CoordinateTransformations: cameramap, PerspectiveMap, AffineMap
 using Rotations: RotXY
 using LinearAlgebra
+using StaticArrays
 
 import MarchingCubes
 import Contour

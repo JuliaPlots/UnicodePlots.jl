@@ -13,7 +13,7 @@ $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
         isovalue = "surface isovalue",
-    ); add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -43,33 +43,11 @@ function surfaceplot(
     if V isa Function
         X = repeat(x', length(y), 1)
         Y = repeat(y, 1, length(x))
-        Z = nothing
+        Z = nothing  # FIXME
         V = map(V, X, Y, Z) |> Array
     end
 
-    # projection step
-    # then extract, x/y lims
-    xl = extrema(x) |> collect
-    yl = extrema(y) |> collect
-    zl = extrema(z) |> collect
-
-    cam_tr = PerspectiveMap() ∘ inv(AffineMap(cam_rotation, cam_position))
-    cube = (
-        (cam_tr((xl[1], yl[1], zl[1])), cam_tr((xl[1], yl[1], zl[1]))),
-        (cam_tr((xl[1], yl[1], zl[1])), cam_tr((xl[2], yl[2], zl[1]))),
-        (cam_tr((xl[1], yl[1], zl[1])), cam_tr((xl[2], yl[1], zl[2]))),
-        (cam_tr((xl[1], yl[1], zl[1])), cam_tr((xl[1], yl[2], zl[1]))),
-        (cam_tr((xl[1], yl[1], zl[1])), cam_tr((xl[1], yl[1], zl[2]))),
-        (cam_tr((xl[2], yl[2], zl[1])), cam_tr((xl[1], yl[2], zl[1]))),
-        (cam_tr((xl[2], yl[2], zl[1])), cam_tr((xl[2], yl[2], zl[2]))),
-        (cam_tr((xl[1], yl[2], zl[1])), cam_tr((xl[2], yl[2], zl[2]))),
-        (cam_tr((xl[2], yl[1], zl[2])), cam_tr((xl[1], yl[1], zl[2]))),
-        (cam_tr((xl[2], yl[1], zl[2])), cam_tr((xl[2], yl[2], zl[2]))),
-        (cam_tr((xl[1], yl[1], zl[2])), cam_tr((xl[2], yl[2], zl[2]))),
-        (cam_tr((xl[2], yl[2], zl[2])), cam_tr((xl[2], yl[2], zl[2]))),
-    )
-
-    plot = Plot(xlim, ylim, canvas; kw...)
+    plot = Plot(x, y, z, canvas; kw...)
     surfaceplot!(plot, x, y, z, V)
 end
 

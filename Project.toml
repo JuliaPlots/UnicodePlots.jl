@@ -14,6 +14,7 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MarchingCubes = "299715c1-40a9-479a-aaf9-4a633d36f717"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
@@ -22,6 +23,7 @@ CoordinateTransformations = "0.6"
 Crayons = "4.1"
 MarchingCubes = "0.1"
 Rotations = "1"
+StaticArrays = "1.3"
 StatsBase = "0.32, 0.33"
 julia = "1.6"
 

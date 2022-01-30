@@ -15,6 +15,8 @@ cube3d() = [
     [(1, -1, -1), (1, 1, -1)],
 ]
 
+segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
+
 @testset "volume" begin
     for proj in (:orthographic, :perspective)
         if proj === :orthographic
@@ -47,20 +49,22 @@ cube3d() = [
         V = lookat(cam_pos)
 
         T = MVP(M, V, P)
+        @test T.ortho == (proj === :orthographic)
 
-        cube_screen = [T.(segment) for segment in cube3d()]
+        segments = cube3d()
 
         p = lineplot(
-            UnicodePlots.segment2xy(cube_screen[1])...,
+            segment2xyz(segments[1])...,
             xlim = (-1, 1),
             ylim = (-1, 1),
             grid = false,
             blend = false,
+            transform = T,
         )
-        for s in cube_screen[2:end]
-            lineplot!(p, UnicodePlots.segment2xy(s)...)
+        for s in segments[2:end]
+            lineplot!(p, segment2xyz(s)...)
         end
-        draw_axes!(p, T, [1, -0.5, 0])
+        draw_axes!(p, [1, -0.5, 0])
 
         test_ref("references/volume/$proj.txt", @show_col(p))
     end

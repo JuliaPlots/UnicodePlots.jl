@@ -62,7 +62,7 @@ function densityplot(
     name = KEYWORDS.name,
     kw...,
 )
-    plot = Plot(x, y, DensityCanvas; grid = grid, kw...)
+    plot = Plot(x, y, nothing, DensityCanvas; grid = grid, kw...)
     scatterplot!(plot, x, y; color = color, name = name)
 end
 

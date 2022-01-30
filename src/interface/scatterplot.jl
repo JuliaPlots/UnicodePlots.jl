@@ -62,15 +62,16 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 """
 function scatterplot(
     x::AbstractVector,
-    y::AbstractVector;
+    y::AbstractVector,
+    z::Union{AbstractVector,Nothing} = nothing;
     canvas::Type = KEYWORDS.canvas,
     color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
     kw...,
 )
-    plot = Plot(x, y, canvas; kw...)
-    scatterplot!(plot, x, y; color = color, name = name, marker = marker)
+    plot = Plot(x, y, z, canvas; kw...)
+    scatterplot!(plot, x, y, z; color = color, name = name, marker = marker)
 end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
@@ -78,7 +79,8 @@ scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 function scatterplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
-    y::AbstractVector;
+    y::AbstractVector,
+    z::Union{AbstractVector,Nothing} = nothing;
     color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
@@ -87,8 +89,9 @@ function scatterplot!(
     name == "" ||
         label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
     if marker ∈ (:pixel, :auto)
-        points!(plot, x, y, color)
+        points!(plot, x, y, z, color)
     else
+        z === nothing || throw(error("unsupported scatter with 3D data"))
         for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
             annotate!(plot, xi, yi, char_marker(mi); color = ci)
         end

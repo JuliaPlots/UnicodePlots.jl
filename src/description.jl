@@ -35,6 +35,7 @@ const DESCRIPTION = (
     # NOTE: this named tuple has to stay ordered
     x = "horizontal position for each point",
     y = "vertical position for each point",
+    z = "depth position for each point",
     symbols = "characters used to render the bars",
     title = "text displayed on top of the plot",
     name = "current drawing annotation displayed on the right",
