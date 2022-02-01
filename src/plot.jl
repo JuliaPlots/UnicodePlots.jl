@@ -199,7 +199,9 @@ function Plot(
     if transform !== nothing
         if transform isa Symbol
             transform = MVP(
-                x, y, z;
+                x,
+                y,
+                z;
                 projection = transform,
                 elevation = elevation,
                 azimuth = azimuth,
@@ -284,8 +286,8 @@ function Plot(
             end
         end
     end
-    
-    (transform !== nothing && axes3d) && draw_axes!(plot, .8 .* [min_x, min_y])
+
+    (transform !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [min_x, min_y])
 
     plot
 end

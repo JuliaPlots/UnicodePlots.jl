@@ -63,10 +63,19 @@ function surfaceplot(
     if A isa Function
         A = map(A, X, Y) |> Matrix
     end
-    length(X) == length(Y) == length(A) || throw(DimensionMismatch("x, y and z must have same length"))
+    length(X) == length(Y) == length(A) ||
+        throw(DimensionMismatch("x, y and z must have same length"))
 
     callback = colormap_callback(colormap)
-    plot = Plot(@view(X[:]), @view(Y[:]), @view(A[:]), canvas; transform = transform, colormap = callback, kwargs...)
+    plot = Plot(
+        @view(X[:]),
+        @view(Y[:]),
+        @view(A[:]),
+        canvas;
+        transform = transform,
+        colormap = callback,
+        kwargs...,
+    )
     surfaceplot!(plot, X, Y, A; name = name, color = color, colormap = colormap)
 
     plot
@@ -95,5 +104,5 @@ end
 
 Draws a surface plot of matrix `A` along axis `x` and `y` on a new canvas.
 """
-surfaceplot(A::AbstractMatrix; kwargs...) = 
+surfaceplot(A::AbstractMatrix; kwargs...) =
     surfaceplot(axes(A, 1), axes(A, 2), A; kwargs...)

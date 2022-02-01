@@ -167,7 +167,10 @@ const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 #! format: on
 
-function default_size!(; width::Union{Integer,Nothing} = nothing, height::Union{Integer,Nothing} = nothing)
+function default_size!(;
+    width::Union{Integer,Nothing} = nothing,
+    height::Union{Integer,Nothing} = nothing,
+)
     @assert (width === nothing) ⊻ (height === nothing)
     if width !== nothing
         DEFAULT_WIDTH[] = width

@@ -117,7 +117,6 @@ end
     UnicodePlots.default_size!(height = 15)
     @test UnicodePlots.DEFAULT_WIDTH[] == 40
     @test UnicodePlots.DEFAULT_HEIGHT[] == 15
-
 end
 
 @testset "docs" begin

@@ -6,14 +6,14 @@ translate_4x4(v) = @SMatrix([
 ])
 
 scale_4x4(v) = @SMatrix([
-  v[1] 0 0 0
-  0 v[2] 0 0
-  0 0 v[3] 0
-  0 0 0 1
+    v[1] 0 0 0
+    0 v[2] 0 0
+    0 0 v[3] 0
+    0 0 0 1
 ])
 
 rotd_x(θ) = @SMatrix([
-    1 0 0 0 
+    1 0 0 0
     0 cosd(θ) -sind(θ) 0
     0 sind(θ) +cosd(θ) 0
     0 0 0 1
@@ -33,12 +33,14 @@ rotd_z(θ) = @SMatrix([
     0 0 0 s1
 ])
 
-camera_4x4(l, u, f, eye) = @SMatrix([
-    l[1] l[2] l[3] -dot(l, eye)
-    u[1] u[2] u[3] -dot(u, eye)
-    f[1] f[2] f[3] -dot(f, eye)
-    0 0 0 1
-])
+camera_4x4(l, u, f, eye) = @SMatrix(
+    [
+        l[1] l[2] l[3] -dot(l, eye)
+        u[1] u[2] u[3] -dot(u, eye)
+        f[1] f[2] f[3] -dot(f, eye)
+        0 0 0 1
+    ]
+)
 
 """
     lookat(args...; kwargs...)
@@ -143,17 +145,17 @@ struct Perspective{T} <: Projection where {T}
 end
 
 center_diagonal(x, y, z) = begin
-  F = float(eltype(x))
+    F = float(eltype(x))
 
-  mx, Mx = extrema(F, x)
-  my, My = extrema(F, y)
-  mz, Mz = extrema(F, z)
+    mx, Mx = extrema(F, x)
+    my, My = extrema(F, y)
+    mz, Mz = extrema(F, z)
 
-  lx = Mx - mx
-  ly = My - my
-  lz = Mz - mz
+    lx = Mx - mx
+    ly = My - my
+    lz = Mz - mz
 
-  [mx + .5lx, my + .5ly, mz + .5lz], √(lx^2 + ly^2 + lz^2)
+    [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], √(lx^2 + ly^2 + lz^2)
 end
 
 """
@@ -172,10 +174,16 @@ struct MVP{T}
     ortho::Bool
     MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::Projection) where {T} =
         new{T}(P.A * V * M, [0, 0, 0], 1, P isa Orthographic)
-    MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::AbstractMatrix{T}, ortho::Bool) where {T} =
-        new{T}(P * V * M, [0, 0, 0], 1, ortho)
+    MVP(
+        M::AbstractMatrix{T},
+        V::AbstractMatrix{T},
+        P::AbstractMatrix{T},
+        ortho::Bool,
+    ) where {T} = new{T}(P * V * M, [0, 0, 0], 1, ortho)
     function MVP(
-        x, y, z;
+        x,
+        y,
+        z;
         projection::Symbol = :orthographic,
         elevation = KEYWORDS.elevation,
         azimuth = KEYWORDS.azimuth,
@@ -190,19 +198,21 @@ struct MVP{T}
         M = I
         # View Matrix
         ctr, diag = center_diagonal(x, y, z)
-        dist = .5diag / zoom / (ortho ? 1 : 2)
+        dist = 0.5diag / zoom / (ortho ? 1 : 2)
         correction = sign(elevation) * 100eps()
-        eye = ctr .+ dist .* [
-            cosd(azimuth) * cosd(elevation - correction)
-            sind(azimuth) * cosd(elevation - correction)
-            sind(elevation - correction)
-        ]
+        eye =
+            ctr .+
+            dist .* [
+                cosd(azimuth) * cosd(elevation - correction)
+                sind(azimuth) * cosd(elevation - correction)
+                sind(elevation - correction)
+            ]
         V, view_dir = lookat(eye, ctr, up)
         # Projection Matrix
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)
         else
-            Perspective(-dist, dist, -dist, dist, 1., 100.)
+            Perspective(-dist, dist, -dist, dist, 1.0, 100.0)
         end
         new{float(eltype(x))}(P.A * V * M, view_dir, dist, ortho)
     end
@@ -218,7 +228,8 @@ function (t::MVP)(p::AbstractMatrix, clip = false)
         if (abs_w = abs(w)) > ε
             if clip
                 thres = abs_w + ε
-                if abs(w - 1) > ε && (abs(xs[i]) > thres || abs(ys[i]) > thres || abs(xs[i]) > thres)
+                if abs(w - 1) > ε &&
+                   (abs(xs[i]) > thres || abs(ys[i]) > thres || abs(xs[i]) > thres)
                     xs[i] = NaN
                     ys[i] = NaN
                     zs[i] = NaN

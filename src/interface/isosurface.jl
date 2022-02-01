@@ -65,7 +65,7 @@ function isosurface(
         X = repeat(xx, 1, 1, length(z))
         Y = repeat(yy, 1, 1, length(z))
         Z = zero(X)
-        for (i, zi) ∈ enumerate(z)
+        for (i, zi) in enumerate(z)
             Z[:, :, i] .= zi
         end
         V = map(V, X, Y, Z) |> Array
@@ -74,8 +74,16 @@ function isosurface(
 
     plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kwargs...)
     isosurface!(
-        plot, x, y, z, V;
-        name = name, color = color, colormap = colormap, isovalue = isovalue, centroid = centroid
+        plot,
+        x,
+        y,
+        z,
+        V;
+        name = name,
+        color = color,
+        colormap = colormap,
+        isovalue = isovalue,
+        centroid = centroid,
     )
 end
 
