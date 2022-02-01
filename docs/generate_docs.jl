@@ -55,6 +55,22 @@ function main()
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
     heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
+    surfaceplot = ("Surfaceplot", """
+      sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
+      surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
+      """),
+    isosurface = ("Isosurface", """
+      torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+      isosurface(
+        -1:0.1:1,
+        -1:0.1:1,
+        -1:0.1:1,
+        torus;
+        xlim = (-0.5, 0.5),
+        ylim = (-0.5, 0.5),
+        elevation = 50,
+      )
+      """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
     labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false, border=:dotted)"),
@@ -158,6 +174,8 @@ Here is a list of the main high-level functions for common scenarios:
   - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
+  - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -258,6 +276,18 @@ The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorb
 
 $(examples.heatmap2)
 
+#### Surface Plot
+
+$(examples.surfaceplot)
+
+Plot a surface using height values. Small values close to zero are not plotted by default (see `mask_small`).
+
+#### Isosurface Plot
+
+$(examples.isosurface)
+
+Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue, and `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+
 ### Options
 
 All plots support the set (or a subset) of the following named parameters:
@@ -265,6 +295,10 @@ All plots support the set (or a subset) of the following named parameters:
   $description
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
+
+### 3D plots
+
+3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword.
 
 ### Methods
 

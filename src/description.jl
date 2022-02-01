@@ -22,7 +22,7 @@ const KEYWORDS = (
     colorbar_border = :solid,
     colormap = :viridis,
     projection = :orthographic,
-    elevation = atand(1 / √2),
+    elevation = round(atand(1 / √2); digits=4),
     mask_small = true,
     centroid = true,
     isovalue = 0,
@@ -47,7 +47,7 @@ const DESCRIPTION = (
     z = "depth position for each point",
     symbols = "characters used to render the bars",
     mask_small = "mask small values (close to 0)",
-    centroid = "display triangulation centroid instead of 3 vertices",
+    centroid = "display triangulation centroid instead of triangle vertices",
     isovalue = "surface isovalue",
     title = "text displayed on top of the plot",
     name = "current drawing annotation displayed on the right",
@@ -74,7 +74,7 @@ const DESCRIPTION = (
     grid = "draws grid-lines at the origin",
     compact = "compact plot labels",
     unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`",
-    projection = "projection for 3D plots (`:orthographic`, `:perspective`, or Matrix-View-Projection matrix)"
+    projection = "projection for 3D plots (`:orthographic`, `:perspective`, or Matrix-View-Projection matrix)",
     axes3d = "draw 3d axes (x -> red, y -> green, z -> blue)",
     elevation = "elevation angle (`-90 ≤ θ ≤ 90`)",
     azimuth = "azimutal angle (`-180° ≤ ϕ ≤ 180°`)",
@@ -119,6 +119,7 @@ const DEFAULT_EXCLUDED = (
     :visible,  # internals
     :fix_ar,  # experimental
     Z_DESCRIPTION...,  # by default for 2D data
+    PROJ_DESCRIPTION...,  # 3D plots
 )
 
 base_type(x) = replace(string(typeof(x).name.name), "64" => "")

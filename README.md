@@ -23,6 +23,8 @@ Here is a list of the main high-level functions for common scenarios:
   * [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
   * [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   * [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  * [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
+  * [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -202,11 +204,42 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 ```
 ![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/heatmap2.png)
 
+#### Surface Plot
+
+```julia
+sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
+surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
+```
+![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/surfaceplot.png)
+
+Plot a surface using height values. Small values close to zero are not plotted by default (see `mask_small`).
+
+#### Isosurface Plot
+
+```julia
+torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+isosurface(
+  -1:0.1:1,
+  -1:0.1:1,
+  -1:0.1:1,
+  torus;
+  xlim = (-0.5, 0.5),
+  ylim = (-0.5, 0.5),
+  elevation = 50,
+)
+```
+![Isosurface](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/isosurface.png)
+
+Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue, and `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+
 ### Options
 
 All plots support the set (or a subset) of the following named parameters:
 
   - `symbols::Array = ['■']`: characters used to render the bars.
+  - `mask_small::Bool = true`: mask small values (close to 0).
+  - `centroid::Bool = true`: display triangulation centroid instead of 3 vertices.
+  - `isovalue::Int = 0`: surface isovalue.
   - `title::String = ""`: text displayed on top of the plot.
   - `name::String = ""`: current drawing annotation displayed on the right.
   - `xlabel::String = ""`: text displayed on the `x` axis of the plot.
@@ -267,11 +300,21 @@ All plots support the set (or a subset) of the following named parameters:
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
+  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or Matrix-View-Projection matrix).
+  - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
+  - `elevation::Float = 35.2644`: elevation angle (`-90 ≤ θ ≤ 90`).
+  - `azimuth::Float = 45.0`: azimutal angle (`-180° ≤ ϕ ≤ 180°`).
+  - `zoom::Float = 1.0`: zooming factor in 3D.
+  - `up::Array = [0, 0, 1]`: camera up vector.
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.
 
 *Note*: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
+
+### 3D plots
+
+3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword.
 
 ### Methods
 
