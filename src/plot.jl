@@ -186,7 +186,7 @@ function Plot(
     elevation::Number = KEYWORDS.elevation,
     azimuth::Number = KEYWORDS.azimuth,
     zoom::Number = KEYWORDS.zoom,
-    axes = KEYWORDS.axes,
+    axes3d = KEYWORDS.axes3d,
     up = KEYWORDS.up,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
@@ -285,7 +285,7 @@ function Plot(
         end
     end
     
-    (transform !== nothing && axes) && draw_axes!(plot, .8 .* [min_x, min_y])
+    (transform !== nothing && axes3d) && draw_axes!(plot, .8 .* [min_x, min_y])
 
     plot
 end

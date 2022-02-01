@@ -51,7 +51,7 @@ function surfaceplot(
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
-    transform::Union{MVP,Symbol} = :orthographic,
+    transform::Union{MVP,Symbol} = KEYWORDS.transform,
     colormap = KEYWORDS.colormap,
     kwargs...,
 )

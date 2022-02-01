@@ -23,7 +23,7 @@ ellipsoid(θs = -π / 2:π / 10:π / 2, ϕs = -π:π / 10:π, a = 2, b = .5, c =
 
 @testset "volume" begin
     x, y, z = ellipsoid()
-    for (plane, az, el) ∈ [("xy", 0, 0), ("yz", 90, 0), ("xz", 0, -89)]
+    for (plane, az, el) ∈ [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
         p = Plot(
             x, y, z, xlim = (-1, 1), ylim = (-1, 1), transform = :orthographic,
             elevation = el, azimuth = az,
@@ -41,7 +41,7 @@ ellipsoid(θs = -π / 2:π / 10:π / 2, ϕs = -π:π / 10:π, a = 2, b = .5, c =
             [-1, 1], [-1, 1], [-1, 1];
             projection = proj,
             elevation = ortho ? atand(1 / √2) : 0,
-            azimuth = ortho ? -45 : 0,
+            azimuth = ortho ? 45 : 0,
         )
         @test T.ortho == ortho
 

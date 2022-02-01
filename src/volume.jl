@@ -181,18 +181,22 @@ struct MVP{T}
         zoom = KEYWORDS.zoom,
         up = KEYWORDS.up,
     )
-        @assert projection in (:orthographic, :perspective)
+        @assert projection ∈ (:orthographic, :perspective)
+        @assert -180 ≤ azimuth ≤ 180
+        @assert -90 ≤ elevation ≤ 90
         ortho = projection === :orthographic
         # Model Matrix
         M = I
         # View Matrix
         ctr, diag = center_diagonal(x, y, z)
         dist = .5diag / zoom / (ortho ? 1 : 2)
+        correction = sign(elevation) * 100eps()
         eye = ctr .+ dist .* [
-            -sind(azimuth) * cosd(elevation)
-            +sind(elevation)
-            +cosd(azimuth) * cosd(elevation)
+            cosd(azimuth) * cosd(elevation - correction)
+            sind(azimuth) * cosd(elevation - correction)
+            sind(elevation - correction)
         ]
+        @show ctr dist eye
         V = lookat(eye, ctr, up)
         # Projection Matrix
         P = if ortho
@@ -200,6 +204,8 @@ struct MVP{T}
         else
             Perspective(-dist, dist, -dist, dist, 1., 100.)
         end
+        @show P.A V M
+        show(stdout, "text/plain", P.A * V * M); println()
         new{float(eltype(x))}(P.A * V * M, dist, ortho)
     end
 end
