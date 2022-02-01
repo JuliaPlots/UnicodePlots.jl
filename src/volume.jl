@@ -53,7 +53,7 @@ function lookat(eye, target = [0, 0, 0], up = [0, 1, 0])
     l = normalize(cross(up, f))  # left vector
     u = cross(f, l)  # up vector
 
-    camera_4x4(l, u, f, eye)
+    camera_4x4(l, u, f, eye), f
 end
 
 """
@@ -167,12 +167,13 @@ Model - View - Projection transformation matrix.
 """
 struct MVP{T}
     A::Matrix{T}
+    view_dir::SVector{3,T}
     distance::T
     ortho::Bool
     MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::Projection) where {T} =
-        new{T}(P.A * V * M, 1, P isa Orthographic)
+        new{T}(P.A * V * M, [0, 0, 0], 1, P isa Orthographic)
     MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::AbstractMatrix{T}, ortho::Bool) where {T} =
-        new{T}(P * V * M, 1, ortho)
+        new{T}(P * V * M, [0, 0, 0], 1, ortho)
     function MVP(
         x, y, z;
         projection::Symbol = :orthographic,
@@ -196,17 +197,14 @@ struct MVP{T}
             sind(azimuth) * cosd(elevation - correction)
             sind(elevation - correction)
         ]
-        @show ctr dist eye
-        V = lookat(eye, ctr, up)
+        V, view_dir = lookat(eye, ctr, up)
         # Projection Matrix
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)
         else
             Perspective(-dist, dist, -dist, dist, 1., 100.)
         end
-        @show P.A V M
-        show(stdout, "text/plain", P.A * V * M); println()
-        new{float(eltype(x))}(P.A * V * M, dist, ortho)
+        new{float(eltype(x))}(P.A * V * M, view_dir, dist, ortho)
     end
 end
 

@@ -1,7 +1,7 @@
 """
     isosurface(x, y, V; kwargs...)
 
-Extract and plot isosurface from volumetric data.
+Extract and plot isosurface from volumetric data, or implicit function.
 
 # Usage
 
@@ -13,7 +13,7 @@ $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
         isovalue = "surface isovalue",
-    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -23,9 +23,26 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> torus(x, y, z, r = .5, R = 1) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus)
-...
+julia> torus(x, y, z, r = .2, R = .5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.5, .5), elevation = 50)
+        ┌────────────────────────────────────────┐ 
+    0.5 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢀⠀⠄⡀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠄⠔⠀⠡⠠⠁⠡⠠⠁⠈⠄⠌⠈⠄⠌⠀⠢⠠⠠⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠠⠐⠅⠌⠈⠄⠌⠀⡁⡀⠨⡀⠄⠠⠡⠠⡀⠥⠠⠈⠀⠡⠠⠁⠡⠡⠢⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⣔⠃⡁⠄⢊⠈⠄⡰⠐⡀⢂⡞⢈⠰⠨⡂⠆⡁⣱⠔⢁⠘⢀⠠⠁⡑⠠⢈⠘⣢⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠐⠥⠁⡀⠂⢂⠈⠄⡖⡋⠗⠈⠉⠀⠀⠀⠀⠀⠀⠉⠁⠱⢙⠱⠠⠁⡐⠐⢀⠈⢌⠆⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠜⠤⠁⡀⠂⢂⢈⠄⠦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡹⠠⡁⡐⠐⢀⠈⢤⢚⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠸⠗⠅⡀⠂⢂⢀⠂⢂⠃⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠂⡑⠐⡀⡐⠐⠀⠨⢔⠏⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠉⠄⠌⠰⠀⡀⠂⢂⠀⡐⠐⠌⠔⠐⠄⠡⠂⠢⠡⠂⢂⠀⡐⠐⣀⠐⠠⡁⡃⠁⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠈⠁⠄⠌⠀⡆⢀⠐⠐⢀⠐⠐⠀⠄⠂⠂⡀⠂⡂⡀⠂⢂⠀⡂⠐⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⢰⠀⠀⠀⠀⠀⠈⠀⠥⠀⡂⡃⠇⠃⡁⡡⠨⡈⡨⠈⠬⠨⠢⢈⠠⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠓⠀⠊⠐⠂⠊⠈⠈⠘⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⣀⠼⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+   -0.5 │⠔⠉⠀⠀⠀⠈⠑⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        └────────────────────────────────────────┘ 
+        ⠀-0.5⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀0.5⠀ 
 ```
 """
 function isosurface(
@@ -39,6 +56,7 @@ function isosurface(
     colormap = KEYWORDS.colormap,
     transform::Union{MVP,Symbol} = KEYWORDS.transform,
     isovalue::Number = 0,
+    centroid::Bool = true,
     kwargs...,
 )
     if V isa Function
@@ -55,7 +73,10 @@ function isosurface(
     callback = colormap_callback(colormap)
 
     plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kwargs...)
-    isosurface!(plot, x, y, z, V; name = name, color = color, colormap = colormap, isovalue = isovalue)
+    isosurface!(
+        plot, x, y, z, V;
+        name = name, color = color, colormap = colormap, isovalue = isovalue, centroid = centroid
+    )
 end
 
 function isosurface!(
@@ -68,6 +89,7 @@ function isosurface!(
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
     isovalue::Number = 0,
+    centroid::Bool = true,
 )
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
@@ -80,25 +102,32 @@ function isosurface!(
         @SVector([v1[2], v2[2], v3[2], v1[2]]),
         @SVector([v1[3], v2[3], v3[3], v1[3]]),
     )
+    F = float(eltype(x))
+    color = color == :auto ? next_color!(plot) : color
 
-    # mc.triangles - mc.vertices - mc.normals
-
-    @show length(mc.triangles)
-    n = 0
+    xs = F[]
+    ys = F[]
+    zs = F[]
     for t in mc.triangles
         v1 = mc.vertices[t[1]]
         v2 = mc.vertices[t[2]]
         v3 = mc.vertices[t[3]]
-        M = @SMatrix([
-            v1[1] v1[2] v1[3] 1
-            v2[1] v2[2] v2[3] 1
-            v3[1] v3[2] v3[3] 1
-            0 0 0 1
-        ])
-        det(M) < 0 && continue
-        n += 1
-        lineplot!(plot, tri2xyz(v1, v2, v3)...; color = color, name = name)
+        # face culling
+        dot(mc.normals[t[1]], plot.transform.view_dir) < 0 && continue
+        dot(mc.normals[t[2]], plot.transform.view_dir) < 0 && continue
+        dot(mc.normals[t[3]], plot.transform.view_dir) < 0 && continue
+        if centroid
+            c = (v1 .+ v2 .+ v3) ./ 3
+            push!(xs, c[1])
+            push!(ys, c[2])
+            push!(zs, c[3])
+        else
+            append!(xs, @SVector([v1[1], v2[1], v3[1]]))
+            append!(ys, @SVector([v1[2], v2[2], v3[2]]))
+            append!(zs, @SVector([v1[3], v2[3], v3[3]]))
+        end
     end
-    @show n
+    # triangles vertices or centroid
+    scatterplot!(plot, xs, ys, zs; color = color, name = name)
     plot
 end
