@@ -57,19 +57,11 @@ function main()
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-      surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
+      surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
       """),
     isosurface = ("Isosurface", """
       torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-      isosurface(
-        -1:0.1:1,
-        -1:0.1:1,
-        -1:0.1:1,
-        torus;
-        xlim = (-0.5, 0.5),
-        ylim = (-0.5, 0.5),
-        elevation = 50,
-      )
+      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.5, .5), elevation = 50, border=:dotted)
       """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
@@ -298,7 +290,7 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
 ### 3D plots
 
-3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword.
+3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
 
 ### Methods
 

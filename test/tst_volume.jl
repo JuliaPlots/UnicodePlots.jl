@@ -30,7 +30,7 @@ ellipsoid(θs = (-π / 2):(π / 10):(π / 2), ϕs = (-π):(π / 10):π, a = 2, b
             z,
             xlim = (-1, 1),
             ylim = (-1, 1),
-            transform = :orthographic,
+            projection = :orthographic,
             elevation = el,
             azimuth = az,
         )
@@ -56,7 +56,7 @@ ellipsoid(θs = (-π / 2):(π / 10):(π / 2), ϕs = (-π):(π / 10):π, a = 2, b
         segments = cube3d()
         p = lineplot(
             segment2xyz(segments[1])...,
-            transform = T,
+            projection = T,
             xlim = (-1, 1),
             ylim = (-1, 1),
         )

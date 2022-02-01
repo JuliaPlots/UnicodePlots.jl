@@ -22,10 +22,7 @@ const KEYWORDS = (
     colorbar_border = :solid,
     colormap = :viridis,
     projection = :orthographic,
-    elevation = round(atand(1 / √2); digits=4),
-    mask_small = true,
-    centroid = true,
-    isovalue = 0,
+    elevation = round(atand(1 / √2); digits = 4),
     azimuth = 45.0,
     axes3d = true,
     zoom = 1.0,
@@ -46,9 +43,6 @@ const DESCRIPTION = (
     y = "vertical position for each point",
     z = "depth position for each point",
     symbols = "characters used to render the bars",
-    mask_small = "mask small values (close to 0)",
-    centroid = "display triangulation centroid instead of triangle vertices",
-    isovalue = "surface isovalue",
     title = "text displayed on top of the plot",
     name = "current drawing annotation displayed on the right",
     xlabel = "text displayed on the `x` axis of the plot",
@@ -88,8 +82,7 @@ const DESCRIPTION = (
 const Z_DESCRIPTION =
     (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
 
-const PROJ_DESCRIPTION =
-    (:projection, :azimuth, :elevation, :up, :zoom, :axes3d)
+const PROJ_DESCRIPTION = (:projection, :azimuth, :elevation, :up, :zoom, :axes3d)
 
 const DEFAULT_KWARGS = (
     # does not have to stay ordered

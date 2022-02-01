@@ -5,14 +5,16 @@ Extract and plot isosurface from volumetric data, or implicit function.
 
 # Usage
 
-    isosurface(x, y, z, V; $(keywords(; add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :isovalue, :centroid, :canvas), remove = (:blend, :grid))))
+    isosurface(x, y, z, V; $(keywords((isovalue = 0, centroid = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :isovalue, :centroid, :canvas), remove = (:blend, :grid)
+        centroid = "display triangulation centroid instead of triangle vertices",
+        isovalue = "surface isovalue",
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -53,9 +55,9 @@ function isosurface(
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
-    transform::Union{MVP,Symbol} = KEYWORDS.transform,
-    isovalue::Number = KEYWORD.isovalue,
-    centroid::Bool = KEYWORD.centroid,
+    projection::Union{MVP,Symbol} = KEYWORDS.projection,
+    isovalue::Number = 0,
+    centroid::Bool = true,
     kwargs...,
 )
     if V isa Function
@@ -71,7 +73,7 @@ function isosurface(
     end
     callback = colormap_callback(colormap)
 
-    plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kwargs...)
+    plot = Plot(x, y, z, canvas; projection = projection, colormap = callback, kwargs...)
     isosurface!(
         plot,
         x,
@@ -95,8 +97,8 @@ function isosurface!(
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
-    isovalue::Number = KEYWORD.isovalue,
-    centroid::Bool = KEYWORD.centroid,
+    isovalue::Number = 0,
+    centroid::Bool = true,
 )
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
@@ -109,9 +111,7 @@ function isosurface!(
         @SVector([v1[2], v2[2], v3[2], v1[2]]),
         @SVector([v1[3], v2[3], v3[3], v1[3]]),
     )
-    F = 
-
-    xs = float(eltype(x))[]
+    F = xs = float(eltype(x))[]
     ys = float(eltype(y))[]
     zs = float(eltype(z))[]
     for t in mc.triangles
@@ -119,9 +119,9 @@ function isosurface!(
         v2 = mc.vertices[t[2]]
         v3 = mc.vertices[t[3]]
         # face culling
-        dot(mc.normals[t[1]], plot.transform.view_dir) < 0 && continue
-        dot(mc.normals[t[2]], plot.transform.view_dir) < 0 && continue
-        dot(mc.normals[t[3]], plot.transform.view_dir) < 0 && continue
+        dot(mc.normals[t[1]], plot.projection.view_dir) < 0 && continue
+        dot(mc.normals[t[2]], plot.projection.view_dir) < 0 && continue
+        dot(mc.normals[t[3]], plot.projection.view_dir) < 0 && continue
         if centroid
             c = (v1 .+ v2 .+ v3) ./ 3
             push!(xs, c[1])

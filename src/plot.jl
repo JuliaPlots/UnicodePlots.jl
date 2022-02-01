@@ -66,7 +66,7 @@ mutable struct Plot{T<:GraphicsArea}
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
-    transform::Union{MVP,Nothing}
+    projection::Union{MVP,Nothing}
 end
 
 function Plot(
@@ -84,7 +84,7 @@ function Plot(
     colorbar_border::Symbol = KEYWORDS.colorbar_border,
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
-    transform::Union{MVP,Nothing} = nothing,
+    projection::Union{MVP,Nothing} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
@@ -118,7 +118,7 @@ function Plot(
         colorbar_border,
         colorbar_lim,
         0,
-        transform,
+        projection,
     )
     if compact
         xlabel != "" && label!(p, :b, xlabel)
@@ -182,7 +182,7 @@ function Plot(
     grid::Bool = KEYWORDS.grid,
     min_width::Int = 5,
     min_height::Int = 2,
-    transform::Union{MVP,Symbol,Nothing} = nothing,
+    projection::Union{MVP,Symbol,Nothing} = nothing,
     elevation::Number = KEYWORDS.elevation,
     azimuth::Number = KEYWORDS.azimuth,
     zoom::Number = KEYWORDS.zoom,
@@ -196,13 +196,13 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
-    if transform !== nothing
-        if transform isa Symbol
-            transform = MVP(
+    if projection !== nothing
+        if projection isa Symbol
+            projection = MVP(
                 x,
                 y,
                 z;
-                projection = transform,
+                projection = projection,
                 elevation = elevation,
                 azimuth = azimuth,
                 zoom = zoom,
@@ -211,7 +211,7 @@ function Plot(
         end
         (xscale !== :identity || yscale !== :identity) &&
             throw(error("xscale or yscale are unsupported in 3D"))
-        x, y = transform(vcat(x', y', z'))
+        x, y = projection(vcat(x', y', z'))
         grid = blend = false
     end
 
@@ -248,7 +248,7 @@ function Plot(
         colorbar = colorbar,
         colorbar_border = colorbar_border,
         colorbar_lim = colorbar_lim,
-        transform = transform,
+        projection = projection,
     )
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
@@ -287,7 +287,7 @@ function Plot(
         end
     end
 
-    (transform !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [min_x, min_y])
+    (projection !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [min_x, min_y])
 
     plot
 end
@@ -549,17 +549,17 @@ transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c
 transform(tr::MVP, x, y, z::AbstractVector, args...) = (tr(vcat(x', y', z'))..., args...)
 
 function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
-    lines!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
+    lines!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
     plot
 end
 
 function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
-    pixel!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
+    pixel!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
     plot
 end
 
 function points!(plot::Plot{<:Canvas}, args...; kwargs...)
-    points!(plot.graphics, transform(plot.transform, args...)...; kwargs...)
+    points!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
     plot
 end
 

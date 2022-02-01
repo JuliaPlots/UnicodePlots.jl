@@ -5,13 +5,14 @@ Draws a 3D surface plot on a new canvas.
 
 # Usage
 
-    surfaceplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :mask_small, :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords((; mask_small = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
+        mask_small = "mask small values (close to 0)",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :mask_small, :canvas), remove = (:blend, :grid)
 ))
 
@@ -51,9 +52,9 @@ function surfaceplot(
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
-    transform::Union{MVP,Symbol} = KEYWORDS.transform,
+    projection::Union{MVP,Symbol} = KEYWORDS.projection,
     colormap = KEYWORDS.colormap,
-    mask_small = KEYWORDS.mask_small,
+    mask_small = false,
     kwargs...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector
@@ -66,7 +67,7 @@ function surfaceplot(
     else
         mask_small ? copy(A) : A
     end
-    length(X) == length(Y) == length(A) ||
+    length(X) == length(Y) == length(Z) ||
         throw(DimensionMismatch("x, y and z must have same length"))
 
     mask_small && (Z[abs.(Z) .< eps(eltype(Z))] .= NaN)
@@ -77,7 +78,7 @@ function surfaceplot(
         @view(Y[:]),
         @view(Z[:]),
         canvas;
-        transform = transform,
+        projection = projection,
         colormap = callback,
         kwargs...,
     )

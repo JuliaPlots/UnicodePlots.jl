@@ -208,7 +208,7 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 
 ```julia
 sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
+surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
 ```
 ![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/surfaceplot.png)
 
@@ -218,15 +218,7 @@ Plot a surface using height values. Small values close to zero are not plotted b
 
 ```julia
 torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-isosurface(
-  -1:0.1:1,
-  -1:0.1:1,
-  -1:0.1:1,
-  torus;
-  xlim = (-0.5, 0.5),
-  ylim = (-0.5, 0.5),
-  elevation = 50,
-)
+isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.5, .5), elevation = 50, border=:dotted)
 ```
 ![Isosurface](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/isosurface.png)
 
@@ -237,9 +229,6 @@ Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` control
 All plots support the set (or a subset) of the following named parameters:
 
   - `symbols::Array = ['■']`: characters used to render the bars.
-  - `mask_small::Bool = true`: mask small values (close to 0).
-  - `centroid::Bool = true`: display triangulation centroid instead of 3 vertices.
-  - `isovalue::Int = 0`: surface isovalue.
   - `title::String = ""`: text displayed on top of the plot.
   - `name::String = ""`: current drawing annotation displayed on the right.
   - `xlabel::String = ""`: text displayed on the `x` axis of the plot.

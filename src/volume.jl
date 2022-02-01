@@ -277,7 +277,7 @@ Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p =
 If `p = (x, y)` is given, draws at screen coordinates (only correct in orthographic projection).
 """
 function draw_axes!(plot, p = [0, 0, 0], len = nothing)
-    T = plot.transform
+    T = plot.projection
     l = len === nothing ? T.distance / 4 : len
 
     axis(p, d) = begin
