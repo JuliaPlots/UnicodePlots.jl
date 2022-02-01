@@ -5,23 +5,28 @@ translate_4x4(v) = @SMatrix([
     0 0 0 1
 ])
 
-rotate_4x4(r) = cat(r, 1; dims = (1, 2))
+scale_4x4(v) = @SMatrix([
+  v[1] 0 0 0
+  0 v[2] 0 0
+  0 0 v[3] 0
+  0 0 0 1
+])
 
-rot_x(θ) = @SMatrix([
+rotd_x(θ) = @SMatrix([
     1 0 0 0 
     0 cosd(θ) -sind(θ) 0
     0 sind(θ) +cosd(θ) 0
     0 0 0 1
 ])
 
-rot_y(θ) = @SMatrix([
+rotd_y(θ) = @SMatrix([
     +cosd(θ) 0 sind(θ) 0
     0 1 0 0
     -sind(θ) 0 cosd(θ) 0
     0 0 0 1
 ])
 
-rot_z(θ) = @SMatrix([
+rotd_z(θ) = @SMatrix([
     cosd(θ) -sind(θ) 0 0
     sind(θ) +cosd(θ) 0 0
     0 0 1 0
@@ -36,12 +41,12 @@ camera_4x4(l, u, f, eye) = @SMatrix([
 ])
 
 """
-  lookat(args...; kwargs...)
+    lookat(args...; kwargs...)
 
 # Arguments
-  - `eye`: position of the camera in world space (e.g. [0, 0, 10])
-  - `target`: target point to look at in world space (usually to origin = [0, 0, 0])
-  - `up`: up vector (usually +y = [0, 1, 0])
+    - `eye`: position of the camera in world space (e.g. [0, 0, 10])
+    - `target`: target point to look at in world space (usually to origin = [0, 0, 0])
+    - `up`: up vector (usually +y = [0, 1, 0])
 """
 function lookat(eye, target = [0, 0, 0], up = [0, 1, 0])
     f = normalize(eye - target)  # forward vector.
@@ -52,18 +57,19 @@ function lookat(eye, target = [0, 0, 0], up = [0, 1, 0])
 end
 
 """
-  frustum(args...; kwargs...)
+    frustum(args...; kwargs...)
 
 # Description
-  Computes the perspective projection matrix.
+
+Computes the perspective projection matrix.
 
 # Arguments
-  - `l`: left coordinate of the vertical clipping plane
-  - `r` : right coordinate of the vertical clipping plane
-  - `b`: bottom coordinate of the horizontal clipping plane
-  - `t`: top coordinate of the horizontal clipping plane
-  - `n`: distance to the near depth clipping plane
-  - `f`: distance to the far depth clipping plane
+    - `l`: left coordinate of the vertical clipping plane
+    - `r` : right coordinate of the vertical clipping plane
+    - `b`: bottom coordinate of the horizontal clipping plane
+    - `t`: top coordinate of the horizontal clipping plane
+    - `n`: distance to the near depth clipping plane
+    - `f`: distance to the far depth clipping plane
 """
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
@@ -90,18 +96,19 @@ function frustum(l, r, b, t, n, f)
 end
 
 """
-  ortho(args...; kwargs...)
+    ortho(args...; kwargs...)
 
 # Description
-  Computes the orthographic projection matrix.
+
+Computes the orthographic projection matrix.
 
 # Arguments
-  - `l`: left coordinate of the vertical clipping plane
-  - `r` : right coordinate of the vertical clipping plane
-  - `b`: bottom coordinate of the horizontal clipping plane
-  - `t`: top coordinate of the horizontal clipping plane
-  - `n`: distance to the near depth clipping plane
-  - `f`: distance to the far depth clipping plane
+    - `l`: left coordinate of the vertical clipping plane
+    - `r` : right coordinate of the vertical clipping plane
+    - `b`: bottom coordinate of the horizontal clipping plane
+    - `t`: top coordinate of the horizontal clipping plane
+    - `n`: distance to the near depth clipping plane
+    - `f`: distance to the far depth clipping plane
 """
 ortho(l, r, b, t, n, f) = *(
     @SMatrix([
@@ -122,106 +129,155 @@ abstract type Projection end
 
 struct Orthographic{T} <: Projection where {T}
     A::Matrix{T}
-    Orthographic(args::T...) where {T} = new{T}(ortho(args...))
+    Orthographic(args::T...) where {T} = new{float(T)}(ortho(args...))
 end
 
 struct Perspective{T} <: Projection where {T}
     A::Matrix{T}
     function Perspective(args::T...) where {T}
-        P = new{T}(frustum(args...))
+        P = new{float(T)}(frustum(args...))
         P.A[1, 1] *= -1  # flip x
         P.A[2, 2] *= -1  # flip y
         P
     end
 end
 
+center_diagonal(x, y, z) = begin
+  F = float(eltype(x))
+
+  mx, Mx = extrema(F, x)
+  my, My = extrema(F, y)
+  mz, Mz = extrema(F, z)
+
+  lx = Mx - mx
+  ly = My - my
+  lz = Mz - mz
+
+  [mx + .5lx, my + .5ly, mz + .5lz], √(lx^2 + ly^2 + lz^2)
+end
+
 """
-  MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection)
-  MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool)
-  MVP(x, y, z, p::Symbol = :orthographic, elevation = 30, azimuth = -37.5)
+    MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection)
+    MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool)
+    MVP(x, y, z, p::Symbol = :orthographic, elevation = atand(1 / √2), azimuth = -45, distance = 1, up = [0, 1, 0])
 
 # Description
 
 Model - View - Projection transformation matrix.
 """
-struct MVP
-    A::Matrix
+struct MVP{T}
+    A::Matrix{T}
+    distance::T
     ortho::Bool
-    MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection) =
-        new(P.A * V * M, P isa Orthographic)
-    MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool) =
-        new(P * V * M, ortho)
+    MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::Projection) where {T} =
+        new{T}(P.A * V * M, 1, P isa Orthographic)
+    MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::AbstractMatrix{T}, ortho::Bool) where {T} =
+        new{T}(P * V * M, 1, ortho)
     function MVP(
-        x = nothing, y = nothing, z = nothing;
-        projection::Symbol = :orthographic, elevation::Number = 30, azimuth::Number = -37.5,
-        l = nothing, r = nothing, b = nothing, t = nothing, n = nothing, f = nothing
+        x, y, z;
+        projection::Symbol = :orthographic,
+        elevation = KEYWORDS.elevation,
+        azimuth = KEYWORDS.azimuth,
+        zoom = KEYWORDS.zoom,
+        up = KEYWORDS.up,
     )
-        if (ortho = projection === :orthographic)
-            l_, r_ = x === nothing ? (-2., 2.) : 2 .* extrema(Float64, x)
-            b_, t_ = y === nothing ? (l_, r_) : 2 .* extrema(Float64, y)
-            n_, f_ = z === nothing ? (l_, r_) : 2 .* extrema(Float64, z)
+        @assert projection in (:orthographic, :perspective)
+        ortho = projection === :orthographic
+        # Model Matrix
+        M = I
+        # View Matrix
+        ctr, diag = center_diagonal(x, y, z)
+        dist = .5diag / zoom / (ortho ? 1 : 2)
+        eye = ctr .+ dist .* [
+            -sind(azimuth) * cosd(elevation)
+            +sind(elevation)
+            +cosd(azimuth) * cosd(elevation)
+        ]
+        V = lookat(eye, ctr, up)
+        # Projection Matrix
+        P = if ortho
+            Orthographic(-dist, dist, -dist, dist, -dist, dist)
         else
-            l_, r_ = x === nothing ? (-1., 1.) : extrema(Float64, x)
-            b_, t_ = y === nothing ? (l_, r_) : extrema(Float64, y)
-            n_, f_ = 1., 100.
+            Perspective(-dist, dist, -dist, dist, 1., 100.)
         end
-        args = (
-            something(l, l_),
-            something(r, r_),
-            something(b, b_),
-            something(t, t_),
-            something(n, n_),
-            something(f, f_),
-        )
-        P = ortho ? Orthographic(args...) : Perspective(args...)
-        cam_pos = [0, 0, 0.5]
-        M = I * (rot_x(elevation) * rot_y(azimuth)) * I  # translate * rotate * scale
-        V = lookat(cam_pos)
-        new(P.A * V * M, ortho)
+        new{float(eltype(x))}(P.A * V * M, dist, ortho)
     end
 end
 
-function (t::MVP)(a::AbstractMatrix)
-    dat = t.A * (size(a, 1) == 4 ? a : vcat(a, ones(1, size(a, 2))))
-    x, y, z, w = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
-    w_nz = w .> eps(eltype(t.A))  # homogeneous coordinates
-    x[w_nz] ./= w[w_nz]
-    y[w_nz] ./= w[w_nz]
-    z[w_nz] ./= w[w_nz]
-    t.ortho ? (x, y) : (x ./ z, y ./ z)
+function (t::MVP)(p::AbstractMatrix, clip = false)
+    F = eltype(t.A)
+    ε = eps(F)
+    # homogeneous coordinates
+    dat = t.A * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
+    xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
+    @inbounds for (i, w) in enumerate(ws)
+        if (abs_w = abs(w)) > ε
+            if clip
+                thres = abs_w + ε
+                if abs(w - 1) > ε && (abs(xs[i]) > thres || abs(ys[i]) > thres || abs(xs[i]) > thres)
+                    xs[i] = NaN
+                    ys[i] = NaN
+                    zs[i] = NaN
+                end
+            else
+                xs[i] /= w
+                ys[i] /= w
+                zs[i] /= w
+            end
+        end
+    end
+    # w_nz = ws .> ε
+    # xs[w_nz] ./= ws[w_nz]
+    # ys[w_nz] ./= ws[w_nz]
+    # zs[w_nz] ./= ws[w_nz]
+    t.ortho ? (xs, ys) : (xs ./ zs, ys ./ zs)
 end
 
-function (t::MVP)(v::Union{AbstractVector,NTuple{3}})
+function (t::MVP)(v::Union{AbstractVector,NTuple{3}}, clip = false)
+    F = eltype(t.A)
+    ε = eps(F)
+    # homogeneous coordinates
     x, y, z, w = t.A * [v..., 1]
-    if abs(w) > eps(eltype(t.A))
-        x /= w
-        y /= w
-        z /= w
+    if (abs_w = abs(w)) > ε
+        if clip
+            thres = abs_w + ε
+            if abs(w - 1) > ε && (abs(x) > thres || abs(y) > thres || abs(z) > thres)
+                x = y = z = F(NaN)
+            end
+        else
+            x /= w
+            y /= w
+            z /= w
+        end
     end
     t.ortho ? (x, y) : (x / z, y / z)
 end
-
-function axis(T, o, l, d)
-    e = copy(o)
-    e[d] += l
-    T(hcat(o, e))
-end
-
-xaxis(T, o, l) = axis(T, float(o), l, 1)
-yaxis(T, o, l) = axis(T, float(o), l, 2)
-zaxis(T, o, l) = axis(T, float(o), l, 3)
 
 """
     draw_axes!(args...; kwargs...)
 
 # Description
 
-Draws (x, y, z) cartesian coordinates axes in (R, G, B) colors.
+Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
+If `p = (x, y)` is given, draws at screen coordinates (only correct in orthographic projection).
 """
-function draw_axes!(p, o = [0, 0, 0], l = 0.5)
-    origin = length(o) == 3 ? o : (inv(p.transform.A) * [o..., 0, 1])[1:3]
-    lineplot!(p, xaxis(p.transform, origin, l)..., color = :red)
-    lineplot!(p, yaxis(p.transform, origin, l)..., color = :green)
-    lineplot!(p, zaxis(p.transform, origin, l)..., color = :blue)
-    p
+function draw_axes!(plot, p = [0, 0, 0], len = nothing)
+    T = plot.transform
+    l = len === nothing ? T.distance / 4 : len
+
+    axis(p, d) = begin
+        e = copy(p)
+        e[d] += l
+        T(hcat(p, e))
+    end
+
+    pos = if length(p) == 2
+        T.ortho ? (inv(T.A) * vcat(p, 0, 1))[1:3] : vcat(p, 0)
+    else
+        p
+    end
+    lineplot!(plot, axis(float(pos), 1)..., color = :red)
+    lineplot!(plot, axis(float(pos), 2)..., color = :green)
+    lineplot!(plot, axis(float(pos), 3)..., color = :blue)
+    plot
 end

@@ -45,9 +45,9 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
 ```
 """
 function contourplot(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    A::Union{Function,AbstractMatrix{<:Number}};
+    x::AbstractVector,
+    y::AbstractVector,
+    A::Union{Function,AbstractMatrix};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
@@ -79,9 +79,9 @@ end
 
 function contourplot!(
     plot::Plot{<:Canvas},
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    A::AbstractMatrix{<:Number};
+    x::AbstractVector,
+    y::AbstractVector,
+    A::AbstractMatrix;
     name::AbstractString = "",
     levels::Integer = 3,
     colormap = KEYWORDS.colormap,
@@ -103,6 +103,8 @@ end
 
 """
     contourplot(A; kwargs...)
+
+# Usage
 
 Draws a contour plot of matrix `A` along axis `x` and `y` on a new canvas.
 

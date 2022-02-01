@@ -1,17 +1,17 @@
 """
-    surfaceplot(x, y, z; kwargs...)
+    surfaceplot(x, y, A; kwargs...)
 
 Draws a 3D surface plot on a new canvas.
 
 # Usage
 
-    surfaceplot(x, y, z; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
-        z = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
+        A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
     ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
@@ -22,44 +22,78 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> sombrero(x, y) = sinc(√(x^2 + y^2) / π)
-julia> surfaceplot(-6:.5:10, -8:.5:10, sombrero)
-...
+julia> sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
+julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
+      ┌────────────────────────────────────────┐ 
+    1 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡫⢟⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡔⠌⡡⢢⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣰⣭⣊⣑⣭⣆⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⠴⣚⠯⡫⢝⣿⣿⡻⣟⣿⣿⡫⢝⠽⣓⠦⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣯⡭⠭⠒⢊⠔⢱⢍⡘⡖⣳⢃⡩⡎⠢⡑⠒⠭⢭⣽⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣞⠭⠭⠥⢒⣿⣋⣵⢜⡧⣮⣙⣿⡒⠬⠭⠭⣳⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠴⢾⠿⠯⠛⠛⠽⢿⣯⣶⣮⡽⠛⠫⡉⠃⠙⢉⠝⠛⢯⣵⣶⣽⡿⠯⠛⠛⠽⠿⡷⠦⠀⠀⠀⠀│ 
+      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⢶⣶⣶⡺⣗⣶⣶⡶⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⢷⢵⢾⡷⡮⡾⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      │⠀⢀⡠⠼⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠢⢕⡯⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+   -1 │⠊⠁⠀⠀⠀⠀⠉⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+      └────────────────────────────────────────┘ 
+      ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀ 
 ```
 """
 function surfaceplot(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::Union{Function,AbstractMatrix{<:Number}};
+    x::Union{AbstractVector,AbstractMatrix},
+    y::Union{AbstractVector,AbstractMatrix},
+    A::Union{Function,AbstractMatrix};
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     transform::Union{MVP,Symbol} = :orthographic,
     colormap = KEYWORDS.colormap,
-    kw...,
+    kwargs...,
 )
-    X = repeat(x', length(y), 1)
-    Y = repeat(y, 1, length(x))
-    if z isa Function
-        Z = map(z, X, Y) |> Matrix
+    X, Y = if x isa AbstractVector && y isa AbstractVector
+        repeat(x', length(y), 1), repeat(y, 1, length(x))
+    else
+        x, y
     end
-    callback = colormap_callback(colormap)
+    if A isa Function
+        A = map(A, X, Y) |> Matrix
+    end
+    length(X) == length(Y) == length(A) || throw(DimensionMismatch("x, y and z must have same length"))
 
-    plot = Plot(X[:], Y[:], Z[:], canvas; transform = transform, colormap = callback, kw...)
-    surfaceplot!(plot, X, Y, Z; name = name, color = color, colormap = colormap)
+    callback = colormap_callback(colormap)
+    plot = Plot(@view(X[:]), @view(Y[:]), @view(A[:]), canvas; transform = transform, colormap = callback, kwargs...)
+    surfaceplot!(plot, X, Y, A; name = name, color = color, colormap = colormap)
+
+    plot
 end
 
 function surfaceplot!(
     plot::Plot{<:Canvas},
-    x::AbstractMatrix{<:Number},
-    y::AbstractMatrix{<:Number},
-    z::AbstractMatrix{<:Number};
+    X::AbstractMatrix,
+    Y::AbstractMatrix,
+    A::AbstractMatrix;
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
 )
+    name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
 
-    scatterplot!(plot, x[:], y[:], z[:]; color = color, name = name)
+    scatterplot!(plot, @view(X[:]), @view(Y[:]), @view(A[:]); color = color, name = name)
     plot
 end
+
+"""
+    surfaceplot(A; kwargs...)
+
+# Usage
+
+Draws a surface plot of matrix `A` along axis `x` and `y` on a new canvas.
+"""
+surfaceplot(A::AbstractMatrix; kwargs...) = 
+    surfaceplot(axes(A, 1), axes(A, 2), A; kwargs...)

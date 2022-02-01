@@ -29,17 +29,17 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus)
 ```
 """
 function isosurface(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::AbstractVector{<:Number},
-    V::Union{Function,AbstractArray{<:Number}};
+    x::AbstractVector,
+    y::AbstractVector,
+    z::AbstractVector,
+    V::Union{Function,AbstractArray};
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
     transform::Union{MVP,Symbol} = :orthographic,
     isovalue::Number = 0,
-    kw...,
+    kwargs...,
 )
     if V isa Function
         xx = repeat(x', length(y), 1)
@@ -54,7 +54,7 @@ function isosurface(
     end
     callback = colormap_callback(colormap)
 
-    plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kw...)
+    plot = Plot(x, y, z, canvas; transform = transform, colormap = callback, kwargs...)
     isosurface!(plot, x, y, z, V; name = name, color = color, colormap = colormap, isovalue = isovalue)
 end
 
@@ -66,21 +66,23 @@ tri2xyz(v1, v2, v3) = (
 
 function isosurface!(
     plot::Plot{<:Canvas},
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::AbstractVector{<:Number},
-    V::AbstractArray{<:Number};
+    x::AbstractVector,
+    y::AbstractVector,
+    z::AbstractVector,
+    V::AbstractArray;
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
     isovalue::Number = 0,
 )
+    name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
     MarchingCubes.march(mc, isovalue)
 
     # mc.triangles - mc.vertices - mc.normals
+    # TODO: performa face culling
 
     for t in mc.triangles
         lineplot!(plot, tri2xyz(mc.vertices[t[1]], mc.vertices[t[2]], mc.vertices[t[3]])...; color = color, name = name)

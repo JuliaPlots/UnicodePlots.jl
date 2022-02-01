@@ -154,9 +154,9 @@ function validate_input(
 end
 
 function Plot(
-    X::AbstractVector{<:Number},
-    Y::AbstractVector{<:Number},
-    Z::Union{AbstractVector{<:Number},Nothing} = nothing,
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Union{AbstractVector{<:Number},Nothing} = nothing,
     ::Type{C} = BrailleCanvas;
     title::AbstractString = KEYWORDS.title,
     xlabel::AbstractString = KEYWORDS.xlabel,
@@ -185,31 +185,36 @@ function Plot(
     transform::Union{MVP,Symbol,Nothing} = nothing,
     elevation::Number = KEYWORDS.elevation,
     azimuth::Number = KEYWORDS.azimuth,
+    zoom::Number = KEYWORDS.zoom,
+    axes = KEYWORDS.axes,
+    up = KEYWORDS.up,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
-    X, Y, Z = validate_input(X, Y, Z)
-
-    min_x, max_x = extend_limits(X, xlim, xscale)
-    min_y, max_y = extend_limits(Y, ylim, yscale)
+    x, y, z = validate_input(x, y, z)
 
     if transform !== nothing
         if transform isa Symbol
             transform = MVP(
-                X, Y, Z;
+                x, y, z;
                 projection = transform,
                 elevation = elevation,
                 azimuth = azimuth,
+                zoom = zoom,
+                up = up,
             )
         end
         (xscale !== :identity || yscale !== :identity) &&
-            throw(error("{x,y}scale are unsupported when using 3D"))
-        X, Y = transform(vcat(X', Y', Z'))
+            throw(error("xscale or yscale are unsupported in 3D"))
+        x, y = transform(vcat(x', y', z'))
         grid = blend = false
     end
+
+    min_x, max_x = extend_limits(x, xlim, xscale)
+    min_y, max_y = extend_limits(y, ylim, yscale)
 
     p_width = max_x - min_x
     p_height = max_y - min_y
@@ -279,6 +284,9 @@ function Plot(
             end
         end
     end
+    
+    (transform !== nothing && axes) && draw_axes!(plot, .8 .* [min_x, min_y])
+
     plot
 end
 
