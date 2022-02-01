@@ -184,7 +184,7 @@ struct MVP{T}
         x,
         y,
         z;
-        projection::Symbol = :orthographic,
+        projection = KEYWORDS.projection,
         elevation = KEYWORDS.elevation,
         azimuth = KEYWORDS.azimuth,
         zoom = KEYWORDS.zoom,

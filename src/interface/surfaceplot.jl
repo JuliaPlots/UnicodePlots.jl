@@ -5,14 +5,14 @@ Draws a 3D surface plot on a new canvas.
 
 # Usage
 
-    surfaceplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :mask_small, :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
-    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :mask_small, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -53,6 +53,7 @@ function surfaceplot(
     name::AbstractString = KEYWORDS.name,
     transform::Union{MVP,Symbol} = KEYWORDS.transform,
     colormap = KEYWORDS.colormap,
+    mask_small = KEYWORDS.mask_small,
     kwargs...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector
@@ -60,23 +61,27 @@ function surfaceplot(
     else
         x, y
     end
-    if A isa Function
-        A = map(A, X, Y) |> Matrix
+    Z = if A isa Function
+        map(A, X, Y) |> Matrix
+    else
+        mask_small ? copy(A) : A
     end
     length(X) == length(Y) == length(A) ||
         throw(DimensionMismatch("x, y and z must have same length"))
+
+    mask_small && (Z[abs.(Z) .< eps(eltype(Z))] .= NaN)
 
     callback = colormap_callback(colormap)
     plot = Plot(
         @view(X[:]),
         @view(Y[:]),
-        @view(A[:]),
+        @view(Z[:]),
         canvas;
         transform = transform,
         colormap = callback,
         kwargs...,
     )
-    surfaceplot!(plot, X, Y, A; name = name, color = color, colormap = colormap)
+    surfaceplot!(plot, X, Y, Z; name = name, color = color, colormap = colormap)
 
     plot
 end
@@ -85,7 +90,7 @@ function surfaceplot!(
     plot::Plot{<:Canvas},
     X::AbstractMatrix,
     Y::AbstractMatrix,
-    A::AbstractMatrix;
+    Z::AbstractMatrix;
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
@@ -93,7 +98,7 @@ function surfaceplot!(
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
 
-    scatterplot!(plot, @view(X[:]), @view(Y[:]), @view(A[:]); color = color, name = name)
+    scatterplot!(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
     plot
 end
 

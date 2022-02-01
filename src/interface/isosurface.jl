@@ -5,15 +5,14 @@ Extract and plot isosurface from volumetric data, or implicit function.
 
 # Usage
 
-    isosurface(x, y, z, V; $(keywords(; add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    isosurface(x, y, z, V; $(keywords(; add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :isovalue, :centroid, :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
-        isovalue = "surface isovalue",
-    ); add = (Z_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :isovalue, :centroid, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -55,8 +54,8 @@ function isosurface(
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
     transform::Union{MVP,Symbol} = KEYWORDS.transform,
-    isovalue::Number = 0,
-    centroid::Bool = true,
+    isovalue::Number = KEYWORD.isovalue,
+    centroid::Bool = KEYWORD.centroid,
     kwargs...,
 )
     if V isa Function
@@ -96,8 +95,8 @@ function isosurface!(
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
-    isovalue::Number = 0,
-    centroid::Bool = true,
+    isovalue::Number = KEYWORD.isovalue,
+    centroid::Bool = KEYWORD.centroid,
 )
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
@@ -110,12 +109,11 @@ function isosurface!(
         @SVector([v1[2], v2[2], v3[2], v1[2]]),
         @SVector([v1[3], v2[3], v3[3], v1[3]]),
     )
-    F = float(eltype(x))
-    color = color == :auto ? next_color!(plot) : color
+    F = 
 
-    xs = F[]
-    ys = F[]
-    zs = F[]
+    xs = float(eltype(x))[]
+    ys = float(eltype(y))[]
+    zs = float(eltype(z))[]
     for t in mc.triangles
         v1 = mc.vertices[t[1]]
         v2 = mc.vertices[t[2]]
