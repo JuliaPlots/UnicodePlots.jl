@@ -37,10 +37,10 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
       │⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣯⡭⠭⠒⢊⠔⢱⢍⡘⡖⣳⢃⡩⡎⠢⡑⠒⠭⢭⣽⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
       │⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣞⠭⠭⠥⢒⣿⣋⣵⢜⡧⣮⣙⣿⡒⠬⠭⠭⣳⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀│  │▄▄│  
       │⠀⠀⠀⠀⠴⢾⠿⠯⠛⠛⠽⢿⣯⣶⣮⡽⠛⠫⡉⠃⠙⢉⠝⠛⢯⣵⣶⣽⡿⠯⠛⠛⠽⠿⡷⠦⠀⠀⠀⠀│  │▄▄│  
-      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⢶⣶⣶⡺⣗⣶⣶⡶⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
-      │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⢷⢵⢾⡷⡮⡾⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
-      │⠀⢀⡠⠼⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠢⢕⡯⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
-   -1 │⠊⠁⠀⠀⠀⠀⠉⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  └──┘ 0
+      │⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⢶⣶⣶⡺⣗⣶⣶⡶⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⢷⢵⢾⡷⡮⡾⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
+      │⠀⠀⣀⠤⠧⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠢⢕⡯⠔⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  │▄▄│  
+   -1 │⠐⠉⠀⠀⠀⠀⠈⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│  └──┘ 0
       └────────────────────────────────────────┘  ⠀⠀⠀⠀  
       ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀  ⠀⠀⠀⠀  
 ```
@@ -52,16 +52,17 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 function surfaceplot(
     x::AbstractVecOrMat,
     y::AbstractVecOrMat,
-    A::Union{Function,AbstractMatrix};
+    A::Union{Function,AbstractVecOrMat};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
+    color::UserColorType = nothing,  # NOTE: nothing here to override colormap
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
     lines::Bool = false,
     kwargs...,
 )
-    X, Y = if x isa AbstractVector && y isa AbstractVector
+    X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
         repeat(x', length(y), 1), repeat(y, 1, length(x))
     else
         x, y
@@ -85,26 +86,40 @@ function surfaceplot(
         colorbar = colorbar,
         kwargs...,
     )
-    surfaceplot!(plot, X, Y, Z; name = name, colormap = colormap, lines = lines)
+    surfaceplot!(
+        plot,
+        X,
+        Y,
+        Z;
+        name = name,
+        colormap = colormap,
+        color = color,
+        lines = lines,
+    )
     plot
 end
 
 function surfaceplot!(
     plot::Plot{<:Canvas},
-    X::AbstractMatrix,
-    Y::AbstractMatrix,
-    Z::AbstractMatrix;
+    X::AbstractVecOrMat,
+    Y::AbstractVecOrMat,
+    Z::AbstractVecOrMat;
     name::AbstractString = KEYWORDS.name,
-    colormap = KEYWORDS.colormap,
     lines::Bool = false,
+    color::UserColorType = nothing,  # NOTE: nothing here to override colormap
+    colormap = KEYWORDS.colormap,
+    kw...,
 )
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
 
     mZ, MZ = NaNMath.extrema(Z)
-    color = UserColorType[isfinite(z) ? callback(z, mZ, MZ) : nothing for z in @view(Z[:])]
+    if color === nothing
+        color =
+            UserColorType[isfinite(z) ? callback(z, mZ, MZ) : nothing for z in @view(Z[:])]
+    end
     callable = lines ? lineplot! : scatterplot!
-    callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
+    callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name, kw...)
     plot
 end
 

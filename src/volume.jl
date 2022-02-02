@@ -147,7 +147,7 @@ struct Perspective{T} <: Projection where {T}
     end
 end
 
-function center_diagonal(x, y, z)
+function ctr_len_diag(x, y, z)
     mx, Mx = NaNMath.extrema(x)
     my, My = NaNMath.extrema(y)
     mz, Mz = NaNMath.extrema(z)
@@ -156,7 +156,7 @@ function center_diagonal(x, y, z)
     ly = My - my
     lz = Mz - mz
 
-    [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], √(lx^2 + ly^2 + lz^2)
+    [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], [lx, ly, lz], √(lx^2 + ly^2 + lz^2)
 end
 
 function view_matrix(center, distance, elevation, azimuth, up)
@@ -201,7 +201,7 @@ Model - View - Projection transformation matrix.
 struct MVP{T}
     A::Matrix{T}
     view_dir::SVector{3,T}
-    distance::T
+    len::SVector{3,T}
     ortho::Bool
     MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::Projection) where {T} =
         new{T}(P.A * V * M, [0, 0, 0], 1, P isa Orthographic)
@@ -225,12 +225,12 @@ struct MVP{T}
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
         ortho = projection === :orthographic
-        ctr, diag = center_diagonal(x, y, z)
+        ctr, len, diag = ctr_len_diag(x, y, z)
         # half the diagonal (cam distance to the center)
         dist = (diag / 2) / zoom / (ortho ? 1 : 2)
         δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
         # Model Matrix
-        M = I  # we don't scale, nor translate nor rotate input data
+        M = I  # we don't scale, nor translate, nor rotate input data
         # View Matrix
         V, view_dir =
             view_matrix(ctr, dist, max(-90 + δ, min(elevation, 90 - δ)), azimuth, up)
@@ -240,7 +240,7 @@ struct MVP{T}
         else
             Perspective(-dist, dist, -dist, dist, 1.0, 100.0)
         end
-        new{float(eltype(x))}(P.A * V * M, view_dir, dist, ortho)
+        new{float(eltype(x))}(P.A * V * M, view_dir, len, ortho)
     end
 end
 
@@ -267,10 +267,6 @@ function (t::MVP)(p::AbstractMatrix, clip = false)
             end
         end
     end
-    # w_nz = ws .> ε
-    # xs[w_nz] ./= ws[w_nz]
-    # ys[w_nz] ./= ws[w_nz]
-    # zs[w_nz] ./= ws[w_nz]
     t.ortho ? (xs, ys) : (xs ./ zs, ys ./ zs)
 end
 
@@ -304,11 +300,11 @@ If `p = (x, y)` is given, draws at screen coordinates (only correct in orthograp
 """
 function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     T = plot.projection
-    l = len === nothing ? T.distance / 4 : len
+    l = len === nothing ? T.len ./ 4 : len
 
     axis(p, d) = begin
         e = copy(p)
-        e[d] += l
+        e[d] += l[d]
         T(hcat(p, e))
     end
 

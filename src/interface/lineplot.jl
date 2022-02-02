@@ -86,14 +86,22 @@ function lineplot!(
     x::AbstractVector,
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
-    color::UserColorType = KEYWORDS.color,
+    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
 )
     color = color == :auto ? next_color!(plot) : color
-    name == "" || label!(plot, :r, string(name), color)
-    lines!(plot, x, y, z, color)
+    name == "" ||
+        label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
+    if color isa AbstractVector
+        for i in 1:length(color)
+            lines!(plot, x[i], y[i], z === nothing ? z : z[i], color[i])
+        end
+    else
+        lines!(plot, x, y, z, color)
+    end
     z === nothing || return plot  # 3D arrows unsupported for now
+    color isa AbstractVector && return plot
     (head_tail === nothing || length(x) == 0 || length(y) == 0) && return plot
     head_tail_color = (col = crayon_256_color(color)) === nothing ? nothing : ~col
     if head_tail in (:head, :both)

@@ -145,7 +145,7 @@ function keywords(
     remove::Tuple = (),
 )
     all_kw = (; KEYWORDS..., extra...)
-    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra does first !
+    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra goes first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
     join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")

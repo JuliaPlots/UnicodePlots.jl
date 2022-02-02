@@ -399,6 +399,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   mkpath("imgs/$ver")
   open("imgs/gen_imgs.jl", "w") do io
     println(io, """
+      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       using UnicodePlots, StableRNGs, SparseArrays
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
@@ -419,11 +420,13 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   open("imgs/gen_imgs.sh", "w") do io
     write(io, """
       #!/usr/bin/env bash
+      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       \${JULIA-julia} gen_imgs.jl
 
       for f in $ver/*.txt; do
         html=\${f%.txt}.html
         cat \$f | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
+        sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
         \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
       done
 
@@ -436,7 +439,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   plain_readme = plain(readme)
   write(stdout, plain_readme)
   open("../README.md", "w") do io
-    write(io, "<!-- WARNING: this file has been automatically generated, please update Unicodeplots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
+    write(io, "<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
     write(io, plain_readme)
   end
   return
