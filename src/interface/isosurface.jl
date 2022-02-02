@@ -12,8 +12,8 @@ Extract and plot isosurface from volumetric data, or implicit function.
 $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
+        isovalue = "chosen surface isovalue",
         centroid = "display triangulation centroid instead of triangle vertices",
-        isovalue = "surface isovalue",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))
 
@@ -45,6 +45,10 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.
         └────────────────────────────────────────┘ 
         ⠀-0.5⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀0.5⠀ 
 ```
+
+# See also
+
+`Plot`, `scatterplot`
 """
 function isosurface(
     x::AbstractVector,
@@ -54,7 +58,6 @@ function isosurface(
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
-    colormap = KEYWORDS.colormap,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     isovalue::Number = 0,
     centroid::Bool = true,
@@ -71,9 +74,8 @@ function isosurface(
         end
         V = map(V, X, Y, Z) |> Array
     end
-    callback = colormap_callback(colormap)
 
-    plot = Plot(x, y, z, canvas; projection = projection, colormap = callback, kwargs...)
+    plot = Plot(x, y, z, canvas; projection = projection, kwargs...)
     isosurface!(
         plot,
         x,
@@ -82,7 +84,6 @@ function isosurface(
         V;
         name = name,
         color = color,
-        colormap = colormap,
         isovalue = isovalue,
         centroid = centroid,
     )
@@ -96,12 +97,10 @@ function isosurface!(
     V::AbstractArray;
     color::UserColorType = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
-    colormap = KEYWORDS.colormap,
     isovalue::Number = 0,
     centroid::Bool = true,
 )
     name == "" || label!(plot, :r, string(name))
-    plot.colormap = callback = colormap_callback(colormap)
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
     MarchingCubes.march(mc, isovalue)

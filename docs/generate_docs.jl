@@ -272,7 +272,7 @@ $(examples.heatmap2)
 
 $(examples.surfaceplot)
 
-Plot a surface using height values. Small values close to zero are not plotted by default (see `mask_small`).
+Plot a colored surface using height values.
 
 #### Isosurface Plot
 

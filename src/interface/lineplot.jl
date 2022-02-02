@@ -20,7 +20,7 @@ This means that the two vectors must be of the same length and ordering.
 $(arguments(
     (
         fun = "a unary function ``f: R -> R`` that should be evaluated, and drawn as a path from `start` to `stop` (numbers in the domain)",
-        head_tail = "pass the symbol `:head`, `:tail` or `:both` to color the head/tail of the line with the complement of the chosen color",
+        head_tail = "color the line head and/or tail with the complement of the chosen color (`:head`, `:tail`, `:both`)",
         x = "horizontal position for each point (can be a real number or of type `TimeType`), if omitted, the axes of `y` will be used as `x`",
     ) ; add = (:x, :y, :canvas)
 ))

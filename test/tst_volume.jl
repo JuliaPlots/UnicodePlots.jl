@@ -44,9 +44,9 @@ ellipsoid(θs = (-π / 2):(π / 10):(π / 2), ϕs = (-π):(π / 10):π, a = 2, b
         ortho = proj === :orthographic
 
         T = MVP(
-            [-1, 1],
-            [-1, 1],
-            [-1, 1];
+            [-1.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 1.0];
             projection = proj,
             elevation = ortho ? atand(1 / √2) : 0,
             azimuth = ortho ? 45 : 0,

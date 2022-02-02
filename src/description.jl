@@ -22,11 +22,11 @@ const KEYWORDS = (
     colorbar_border = :solid,
     colormap = :viridis,
     projection = :orthographic,
-    elevation = round(atand(1 / √2); digits = 4),
+    elevation = round(atand(1 / √2); digits = 6),
     azimuth = 45.0,
     axes3d = true,
     zoom = 1.0,
-    up = [0, 0, 1],
+    up = :z,
     colorbar = false,
     unicode_exponent = true,
     compact = false,
@@ -68,12 +68,12 @@ const DESCRIPTION = (
     grid = "draws grid-lines at the origin",
     compact = "compact plot labels",
     unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`",
-    projection = "projection for 3D plots (`:orthographic`, `:perspective`, or Matrix-View-Projection matrix)",
+    projection = "projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix)",
     axes3d = "draw 3d axes (x -> red, y -> green, z -> blue)",
     elevation = "elevation angle (`-90 ≤ θ ≤ 90`)",
-    azimuth = "azimutal angle (`-180° ≤ ϕ ≤ 180°`)",
+    azimuth = "azimutal angle (`-180° ≤ φ ≤ 180°`)",
     zoom = "zooming factor in 3D",
-    up = "camera up vector",
+    up = "camera up vector (`:x`, `:y` or `:z`)",
     blend = "blend colors on the underlying canvas",
     fix_ar = "fix terminal aspect ratio (experimental)",
     visible = "visible canvas",
@@ -145,7 +145,7 @@ function keywords(
     remove::Tuple = (),
 )
     all_kw = (; KEYWORDS..., extra...)
-    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KWARGS)
+    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra does first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
     join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")

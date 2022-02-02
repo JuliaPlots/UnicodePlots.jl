@@ -43,29 +43,31 @@ camera_4x4(l, u, f, eye) = @SMatrix(
 )
 
 """
-    lookat(args...; kwargs...)
+    lookat(eye, target, up_vector)
 
 # Arguments
+
     - `eye`: position of the camera in world space (e.g. [0, 0, 10])
     - `target`: target point to look at in world space (usually to origin = [0, 0, 0])
-    - `up`: up vector (usually +y = [0, 1, 0])
+    - `up_vector`: up vector (usually +z = [0, 0, 1])
 """
-function lookat(eye, target = [0, 0, 0], up = [0, 1, 0])
-    f = normalize(eye - target)  # forward vector.
-    l = normalize(cross(up, f))  # left vector
+function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
+    f = normalize(eye - target)  # forward vector
+    l = normalize(cross(up_vector, f))  # left vector
     u = cross(f, l)  # up vector
 
     camera_4x4(l, u, f, eye), f
 end
 
 """
-    frustum(args...; kwargs...)
+    frustum(l, r, b, t, n, f)
 
 # Description
 
 Computes the perspective projection matrix.
 
 # Arguments
+
     - `l`: left coordinate of the vertical clipping plane
     - `r` : right coordinate of the vertical clipping plane
     - `b`: bottom coordinate of the horizontal clipping plane
@@ -98,13 +100,14 @@ function frustum(l, r, b, t, n, f)
 end
 
 """
-    ortho(args...; kwargs...)
+    ortho(l, r, b, t, n, f)
 
 # Description
 
 Computes the orthographic projection matrix.
 
 # Arguments
+
     - `l`: left coordinate of the vertical clipping plane
     - `r` : right coordinate of the vertical clipping plane
     - `b`: bottom coordinate of the horizontal clipping plane
@@ -145,11 +148,9 @@ struct Perspective{T} <: Projection where {T}
 end
 
 center_diagonal(x, y, z) = begin
-    F = float(eltype(x))
-
-    mx, Mx = extrema(F, x)
-    my, My = extrema(F, y)
-    mz, Mz = extrema(F, z)
+    mx, Mx = NaNMath.extrema(x)
+    my, My = NaNMath.extrema(y)
+    mz, Mz = NaNMath.extrema(z)
 
     lx = Mx - mx
     ly = My - my
@@ -161,7 +162,7 @@ end
 """
     MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection)
     MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool)
-    MVP(x, y, z, p::Symbol = :orthographic, elevation = atand(1 / √2), azimuth = -45, distance = 1, up = [0, 1, 0])
+    MVP(x, y, z; $(keywords(; default = (), add = (:x, :y, :z, :projection, :elevation, :azimuth, :zoom, :up))))
 
 # Description
 
@@ -195,19 +196,22 @@ struct MVP{T}
         @assert -90 ≤ elevation ≤ 90
         ortho = projection === :orthographic
         # Model Matrix
-        M = I
+        M = I  # we don't scale, nor translate nor rotate input data
         # View Matrix
         ctr, diag = center_diagonal(x, y, z)
+        # half the diagonal (cam distance to the center)
         dist = 0.5diag / zoom / (ortho ? 1 : 2)
-        correction = sign(elevation) * 100eps()
+        δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
+        el = max(-90 + δ, min(elevation, 90 - δ))
         eye =
             ctr .+
             dist .* [
-                cosd(azimuth) * cosd(elevation - correction)
-                sind(azimuth) * cosd(elevation - correction)
-                sind(elevation - correction)
+                cosd(azimuth) * cosd(el)
+                sind(azimuth) * cosd(el)
+                sind(el)
             ]
-        V, view_dir = lookat(eye, ctr, up)
+        up_vector = (x = [1, 0, 0], y = [0, 1, 0], z = [0, 0, 1])[up]
+        V, view_dir = lookat(eye, ctr, up_vector)
         # Projection Matrix
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)

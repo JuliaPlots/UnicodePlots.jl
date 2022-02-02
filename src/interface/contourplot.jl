@@ -43,6 +43,10 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
       └────────────────────────────────────────┘  ⠀⠀⠀⠀  
       ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀  ⠀⠀⠀⠀  
 ```
+
+# See also
+
+`Plot`, `scatterplot`
 """
 function contourplot(
     x::AbstractVector,
@@ -52,10 +56,10 @@ function contourplot(
     name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
     colormap = KEYWORDS.colormap,
-    blend = false,
-    grid = false,
-    colorbar = true,
-    kw...,
+    colorbar::Bool = true,
+    blend::Bool = false,
+    grid::Bool = false,
+    kwargs...,
 )
     callback = colormap_callback(colormap)
     plot = Plot(
@@ -65,9 +69,9 @@ function contourplot(
         canvas;
         blend = blend,
         grid = grid,
-        colorbar = colorbar,
         colormap = callback,
-        kw...,
+        colorbar = colorbar,
+        kwargs...,
     )
     if A isa Function
         X = repeat(x', length(y), 1)
@@ -89,7 +93,7 @@ function contourplot!(
     name == "" || label!(plot, :r, string(name))
 
     plot.colormap = callback = colormap_callback(colormap)
-    mA, MA = extrema(A)
+    mA, MA = NaNMath.extrema(A)
 
     for cl in Contour.levels(Contour.contours(y, x, A, levels))
         color = callback(Contour.level(cl), mA, MA)

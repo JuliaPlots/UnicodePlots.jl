@@ -8,6 +8,7 @@ using LinearAlgebra
 using StaticArrays
 
 import MarchingCubes
+import NaNMath
 import Contour
 
 export GraphicsArea,

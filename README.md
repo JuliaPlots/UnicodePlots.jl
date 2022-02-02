@@ -212,7 +212,7 @@ surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
 ```
 ![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/surfaceplot.png)
 
-Plot a surface using height values. Small values close to zero are not plotted by default (see `mask_small`).
+Plot a colored surface using height values.
 
 #### Isosurface Plot
 
@@ -289,12 +289,12 @@ All plots support the set (or a subset) of the following named parameters:
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
-  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or Matrix-View-Projection matrix).
+  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
-  - `elevation::Float = 35.2644`: elevation angle (`-90 ≤ θ ≤ 90`).
-  - `azimuth::Float = 45.0`: azimutal angle (`-180° ≤ ϕ ≤ 180°`).
+  - `elevation::Float = 35.26439`: elevation angle (`-90 ≤ θ ≤ 90`).
+  - `azimuth::Float = 45.0`: azimutal angle (`-180° ≤ φ ≤ 180°`).
   - `zoom::Float = 1.0`: zooming factor in 3D.
-  - `up::Array = [0, 0, 1]`: camera up vector.
+  - `up::Symbol = :z`: camera up vector (`:x`, `:y` or `:z`).
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.
@@ -303,7 +303,7 @@ All plots support the set (or a subset) of the following named parameters:
 
 ### 3D plots
 
-3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword.
+3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
 
 ### Methods
 
