@@ -291,10 +291,10 @@ All plots support the set (or a subset) of the following named parameters:
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
-  - `elevation::Float = 35.26439`: elevation angle (`-90 ≤ θ ≤ 90`).
-  - `azimuth::Float = 45.0`: azimutal angle (`-180° ≤ φ ≤ 180°`).
+  - `elevation::Float = 35.26439`: elevation angle above the `floor` plane (`-90 ≤ θ ≤ 90`).
+  - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
   - `zoom::Float = 1.0`: zooming factor in 3D.
-  - `up::Symbol = :z`: camera up vector (`:x`, `:y` or `:z`).
+  - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.

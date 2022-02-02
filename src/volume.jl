@@ -147,7 +147,7 @@ struct Perspective{T} <: Projection where {T}
     end
 end
 
-center_diagonal(x, y, z) = begin
+function center_diagonal(x, y, z)
     mx, Mx = NaNMath.extrema(x)
     my, My = NaNMath.extrema(y)
     mz, Mz = NaNMath.extrema(z)
@@ -157,6 +157,36 @@ center_diagonal(x, y, z) = begin
     lz = Mz - mz
 
     [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], √(lx^2 + ly^2 + lz^2)
+end
+
+function view_matrix(center, distance, elevation, azimuth, up)
+    up_str = string(up)
+    shift = if (up_axis = Symbol(up_str[end])) === :x
+        0
+    elseif up_axis === :y
+        1
+    elseif up_axis === :z
+        2
+    else
+        throw(error("$up not understood"))
+    end
+    up_vector = circshift(
+        [
+            length(up_str) == 1 ? 1 : (p = +1, m = -1)[Symbol(up_str[1])]
+            0
+            0
+        ],
+        shift,
+    )
+    cam_move = circshift(
+        distance .* [
+            sind(elevation)
+            cosd(azimuth) * cosd(elevation)
+            sind(azimuth) * cosd(elevation)
+        ],
+        shift,
+    )
+    lookat(center .+ cam_move, center, up_vector)
 end
 
 """
@@ -195,23 +225,15 @@ struct MVP{T}
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
         ortho = projection === :orthographic
+        ctr, diag = center_diagonal(x, y, z)
+        # half the diagonal (cam distance to the center)
+        dist = (diag / 2) / zoom / (ortho ? 1 : 2)
+        δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
         # Model Matrix
         M = I  # we don't scale, nor translate nor rotate input data
         # View Matrix
-        ctr, diag = center_diagonal(x, y, z)
-        # half the diagonal (cam distance to the center)
-        dist = 0.5diag / zoom / (ortho ? 1 : 2)
-        δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
-        el = max(-90 + δ, min(elevation, 90 - δ))
-        eye =
-            ctr .+
-            dist .* [
-                cosd(azimuth) * cosd(el)
-                sind(azimuth) * cosd(el)
-                sind(el)
-            ]
-        up_vector = (x = [1, 0, 0], y = [0, 1, 0], z = [0, 0, 1])[up]
-        V, view_dir = lookat(eye, ctr, up_vector)
+        V, view_dir =
+            view_matrix(ctr, dist, max(-90 + δ, min(elevation, 90 - δ)), azimuth, up)
         # Projection Matrix
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)
