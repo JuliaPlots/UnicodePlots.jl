@@ -5,13 +5,14 @@ Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s.
 
 # Usage
 
-    surfaceplot(x, y, A; $(keywords(; add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords((; lines = false); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
 
 # Arguments
 
 $(arguments(
     (
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
+        lines = "use `lineplot` instead of `scatterplot`",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
@@ -49,14 +50,15 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 `Plot`, `scatterplot`
 """
 function surfaceplot(
-    x::Union{AbstractVector,AbstractMatrix},
-    y::Union{AbstractVector,AbstractMatrix},
+    x::AbstractVecOrMat,
+    y::AbstractVecOrMat,
     A::Union{Function,AbstractMatrix};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
+    lines::Bool = false,
     kwargs...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector
@@ -83,8 +85,7 @@ function surfaceplot(
         colorbar = colorbar,
         kwargs...,
     )
-    surfaceplot!(plot, X, Y, Z; name = name, colormap = colormap)
-
+    surfaceplot!(plot, X, Y, Z; name = name, colormap = colormap, lines = lines)
     plot
 end
 
@@ -95,13 +96,15 @@ function surfaceplot!(
     Z::AbstractMatrix;
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
+    lines::Bool = false,
 )
     name == "" || label!(plot, :r, string(name))
     plot.colormap = callback = colormap_callback(colormap)
 
     mZ, MZ = NaNMath.extrema(Z)
     color = UserColorType[isfinite(z) ? callback(z, mZ, MZ) : nothing for z in @view(Z[:])]
-    scatterplot!(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
+    callable = lines ? lineplot! : scatterplot!
+    callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
     plot
 end
 
