@@ -103,7 +103,7 @@ function lineplot!(
     z === nothing || return plot  # 3D arrows unsupported for now
     color isa AbstractVector && return plot
     (head_tail === nothing || length(x) == 0 || length(y) == 0) && return plot
-    head_tail_color = (col = crayon_256_color(color)) === nothing ? nothing : ~col
+    head_tail_color = complement(color)
     if head_tail in (:head, :both)
         points!(plot, last(x), last(y), head_tail_color)
     end

@@ -312,6 +312,8 @@ function crayon_256_color(color::UserColorType)::ColorType
     Crayons.val(ansicolor)
 end
 
+complement(color) = (col = crayon_256_color(color)) === nothing ? nothing : ~col
+
 julia_color(color::Integer)::JuliaColorType = Int(color)
 julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color

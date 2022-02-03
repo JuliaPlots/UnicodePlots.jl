@@ -13,6 +13,7 @@ $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
         isovalue = "chosen surface isovalue",
+        cull = "cull back faces",
         centroid = "display triangulation centroid instead of triangle vertices",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))
@@ -29,17 +30,17 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.
         ┌────────────────────────────────────────┐ 
     0.5 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
         │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢀⠀⠄⡀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠄⠔⠀⠡⠠⠁⠡⠠⠁⠈⠄⠌⠈⠄⠌⠀⠢⠠⠠⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠀⠀⠠⠐⠅⠌⠈⠄⠌⠀⡁⡀⠨⡀⠄⠠⠡⠠⡀⠥⠠⠈⠀⠡⠠⠁⠡⠡⠢⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠀⣔⠃⡁⠄⢊⠈⠄⡰⠐⡀⢂⡞⢈⠰⠨⡂⠆⡁⣱⠔⢁⠘⢀⠠⠁⡑⠠⢈⠘⣢⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠐⠥⠁⡀⠂⢂⠈⠄⡖⡋⠗⠈⠉⠀⠀⠀⠀⠀⠀⠉⠁⠱⢙⠱⠠⠁⡐⠐⢀⠈⢌⠆⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠜⠤⠁⡀⠂⢂⢈⠄⠦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡹⠠⡁⡐⠐⢀⠈⢤⢚⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠸⠗⠅⡀⠂⢂⢀⠂⢂⠃⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠂⡑⠐⡀⡐⠐⠀⠨⢔⠏⠀⠀⠀⠀│ 
-        │⠀⠀⠀⠀⠀⠉⠄⠌⠰⠀⡀⠂⢂⠀⡐⠐⠌⠔⠐⠄⠡⠂⠢⠡⠂⢂⠀⡐⠐⣀⠐⠠⡁⡃⠁⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⢀⠀⠀⠀⠈⠁⠄⠌⠀⡆⢀⠐⠐⢀⠐⠐⠀⠄⠂⠂⡀⠂⡂⡀⠂⢂⠀⡂⠐⠀⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠈⠀⠥⠀⡂⡃⠇⠃⡁⡡⠨⡈⡨⠈⠬⠨⠢⢈⠠⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
-        │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠓⠀⠊⠐⠂⠊⠈⠈⠘⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢀⢀⠠⢄⢄⠄⠄⡠⡠⠤⡀⡀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠔⠌⠜⠀⠡⠠⠁⠡⠠⠁⠈⠄⠌⠈⠄⠌⠀⠪⠠⠤⡀⡀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠀⠀⡠⠔⠅⠌⠈⠄⠌⠀⡁⡀⠨⡀⠄⠠⠡⠠⡀⠥⠠⠈⠀⠡⠠⠁⠡⠱⠢⡀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⢀⣜⠃⡁⠄⢊⠈⠄⡰⠐⡀⢂⡞⢈⡰⡨⡂⢆⡁⣱⠔⢁⠘⢀⠠⠁⡑⠠⢈⠘⣲⡀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⡚⠥⠁⡀⠂⢂⠈⠄⡖⡫⠗⠋⠉⠀⠀⠀⠀⠀⠈⠉⠉⠱⢝⠱⠠⠁⡐⠐⢀⠈⢌⢧⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⡟⠤⠁⡀⠂⢂⢈⠄⢮⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡿⠠⡁⡐⠐⢀⠈⢤⢚⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⢽⠗⠅⡀⠂⢂⢀⠂⢂⠓⡢⡄⣀⠀⠀⠀⠀⠀⢀⡀⢀⢰⠂⡑⠐⡀⡐⠐⠀⠨⢔⡟⠀⠀⠀⠀│ 
+        │⠀⠀⠀⠀⠈⠭⠄⠌⠰⠀⡀⠂⢂⠀⡐⠐⠌⠔⠑⠅⠡⠊⠢⠡⠂⢂⠀⡐⠐⣀⠐⠠⡁⡃⡑⠁⠀⠀⠀⠀│ 
+        │⠀⠀⠀⢀⠀⠀⠈⠨⠅⠄⠌⠀⡆⢀⠐⠐⢀⠐⠐⠀⠄⠂⠂⡀⠂⡂⡀⠂⢂⠀⡂⢐⠔⠈⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠈⠢⢥⢀⡂⡃⠇⠃⡁⡡⠨⡈⡨⠈⠬⠨⠢⢈⢠⠑⠒⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
+        │⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠈⠋⠓⠂⠊⠒⠂⠚⠘⠚⠙⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
         │⠀⠀⣀⠼⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
    -0.5 │⠔⠉⠀⠀⠀⠈⠑⠤⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
         └────────────────────────────────────────┘ 
@@ -61,6 +62,7 @@ function isosurface(
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     isovalue::Number = 0,
     centroid::Bool = true,
+    cull::Bool = false,
     kw...,
 )
     if V isa Function
@@ -75,7 +77,13 @@ function isosurface(
         V = map(V, X, Y, Z) |> Array
     end
 
-    plot = Plot(x, y, z, canvas; projection = projection, kw...)
+    plot = Plot(
+        extrema(x) |> collect,
+        extrema(y) |> collect,
+        extrema(z) |> collect,
+        canvas;
+        projection = projection, kw...
+    )
     isosurface!(
         plot,
         x,
@@ -86,6 +94,7 @@ function isosurface(
         color = color,
         isovalue = isovalue,
         centroid = centroid,
+        cull = cull,
     )
 end
 
@@ -99,42 +108,45 @@ function isosurface!(
     name::AbstractString = KEYWORDS.name,
     isovalue::Number = 0,
     centroid::Bool = true,
+    cull::Bool = false,
 )
     name == "" || label!(plot, :r, string(name))
+    color = color == :auto ? next_color!(plot) : color
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
     MarchingCubes.march(mc, isovalue)
 
-    tri2xyz(v1, v2, v3) = (
-        @SVector([v1[1], v2[1], v3[1], v1[1]]),
-        @SVector([v1[2], v2[2], v3[2], v1[2]]),
-        @SVector([v1[3], v2[3], v3[3], v1[3]]),
-    )
     xs = float(eltype(x))[]
     ys = float(eltype(y))[]
     zs = float(eltype(z))[]
-    for t in mc.triangles
-        i1, i2, i3 = t
-        (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
+    cs = UserColorType[]
+
+    for (i1, i2, i3) in mc.triangles
+        (i1 <= 0 || i2 <= 0 || i3 <= 0) && continue  # invalid triangle
         v1 = mc.vertices[i1]
         v2 = mc.vertices[i2]
         v3 = mc.vertices[i3]
-        # face culling
-        dot(mc.normals[i1], plot.projection.view_dir) < 0 && continue
-        dot(mc.normals[i2], plot.projection.view_dir) < 0 && continue
-        dot(mc.normals[i3], plot.projection.view_dir) < 0 && continue
+        back_face = (
+            dot(mc.normals[i1], plot.projection.view_dir) < 0 &&
+            dot(mc.normals[i2], plot.projection.view_dir) < 0 &&
+            dot(mc.normals[i3], plot.projection.view_dir) < 0
+        )
+        (cull && back_face) && continue
+        vc = back_face ? complement(color) : color
         if centroid
             c = (v1 .+ v2 .+ v3) ./ 3
             push!(xs, c[1])
             push!(ys, c[2])
             push!(zs, c[3])
+            push!(cs, vc)
         else
-            append!(xs, @SVector([v1[1], v2[1], v3[1]]))
-            append!(ys, @SVector([v1[2], v2[2], v3[2]]))
-            append!(zs, @SVector([v1[3], v2[3], v3[3]]))
+            push!(xs, v1[1], v2[1], v3[1])
+            push!(ys, v1[2], v2[2], v3[2])
+            push!(zs, v1[3], v2[3], v3[3])
+            push!(cs, vc, vc, vc)
         end
     end
     # triangles vertices or centroid
-    scatterplot!(plot, xs, ys, zs; color = color, name = name)
+    scatterplot!(plot, xs, ys, zs; color = cs, name = name)
     plot
 end

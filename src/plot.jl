@@ -140,6 +140,7 @@ function validate_input(
     z::Union{AbstractVector{<:Number},Nothing} = nothing,
 )
     if z !== nothing
+        length(x) == length(y) == length(z) || throw(DimensionMismatch("x, y and z must have same length"))
         idx = map(x, y, z) do i, j, k
             isfinite(i) && isfinite(j) && isfinite(k)
         end
@@ -202,9 +203,9 @@ function Plot(
     if projection !== nothing
         if projection isa Symbol
             projection = MVP(
-                x,
-                y,
-                z;
+                float(x),
+                float(y),
+                float(z);
                 projection = projection,
                 elevation = elevation,
                 azimuth = azimuth,
