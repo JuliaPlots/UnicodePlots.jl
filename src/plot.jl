@@ -134,8 +134,8 @@ function Plot(
     zlabel::AbstractString = KEYWORDS.zlabel,
     xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = KEYWORDS.yscale,
-    width::Int = KEYWORDS.width,
-    height::Int = KEYWORDS.height,
+    width::Union{Int,Nothing} = nothing,
+    height::Union{Int,Nothing} = nothing,
     border::Symbol = KEYWORDS.border,
     compact::Bool = KEYWORDS.compact,
     blend::Bool = KEYWORDS.blend,
@@ -156,6 +156,10 @@ function Plot(
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must have same length"))
+
+    width === nothing && (width = DEFAULT_WIDTH[])
+    height === nothing && (height = DEFAULT_HEIGHT[])
+
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
