@@ -1,7 +1,7 @@
 """
     surfaceplot(x, y, A; kw...)
 
-Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s.
+Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s. Pass 
 
 # Usage
 
@@ -83,7 +83,7 @@ function surfaceplot(
         canvas;
         projection = projection,
         colormap = callback,
-        colorbar = colorbar,
+        colorbar = colorbar && color === nothing,
         kw...,
     )
     surfaceplot!(
@@ -92,7 +92,7 @@ function surfaceplot(
         Y,
         Z;
         name = name,
-        colormap = colormap,
+        colormap = callback,
         color = color,
         lines = lines,
     )
