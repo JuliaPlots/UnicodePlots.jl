@@ -54,8 +54,8 @@ end
 @inline lookup_encode(::BlockCanvas) = block_signs
 @inline lookup_decode(::BlockCanvas) = block_decode
 
-BlockCanvas(args...; kwargs...) =
-    CreateLookupCanvas(BlockCanvas, (0b0000, 0b1111), args...; kwargs...)
+BlockCanvas(args...; kw...) =
+    CreateLookupCanvas(BlockCanvas, (0b0000, 0b1111), args...; kw...)
 
 function char_point!(
     c::BlockCanvas,

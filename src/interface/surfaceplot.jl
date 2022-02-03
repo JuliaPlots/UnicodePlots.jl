@@ -1,5 +1,5 @@
 """
-    surfaceplot(x, y, A; kwargs...)
+    surfaceplot(x, y, A; kw...)
 
 Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s.
 
@@ -55,12 +55,12 @@ function surfaceplot(
     A::Union{Function,AbstractVecOrMat};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
-    projection::Union{MVP,Symbol} = KEYWORDS.projection,
-    color::UserColorType = nothing,  # NOTE: nothing here to override colormap
+    color::UserColorType = nothing,  # NOTE: nothing as default to override colormap
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
+    projection::Union{MVP,Symbol} = KEYWORDS.projection,
     lines::Bool = false,
-    kwargs...,
+    kw...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
         repeat(x', length(y), 1), repeat(y, 1, length(x))
@@ -84,7 +84,7 @@ function surfaceplot(
         projection = projection,
         colormap = callback,
         colorbar = colorbar,
-        kwargs...,
+        kw...,
     )
     surfaceplot!(
         plot,
@@ -105,9 +105,9 @@ function surfaceplot!(
     Y::AbstractVecOrMat,
     Z::AbstractVecOrMat;
     name::AbstractString = KEYWORDS.name,
-    lines::Bool = false,
-    color::UserColorType = nothing,  # NOTE: nothing here to override colormap
+    color::UserColorType = nothing,  # NOTE: nothing as default to override colormap
     colormap = KEYWORDS.colormap,
+    lines::Bool = false,
     kw...,
 )
     name == "" || label!(plot, :r, string(name))
@@ -124,11 +124,10 @@ function surfaceplot!(
 end
 
 """
-    surfaceplot(A; kwargs...)
+    surfaceplot(A; kw...)
 
 # Usage
 
 Draws a surface plot of matrix `A` along axis `x` and `y` on a new canvas.
 """
-surfaceplot(A::AbstractMatrix; kwargs...) =
-    surfaceplot(axes(A, 1), axes(A, 2), A; kwargs...)
+surfaceplot(A::AbstractMatrix; kw...) = surfaceplot(axes(A, 1), axes(A, 2), A; kw...)

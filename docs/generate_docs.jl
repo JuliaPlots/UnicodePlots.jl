@@ -272,7 +272,7 @@ $(examples.heatmap2)
 
 $(examples.surfaceplot)
 
-Plot a colored surface using height values.
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions.
 
 #### Isosurface Plot
 

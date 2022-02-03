@@ -1,5 +1,5 @@
 """
-    histogram(data; kwargs...)
+    histogram(data; kw...)
 
 # Description
 
@@ -12,7 +12,7 @@ Note internally that `histogram` is a simply wrapper for
 
 # Usage
 
-    histogram(x; nbins, closed = :left, kwargs...)
+    histogram(x; nbins, closed = :left, kw...)
 
     histogram(hist; $(keywords((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
 

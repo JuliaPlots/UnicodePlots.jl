@@ -212,7 +212,7 @@ surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
 ```
 ![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/surfaceplot.png)
 
-Plot a colored surface using height values.
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions.
 
 #### Isosurface Plot
 

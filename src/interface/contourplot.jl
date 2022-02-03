@@ -1,5 +1,5 @@
 """
-    contourplot(x, y, A; kwargs...)
+    contourplot(x, y, A; kw...)
 
 Draws a contour plot on a new canvas.
 
@@ -59,7 +59,7 @@ function contourplot(
     colorbar::Bool = true,
     blend::Bool = false,
     grid::Bool = false,
-    kwargs...,
+    kw...,
 )
     callback = colormap_callback(colormap)
     plot = Plot(
@@ -71,7 +71,7 @@ function contourplot(
         grid = grid,
         colormap = callback,
         colorbar = colorbar,
-        kwargs...,
+        kw...,
     )
     if A isa Function
         X = repeat(x', length(y), 1)
@@ -106,7 +106,7 @@ function contourplot!(
 end
 
 """
-    contourplot(A; kwargs...)
+    contourplot(A; kw...)
 
 # Usage
 
@@ -126,5 +126,5 @@ axes(A, 1) │            │ y │
                         │       x
 ```
 """
-contourplot(A::AbstractMatrix; kwargs...) =
-    contourplot(axes(A, 2) |> collect, axes(A, 1) |> reverse |> collect, A; kwargs...)
+contourplot(A::AbstractMatrix; kw...) =
+    contourplot(axes(A, 2) |> collect, axes(A, 1) |> reverse |> collect, A; kw...)

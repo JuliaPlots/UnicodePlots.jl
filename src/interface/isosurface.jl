@@ -1,5 +1,5 @@
 """
-    isosurface(x, y, V; kwargs...)
+    isosurface(x, y, z, V; kw...)
 
 Extract and plot isosurface from volumetric data, or implicit function.
 
@@ -61,7 +61,7 @@ function isosurface(
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     isovalue::Number = 0,
     centroid::Bool = true,
-    kwargs...,
+    kw...,
 )
     if V isa Function
         xx = repeat(x', length(y), 1)
@@ -75,7 +75,7 @@ function isosurface(
         V = map(V, X, Y, Z) |> Array
     end
 
-    plot = Plot(x, y, z, canvas; projection = projection, kwargs...)
+    plot = Plot(x, y, z, canvas; projection = projection, kw...)
     isosurface!(
         plot,
         x,
@@ -110,7 +110,7 @@ function isosurface!(
         @SVector([v1[2], v2[2], v3[2], v1[2]]),
         @SVector([v1[3], v2[3], v3[3], v1[3]]),
     )
-    F = xs = float(eltype(x))[]
+    xs = float(eltype(x))[]
     ys = float(eltype(y))[]
     zs = float(eltype(z))[]
     for t in mc.triangles

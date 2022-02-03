@@ -47,9 +47,9 @@ camera_4x4(l, u, f, eye) = @SMatrix(
 
 # Arguments
 
-    - `eye`: position of the camera in world space (e.g. [0, 0, 10])
-    - `target`: target point to look at in world space (usually to origin = [0, 0, 0])
-    - `up_vector`: up vector (usually +z = [0, 0, 1])
+    - `eye`: position of the camera in world space (e.g. [0, 0, 10]).
+    - `target`: target point to look at in world space (usually to origin = [0, 0, 0]).
+    - `up_vector`: up vector (usually +z = [0, 0, 1]).
 """
 function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     f = normalize(eye - target)  # forward vector
@@ -68,12 +68,12 @@ Computes the perspective projection matrix.
 
 # Arguments
 
-    - `l`: left coordinate of the vertical clipping plane
-    - `r` : right coordinate of the vertical clipping plane
-    - `b`: bottom coordinate of the horizontal clipping plane
-    - `t`: top coordinate of the horizontal clipping plane
-    - `n`: distance to the near depth clipping plane
-    - `f`: distance to the far depth clipping plane
+    - `l`: left coordinate of the vertical clipping plane.
+    - `r` : right coordinate of the vertical clipping plane.
+    - `b`: bottom coordinate of the horizontal clipping plane.
+    - `t`: top coordinate of the horizontal clipping plane.
+    - `n`: distance to the near depth clipping plane.
+    - `f`: distance to the far depth clipping plane.
 """
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
@@ -108,12 +108,12 @@ Computes the orthographic projection matrix.
 
 # Arguments
 
-    - `l`: left coordinate of the vertical clipping plane
-    - `r` : right coordinate of the vertical clipping plane
-    - `b`: bottom coordinate of the horizontal clipping plane
-    - `t`: top coordinate of the horizontal clipping plane
-    - `n`: distance to the near depth clipping plane
-    - `f`: distance to the far depth clipping plane
+    - `l`: left coordinate of the vertical clipping plane.
+    - `r` : right coordinate of the vertical clipping plane.
+    - `b`: bottom coordinate of the horizontal clipping plane.
+    - `t`: top coordinate of the horizontal clipping plane.
+    - `n`: distance to the near depth clipping plane.
+    - `f`: distance to the far depth clipping plane.
 """
 ortho(l, r, b, t, n, f) = *(
     @SMatrix([
@@ -190,8 +190,6 @@ function view_matrix(center, distance, elevation, azimuth, up)
 end
 
 """
-    MVP(M::AbstractMatrix, V::AbstractMatrix, P::Projection)
-    MVP(M::AbstractMatrix, V::AbstractMatrix, P::AbstractMatrix, ortho::Bool)
     MVP(x, y, z; $(keywords(; default = (), add = (:x, :y, :z, :projection, :elevation, :azimuth, :zoom, :up))))
 
 # Description
@@ -203,14 +201,6 @@ struct MVP{T}
     view_dir::SVector{3,T}
     len::SVector{3,T}
     ortho::Bool
-    MVP(M::AbstractMatrix{T}, V::AbstractMatrix{T}, P::Projection) where {T} =
-        new{T}(P.A * V * M, [0, 0, 0], 1, P isa Orthographic)
-    MVP(
-        M::AbstractMatrix{T},
-        V::AbstractMatrix{T},
-        P::AbstractMatrix{T},
-        ortho::Bool,
-    ) where {T} = new{T}(P * V * M, [0, 0, 0], 1, ortho)
     function MVP(
         x,
         y,
@@ -256,9 +246,7 @@ function (t::MVP)(p::AbstractMatrix, clip = false)
                 thres = abs_w + ε
                 if abs(w - 1) > ε &&
                    (abs(xs[i]) > thres || abs(ys[i]) > thres || abs(xs[i]) > thres)
-                    xs[i] = NaN
-                    ys[i] = NaN
-                    zs[i] = NaN
+                    xs[i] = ys[i] = zs[i] = NaN
                 end
             else
                 xs[i] /= w
@@ -291,12 +279,12 @@ function (t::MVP)(v::Union{AbstractVector,NTuple{3}}, clip = false)
 end
 
 """
-    draw_axes!(args...; kwargs...)
+    draw_axes!(plot; p = [0, 0, 0], len = nothing)
 
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
-If `p = (x, y)` is given, draws at screen coordinates (only correct in orthographic projection).
+If `p = (x, y)` is given, draws at screen coordinates (only valid in orthographic projection).
 """
 function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     T = plot.projection

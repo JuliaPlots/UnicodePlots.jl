@@ -1,5 +1,5 @@
 """
-    Plot(graphics; kwargs...)
+    Plot(graphics; kw...)
 
 # Description
 
@@ -128,7 +128,7 @@ function Plot(
 end
 
 """
-    validate_input(args...; kwargs...)
+    validate_input(x, y, z = nothing)
 
 # Description
 
@@ -164,8 +164,8 @@ function Plot(
     zlabel::AbstractString = KEYWORDS.zlabel,
     xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = KEYWORDS.yscale,
-    width::Int = KEYWORDS.width,
-    height::Int = KEYWORDS.height,
+    width::Union{Int,Nothing} = nothing,
+    height::Union{Int,Nothing} = nothing,
     border::Symbol = KEYWORDS.border,
     compact::Bool = KEYWORDS.compact,
     blend::Bool = KEYWORDS.blend,
@@ -191,6 +191,9 @@ function Plot(
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
+    width === nothing && (width = DEFAULT_WIDTH[])
+    height === nothing && (height = DEFAULT_HEIGHT[])
+
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
@@ -487,7 +490,7 @@ function annotate!(
 end
 
 """
-    annotate!(plot, x, y, text; kwargs...)
+    annotate!(plot, x, y, text; kw...)
 
 # Description
 
@@ -536,10 +539,10 @@ function annotate!(
     y::Number,
     text::Union{Char,AbstractString};
     color = :normal,
-    kwargs...,
+    kw...,
 )
     color = color == :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color; kwargs...)
+    annotate!(plot.graphics, x, y, text, color; kw...)
     plot
 end
 
@@ -548,18 +551,18 @@ transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
 transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
 transform(tr::MVP, x, y, z::AbstractVector, args...) = (tr(vcat(x', y', z'))..., args...)
 
-function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
-    lines!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
+function lines!(plot::Plot{<:Canvas}, args...; kw...)
+    lines!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 
-function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
-    pixel!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
+function pixel!(plot::Plot{<:Canvas}, args...; kw...)
+    pixel!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 
-function points!(plot::Plot{<:Canvas}, args...; kwargs...)
-    points!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
+function points!(plot::Plot{<:Canvas}, args...; kw...)
+    points!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 
