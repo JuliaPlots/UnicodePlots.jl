@@ -69,7 +69,7 @@ const DESCRIPTION = (
 const Z_DESCRIPTION =
     (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
 
-const DEFAULT_KWARGS = (
+const DEFAULT_KW = (
     # does not have to stay ordered
     :name,
     :title,
@@ -110,7 +110,7 @@ default_with_type(s::Symbol) = (
 )
 
 """
-    keywords([extra]; default = DEFAULT_KWARGS, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
+    keywords([extra]; default = DEFAULT_KW, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
 
 Adds default keywords to a function signature, in a docstring.
 
@@ -123,20 +123,20 @@ Adds default keywords to a function signature, in a docstring.
 """
 function keywords(
     extra::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KWARGS,
+    default::Tuple = DEFAULT_KW,
     add::Tuple = (),
     exclude::Tuple = DEFAULT_EXCLUDED,
     remove::Tuple = (),
 )
     all_kw = (; KEYWORDS..., extra...)
-    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KWARGS)
+    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KW)
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
     join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")
 end
 
 """
-    arguments([desc]; default = DEFAULT_KWARGS, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
+    arguments([desc]; default = DEFAULT_KW, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
 
 Defines arguments for docstring genreration.
 
@@ -149,7 +149,7 @@ Defines arguments for docstring genreration.
 """
 function arguments(
     desc::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KWARGS,
+    default::Tuple = DEFAULT_KW,
     add::Tuple = (),
     exclude::Tuple = DEFAULT_EXCLUDED,
     remove::Tuple = (),

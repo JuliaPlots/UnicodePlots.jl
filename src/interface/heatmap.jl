@@ -1,5 +1,5 @@
 """
-    heatmap(A; kwargs...)
+    heatmap(A; kw...)
 
 # Description
 

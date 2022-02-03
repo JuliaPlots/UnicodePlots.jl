@@ -1,5 +1,5 @@
 """
-    Plot(graphics; kwargs...)
+    Plot(graphics; kw...)
 
 # Description
 
@@ -427,7 +427,7 @@ function annotate!(
 end
 
 """
-    annotate!(plot, x, y, text; kwargs...)
+    annotate!(plot, x, y, text; kw...)
 
 # Description
 
@@ -476,25 +476,25 @@ function annotate!(
     y::Number,
     text::Union{Char,AbstractString};
     color = :normal,
-    kwargs...,
+    kw...,
 )
     color = color == :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color; kwargs...)
+    annotate!(plot.graphics, x, y, text, color; kw...)
     plot
 end
 
-function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
-    lines!(plot.graphics, args...; kwargs...)
+function lines!(plot::Plot{<:Canvas}, args...; kw...)
+    lines!(plot.graphics, args...; kw...)
     plot
 end
 
-function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
-    pixel!(plot.graphics, args...; kwargs...)
+function pixel!(plot::Plot{<:Canvas}, args...; kw...)
+    pixel!(plot.graphics, args...; kw...)
     plot
 end
 
-function points!(plot::Plot{<:Canvas}, args...; kwargs...)
-    points!(plot.graphics, args...; kwargs...)
+function points!(plot::Plot{<:Canvas}, args...; kw...)
+    points!(plot.graphics, args...; kw...)
     plot
 end
 
