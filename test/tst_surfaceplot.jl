@@ -6,6 +6,6 @@
 end
 
 @testset "single color - no colormap" begin
-    p = surfaceplot(0:0.5:2π, 0:0.5:2π, (x, y) -> sin(x) + cos(y), color = :yellow)
+    p = surfaceplot(0:0.5:(2π), 0:0.5:(2π), (x, y) -> sin(x) + cos(y), color = :yellow)
     test_ref("references/surfaceplot/single_color.txt", @show_col(p))
 end

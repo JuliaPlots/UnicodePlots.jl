@@ -13,7 +13,8 @@ $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
         isovalue = "chosen surface isovalue",
-        cull = "cull back faces",
+        legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
+        cull = "cull (hide) back faces",
         centroid = "display triangulation centroid instead of triangle vertices",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))
@@ -62,6 +63,7 @@ function isosurface(
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     isovalue::Number = 0,
     centroid::Bool = true,
+    legacy::Bool = false,
     cull::Bool = false,
     kw...,
 )
@@ -82,7 +84,8 @@ function isosurface(
         extrema(y) |> collect,
         extrema(z) |> collect,
         canvas;
-        projection = projection, kw...
+        projection = projection,
+        kw...,
     )
     isosurface!(
         plot,
@@ -94,6 +97,7 @@ function isosurface(
         color = color,
         isovalue = isovalue,
         centroid = centroid,
+        legacy = legacy,
         cull = cull,
     )
 end
@@ -108,13 +112,14 @@ function isosurface!(
     name::AbstractString = KEYWORDS.name,
     isovalue::Number = 0,
     centroid::Bool = true,
+    legacy::Bool = false,
     cull::Bool = false,
 )
     name == "" || label!(plot, :r, string(name))
     color = color == :auto ? next_color!(plot) : color
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
-    MarchingCubes.march(mc, isovalue)
+    (legacy ? MarchingCubes.march_legacy : MarchingCubes.march)(mc, isovalue)
 
     xs = float(eltype(x))[]
     ys = float(eltype(y))[]
