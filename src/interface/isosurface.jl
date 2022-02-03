@@ -114,13 +114,15 @@ function isosurface!(
     ys = float(eltype(y))[]
     zs = float(eltype(z))[]
     for t in mc.triangles
-        v1 = mc.vertices[t[1]]
-        v2 = mc.vertices[t[2]]
-        v3 = mc.vertices[t[3]]
+        i1, i2, i3 = t
+        (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
+        v1 = mc.vertices[i1]
+        v2 = mc.vertices[i2]
+        v3 = mc.vertices[i3]
         # face culling
-        dot(mc.normals[t[1]], plot.projection.view_dir) < 0 && continue
-        dot(mc.normals[t[2]], plot.projection.view_dir) < 0 && continue
-        dot(mc.normals[t[3]], plot.projection.view_dir) < 0 && continue
+        dot(mc.normals[i1], plot.projection.view_dir) < 0 && continue
+        dot(mc.normals[i2], plot.projection.view_dir) < 0 && continue
+        dot(mc.normals[i3], plot.projection.view_dir) < 0 && continue
         if centroid
             c = (v1 .+ v2 .+ v3) ./ 3
             push!(xs, c[1])
