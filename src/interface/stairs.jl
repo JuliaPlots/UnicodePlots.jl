@@ -1,5 +1,5 @@
 """
-    stairs(x, y; kwargs...)
+    stairs(x, y; kw...)
 
 # Description
 

@@ -293,7 +293,7 @@ The method `label!` is responsible for the setting all the textual decorations o
     - `row` can be between 1 and the number of character rows of the canvas
 $(MD(Paragraph(indent(examples.decorate, 2))))
 
-  - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kwargs...)`
+  - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
     - `text` arbitrary annotation at position (x, y)
 
 ## Know Issues

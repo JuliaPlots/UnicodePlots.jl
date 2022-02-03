@@ -1,5 +1,5 @@
 """
-    spy(A; kwargs...)
+    spy(A; kw...)
 
 # Description
 
@@ -69,9 +69,9 @@ julia> spy(sprandn(50, 120, .05))
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function spy(A::AbstractMatrix; kwargs...)
+function spy(A::AbstractMatrix; kw...)
     rows, cols, vals = _strict_non_zeros(_findnz(A)...)
-    if get(kwargs, :show_zeros, false)
+    if get(kw, :show_zeros, false)
         I = CartesianIndex.(zip(rows, cols))  # non zeros
         mask = trues(size(A))
         mask[I] .= false
@@ -79,7 +79,7 @@ function spy(A::AbstractMatrix; kwargs...)
         rows, cols = getindex.(Z, 1), getindex.(Z, 2)
         vals = zeros(eltype(vals), length(rows))
     end
-    spy(size(A)..., rows, cols, vals; kwargs...)
+    spy(size(A)..., rows, cols, vals; kw...)
 end
 
 function _strict_non_zeros(rows, cols, vals)

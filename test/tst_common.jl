@@ -63,6 +63,26 @@ end
     end
 end
 
+@testset "colors" begin
+    @test UnicodePlots.julia_color(100) == 100
+    @test UnicodePlots.julia_color(:red) == :red
+    @test UnicodePlots.julia_color(nothing) == :normal
+    @test UnicodePlots.julia_color((0, 135, 95)) == 29
+
+    @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
+          Function
+    @test UnicodePlots.colormap_callback(() -> nothing) isa Function
+    @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
+    @test UnicodePlots.colormap_callback(nothing) === nothing
+
+    # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+    @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black
+    @test UnicodePlots.rgb2ansi((1, 0, 0)) == 196  # red
+    @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
+    @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
+    @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
+end
+
 @testset "miscellaneous" begin
     @test UnicodePlots.char_marker('a') === 'a'
     @test UnicodePlots.char_marker("a") === 'a'
@@ -89,26 +109,16 @@ end
     @test UnicodePlots.out_stream_width(nothing) == 40
     @test UnicodePlots.out_stream_height(nothing) == 15
 
-    @test UnicodePlots.julia_color(100) == 100
-    @test UnicodePlots.julia_color(:red) == :red
-    @test UnicodePlots.julia_color(nothing) == :normal
-    @test UnicodePlots.julia_color((0, 135, 95)) == 29
-
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"
 
-    @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
-          Function
-    @test UnicodePlots.colormap_callback(() -> nothing) isa Function
-    @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
-    @test UnicodePlots.colormap_callback(nothing) === nothing
-
-    # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
-    @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black
-    @test UnicodePlots.rgb2ansi((1, 0, 0)) == 196  # red
-    @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
-    @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
-    @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
+    @test_throws AssertionError UnicodePlots.default_size!(width = 8, height = 8)
+    UnicodePlots.default_size!(width = 64)
+    @test UnicodePlots.DEFAULT_WIDTH[] == 64
+    @test UnicodePlots.DEFAULT_HEIGHT[] == 24
+    UnicodePlots.default_size!(height = 15)
+    @test UnicodePlots.DEFAULT_WIDTH[] == 40
+    @test UnicodePlots.DEFAULT_HEIGHT[] == 15
 end
 
 @testset "docs" begin

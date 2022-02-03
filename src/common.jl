@@ -154,7 +154,7 @@ const ASPECT_RATIO = 4 / 3
 
 # default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
 const DEFAULT_HEIGHT = Ref(15)
-const DEFAULT_WIDTH = Ref(2round(Int, ASPECT_RATIO * DEFAULT_HEIGHT[]))
+const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO))
 
 const MarkerType = Union{Symbol,Char,AbstractString}
 const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
@@ -166,6 +166,21 @@ const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # i
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 #! format: on
+
+function default_size!(;
+    width::Union{Integer,Nothing} = nothing,
+    height::Union{Integer,Nothing} = nothing,
+)
+    @assert (width === nothing) ⊻ (height === nothing)
+    if width !== nothing
+        DEFAULT_WIDTH[] = width
+        DEFAULT_HEIGHT[] = round(Int, width / 2ASPECT_RATIO)
+    elseif height !== nothing
+        DEFAULT_HEIGHT[] = height
+        DEFAULT_WIDTH[] = round(Int, height * 2ASPECT_RATIO)
+    end
+    return
+end
 
 function char_marker(marker::MarkerType)::Char
     if marker isa Symbol

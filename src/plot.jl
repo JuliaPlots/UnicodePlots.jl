@@ -1,5 +1,5 @@
 """
-    Plot(graphics; kwargs...)
+    Plot(graphics; kw...)
 
 # Description
 
@@ -60,9 +60,9 @@ mutable struct Plot{T<:GraphicsArea}
     colors_right::Dict{Int,JuliaColorType}
     decorations::Dict{Symbol,String}
     colors_deco::Dict{Symbol,JuliaColorType}
-    show_labels::Bool
+    labels::Bool
     colormap::Any
-    show_colorbar::Bool
+    colorbar::Bool
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
@@ -134,8 +134,8 @@ function Plot(
     zlabel::AbstractString = KEYWORDS.zlabel,
     xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = KEYWORDS.yscale,
-    width::Int = KEYWORDS.width,
-    height::Int = KEYWORDS.height,
+    width::Union{Int,Nothing} = nothing,
+    height::Union{Int,Nothing} = nothing,
     border::Symbol = KEYWORDS.border,
     compact::Bool = KEYWORDS.compact,
     blend::Bool = KEYWORDS.blend,
@@ -156,6 +156,10 @@ function Plot(
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must have same length"))
+
+    width === nothing && (width = DEFAULT_WIDTH[])
+    height === nothing && (height = DEFAULT_HEIGHT[])
+
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
@@ -427,7 +431,7 @@ function annotate!(
 end
 
 """
-    annotate!(plot, x, y, text; kwargs...)
+    annotate!(plot, x, y, text; kw...)
 
 # Description
 
@@ -476,25 +480,25 @@ function annotate!(
     y::Number,
     text::Union{Char,AbstractString};
     color = :normal,
-    kwargs...,
+    kw...,
 )
     color = color == :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color; kwargs...)
+    annotate!(plot.graphics, x, y, text, color; kw...)
     plot
 end
 
-function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
-    lines!(plot.graphics, args...; kwargs...)
+function lines!(plot::Plot{<:Canvas}, args...; kw...)
+    lines!(plot.graphics, args...; kw...)
     plot
 end
 
-function pixel!(plot::Plot{<:Canvas}, args...; kwargs...)
-    pixel!(plot.graphics, args...; kwargs...)
+function pixel!(plot::Plot{<:Canvas}, args...; kw...)
+    pixel!(plot.graphics, args...; kw...)
     plot
 end
 
-function points!(plot::Plot{<:Canvas}, args...; kwargs...)
-    points!(plot.graphics, args...; kwargs...)
+function points!(plot::Plot{<:Canvas}, args...; kw...)
+    points!(plot.graphics, args...; kw...)
     plot
 end
 
@@ -549,7 +553,7 @@ function print_labels(
     right_pad::AbstractString,
     blank::Char,
 )
-    p.show_labels || return
+    p.labels || return
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
@@ -591,17 +595,17 @@ function Base.show(io::IO, p::Plot)
     bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
 
     # get length of largest strings to the left and right
-    max_len_l = if p.show_labels && !isempty(p.labels_left)
+    max_len_l = if p.labels && !isempty(p.labels_left)
         maximum([length(_nocolor_string(l)) for l in values(p.labels_left)])
     else
         0
     end
-    max_len_r = if p.show_labels && !isempty(p.labels_right)
+    max_len_r = if p.labels && !isempty(p.labels_right)
         maximum([length(_nocolor_string(l)) for l in values(p.labels_right)])
     else
         0
     end
-    if !p.compact && p.show_labels && p.ylabel != ""
+    if !p.compact && p.labels && p.ylabel != ""
         max_len_l += length(p.ylabel) + 1
     end
 
@@ -611,7 +615,7 @@ function Base.show(io::IO, p::Plot)
     # padding-string from left to border
     plot_padding = repeat(🗷, p.padding)
 
-    if p.show_colorbar
+    if p.colorbar
         min_z, max_z = p.colorbar_lim
         min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
         max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
@@ -659,7 +663,7 @@ function Base.show(io::IO, p::Plot)
     for row in 1:nrows(c)
         # print left annotations
         print(io, repeat(🗷, p.margin))
-        if p.show_labels
+        if p.labels
             # Current labels to left and right of the row and their length
             left_str  = get(p.labels_left, row, "")
             left_col  = get(p.colors_left, row, :light_black)
@@ -691,13 +695,13 @@ function Base.show(io::IO, p::Plot)
             # print right label and padding
             print_color(:light_black, io, bmap[:r])
         end
-        if p.show_labels
+        if p.labels
             print(io, plot_padding)
             print_color(right_col, io, right_str)
             print(io, repeat(🗷, max_len_r - right_len))
         end
         # print colorbar
-        if p.show_colorbar
+        if p.colorbar
             print(io, plot_padding)
             printcolorbarrow(
                 io,
@@ -719,7 +723,7 @@ function Base.show(io::IO, p::Plot)
     # draw bottom border and bottom labels  
     c.visible &&
         print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
-    if p.show_labels
+    if p.labels
         print_labels(
             io,
             :b,

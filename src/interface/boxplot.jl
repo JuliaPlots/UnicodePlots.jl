@@ -1,5 +1,5 @@
 """
-    boxplot(data; kwargs...)
+    boxplot(data; kw...)
 
 # Description
 
@@ -20,7 +20,7 @@ used as the labels.
     
     boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
 
-    boxplot(dict; kwargs...)
+    boxplot(dict; kw...)
 
 # Arguments
 
@@ -102,7 +102,7 @@ function boxplot(
 end
 
 """
-    boxplot!(plot, data; kwargs...)
+    boxplot!(plot, data; kw...)
 
 Mutating variant of `boxplot`, in which the first parameter (`plot`) specifies the existing plot to draw on.
 
