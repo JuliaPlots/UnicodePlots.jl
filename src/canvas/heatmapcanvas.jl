@@ -29,13 +29,13 @@ const HALF_BLOCK = '▄'
 
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
-HeatmapCanvas(args...; kwargs...) = CreateLookupCanvas(
+HeatmapCanvas(args...; kw...) = CreateLookupCanvas(
     HeatmapCanvas,
     (0, 1),
     args...;
     min_char_width = 1,
     min_char_height = 1,
-    kwargs...,
+    kw...,
 )
 
 _toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)

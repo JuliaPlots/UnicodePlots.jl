@@ -346,7 +346,7 @@ The method `label!` is responsible for the setting all the textual decorations o
     ![Decorate](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/doc/imgs/2.x/decorate.png)
     
 
-  * `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kwargs...)`
+  * `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
 
       * `text` arbitrary annotation at position (x, y)
 
