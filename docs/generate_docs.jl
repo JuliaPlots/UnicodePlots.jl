@@ -272,13 +272,13 @@ $(examples.heatmap2)
 
 $(examples.surfaceplot)
 
-Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions.
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions. Use `lines=true` to draw using `lineplot` instead of `scatterplot`.
 
 #### Isosurface Plot
 
 $(examples.isosurface)
 
-Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue, and `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue. `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). One can use the legacy 'Marching Cubes' algorithm using `legacy=true`. Back face culling (hide not visible facets) can be activated using `cull=true`.
 
 ### Options
 
