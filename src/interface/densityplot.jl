@@ -1,5 +1,5 @@
 """
-    densityplot(x, y; kw...)
+    densityplot(x, y; kwargs...)
 
 # Description
 

@@ -1,5 +1,5 @@
 """
-    barplot(text, heights; kw...)
+    barplot(text, heights; kwargs...)
 
 # Description
 
@@ -15,7 +15,7 @@ as the heights of the bars.
     
     barplot(text, heights; $(keywords((border = :barplot, color = :green,), remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,))))
 
-    barplot(dict; kw...)
+    barplot(dict; kwargs...)
 
 # Arguments
 

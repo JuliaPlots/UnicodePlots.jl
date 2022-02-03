@@ -109,14 +109,6 @@ end
     @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
     @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
     @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
-
-    @test_throws AssertionError UnicodePlots.default_size!(width = 8, height = 8)
-    UnicodePlots.default_size!(width = 64)
-    @test UnicodePlots.DEFAULT_WIDTH[] == 64
-    @test UnicodePlots.DEFAULT_HEIGHT[] == 24
-    UnicodePlots.default_size!(height = 15)
-    @test UnicodePlots.DEFAULT_WIDTH[] == 40
-    @test UnicodePlots.DEFAULT_HEIGHT[] == 15
 end
 
 @testset "docs" begin

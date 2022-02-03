@@ -43,7 +43,8 @@ end
 @inline lookup_encode(::DotCanvas) = dot_signs
 @inline lookup_decode(::DotCanvas) = dot_decode
 
-DotCanvas(args...; kw...) = CreateLookupCanvas(DotCanvas, (0b00, 0b11), args...; kw...)
+DotCanvas(args...; kwargs...) =
+    CreateLookupCanvas(DotCanvas, (0b00, 0b11), args...; kwargs...)
 
 function char_point!(
     c::DotCanvas,

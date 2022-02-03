@@ -1,5 +1,5 @@
 """
-    lineplot(x, y; kw...)
+    lineplot(x, y; kwargs...)
 
 # Description
 
@@ -13,7 +13,7 @@ This means that the two vectors must be of the same length and ordering.
 
     lineplot([x], y; $(keywords(; add = (:canvas,)))
 
-    lineplot(fun, [start], [stop]; kw...)
+    lineplot(fun, [start], [stop]; kwargs...)
 
 # Arguments
 

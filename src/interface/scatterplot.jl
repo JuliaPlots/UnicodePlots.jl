@@ -1,5 +1,5 @@
 """
-    scatterplot(x, y; kw...)
+    scatterplot(x, y; kwargs...)
 
 # Description
 

@@ -1,5 +1,5 @@
 """
-    contourplot(x, y, A; kw...)
+    contourplot(x, y, A; kwargs...)
 
 Draws a contour plot on a new canvas.
 
@@ -106,7 +106,7 @@ function contourplot!(
 end
 
 """
-    contourplot(A; kw...)
+    contourplot(A; kwargs...)
 
 # Usage
 
@@ -126,5 +126,5 @@ axes(A, 1) │            │ y │
                         │       x
 ```
 """
-contourplot(A::AbstractMatrix; kw...) =
-    contourplot(axes(A, 2) |> collect, axes(A, 1) |> reverse |> collect, A; kw...)
+contourplot(A::AbstractMatrix; kwargs...) =
+    contourplot(axes(A, 2) |> collect, axes(A, 1) |> reverse |> collect, A; kwargs...)

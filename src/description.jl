@@ -84,7 +84,7 @@ const Z_DESCRIPTION =
 
 const PROJ_DESCRIPTION = (:projection, :azimuth, :elevation, :up, :zoom, :axes3d)
 
-const DEFAULT_KW = (
+const DEFAULT_KWARGS = (
     # does not have to stay ordered
     :name,
     :title,
@@ -126,7 +126,7 @@ default_with_type(s::Symbol) = (
 )
 
 """
-    keywords([extra]; default = DEFAULT_KW, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
+    keywords([extra]; default = DEFAULT_KWARGS, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
 
 Adds default keywords to a function signature, in a docstring.
 
@@ -139,7 +139,7 @@ Adds default keywords to a function signature, in a docstring.
 """
 function keywords(
     extra::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KW,
+    default::Tuple = DEFAULT_KWARGS,
     add::Tuple = (),
     exclude::Tuple = DEFAULT_EXCLUDED,
     remove::Tuple = (),
@@ -152,7 +152,7 @@ function keywords(
 end
 
 """
-    arguments([desc]; default = DEFAULT_KW, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
+    arguments([desc]; default = DEFAULT_KWARGS, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
 
 Defines arguments for docstring genreration.
 
@@ -165,7 +165,7 @@ Defines arguments for docstring genreration.
 """
 function arguments(
     desc::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KW,
+    default::Tuple = DEFAULT_KWARGS,
     add::Tuple = (),
     exclude::Tuple = DEFAULT_EXCLUDED,
     remove::Tuple = (),
