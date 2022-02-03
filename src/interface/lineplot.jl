@@ -91,24 +91,33 @@ function lineplot!(
     head_tail::Union{Nothing,Symbol} = nothing,
 )
     color = color == :auto ? next_color!(plot) : color
-    name == "" ||
-        label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
-    if color isa AbstractVector
+    col_vec = color isa AbstractVector
+    name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
+    if col_vec
         for i in 1:length(color)
             lines!(plot, x[i], y[i], z === nothing ? z : z[i], color[i])
         end
     else
         lines!(plot, x, y, z, color)
     end
-    z === nothing || return plot  # 3D arrows unsupported for now
-    color isa AbstractVector && return plot
     (head_tail === nothing || length(x) == 0 || length(y) == 0) && return plot
-    head_tail_color = complement(color)
     if head_tail in (:head, :both)
-        points!(plot, last(x), last(y), head_tail_color)
+        points!(
+            plot,
+            last(x),
+            last(y),
+            z === nothing ? z : last(z),
+            complement(col_vec ? last(color) : color),
+        )
     end
     if head_tail in (:tail, :both)
-        points!(plot, first(x), first(y), head_tail_color)
+        points!(
+            plot,
+            first(x),
+            first(y),
+            z === nothing ? z : first(z),
+            complement(col_vec ? first(color) : color),
+        )
     end
     plot
 end

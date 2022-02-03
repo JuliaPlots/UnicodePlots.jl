@@ -548,7 +548,8 @@ end
 transform(tr, args...) = args  # catch all
 transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
 transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
-transform(tr::MVP, x, y, z::AbstractVector, args...) = (tr(vcat(x', y', z'))..., args...)
+transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
+    (tr(vcat(x', y', z'))..., args...)
 
 function lines!(plot::Plot{<:Canvas}, args...; kwargs...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kwargs...)
