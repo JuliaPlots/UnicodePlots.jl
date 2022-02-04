@@ -1,3 +1,18 @@
+@testset "sphere" begin
+    p = isosurface(
+        -3:0.2:3,
+        -3:0.2:3,
+        -3:0.2:3,
+        (x, y, z) -> x^2 + y^2 + z^2 - 2;
+        xlim = (-0.5, 0.5),
+        ylim = (-0.5, 0.5),
+        centroid = false,
+        axes3d = false,
+        cull = true,
+    )
+    test_ref("references/isosurface/sphere.txt", @show_col(p))
+end
+
 @testset "torus" begin
     torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
     p = isosurface(
@@ -10,7 +25,6 @@
         elevation = 50,
         cull = true,
     )
-
     test_ref("references/isosurface/torus.txt", @show_col(p))
 end
 

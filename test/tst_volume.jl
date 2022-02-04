@@ -34,6 +34,10 @@
     @test UnicodePlots.rotd_z(0) ≈ I
 
     @test UnicodePlots.camera_4x4([1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]) ≈ I
+
+    T = MVP([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0])
+    @test length(T([1, 2, 3])) == 2
+    @test length(T((1, 2, 3))) == 2
 end
 
 @testset "azimuth / elevation" begin

@@ -258,3 +258,11 @@ end
     lineplot!(p, [0.0, 1.0], [0.5, 0.5], head_tail = :both, name = "both", color = :blue)
     test_ref("references/lineplot/arrows.txt", @show_col(p))
 end
+
+@testset "color vector" begin
+    x = [[-1, 2], [2, 3], [3, 7]]
+    y = [[-1, 2], [2, 9], [9, 4]]
+    p = Plot([-1, 7], [-1, 9])
+    lineplot!(p, x, y, color = [:red, :green, :blue])
+    test_ref("references/lineplot/color_vector.txt", @show_col(p))
+end

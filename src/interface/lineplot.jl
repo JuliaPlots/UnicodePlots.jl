@@ -94,7 +94,7 @@ function lineplot!(
     col_vec = color isa AbstractVector
     name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if col_vec
-        for i in 1:length(color)
+        for i in eachindex(color)
             lines!(plot, x[i], y[i], z === nothing ? z : z[i], color[i])
         end
     else
@@ -189,7 +189,7 @@ function lineplot(
     kw...,
 )
     diff = abs(endx - startx)
-    x = startx:(diff / (3 * width)):endx
+    x = startx:(diff / 3width):endx
     lineplot(f, x; width = width, kw...)
 end
 
@@ -209,7 +209,7 @@ function lineplot!(
     kw...,
 )
     diff = abs(endx - startx)
-    x = startx:(diff / (3ncols(plot.graphics))):endx
+    x = startx:(diff / 3ncols(plot.graphics)):endx
     lineplot!(plot, f, x; kw...)
 end
 
@@ -241,9 +241,9 @@ function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name =
             ),
         )
     )
-    tcolor = color_is_vec ? color[1] : color
-    tname  = name_is_vec ? name[1] : name
-    plot   = lineplot(F[1], args...; color = tcolor, name = tname, kw...)
+    tcolor = color_is_vec ? first(color) : color
+    tname  = name_is_vec ? first(name) : name
+    plot   = lineplot(first(F), args...; color = tcolor, name = tname, kw...)
     for i in 2:n
         tcolor = color_is_vec ? color[i] : color
         tname  = name_is_vec ? name[i] : name

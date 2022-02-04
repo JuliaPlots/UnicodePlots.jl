@@ -78,21 +78,21 @@ Computes the perspective projection matrix.
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
     *(
-        @SMatrix([
-            2n/(r - l) 0 0 0
-            0 2n/(t - b) 0 0
+        @SMatrix([  # scale and flip x and y
+            -2n/(r - l) 0 0 0
+            0 -2n/(t - b) 0 0
             0 0 1 0
             0 0 0 1
         ]),
-        @SMatrix([
+        @SMatrix([  # translate
             1 0 0 (r + l)/2n
             0 1 0 (t + b)/2n
             0 0 1 0
             0 0 0 1
         ]),
-        @SMatrix([
-            -1 0 0 0  # flip x
-            0 -1 0 0  # flip y
+        @SMatrix([  # perspective
+            1 0 0 0
+            0 1 0 0
             0 0 (f + n)/(f - n) -2f * n/(f - n)
             0 0 1 0
         ]),
@@ -116,13 +116,13 @@ Computes the orthographic projection matrix.
     - `f`: distance to the far depth clipping plane.
 """
 ortho(l, r, b, t, n, f) = *(
-    @SMatrix([
+    @SMatrix([  # scale
         2/(r - l) 0 0 0
         0 2/(t - b) 0 0
         0 0 2/(f - n) 0
         0 0 0 1
     ]),
-    @SMatrix([
+    @SMatrix([  # translate
         1 0 0 -(l + r)/2
         0 1 0 -(t + b)/2
         0 0 1 -(f + n)/2
@@ -229,46 +229,31 @@ struct MVP{T}
     end
 end
 
-function (t::MVP)(p::AbstractMatrix, clip = false)
+function (t::MVP)(p::AbstractMatrix)
     F = eltype(t.A)
     ε = eps(F)
     # homogeneous coordinates
     dat = t.A * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
     xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
     @inbounds for (i, w) in enumerate(ws)
-        if (abs_w = abs(w)) > ε
-            if clip
-                thres = abs_w + ε
-                if abs(w - 1) > ε &&
-                   (abs(xs[i]) > thres || abs(ys[i]) > thres || abs(xs[i]) > thres)
-                    xs[i] = ys[i] = zs[i] = NaN
-                end
-            else
-                xs[i] /= w
-                ys[i] /= w
-                zs[i] /= w
-            end
+        if abs(w) > ε
+            xs[i] /= w
+            ys[i] /= w
+            zs[i] /= w
         end
     end
     t.ortho ? (xs, ys) : (xs ./ zs, ys ./ zs)
 end
 
-function (t::MVP)(v::Union{AbstractVector,NTuple{3}}, clip = false)
+function (t::MVP)(v::Union{AbstractVector,NTuple{3}})
     F = eltype(t.A)
     ε = eps(F)
     # homogeneous coordinates
     x, y, z, w = t.A * [v..., 1]
-    if (abs_w = abs(w)) > ε
-        if clip
-            thres = abs_w + ε
-            if abs(w - 1) > ε && (abs(x) > thres || abs(y) > thres || abs(z) > thres)
-                x = y = z = F(NaN)
-            end
-        else
-            x /= w
-            y /= w
-            z /= w
-        end
+    if abs(w) > ε
+        x /= w
+        y /= w
+        z /= w
     end
     t.ortho ? (x, y) : (x / z, y / z)
 end
