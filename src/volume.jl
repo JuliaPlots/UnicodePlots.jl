@@ -30,7 +30,7 @@ rotd_z(θ) = @SMatrix([
     cosd(θ) -sind(θ) 0 0
     sind(θ) +cosd(θ) 0 0
     0 0 1 0
-    0 0 0 s1
+    0 0 0 1
 ])
 
 camera_4x4(l, u, f, eye) = @SMatrix(
@@ -91,8 +91,8 @@ function frustum(l, r, b, t, n, f)
             0 0 0 1
         ]),
         @SMatrix([
-            1 0 0 0
-            0 1 0 0
+            -1 0 0 0  # flip x
+            0 -1 0 0  # flip y
             0 0 (f + n)/(f - n) -2f * n/(f - n)
             0 0 1 0
         ]),
@@ -133,18 +133,13 @@ ortho(l, r, b, t, n, f) = *(
 abstract type Projection end
 
 struct Orthographic{T} <: Projection where {T}
-    A::Matrix{T}
+    A::SMatrix{4,4,T}
     Orthographic(args::T...) where {T} = new{float(T)}(ortho(args...))
 end
 
 struct Perspective{T} <: Projection where {T}
-    A::Matrix{T}
-    function Perspective(args::T...) where {T}
-        P = new{float(T)}(frustum(args...))
-        P.A[1, 1] *= -1  # flip x
-        P.A[2, 2] *= -1  # flip y
-        P
-    end
+    A::SMatrix{4,4,T}
+    Perspective(args::T...) where {T} = new{float(T)}(frustum(args...))
 end
 
 function ctr_len_diag(x, y, z)
@@ -197,7 +192,7 @@ end
 Model - View - Projection transformation matrix.
 """
 struct MVP{T}
-    A::Matrix{T}
+    A::SMatrix{4,4,T}
     view_dir::SVector{3,T}
     len::SVector{3,T}
     ortho::Bool
@@ -297,7 +292,7 @@ function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     end
 
     pos = if length(p) == 2
-        T.ortho ? (inv(T.A) * vcat(p, 0, 1))[1:3] : vcat(p, 0)
+        T.ortho ? (T.A \ vcat(p, 0, 1))[1:3] : vcat(p, 0)
     else
         p
     end

@@ -26,6 +26,14 @@
         0 0 0 1
     ]
     @test dir == [1, 0, 0]
+
+    @test UnicodePlots.scale_4x4([1, 1, 1]) ≈ I
+    @test UnicodePlots.translate_4x4([0, 0, 0]) ≈ I
+    @test UnicodePlots.rotd_x(0) ≈ I
+    @test UnicodePlots.rotd_y(0) ≈ I
+    @test UnicodePlots.rotd_z(0) ≈ I
+
+    @test UnicodePlots.camera_4x4([1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]) ≈ I
 end
 
 @testset "azimuth / elevation" begin
@@ -90,12 +98,13 @@ end
             segment2xyz(segments[1])...,
             projection = T,
             xlim = (-1, 1),
-            ylim = (-1, 1),
+            ylim = (-1, 1);
+            axes3d = false,
         )
         for s in segments[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
-        draw_axes!(p, ortho ? [-0.8, -0.8] : [1, -0.5, 0])
+        draw_axes!(p, ortho ? [-0.8, -0.8] : [0, 0, 0])
 
         test_ref("references/volume/cube_$proj.txt", @show_col(p))
     end
