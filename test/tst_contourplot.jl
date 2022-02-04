@@ -1,7 +1,6 @@
 gaussian_2d(x = -3:0.01:3, y = -7:0.01:3; x₀ = 0, y₀ = -2, σx = 1, σy = 2) = begin
-    X = repeat(x', length(y), 1)
-    Y = repeat(y, 1, length(x))
-    x, y, map((x, y) -> exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2), X, Y)
+    g = (x, y) -> exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
+    x, y, g.(x', y)
 end
 
 @testset "arbitrary colormap" begin

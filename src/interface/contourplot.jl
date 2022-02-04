@@ -73,11 +73,7 @@ function contourplot(
         colorbar = colorbar,
         kw...,
     )
-    if A isa Function
-        X = repeat(x', length(y), 1)
-        Y = repeat(y, 1, length(x))
-        A = map(A, X, Y) |> Matrix
-    end
+    A isa Function && (A = A.(x', y))
     contourplot!(plot, x, y, A; name = name, levels = levels, colormap = callback)
 end
 

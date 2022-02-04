@@ -191,7 +191,6 @@ function Plot(
     axes3d = KEYWORDS.axes3d,
     up = KEYWORDS.up,
 ) where {C<:Canvas}
-
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
 

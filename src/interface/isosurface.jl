@@ -67,17 +67,7 @@ function isosurface(
     cull::Bool = false,
     kw...,
 )
-    if V isa Function
-        xx = repeat(x', length(y), 1)
-        yy = repeat(y, 1, length(x))
-        X = repeat(xx, 1, 1, length(z))
-        Y = repeat(yy, 1, 1, length(z))
-        Z = zero(X)
-        for (i, zi) in enumerate(z)
-            Z[:, :, i] .= zi
-        end
-        V = map(V, X, Y, Z) |> Array
-    end
+    V isa Function && (V = V.(y, x', reshape(z, 1, 1, length(z))))
 
     plot = Plot(
         extrema(x) |> collect,

@@ -274,7 +274,7 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
     if mi == 0 && ma == 0
         mi, ma = map(Float64, extrema(vec))
     end
-    if isapprox(mi, ma; atol=10eps())
+    if isapprox(mi, ma; atol = 10eps())
         ma = mi + 1
         mi = mi - 1
     end
