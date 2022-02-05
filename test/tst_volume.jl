@@ -38,6 +38,10 @@
     T = MVP([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0])
     @test length(T([1, 2, 3])) == 2
     @test length(T((1, 2, 3))) == 2
+
+    corners = UnicodePlots.cube_corners(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
+    @test size(corners) == (3, 8)
+    @test all(-1 .<= corners .<= 1)
 end
 
 @testset "azimuth / elevation" begin
@@ -89,7 +93,7 @@ end
 
         segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
 
-        p = lineplot(segment2xyz(segments[1])..., projection = T)
+        p = lineplot(segment2xyz(segments[1])..., projection = T, title = "proj=$proj")
         for s in segments[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
@@ -123,7 +127,8 @@ end
             [p[3] for s in segments for p in s],
         )
 
-        p = lineplot(segments2xyz(tetrahedron)..., projection = T)
+        ttl = "proj=$proj zoom=$zoom"
+        p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = ttl)
         test_ref("references/volume/cube_$(proj)_$(zoom).txt", @show_col(p))
     end
 end

@@ -78,9 +78,9 @@ Computes the perspective projection matrix.
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
     *(
-        @SMatrix([  # scale and flip x and y
-            -2n/(r - l) 0 0 0
-            0 -2n/(t - b) 0 0
+        @SMatrix([  # scale
+            2n/(r - l) 0 0 0
+            0 2n/(t - b) 0 0
             0 0 1 0
             0 0 0 1
         ]),
@@ -91,8 +91,8 @@ function frustum(l, r, b, t, n, f)
             0 0 0 1
         ]),
         @SMatrix([  # perspective
-            1 0 0 0
-            0 1 0 0
+            -1 0 0 0  # flip x
+            0 -1 0 0  # flip y
             0 0 (f + n)/(f - n) -2f * n/(f - n)
             0 0 1 0
         ]),
@@ -156,11 +156,11 @@ function ctr_len_diag(x, y, z)
         @SVector([mx, my, mz]),
         @SVector([Mx, My, Mz]),
         @SVector([lx, ly, lz]),
-        √(lx^2 + ly^2 + lz^2)
+        √(lx^2 + ly^2 + lz^2),
     )
 end
 
-cube(mx, Mx, my, My, mz, Mz) = [
+cube_corners(mx, Mx, my, My, mz, Mz) = [
     mx mx mx mx Mx Mx Mx Mx
     my my My My my my My My
     mx Mz mx Mz mx Mz mx Mz
@@ -278,9 +278,9 @@ end
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
 If `p = (x, y)` is given, draws at screen coordinates.
 """
-function draw_axes!(plot, p = [0, 0, 0], len = nothing)
+function draw_axes!(plot, p = [0, 0, 0], len = nothing, scale = 0.25)
     T = plot.projection
-    l = len === nothing ? T.len ./ 4 : len
+    l = len === nothing ? T.len .* scale : len
 
     axis(p, d) = begin
         e = copy(p)
@@ -289,11 +289,15 @@ function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     end
 
     pos = if length(p) == 2
-        # T.ortho ? (T.A \ vcat(p, 0, 1))[1:3] : vcat(p, 0)
         if T.ortho
-            (T.A \ vcat(p, 0, 1))[1:3] 
+            (T.A \ vcat(p, 0, 1))[1:3]
         else
-            (T.A \ [p[1] * T.ctr[3], p[2] * T.ctr[3], 1, 1])[1:3]
+            if false  # FIXME: reverting / z + persp tr seems erroneous here
+                pt = (z = T.min[3]) != 0 ? vcat(p .* z, 1, 1) : vcat(p, 0, 1)
+                (T.A \ pt)[1:3]
+            else  # fallback to data center
+                collect(T.ctr)
+            end
         end
     else
         p

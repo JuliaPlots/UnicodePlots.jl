@@ -219,7 +219,7 @@ function Plot(
             throw(error("xscale or yscale are unsupported in 3D"))
 
         if false
-            x, y = projection(cube(x..., y..., z...))
+            x, y = projection(cube_corners(x..., y..., z...))
 
             mx, Mx = float.(extrema(x))
             my, My = float.(extrema(y))
@@ -311,8 +311,7 @@ function Plot(
         end
     end
 
-    (projection !== nothing && axes3d) &&
-        draw_axes!(plot, projection.ortho ? 0.8 .* [mx, my] : zeros(3))
+    (projection !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
 
     plot
 end
