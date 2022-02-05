@@ -202,7 +202,7 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
-    if projection !== nothing
+    if projection !== nothing  # 3D
         if projection isa Symbol
             projection = MVP(
                 float(x),
@@ -217,12 +217,23 @@ function Plot(
         end
         (xscale !== :identity || yscale !== :identity) &&
             throw(error("xscale or yscale are unsupported in 3D"))
-        x, y = projection(vcat(x', y', z'))
-        grid = blend = false
-    end
 
-    min_x, max_x = extend_limits(x, xlim, xscale)
-    min_y, max_y = extend_limits(y, ylim, yscale)
+        x, y = projection(cube(x..., y..., z...))
+
+        min_x, max_x = extrema(x)
+        min_y, max_y = extrema(y)
+
+        # maintain aspect ratio
+        if abs(abs(max_x - min_x) - abs(max_y - min_y)) > eps()
+            min_x = min_y = min(min_x, min_y)
+            max_x = max_y = max(max_x, max_y)
+        end
+
+        grid = blend = false
+    else  # 2D
+        min_x, max_x = extend_limits(x, xlim, xscale)
+        min_y, max_y = extend_limits(y, ylim, yscale)
+    end
 
     p_width = max_x - min_x
     p_height = max_y - min_y

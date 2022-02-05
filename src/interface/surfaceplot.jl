@@ -77,9 +77,9 @@ function surfaceplot(
 
     callback = colormap_callback(colormap)
     plot = Plot(
-        @view(X[:]),
-        @view(Y[:]),
-        @view(Z[:]),
+        extrema(X),
+        extrema(Y),
+        extrema(Z),
         canvas;
         projection = projection,
         colormap = callback,

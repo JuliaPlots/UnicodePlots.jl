@@ -154,6 +154,12 @@ function ctr_len_diag(x, y, z)
     [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], [lx, ly, lz], √(lx^2 + ly^2 + lz^2)
 end
 
+cube(mx, Mx, my, My, mz, Mz) = [
+    mx mx mx mx Mx Mx Mx Mx
+    my my My My my my My My
+    mx Mz mx Mz mx Mz mx Mz
+]
+
 function view_matrix(center, distance, elevation, azimuth, up)
     up_str = string(up)
     shift = if (up_axis = Symbol(up_str[end])) === :x
@@ -220,6 +226,7 @@ struct MVP{T}
         V, view_dir =
             view_matrix(ctr, dist, max(-90 + δ, min(elevation, 90 - δ)), azimuth, up)
         # Projection Matrix
+        @show ctr diag dist len view_dir
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)
         else
