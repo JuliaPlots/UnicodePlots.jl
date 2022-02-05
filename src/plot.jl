@@ -205,9 +205,9 @@ function Plot(
     if projection !== nothing  # 3D
         if projection isa Symbol
             projection = MVP(
-                float(x),
-                float(y),
-                float(z);
+                x,
+                y,
+                z;
                 projection = projection,
                 elevation = elevation,
                 azimuth = azimuth,
@@ -218,33 +218,47 @@ function Plot(
         (xscale !== :identity || yscale !== :identity) &&
             throw(error("xscale or yscale are unsupported in 3D"))
 
-        x, y = projection(cube(x..., y..., z...))
+        if false
+            x, y = projection(cube(x..., y..., z...))
 
-        min_x, max_x = extrema(x)
-        min_y, max_y = extrema(y)
+            mx, Mx = float.(extrema(x))
+            my, My = float.(extrema(y))
 
-        # maintain aspect ratio
-        if abs(abs(max_x - min_x) - abs(max_y - min_y)) > eps()
-            min_x = min_y = min(min_x, min_y)
-            max_x = max_y = max(max_x, max_y)
+            # maintain aspect ratio
+            if abs(abs(Mx - mx) - abs(My - my)) > eps()
+                mx = my = min(mx, my)
+                Mx = My = max(Mx, My)
+            end
+        else
+            # normalized coordinates
+            mx = my = -1.0
+            Mx = My = +1.0
+        end
+
+        # overrides
+        if xlim != (0, 0)
+            mx, Mx = float.(xlim)
+        end
+        if ylim != (0, 0)
+            my, My = float.(ylim)
         end
 
         grid = blend = false
     else  # 2D
-        min_x, max_x = extend_limits(x, xlim, xscale)
-        min_y, max_y = extend_limits(y, ylim, yscale)
+        mx, Mx = extend_limits(x, xlim, xscale)
+        my, My = extend_limits(y, ylim, yscale)
     end
 
-    p_width = max_x - min_x
-    p_height = max_y - min_y
+    p_width = Mx - mx
+    p_height = My - my
 
     canvas = C(
         width,
         height,
         blend = blend,
         visible = visible,
-        origin_x = min_x,
-        origin_y = min_y,
+        origin_x = mx,
+        origin_y = my,
         width = p_width,
         height = p_height,
         xscale = xscale,
@@ -271,7 +285,7 @@ function Plot(
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     m_x, M_x, m_y, M_y = map(
         v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
-        (min_x, max_x, min_y, max_y),
+        (mx, Mx, my, My),
     )
     if unicode_exponent
         m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
@@ -284,27 +298,21 @@ function Plot(
     label!(plot, :bl, base_x_str * m_x, color = :light_black)
     label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
-        if min_y < 0 < max_y
-            for i in range(
-                min_x,
-                stop = max_x,
-                length = width * x_pixel_per_char(typeof(canvas)),
-            )
+        if my < 0 < My
+            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(typeof(canvas)))
                 points!(plot, i, 0.0, :normal)
             end
         end
-        if min_x < 0 < max_x
-            for i in range(
-                min_y,
-                stop = max_y,
-                length = height * y_pixel_per_char(typeof(canvas)),
-            )
+        if mx < 0 < Mx
+            for i in
+                range(my, stop = My, length = height * y_pixel_per_char(typeof(canvas)))
                 points!(plot, 0.0, i, :normal)
             end
         end
     end
 
-    (projection !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [min_x, min_y])
+    (projection !== nothing && axes3d) &&
+        draw_axes!(plot, projection.ortho ? 0.8 .* [mx, my] : zeros(3))
 
     plot
 end

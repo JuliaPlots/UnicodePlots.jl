@@ -50,16 +50,7 @@ end
 
     x, y, z = ellipsoid()
     for (plane, az, el) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
-        p = Plot(
-            x,
-            y,
-            z,
-            xlim = (-1, 1),
-            ylim = (-1, 1),
-            projection = :orthographic,
-            elevation = el,
-            azimuth = az,
-        )
+        p = Plot(x, y, z, projection = :orthographic, elevation = el, azimuth = az)
         scatterplot!(p, x, y, z)
         draw_axes!(p, [-0.8, -0.8])
 
@@ -72,16 +63,14 @@ end
         ortho = proj === :orthographic
 
         T = MVP(
-            [-1.0, 1.0],
-            [-1.0, 1.0],
-            [-1.0, 1.0];
+            [-1, 1],
+            [-1, 1],
+            [-1, 1];
             projection = proj,
-            elevation = ortho ? atand(1 / √2) : 0,
-            azimuth = ortho ? 45 : 0,
+            elevation = ortho ? UnicodePlots.KEYWORDS.elevation : 0,
+            azimuth = ortho ? UnicodePlots.KEYWORDS.azimuth : 0,
         )
         @test T.ortho == ortho
-
-        segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
 
         segments = [
             [(-1, 1, 1), (1, 1, 1)],
@@ -98,18 +87,43 @@ end
             [(1, -1, -1), (1, 1, -1)],
         ]
 
-        p = lineplot(
-            segment2xyz(segments[1])...,
-            projection = T,
-            xlim = (-1, 1),
-            ylim = (-1, 1);
-            axes3d = false,
-        )
+        segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
+
+        p = lineplot(segment2xyz(segments[1])..., projection = T)
         for s in segments[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
-        draw_axes!(p, ortho ? [-0.8, -0.8] : [0, 0, 0])
 
         test_ref("references/volume/cube_$proj.txt", @show_col(p))
+    end
+end
+
+@testset "zoom" begin
+    for proj in (:orthographic, :perspective), zoom in (0.5, 1, 2)
+        T = MVP([-1, 1], [-1, 1], [-1, 1]; projection = proj, zoom = zoom)
+
+        tetrahedron = [
+            # 1st triangle
+            [(0, 0, 0), (1, 0, 0)],
+            [(1, 0, 0), (0, 0, 1)],
+            [(0, 0, 1), (0, 0, 0)],
+            # 2nd triangle
+            [(0, 0, 0), (0, 1, 0)],
+            [(0, 1, 0), (0, 0, 1)],
+            [(0, 0, 1), (0, 0, 0)],
+            # 3rd triangle
+            [(1, 0, 0), (0, 1, 0)],
+            [(0, 1, 0), (0, 0, 1)],
+            [(0, 0, 1), (1, 0, 0)],
+        ]
+
+        segments2xyz(segments) = (
+            [p[1] for s in segments for p in s],
+            [p[2] for s in segments for p in s],
+            [p[3] for s in segments for p in s],
+        )
+
+        p = lineplot(segments2xyz(tetrahedron)..., projection = T)
+        test_ref("references/volume/cube_$(proj)_$(zoom).txt", @show_col(p))
     end
 end

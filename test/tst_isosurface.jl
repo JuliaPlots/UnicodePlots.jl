@@ -29,13 +29,6 @@ end
 end
 
 @testset "hyperboloid" begin
-    p = isosurface(
-        -3:0.6:3,
-        -3:0.6:3,
-        -3:0.6:3,
-        (x, y, z) -> x^2 + y^2 - z^2 - 1;
-        xlim = (-1, 1),
-        ylim = (-1, 1),
-    )
+    p = isosurface(-3:0.6:3, -3:0.6:3, -3:0.6:3, (x, y, z) -> x^2 + y^2 - z^2 - 1;)
     test_ref("references/isosurface/hyperboloid.txt", @show_col(p))
 end

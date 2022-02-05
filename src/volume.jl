@@ -143,15 +143,21 @@ struct Perspective{T} <: Projection where {T}
 end
 
 function ctr_len_diag(x, y, z)
-    mx, Mx = NaNMath.extrema(x)
-    my, My = NaNMath.extrema(y)
-    mz, Mz = NaNMath.extrema(z)
+    mx, Mx = NaNMath.extrema(float.(x))
+    my, My = NaNMath.extrema(float.(y))
+    mz, Mz = NaNMath.extrema(float.(z))
 
     lx = Mx - mx
     ly = My - my
     lz = Mz - mz
 
-    [mx + 0.5lx, my + 0.5ly, mz + 0.5lz], [lx, ly, lz], √(lx^2 + ly^2 + lz^2)
+    (
+        @SVector([mx + 0.5lx, my + 0.5ly, mz + 0.5lz]),
+        @SVector([mx, my, mz]),
+        @SVector([Mx, My, Mz]),
+        @SVector([lx, ly, lz]),
+        √(lx^2 + ly^2 + lz^2)
+    )
 end
 
 cube(mx, Mx, my, My, mz, Mz) = [
@@ -200,6 +206,9 @@ Model - View - Projection transformation matrix.
 struct MVP{T}
     A::SMatrix{4,4,T}
     view_dir::SVector{3,T}
+    ctr::SVector{3,T}
+    min::SVector{3,T}
+    max::SVector{3,T}
     len::SVector{3,T}
     ortho::Bool
     function MVP(
@@ -216,7 +225,7 @@ struct MVP{T}
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
         ortho = projection === :orthographic
-        ctr, len, diag = ctr_len_diag(x, y, z)
+        ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
         # half the diagonal (cam distance to the center)
         dist = (diag / 2) / zoom / (ortho ? 1 : 2)
         δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
@@ -226,19 +235,17 @@ struct MVP{T}
         V, view_dir =
             view_matrix(ctr, dist, max(-90 + δ, min(elevation, 90 - δ)), azimuth, up)
         # Projection Matrix
-        @show ctr diag dist len view_dir
         P = if ortho
             Orthographic(-dist, dist, -dist, dist, -dist, dist)
         else
             Perspective(-dist, dist, -dist, dist, 1.0, 100.0)
         end
-        new{float(eltype(x))}(P.A * V * M, view_dir, len, ortho)
+        new{float(eltype(x))}(P.A * V * M, view_dir, ctr, mini, maxi, len, ortho)
     end
 end
 
 function (t::MVP)(p::AbstractMatrix)
-    F = eltype(t.A)
-    ε = eps(F)
+    ε = eps(eltype(t.A))
     # homogeneous coordinates
     dat = t.A * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
     xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
@@ -253,11 +260,9 @@ function (t::MVP)(p::AbstractMatrix)
 end
 
 function (t::MVP)(v::Union{AbstractVector,NTuple{3}})
-    F = eltype(t.A)
-    ε = eps(F)
     # homogeneous coordinates
     x, y, z, w = t.A * [v..., 1]
-    if abs(w) > ε
+    if abs(w) > eps(eltype(t.A))
         x /= w
         y /= w
         z /= w
@@ -271,7 +276,7 @@ end
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
-If `p = (x, y)` is given, draws at screen coordinates (only valid in orthographic projection).
+If `p = (x, y)` is given, draws at screen coordinates.
 """
 function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     T = plot.projection
@@ -284,10 +289,16 @@ function draw_axes!(plot, p = [0, 0, 0], len = nothing)
     end
 
     pos = if length(p) == 2
-        T.ortho ? (T.A \ vcat(p, 0, 1))[1:3] : vcat(p, 0)
+        # T.ortho ? (T.A \ vcat(p, 0, 1))[1:3] : vcat(p, 0)
+        if T.ortho
+            (T.A \ vcat(p, 0, 1))[1:3] 
+        else
+            (T.A \ [p[1] * T.ctr[3], p[2] * T.ctr[3], 1, 1])[1:3]
+        end
     else
         p
     end
+
     lineplot!(plot, axis(float(pos), 1)..., color = :red)
     lineplot!(plot, axis(float(pos), 2)..., color = :green)
     lineplot!(plot, axis(float(pos), 3)..., color = :blue)
