@@ -56,7 +56,6 @@ end
     for (plane, az, el) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
         p = Plot(x, y, z, projection = :orthographic, elevation = el, azimuth = az)
         scatterplot!(p, x, y, z)
-        draw_axes!(p, [-0.8, -0.8])
 
         test_ref("references/volume/ellipsoid_$plane.txt", @show_col(p))
     end

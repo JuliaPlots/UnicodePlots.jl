@@ -68,7 +68,6 @@ export GraphicsArea,
     spy,
     boxplot,
     boxplot!,
-    draw_axes!,
     MVP,
     savefig
 
