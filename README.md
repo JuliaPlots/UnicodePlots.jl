@@ -289,12 +289,6 @@ All plots support the set (or a subset) of the following named parameters:
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
-  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
-  - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
-  - `elevation::Float = 35.26439`: elevation angle above the `floor` plane (`-90 ≤ θ ≤ 90`).
-  - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
-  - `zoom::Float = 1.0`: zooming factor in 3D.
-  - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.
@@ -303,7 +297,7 @@ All plots support the set (or a subset) of the following named parameters:
 
 ### 3D plots
 
-3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
+3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to render 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the X-, Y-, and Z- axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
 
 ### Methods
 
