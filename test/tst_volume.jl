@@ -1,7 +1,10 @@
 @testset "camera" begin
     # NOTE: the output of view_matrix uses the OpenGL convention:
     # x pointing to the east, y pointing to the north, z pointing out of the screen, towards the user
-    # meaning (:x -> :y_ogl, :y -> :z_ogl, :z -> :x_ogl)
+    # when our up vector = y (openGL default), V looks like I
+    # up vector = :x -> cam_dir = :y
+    # up vector = :y -> cam_dir = :z
+    # up vector = :z -> cam_dir = :x
     V, dir = UnicodePlots.view_matrix([0, 0, 0], 1, 0, 0, :x)
     @test V ≈ [
         0 0 1 0

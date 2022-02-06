@@ -231,6 +231,8 @@ struct MVP{T}
         elevation = KEYWORDS.elevation,
         azimuth = KEYWORDS.azimuth,
         zoom = KEYWORDS.zoom,
+        near = KEYWORDS.near,
+        far = KEYWORDS.far,
         up = KEYWORDS.up,
     )
         @assert projection ∈ (:orthographic, :perspective)
@@ -259,7 +261,7 @@ struct MVP{T}
 
         # Projection Matrix
         P_ortho = Orthographic(-disto, disto, -disto, disto, -disto, disto)
-        P_persp = Perspective(-distp, distp, -distp, distp, 1.0, 100.0)
+        P_persp = Perspective(-distp, distp, -distp, distp, near, far)
         P = ortho ? P_ortho : P_persp
 
         new{F}(P(V * M), P_ortho(V_ortho * M), P_persp(V_persp * M), view_dir, dist, ortho)

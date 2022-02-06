@@ -185,11 +185,8 @@ function Plot(
     min_width::Int = 5,
     min_height::Int = 2,
     projection::Union{MVP,Symbol,Nothing} = nothing,
-    elevation::Number = KEYWORDS.elevation,
-    azimuth::Number = KEYWORDS.azimuth,
-    zoom::Number = KEYWORDS.zoom,
     axes3d = KEYWORDS.axes3d,
-    up = KEYWORDS.up,
+    kw...,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
@@ -203,20 +200,10 @@ function Plot(
     x, y, z = validate_input(x, y, z)
 
     if projection !== nothing  # 3D
-        if projection isa Symbol
-            projection = MVP(
-                x,
-                y,
-                z;
-                projection = projection,
-                elevation = elevation,
-                azimuth = azimuth,
-                zoom = zoom,
-                up = up,
-            )
-        end
         (xscale !== :identity || yscale !== :identity) &&
             throw(error("xscale or yscale are unsupported in 3D"))
+
+        projection isa Symbol && (projection = MVP(x, y, z; kw...))
 
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
