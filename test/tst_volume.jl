@@ -33,8 +33,6 @@
     @test UnicodePlots.rotd_y(0) ≈ I
     @test UnicodePlots.rotd_z(0) ≈ I
 
-    @test UnicodePlots.camera_4x4([1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]) ≈ I
-
     T = MVP([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0])
     @test length(T([1, 2, 3])) == 2
     @test length(T((1, 2, 3))) == 2
@@ -126,8 +124,8 @@ end
             [p[3] for s in segments for p in s],
         )
 
-        ttl = "proj=$proj zoom=$zoom"
-        p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = ttl)
+        title = "proj=$proj zoom=$zoom"
+        p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = title)
         test_ref("references/volume/cube_$(proj)_$(zoom).txt", @show_col(p))
     end
 end

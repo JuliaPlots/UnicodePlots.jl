@@ -33,17 +33,12 @@ rotd_z(θ) = @SMatrix([
     0 0 0 1
 ])
 
-camera_4x4(l, u, f, eye) = @SMatrix(
-    [
-        l[1] l[2] l[3] -dot(l, eye)
-        u[1] u[2] u[3] -dot(u, eye)
-        f[1] f[2] f[3] -dot(f, eye)
-        0 0 0 1
-    ]
-)
-
 """
     lookat(eye, target, up_vector)
+
+# Description
+
+Computes the scene camera (see songho.ca/opengl/gl_camera.html).
 
 # Arguments
 
@@ -56,7 +51,15 @@ function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     l = normalize(cross(up_vector, f))  # left vector
     u = cross(f, l)  # up vector
 
-    camera_4x4(l, u, f, eye), f
+    @SMatrix(
+        [
+            l[1] l[2] l[3] -dot(l, eye)
+            u[1] u[2] u[3] -dot(u, eye)
+            f[1] f[2] f[3] -dot(f, eye)
+            0 0 0 1
+        ]
+    ),
+    f
 end
 
 """
@@ -64,7 +67,7 @@ end
 
 # Description
 
-Computes the perspective projection matrix.
+Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionmatrix.html#perspective).
 
 # Arguments
 
@@ -85,8 +88,8 @@ function frustum(l, r, b, t, n, f)
             0 0 0 1
         ]),
         @SMatrix([  # translate
-            1 0 0 (r + l)/2n
-            0 1 0 (t + b)/2n
+            1 0 0 (l + r)/2n
+            0 1 0 (b + t)/2n
             0 0 1 0
             0 0 0 1
         ]),
@@ -104,7 +107,7 @@ end
 
 # Description
 
-Computes the orthographic projection matrix.
+Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionmatrix.html#ortho).
 
 # Arguments
 
@@ -124,8 +127,8 @@ ortho(l, r, b, t, n, f) = *(
     ]),
     @SMatrix([  # translate
         1 0 0 -(l + r)/2
-        0 1 0 -(t + b)/2
-        0 0 1 -(f + n)/2
+        0 1 0 -(b + t)/2
+        0 0 1 -(n + f)/2
         0 0 0 1
     ]),
 )
@@ -142,6 +145,13 @@ struct Perspective{T} <: Projection where {T}
     Perspective(args::T...) where {T} = new{float(T)}(frustum(args...))
 end
 
+"""
+    ctr_len_diag(x, y, z)
+
+# Description
+
+Computes data center, minimum and maximum points, and cube diagonal.
+"""
 function ctr_len_diag(x, y, z)
     mx, Mx = NaNMath.extrema(float.(x))
     my, My = NaNMath.extrema(float.(y))
@@ -201,7 +211,7 @@ end
 
 # Description
 
-Model - View - Projection transformation matrix.
+Build up the "Model - View - Projection" transformation matrix. See codinglabs.net/article_world_view_projection_matrix.aspx
 """
 struct MVP{T}
     A::SMatrix{4,4,T}
