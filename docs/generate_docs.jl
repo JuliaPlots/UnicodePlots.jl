@@ -107,7 +107,7 @@ function main()
 
   examples = NamedTuple{keys(exs)}((
       MD(Paragraph(
-        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/doc/imgs/$ver/$k.png)"
+        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/$ver/$k.png)"
       )) for (k, e) in pairs(exs)
     )
   )
