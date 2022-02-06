@@ -73,25 +73,28 @@ end
         )
         @test T.ortho == ortho
 
-        segments = [
+        cube = (
+            # near plane square
             [(-1, 1, 1), (1, 1, 1)],
             [(-1, -1, 1), (-1, 1, 1)],
             [(-1, -1, 1), (1, -1, 1)],
             [(1, -1, 1), (1, 1, 1)],
+            # transversal edges
             [(1, 1, -1), (1, 1, 1)],
             [(-1, 1, -1), (-1, 1, 1)],
             [(-1, -1, -1), (-1, -1, 1)],
             [(1, -1, -1), (1, -1, 1)],
+            # far plane square
             [(-1, 1, -1), (1, 1, -1)],
             [(-1, -1, -1), (-1, 1, -1)],
             [(-1, -1, -1), (1, -1, -1)],
             [(1, -1, -1), (1, 1, -1)],
-        ]
+        )
 
         segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
 
-        p = lineplot(segment2xyz(segments[1])..., projection = T, title = "proj=$proj")
-        for s in segments[2:end]
+        p = lineplot(segment2xyz(cube[1])..., projection = T, title = "proj=$proj")
+        for s in cube[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
 
@@ -103,7 +106,7 @@ end
     for proj in (:orthographic, :perspective), zoom in (0.5, 1, 2)
         T = MVP([-1, 1], [-1, 1], [-1, 1]; projection = proj, zoom = zoom)
 
-        tetrahedron = [
+        tetrahedron = (
             # 1st triangle
             [(0, 0, 0), (1, 0, 0)],
             [(1, 0, 0), (0, 0, 1)],
@@ -116,7 +119,7 @@ end
             [(1, 0, 0), (0, 1, 0)],
             [(0, 1, 0), (0, 0, 1)],
             [(0, 0, 1), (1, 0, 0)],
-        ]
+        )
 
         segments2xyz(segments) = (
             [p[1] for s in segments for p in s],

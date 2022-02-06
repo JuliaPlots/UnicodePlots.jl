@@ -218,29 +218,18 @@ function Plot(
         (xscale !== :identity || yscale !== :identity) &&
             throw(error("xscale or yscale are unsupported in 3D"))
 
-        if false
-            x, y = projection(cube_corners(x..., y..., z...))
-
-            mx, Mx = float.(extrema(x))
-            my, My = float.(extrema(y))
-
-            # maintain aspect ratio
-            if abs(abs(Mx - mx) - abs(My - my)) > eps()
-                mx = my = min(mx, my)
-                Mx = My = max(Mx, My)
-            end
+        # normalized coordinates, but allow override (artifact for zooming):
+        # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
+        # should be close to using `zoom = 2`
+        mx, Mx = if xlim == (0, 0)
+            -1.0, 1.0
         else
-            # normalized coordinates
-            mx = my = -1.0
-            Mx = My = +1.0
+            float.(xlim)
         end
-
-        # overrides
-        if xlim != (0, 0)
-            mx, Mx = float.(xlim)
-        end
-        if ylim != (0, 0)
-            my, My = float.(ylim)
+        my, My = if ylim == (0, 0)
+            -1.0, 1.0
+        else
+            float.(ylim)
         end
 
         grid = blend = false

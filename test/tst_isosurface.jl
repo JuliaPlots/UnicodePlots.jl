@@ -4,11 +4,10 @@
         -3:0.2:3,
         -3:0.2:3,
         (x, y, z) -> x^2 + y^2 + z^2 - 2;
-        xlim = (-0.5, 0.5),
-        ylim = (-0.5, 0.5),
         centroid = false,
         axes3d = false,
         cull = true,
+        zoom = 2,
     )
     test_ref("references/isosurface/sphere.txt", @show_col(p))
 end
@@ -20,10 +19,9 @@ end
         -1:0.1:1,
         -1:0.1:1,
         torus;
-        xlim = (-0.5, 0.5),
-        ylim = (-0.5, 0.5),
         elevation = 50,
         cull = true,
+        zoom = 2,
     )
     test_ref("references/isosurface/torus.txt", @show_col(p))
 end

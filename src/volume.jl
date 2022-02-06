@@ -145,6 +145,8 @@ struct Perspective{T} <: Projection where {T}
     Perspective(args::T...) where {T} = new{float(T)}(frustum(args...))
 end
 
+(t::Projection)(p::AbstractMatrix) = t.A * p
+
 """
     ctr_len_diag(x, y, z)
 
@@ -187,6 +189,7 @@ function view_matrix(center, distance, elevation, azimuth, up)
     else
         throw(error("$up not understood"))
     end
+    # we support :x -> +x, :px -> +x or :mx -> -x
     up_vector = circshift(
         [
             length(up_str) == 1 ? 1 : (p = +1, m = -1)[Symbol(up_str[1])]
@@ -211,15 +214,14 @@ end
 
 # Description
 
-Build up the "Model - View - Projection" transformation matrix. See codinglabs.net/article_world_view_projection_matrix.aspx
+Build up the "Model - View - Projection" transformation matrix (see codinglabs.net/article_world_view_projection_matrix.aspx).
 """
 struct MVP{T}
-    A::SMatrix{4,4,T}
+    mvp_mat::SMatrix{4,4,T}
+    mvp_ortho_mat::SMatrix{4,4,T}
+    mvp_persp_mat::SMatrix{4,4,T}
     view_dir::SVector{3,T}
-    ctr::SVector{3,T}
-    min::SVector{3,T}
-    max::SVector{3,T}
-    len::SVector{3,T}
+    dist::T
     ortho::Bool
     function MVP(
         x,
@@ -234,50 +236,64 @@ struct MVP{T}
         @assert projection ∈ (:orthographic, :perspective)
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
+
+        F = float(eltype(x))
         ortho = projection === :orthographic
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
+
         # half the diagonal (cam distance to the center)
-        dist = (diag / 2) / zoom / (ortho ? 1 : 2)
-        δ = 100eps()  # avoid `NaN`s in `V` when `elevation` is close to ±90
+        disto = dist = (diag / 2) / zoom
+        distp = disto / 2
+
+        # avoid `NaN`s in `V` when `elevation` is close to ±90
+        δ = 100eps()
+        elev = max(-90 + δ, min(elevation, 90 - δ))
+
         # Model Matrix
         M = I  # we don't scale, nor translate, nor rotate input data
+
         # View Matrix
-        V, view_dir =
-            view_matrix(ctr, dist, max(-90 + δ, min(elevation, 90 - δ)), azimuth, up)
+        V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)
+        V_persp, view_dir = view_matrix(ctr, distp, elev, azimuth, up)
+        V = ortho ? V_ortho : V_persp
+
         # Projection Matrix
-        P = if ortho
-            Orthographic(-dist, dist, -dist, dist, -dist, dist)
-        else
-            Perspective(-dist, dist, -dist, dist, 1.0, 100.0)
-        end
-        new{float(eltype(x))}(P.A * V * M, view_dir, ctr, mini, maxi, len, ortho)
+        P_ortho = Orthographic(-disto, disto, -disto, disto, -disto, disto)
+        P_persp = Perspective(-distp, distp, -distp, distp, 1.0, 100.0)
+        P = ortho ? P_ortho : P_persp
+
+        new{F}(P(V * M), P_ortho(V_ortho * M), P_persp(V_persp * M), view_dir, dist, ortho)
     end
 end
 
-function (t::MVP)(p::AbstractMatrix)
-    ε = eps(eltype(t.A))
+get_tr_mat(t::MVP, n::Symbol) =
+    (user = t.mvp_mat, orthographic = t.mvp_ortho_mat, perspective = t.mvp_persp_mat)[n]
+
+is_ortho(t::MVP, n::Symbol) = (user = t.ortho, orthographic = true, perspective = false)[n]
+
+function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    dat = t.A * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
+    dat = get_tr_mat(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
     xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
     @inbounds for (i, w) in enumerate(ws)
-        if abs(w) > ε
+        if abs(w) > eps(T)
             xs[i] /= w
             ys[i] /= w
             zs[i] /= w
         end
     end
-    t.ortho ? (xs, ys) : (xs ./ zs, ys ./ zs)
+    is_ortho(t, n) ? (xs, ys) : (xs ./ zs, ys ./ zs)
 end
 
-function (t::MVP)(v::Union{AbstractVector,NTuple{3}})
+function (t::MVP{T})(v::Union{AbstractVector,NTuple{3}}, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    x, y, z, w = t.A * [v..., 1]
-    if abs(w) > eps(eltype(t.A))
+    x, y, z, w = get_tr_mat(t, n) * [v..., 1]
+    if abs(w) > eps(T)
         x /= w
         y /= w
         z /= w
     end
-    t.ortho ? (x, y) : (x / z, y / z)
+    is_ortho(t, n) ? (x, y) : (x / z, y / z)
 end
 
 """
@@ -290,31 +306,26 @@ If `p = (x, y)` is given, draws at screen coordinates.
 """
 function draw_axes!(plot, p = [0, 0, 0], len = nothing, scale = 0.25)
     T = plot.projection
-    l = len === nothing ? T.len .* scale : len
+    # constant apparent size
+    l = len === nothing ? scale .* @SVector([T.dist, T.dist, T.dist]) : len
 
-    axis(p, d) = begin
-        e = copy(p)
-        e[d] += l[d]
-        T(hcat(p, e))
-    end
+    proj = :orthographic  # force axes projection
 
     pos = if length(p) == 2
-        if T.ortho
-            (T.A \ vcat(p, 0, 1))[1:3]
-        else
-            if false  # FIXME: reverting / z + persp tr seems erroneous here
-                pt = (z = T.min[3]) != 0 ? vcat(p .* z, 1, 1) : vcat(p, 0, 1)
-                (T.A \ pt)[1:3]
-            else  # fallback to data center
-                collect(T.ctr)
-            end
-        end
+        (get_tr_mat(T, proj) \ vcat(p, 0, 1))[1:3]
     else
         p
     end
 
-    lineplot!(plot, axis(float(pos), 1)..., color = :red)
-    lineplot!(plot, axis(float(pos), 2)..., color = :green)
-    lineplot!(plot, axis(float(pos), 3)..., color = :blue)
+    axis(p, d) = begin
+        e = copy(p)
+        e[d] += l[d]
+        T(hcat(p, e), proj)
+    end
+
+    lines!(plot.graphics, axis(float(pos), 1)..., color = :red)
+    lines!(plot.graphics, axis(float(pos), 2)..., color = :green)
+    lines!(plot.graphics, axis(float(pos), 3)..., color = :blue)
+
     plot
 end
