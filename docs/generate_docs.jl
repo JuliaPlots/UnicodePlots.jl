@@ -290,7 +290,7 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
 ### 3D plots
 
-3d plots use a `Matrix-View-Projection` transformation matrix on input data to render 3D plots to a 2D screen. Use `elevation`, `azimuth`, `up` or `zoom` to control the `View` matrix (camera). The projection type can be set to either `:perspective` or `orthographic`. Displaying the `xyz` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
+3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to render 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the X-, Y-, and Z- axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
 
 ### Methods
 
