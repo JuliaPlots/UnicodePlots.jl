@@ -155,9 +155,9 @@ end
 Computes data center, minimum and maximum points, and cube diagonal.
 """
 function ctr_len_diag(x, y, z)
-    mx, Mx = NaNMath.extrema(float.(x))
-    my, My = NaNMath.extrema(float.(y))
-    mz, Mz = NaNMath.extrema(float.(z))
+    mx, Mx = NaNMath.extrema(as_float(x))
+    my, My = NaNMath.extrema(as_float(y))
+    mz, Mz = NaNMath.extrema(as_float(z))
 
     lx = Mx - mx
     ly = My - my
@@ -187,7 +187,7 @@ function view_matrix(center, distance, elevation, azimuth, up)
     elseif up_axis === :z
         2
     else
-        throw(error("$up not understood"))
+        throw(ArgumentError("up=$up not understood"))
     end
     # we support :x -> +x, :px -> +x or :mx -> -x
     up_vector = circshift(

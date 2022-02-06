@@ -91,7 +91,7 @@ function scatterplot!(
     if marker ∈ (:pixel, :auto)
         points!(plot, x, y, z, color)
     else
-        z === nothing || throw(error("unsupported scatter with 3D data"))
+        z === nothing || throw(ArgumentError("unsupported scatter with 3D data"))
         for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
             annotate!(plot, xi, yi, char_marker(mi); color = ci)
         end

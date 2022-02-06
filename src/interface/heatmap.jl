@@ -153,8 +153,8 @@ function heatmap(
     end
     kw = (; kw..., colorbar = colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
+    xs = length(X) > 0 ? [X[1], X[end]] : [0.0, 0.0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : [0.0, 0.0]
     plot = Plot(
         xs,
         ys,

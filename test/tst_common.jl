@@ -2,7 +2,7 @@
     @testset "types" begin
         @test UnicodePlots.plotting_range(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0f0)
         @test UnicodePlots.plotting_range(0x0, 0x1) === (0.0, 1.0)
     end
 
@@ -18,7 +18,7 @@ end
     @testset "types" begin
         @test UnicodePlots.plotting_range_narrow(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range_narrow(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0f0)
         @test UnicodePlots.plotting_range_narrow(0x0, 0x1) === (0.0, 1.0)
     end
 

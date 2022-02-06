@@ -9,6 +9,8 @@
 
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero, zscale = h -> h / 2)
     test_ref("references/surfaceplot/sombrero_zscale.txt", @show_col(p))
+
+    @test_throws ArgumentError surfaceplot([1 2; 3 4], zscale = :not_supported)
 end
 
 @testset "single color - no colormap" begin
@@ -17,6 +19,6 @@ end
 end
 
 @testset "matrix" begin
-    p = surfaceplot(collect(1:10) * collect(.1:.1:1)')
+    p = surfaceplot(collect(1:10) * collect(0.1:0.1:1)')
     test_ref("references/surfaceplot/matrix.txt", @show_col(p))
 end

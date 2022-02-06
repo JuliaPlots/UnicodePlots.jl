@@ -30,6 +30,8 @@
     ]
     @test dir == [1, 0, 0]
 
+    @test_throws ArgumentError UnicodePlots.view_matrix([0, 0, 0], 1, 0, 0, :not_supported)
+
     @test UnicodePlots.scale_4x4([1, 1, 1]) ≈ I
     @test UnicodePlots.translate_4x4([0, 0, 0]) ≈ I
     @test UnicodePlots.rotd_x(0) ≈ I
@@ -55,7 +57,15 @@ end
 
     x, y, z = ellipsoid()
     for (plane, az, el) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
-        p = Plot(x, y, z, projection = :orthographic, elevation = el, azimuth = az, title = "plane=$plane")
+        p = Plot(
+            x,
+            y,
+            z,
+            projection = :orthographic,
+            elevation = el,
+            azimuth = az,
+            title = "plane=$plane",
+        )
         scatterplot!(p, x, y, z)
 
         test_ref("references/volume/ellipsoid_$plane.txt", @show_col(p))

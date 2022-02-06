@@ -13,8 +13,8 @@ $(arguments(
     (
         V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
         isovalue = "chosen surface isovalue",
-        legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
         cull = "cull (hide) back faces",
+        legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
         centroid = "display triangulation centroid instead of triangle vertices",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
 ))

@@ -1,7 +1,7 @@
 """
     surfaceplot(x, y, A; kw...)
 
-Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s. Pass 
+Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s. 
 
 # Usage
 
@@ -13,6 +13,7 @@ $(arguments(
     (
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
         lines = "use `lineplot` instead of `scatterplot`",
+        zscale = "scale z (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
@@ -59,9 +60,8 @@ function surfaceplot(
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
-    zscale::Union{Symbol,Function} = :identity,
+    zscale::Union{Symbol,Function,NTuple{2}} = :identity,
     lines::Bool = false,
-    zlim = KEYWORDS.zlim,
     kw...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
@@ -73,24 +73,24 @@ function surfaceplot(
 
     mx, Mx = extrema(x)
     my, My = extrema(y)
-    mh, Mh = NaNMath.extrema(H)
+    mh, Mh = NaNMath.extrema(as_float(H))
 
-    if zscale === :identity
-        mz, Mz = mh, Mh
-        Z = H
-    elseif zscale === :aspect
-        mz, Mz = if zlim == (0, 0)
+    if zscale === :aspect || zscale isa NTuple{2}
+        mz, Mz = if zscale === :aspect
             min(mx, my), max(Mx, My)
         else
-            zlim
+            zscale
         end
         Z = (H .- mh) .* ((Mz - mz) / (Mh - mh)) .+ mz
+    elseif zscale === :identity
+        mz, Mz = mh, Mh
+        Z = H
     elseif zscale isa Function
         # e.g. plotting a slice, pass zscale = x -> slice_pos
         mz, Mz = zscale(mh), zscale(Mh)
         Z = zscale.(H)
     else
-        throw(error("zscale=$zscale not understood"))
+        throw(ArgumentError("zscale=$zscale not understood"))
     end
 
     length(X) == length(Y) == length(Z) == length(H) ||

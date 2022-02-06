@@ -175,7 +175,7 @@ function lineplot(
     ylabel = "f(x)",
     kw...,
 )
-    y = Float64[f(i) for i in x]
+    y = [float(f(i)) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
     plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
@@ -196,7 +196,7 @@ end
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
 
 function lineplot!(plot::Plot{<:Canvas}, f::Function, x::AbstractVector; name = "", kw...)
-    y = Float64[f(i) for i in x]
+    y = [float(f(i)) for i in x]
     name = name == "" ? string(nameof(f), "(x)") : name
     lineplot!(plot, x, y; name = name, kw...)
 end

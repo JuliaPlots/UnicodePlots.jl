@@ -201,7 +201,7 @@ function Plot(
 
     if projection !== nothing  # 3D
         (xscale !== :identity || yscale !== :identity) &&
-            throw(error("xscale or yscale are unsupported in 3D"))
+            throw(ArgumentError("xscale or yscale are unsupported in 3D"))
 
         projection isa Symbol && (projection = MVP(x, y, z; kw...))
 
@@ -211,12 +211,12 @@ function Plot(
         mx, Mx = if xlim == (0, 0)
             -1.0, 1.0
         else
-            float.(xlim)
+            as_float(xlim)
         end
         my, My = if ylim == (0, 0)
             -1.0, 1.0
         else
-            float.(ylim)
+            as_float(ylim)
         end
 
         grid = blend = false
