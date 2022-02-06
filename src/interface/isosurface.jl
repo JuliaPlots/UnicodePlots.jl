@@ -77,35 +77,7 @@ function isosurface(
         projection = projection,
         kw...,
     )
-    isosurface!(
-        plot,
-        x,
-        y,
-        z,
-        V;
-        name = name,
-        color = color,
-        isovalue = isovalue,
-        centroid = centroid,
-        legacy = legacy,
-        cull = cull,
-    )
-end
 
-function isosurface!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    z::AbstractVector,
-    V::AbstractArray;
-    color::UserColorType = KEYWORDS.color,
-    name::AbstractString = KEYWORDS.name,
-    isovalue::Number = 0,
-    centroid::Bool = true,
-    legacy::Bool = false,
-    cull::Bool = false,
-)
-    name == "" || label!(plot, :r, string(name))
     color = color == :auto ? next_color!(plot) : color
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
@@ -143,5 +115,4 @@ function isosurface!(
     end
     # triangles vertices or centroid
     scatterplot!(plot, xs, ys, zs; color = cs, name = name)
-    plot
 end

@@ -59,6 +59,7 @@ function surfaceplot(
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
+    zscale::Union{Symbol,Function} = :identity,
     lines::Bool = false,
     kw...,
 )
@@ -67,55 +68,47 @@ function surfaceplot(
     else
         x, y
     end
-    Z = A isa Function ? A.(X, Y) : A
-    length(X) == length(Y) == length(Z) ||
-        throw(DimensionMismatch("x, y and z must have same length"))
+    H = A isa Function ? A.(X, Y) : A
+
+    mx, Mx = extrema(x)
+    my, My = extrema(y)
+    mh, Mh = NaNMath.extrema(H)
+
+    if zscale === :identity
+        mz, Mz = mh, Mh
+        Z = H
+    elseif zscale === :aspect
+        mz, Mz = min(mx, my), max(Mx, My)
+        Z = (Mz - mz) .* (H .- mh) ./ (Mh - mh) .+ mz
+    elseif zscale isa Function
+        mz, Mz = zscale(mh), zscale(Mh)
+        Z = zscale.(H)
+    else
+        throw(error("zscale=$zscale not understood"))
+    end
+
+    length(X) == length(Y) == length(Z) == length(H) ||
+        throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
     callback = colormap_callback(colormap)
     plot = Plot(
-        extrema(X) |> collect,
-        extrema(Y) |> collect,
-        extrema(Z) |> collect,
+        [mx, Mx],
+        [my, My],
+        [mz, Mz],
         canvas;
         projection = projection,
         colormap = callback,
         colorbar = colorbar && color === nothing,
+        colorbar_lim = (mh, Mh),
         kw...,
     )
-    surfaceplot!(
-        plot,
-        X,
-        Y,
-        Z;
-        name = name,
-        colormap = callback,
-        color = color,
-        lines = lines,
-    )
-    plot
-end
-
-function surfaceplot!(
-    plot::Plot{<:Canvas},
-    X::AbstractVecOrMat,
-    Y::AbstractVecOrMat,
-    Z::AbstractVecOrMat;
-    name::AbstractString = KEYWORDS.name,
-    color::UserColorType = nothing,  # NOTE: nothing as default to override colormap
-    colormap = KEYWORDS.colormap,
-    lines::Bool = false,
-    kw...,
-)
-    name == "" || label!(plot, :r, string(name))
-    plot.colormap = callback = colormap_callback(colormap)
-    plot.colorbar_lim = mZ, MZ = NaNMath.extrema(Z)
 
     if color === nothing
         color =
-            UserColorType[isfinite(z) ? callback(z, mZ, MZ) : nothing for z in @view(Z[:])]
+            UserColorType[isfinite(h) ? callback(h, mh, Mh) : nothing for h in @view(H[:])]
     end
     callable = lines ? lineplot! : scatterplot!
-    callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name, kw...)
+    callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
     plot
 end
 
