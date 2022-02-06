@@ -55,7 +55,7 @@ end
 
     x, y, z = ellipsoid()
     for (plane, az, el) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
-        p = Plot(x, y, z, projection = :orthographic, elevation = el, azimuth = az)
+        p = Plot(x, y, z, projection = :orthographic, elevation = el, azimuth = az, title = "plane=$plane")
         scatterplot!(p, x, y, z)
 
         test_ref("references/volume/ellipsoid_$plane.txt", @show_col(p))
@@ -106,8 +106,8 @@ end
 end
 
 @testset "zoom" begin
-    for proj in (:orthographic, :perspective), zoom in (0.5, 1, 2)
-        T = MVP([-1, 1], [-1, 1], [-1, 1]; projection = proj, zoom = zoom)
+    for zoom in (0.5, 1, 2)
+        T = MVP([-1, 1], [-1, 1], [-1, 1]; zoom = zoom)
 
         tetrahedron = (
             # 1st triangle
@@ -130,8 +130,8 @@ end
             [p[3] for s in segments for p in s],
         )
 
-        title = "proj=$proj zoom=$zoom"
+        title = "zoom=$zoom"
         p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = title)
-        test_ref("references/volume/cube_$(proj)_$(zoom).txt", @show_col(p))
+        test_ref("references/volume/cube_$(zoom).txt", @show_col(p))
     end
 end

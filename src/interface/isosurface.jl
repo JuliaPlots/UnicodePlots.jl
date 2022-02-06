@@ -67,7 +67,7 @@ function isosurface(
     cull::Bool = false,
     kw...,
 )
-    V isa Function && (V = V.(y, x', reshape(z, 1, 1, length(z))))
+    V isa Function && (V = V.(x, y', reshape(z, 1, 1, length(z))))
 
     plot = Plot(
         extrema(x) |> collect,

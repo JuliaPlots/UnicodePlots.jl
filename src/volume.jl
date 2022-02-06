@@ -253,12 +253,6 @@ struct MVP{T}
 
         # Model Matrix
         M = I  # we don't scale, nor translate, nor rotate input data
-        # M = [  # normalize in [0; 1]
-        #     1 / len[1] 0 0 -mini[1] / len[1]
-        #     0 1 / len[2] 0 -mini[2] / len[2]
-        #     0 0 1 / len[3] -mini[3] / len[3]
-        #     0 0 0 1
-        # ]
 
         # View Matrix
         V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)

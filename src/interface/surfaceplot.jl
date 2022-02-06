@@ -61,10 +61,11 @@ function surfaceplot(
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     zscale::Union{Symbol,Function} = :identity,
     lines::Bool = false,
+    zlim = KEYWORDS.zlim,
     kw...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
-        repeat(x', length(y), 1), repeat(y, 1, length(x))
+        repeat(x, 1, length(y)), repeat(y', length(x), 1)
     else
         x, y
     end
@@ -78,9 +79,14 @@ function surfaceplot(
         mz, Mz = mh, Mh
         Z = H
     elseif zscale === :aspect
-        mz, Mz = min(mx, my), max(Mx, My)
-        Z = (Mz - mz) .* (H .- mh) ./ (Mh - mh) .+ mz
+        mz, Mz = if zlim == (0, 0)
+            min(mx, my), max(Mx, My)
+        else
+            zlim
+        end
+        Z = (H .- mh) .* ((Mz - mz) / (Mh - mh)) .+ mz
     elseif zscale isa Function
+        # e.g. plotting a slice, pass zscale = x -> slice_pos
         mz, Mz = zscale(mh), zscale(Mh)
         Z = zscale.(H)
     else
