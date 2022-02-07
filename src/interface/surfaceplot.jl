@@ -1,7 +1,8 @@
 """
     surfaceplot(x, y, A; kw...)
 
-Draws a 3D surface plot on a new canvas. Values can be masked using `NaN`s. 
+Draws a 3D surface plot on a new canvas (masking values using `NaN`s is supported).
+For plotting a slice one can pass an anonymous function which maps to a constant height: `hscale = x -> some_constant_height`.
 
 # Usage
 
@@ -13,7 +14,7 @@ $(arguments(
     (
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
         lines = "use `lineplot` instead of `scatterplot`",
-        zscale = "scale z (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
+        hscale = "scale heights (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
     ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
@@ -60,7 +61,7 @@ function surfaceplot(
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
-    zscale::Union{Symbol,Function,NTuple{2}} = :identity,
+    hscale::Union{Symbol,Function,NTuple{2}} = :identity,
     lines::Bool = false,
     kw...,
 )
@@ -71,32 +72,33 @@ function surfaceplot(
     end
     H = A isa Function ? A.(X, Y) : A
 
-    mx, Mx = extrema(x)
-    my, My = extrema(y)
-    mh, Mh = NaNMath.extrema(as_float(H))
+    ex = extrema(x)
+    ey = extrema(y)
+    eh = NaNMath.extrema(as_float(H))
 
-    if zscale === :aspect || zscale isa NTuple{2}
-        mz, Mz = if zscale === :aspect
-            min(mx, my), max(Mx, My)
+    if hscale === :identity
+        ez = eh
+        Z = H
+    elseif hscale isa Function
+        ez = hscale.(eh)
+        Z = hscale.(H)
+    elseif hscale === :aspect || hscale isa NTuple{2}
+        mh, Mh = eh
+        mz, Mz = ez = if hscale === :aspect
+            diff(ex |> collect) > diff(ey |> collect) ? ex : ey
         else
-            zscale
+            hscale
         end
         Z = (H .- mh) .* ((Mz - mz) / (Mh - mh)) .+ mz
-    elseif zscale === :identity
-        mz, Mz = mh, Mh
-        Z = H
-    elseif zscale isa Function
-        # e.g. plotting a slice, pass zscale = x -> slice_pos
-        mz, Mz = zscale(mh), zscale(Mh)
-        Z = zscale.(H)
     else
-        throw(ArgumentError("zscale=$zscale not understood"))
+        throw(ArgumentError("hscale=$hscale not understood"))
     end
 
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
-    plot = Plot([mx, Mx], [my, My], [mz, Mz], canvas; projection = projection, kw...)
+    plot =
+        Plot(collect(ex), collect(ey), collect(ez), canvas; projection = projection, kw...)
     surfaceplot!(
         plot,
         X,
