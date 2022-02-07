@@ -50,7 +50,7 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, elevation = 50, zoom = 2)
 
 # See also
 
-`Plot`, `scatterplot`
+[`Plot`](@ref), [`scatterplot`](@ref)
 """
 function isosurface(
     x::AbstractVector,
@@ -77,7 +77,33 @@ function isosurface(
         projection = projection,
         kw...,
     )
+    isosurface!(
+        plot,
+        x,
+        y,
+        z,
+        V;
+        color = color,
+        isovalue = isovalue,
+        centroid = centroid,
+        legacy = legacy,
+        cull = cull,
+    )
+end
 
+function isosurface!(
+    plot::Plot{<:Canvas},
+    x::AbstractVector,
+    y::AbstractVector,
+    z::AbstractVector,
+    V::AbstractArray;
+    color::UserColorType = KEYWORDS.color,
+    name::AbstractString = KEYWORDS.name,
+    isovalue::Number = 0,
+    centroid::Bool = true,
+    legacy::Bool = false,
+    cull::Bool = false,
+)
     color = color == :auto ? next_color!(plot) : color
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))

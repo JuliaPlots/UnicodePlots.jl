@@ -145,7 +145,7 @@ struct Perspective{T} <: Projection where {T}
     Perspective(args::T...) where {T} = new{float(T)}(frustum(args...))
 end
 
-(t::Projection)(p::AbstractMatrix) = t.A * p
+(t::Projection)(p::AbstractVecOrMat) = t.A * p
 
 """
     ctr_len_diag(x, y, z)
@@ -271,14 +271,14 @@ struct MVP{T}
     end
 end
 
-get_tr_mat(t::MVP, n::Symbol) =
+transform_matrix(t::MVP, n::Symbol) =
     (user = t.mvp_mat, orthographic = t.mvp_ortho_mat, perspective = t.mvp_persp_mat)[n]
 
 is_ortho(t::MVP, n::Symbol) = (user = t.ortho, orthographic = true, perspective = false)[n]
 
 function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    dat = get_tr_mat(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
+    dat = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
     xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
     @inbounds for (i, w) in enumerate(ws)
         if abs(w) > eps(T)
@@ -292,7 +292,7 @@ end
 
 function (t::MVP{T})(v::Union{AbstractVector,NTuple{3}}, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    x, y, z, w = get_tr_mat(t, n) * [v..., 1]
+    x, y, z, w = transform_matrix(t, n) * [v..., 1]
     if abs(w) > eps(T)
         x /= w
         y /= w
@@ -317,7 +317,7 @@ function draw_axes!(plot, p = [0, 0, 0], len = nothing, scale = 0.25)
     proj = :orthographic  # force axes projection
 
     pos = if length(p) == 2
-        (get_tr_mat(T, proj) \ vcat(p, 0, 1))[1:3]
+        (transform_matrix(T, proj) \ vcat(p, 0, 1))[1:3]
     else
         p
     end

@@ -48,7 +48,7 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 
 # See also
 
-`Plot`, `scatterplot`
+[`Plot`](@ref), [`scatterplot`](@ref)
 """
 function surfaceplot(
     x::AbstractVecOrMat,
@@ -56,7 +56,7 @@ function surfaceplot(
     A::Union{Function,AbstractVecOrMat};
     canvas::Type = BrailleCanvas,
     name::AbstractString = KEYWORDS.name,
-    color::UserColorType = nothing,  # NOTE: nothing as default to override colormap
+    color::UserColorType = nothing,  # NOTE: nothing as default (uses colormap), but allow single color
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
@@ -96,26 +96,44 @@ function surfaceplot(
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
-    callback = colormap_callback(colormap)
-    plot = Plot(
-        [mx, Mx],
-        [my, My],
-        [mz, Mz],
-        canvas;
-        projection = projection,
-        colormap = callback,
-        colorbar = colorbar && color === nothing,
-        colorbar_lim = (mh, Mh),
-        kw...,
+    plot = Plot([mx, Mx], [my, My], [mz, Mz], canvas; projection = projection, kw...)
+    surfaceplot!(
+        plot,
+        X,
+        Y,
+        Z,
+        H;
+        name = name,
+        color = color,
+        colormap = colormap,
+        colorbar = colorbar,
+        lines = lines,
     )
+end
+
+function surfaceplot!(
+    plot::Plot{<:Canvas},
+    X::AbstractVecOrMat,
+    Y::AbstractVecOrMat,
+    Z::AbstractVecOrMat,
+    H::AbstractVecOrMat;
+    name::AbstractString = KEYWORDS.name,
+    color::UserColorType = nothing,
+    colormap = KEYWORDS.colormap,
+    colorbar::Bool = true,
+    lines::Bool = false,
+)
+    plot.colorbar_lim = mh, Mh = NaNMath.extrema(as_float(H))
+    plot.colormap = callback = colormap_callback(colormap)
+    plot.colorbar = colorbar && color === nothing
 
     if color === nothing
         color =
             UserColorType[isfinite(h) ? callback(h, mh, Mh) : nothing for h in @view(H[:])]
     end
+
     callable = lines ? lineplot! : scatterplot!
     callable(plot, @view(X[:]), @view(Y[:]), @view(Z[:]); color = color, name = name)
-    plot
 end
 
 """

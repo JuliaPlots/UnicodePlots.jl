@@ -46,7 +46,7 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
 
 # See also
 
-`Plot`, `scatterplot`
+[`Plot`](@ref), [`scatterplot`](@ref)
 """
 function contourplot(
     x::AbstractVector,
