@@ -226,7 +226,7 @@ surfaceplot(
 
 #### Isosurface Plot
 
-Uses the `Marching Cubes` algorithm to extract an isosurface, where `isovalue` controls the surface isovalue. Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). Back face culling (hide not visible facets) can be activated using `cull=true`. One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
+Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue. Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). Back face culling (hide not visible facets) can be activated using `cull=true`. One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
 ```julia
 torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2

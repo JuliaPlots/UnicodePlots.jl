@@ -75,6 +75,11 @@ end
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
     @test UnicodePlots.colormap_callback(nothing) === nothing
 
+    # clamp in range
+    values = collect(1:10)
+    callback = UnicodePlots.colormap_callback(:viridis)
+    colors = [callback(v, values[2], values[end - 1]) for v in values]
+
     # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
     @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black
     @test UnicodePlots.rgb2ansi((1, 0, 0)) == 196  # red

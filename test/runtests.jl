@@ -60,9 +60,6 @@ end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     for test in (
-        "tst_volume.jl",
-        "tst_surfaceplot.jl",
-        "tst_isosurface.jl",
         "tst_issues.jl",
         "tst_common.jl",
         "tst_graphics.jl",
@@ -76,6 +73,9 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
         "tst_boxplot.jl",
         "tst_heatmap.jl",
         "tst_contourplot.jl",
+        "tst_volume.jl",
+        "tst_surfaceplot.jl",
+        "tst_isosurface.jl",
         "tst_deprecated_warns.jl",
     )
         @testset "$test" begin

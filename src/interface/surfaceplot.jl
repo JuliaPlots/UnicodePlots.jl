@@ -61,8 +61,8 @@ function surfaceplot(
     colorbar::Bool = true,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     zscale::Union{Symbol,Function,NTuple{2}} = :identity,
-    zlim = KEYWORDS.zlim,
     lines::Bool = false,
+    zlim = KEYWORDS.zlim,
     kw...,
 )
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
@@ -119,8 +119,8 @@ function surfaceplot!(
     color::UserColorType = nothing,
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
-    zlim = KEYWORDS.zlim,
     lines::Bool = false,
+    zlim = KEYWORDS.zlim,
 )
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))

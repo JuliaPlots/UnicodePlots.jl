@@ -287,7 +287,7 @@ $(examples.surfaceplot2)
 
 #### Isosurface Plot
 
-Uses the `Marching Cubes` algorithm to extract an isosurface, where `isovalue` controls the surface isovalue.
+Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
 Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
 Back face culling (hide not visible facets) can be activated using `cull=true`.
 One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
