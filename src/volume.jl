@@ -215,6 +215,9 @@ end
 # Description
 
 Build up the "Model - View - Projection" transformation matrix (see codinglabs.net/article_world_view_projection_matrix.aspx).
+
+This is typically used to adjust how 3D plot is viewed, see also
+the `projection` keyword in [`surfaceplot`](@ref), [`isosurface`](@ref).
 """
 struct MVP{T}
     mvp_mat::SMatrix{4,4,T}
