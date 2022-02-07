@@ -55,6 +55,20 @@ function main()
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
     heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
+    surfaceplot1 = ("Surfaceplot", """
+      sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
+      surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
+      """),
+    surfaceplot2 = ("Surfaceplot", """
+      surfaceplot(
+        -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+        zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+      )
+      """),
+    isosurface = ("Isosurface", """
+      torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50, border=:dotted)
+      """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
     labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false, border=:dotted)"),
@@ -99,7 +113,7 @@ function main()
 
   examples = NamedTuple{keys(exs)}((
       MD(Paragraph(
-        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/doc/imgs/$ver/$k.png)"
+        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/$ver/$k.png)"
       )) for (k, e) in pairs(exs)
     )
   )
@@ -158,6 +172,8 @@ Here is a list of the main high-level functions for common scenarios:
   - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
+  - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
 Here is a quick hello world example of a typical use-case:
 
@@ -258,6 +274,26 @@ The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorb
 
 $(examples.heatmap2)
 
+#### Surface Plot
+
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
+
+$(examples.surfaceplot1)
+
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`).
+To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
+
+$(examples.surfaceplot2)
+
+#### Isosurface Plot
+
+Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
+Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+Back face culling (hide not visible facets) can be activated using `cull=true`.
+One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
+
+$(examples.isosurface)
+
 ### Options
 
 All plots support the set (or a subset) of the following named parameters:
@@ -265,6 +301,14 @@ All plots support the set (or a subset) of the following named parameters:
   $description
 
 _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
+
+### 3D plots
+
+3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
+Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
+The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`.
+Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword.
+For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
 
 ### Methods
 
@@ -373,6 +417,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   mkpath("imgs/$ver")
   open("imgs/gen_imgs.jl", "w") do io
     println(io, """
+      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       using UnicodePlots, StableRNGs, SparseArrays
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
@@ -393,11 +438,13 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   open("imgs/gen_imgs.sh", "w") do io
     write(io, """
       #!/usr/bin/env bash
+      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       \${JULIA-julia} gen_imgs.jl
 
       for f in $ver/*.txt; do
         html=\${f%.txt}.html
         cat \$f | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
+        sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
         \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
       done
 
@@ -410,7 +457,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   plain_readme = plain(readme)
   write(stdout, plain_readme)
   open("../README.md", "w") do io
-    write(io, "<!-- WARNING: this file has been automatically generated, please update Unicodeplots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
+    write(io, "<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
     write(io, plain_readme)
   end
   return

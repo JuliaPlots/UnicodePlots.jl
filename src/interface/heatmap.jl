@@ -31,9 +31,24 @@ A plot object of type `Plot{HeatmapCanvas}`.
 
 - Rowan Katekar (github.com/rjkat)
 
+# Examples
+
+```julia-repl
+julia> heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
+      ┌───────────┐         
+   11 │▄▄▄▄▄▄▄▄▄▄▄│  ┌──┐ 10
+      │▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│   
+      │▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│   
+      │▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│ z 
+      │▄▄▄▄▄▄▄▄▄▄▄│  │▄▄│   
+    1 │▄▄▄▄▄▄▄▄▄▄▄│  └──┘ 0 
+      └───────────┘         
+       1        11          
+```
+
 # See also
 
-`Plot`, `scatterplot`, `HeatmapCanvas`
+`Plot`, `HeatmapCanvas`
 """
 function heatmap(
     A::AbstractMatrix;
@@ -138,11 +153,12 @@ function heatmap(
     end
     kw = (; kw..., colorbar = colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : Float64[0, 0]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : Float64[0, 0]
+    xs = length(X) > 0 ? [X[1], X[end]] : [0.0, 0.0]
+    ys = length(Y) > 0 ? [Y[1], Y[end]] : [0.0, 0.0]
     plot = Plot(
         xs,
         ys,
+        nothing,
         HeatmapCanvas;
         grid = false,
         colormap = callback,

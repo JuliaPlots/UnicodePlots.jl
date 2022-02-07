@@ -4,6 +4,11 @@ using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
+using LinearAlgebra
+using StaticArrays
+
+import MarchingCubes
+import NaNMath
 import Contour
 
 export GraphicsArea,
@@ -50,6 +55,10 @@ export GraphicsArea,
     scatterplot!,
     contourplot,
     contourplot!,
+    surfaceplot,
+    surfaceplot!,
+    isosurface,
+    isosurface!,
     stairs,
     stairs!,
     histogram,
@@ -59,6 +68,7 @@ export GraphicsArea,
     spy,
     boxplot,
     boxplot!,
+    MVP,
     savefig
 
 include("common.jl")
@@ -77,6 +87,7 @@ include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
 
 include("description.jl")
+include("volume.jl")
 
 include("plot.jl")
 include("colormaps.jl")
@@ -84,6 +95,8 @@ include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")
 include("interface/contourplot.jl")
+include("interface/surfaceplot.jl")
+include("interface/isosurface.jl")
 include("interface/lineplot.jl")
 include("interface/stairs.jl")
 include("interface/densityplot.jl")

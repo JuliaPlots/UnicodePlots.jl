@@ -186,7 +186,8 @@ function char_marker(marker::MarkerType)::Char
     if marker isa Symbol
         get(MARKERS, marker, MARKERS[:circle])
     else
-        length(marker) == 1 || throw(error("`marker` keyword has a non unit length"))
+        length(marker) == 1 ||
+            throw(ArgumentError("`marker` keyword has a non unit length"))
         marker[1]
     end
 end
@@ -207,6 +208,8 @@ function transform_name(tr, basename = "")
     name = occursin("#", name) ? "custom" : name
     string(basename, " [", name, "]")
 end
+
+as_float(x) = eltype(x) <: AbstractFloat ? x : float.(x)
 
 roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
 compact_repr(num::Number) = repr(num, context = :compact => true)
@@ -257,25 +260,24 @@ function plotting_range(xmin, xmax)
     diff = xmax - xmin
     xmax = round_up_tick(xmax, diff)
     xmin = round_down_tick(xmin, diff)
-    Float64(xmin), Float64(xmax)
+    float(xmin), float(xmax)
 end
 
 function plotting_range_narrow(xmin, xmax)
     diff = xmax - xmin
     xmax = round_up_subtick(xmax, diff)
     xmin = round_down_subtick(xmin, diff)
-    Float64(xmin), Float64(xmax)
+    float(xmin), float(xmax)
 end
 
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
 function extend_limits(vec, limits, scale::Union{Symbol,Function})
-    mi, ma = map(Float64, extrema(limits))
+    mi, ma = as_float(extrema(limits))
     if mi == 0 && ma == 0
-        mi, ma = map(Float64, extrema(vec))
+        mi, ma = as_float(extrema(vec))
     end
-    diff = ma - mi
-    if diff == 0
+    if ma - mi == 0
         ma = mi + 1
         mi = mi - 1
     end
@@ -312,6 +314,8 @@ function crayon_256_color(color::UserColorType)::ColorType
     end
     Crayons.val(ansicolor)
 end
+
+complement(color) = (col = crayon_256_color(color)) === nothing ? nothing : ~col
 
 julia_color(color::Integer)::JuliaColorType = Int(color)
 julia_color(color::Nothing)::JuliaColorType = :normal

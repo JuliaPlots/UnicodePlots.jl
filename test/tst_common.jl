@@ -2,7 +2,7 @@
     @testset "types" begin
         @test UnicodePlots.plotting_range(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0f0)
         @test UnicodePlots.plotting_range(0x0, 0x1) === (0.0, 1.0)
     end
 
@@ -18,7 +18,7 @@ end
     @testset "types" begin
         @test UnicodePlots.plotting_range_narrow(0, 1) === (0.0, 1.0)
         @test UnicodePlots.plotting_range_narrow(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0f0)
         @test UnicodePlots.plotting_range_narrow(0x0, 0x1) === (0.0, 1.0)
     end
 
@@ -74,6 +74,11 @@ end
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
     @test UnicodePlots.colormap_callback(nothing) === nothing
+
+    # clamp in range
+    values = collect(1:10)
+    callback = UnicodePlots.colormap_callback(:viridis)
+    colors = [callback(v, values[2], values[end - 1]) for v in values]
 
     # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
     @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black

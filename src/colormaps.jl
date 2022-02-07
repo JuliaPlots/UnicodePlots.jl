@@ -1420,8 +1420,10 @@ function rgb2ansi(rgb)
 end
 
 function cmapcolor(z, minz, maxz, cmap)
-    i = if minz == maxz
+    i = if minz == maxz || z < minz
         1
+    elseif z > maxz
+        length(cmap)
     else
         1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
     end

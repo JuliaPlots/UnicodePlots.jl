@@ -11,13 +11,13 @@ additional information such as a title, border, and axis labels.
 
     Plot(graphics; $(keywords(; default = (), add = (:title, :xlabel, :ylabel, :zlabel, :border, :margin, :padding, :compact, :labels))))
 
-    Plot(x, y, canvas; $(keywords()))
+    Plot(x, y, z, canvas; $(keywords()))
 
 # Arguments
 
 $(arguments(
     (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
-    add = (:x, :y, :canvas)
+    add = (:x, :y, :z, :canvas)
 ))
 
 # Methods
@@ -66,6 +66,7 @@ mutable struct Plot{T<:GraphicsArea}
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
+    projection::Union{MVP,Nothing}
 end
 
 function Plot(
@@ -83,6 +84,7 @@ function Plot(
     colorbar_border::Symbol = KEYWORDS.colorbar_border,
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
+    projection::Union{MVP,Nothing} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
@@ -116,6 +118,7 @@ function Plot(
         colorbar_border,
         colorbar_lim,
         0,
+        projection,
     )
     if compact
         xlabel != "" && label!(p, :b, xlabel)
@@ -124,9 +127,38 @@ function Plot(
     p
 end
 
+"""
+    validate_input(x, y, z = nothing)
+
+# Description
+
+Check for invalid input (length) and selects only finite input data.
+"""
+function validate_input(
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Union{AbstractVector{<:Number},Nothing} = nothing,
+)
+    if z !== nothing
+        length(x) == length(y) == length(z) ||
+            throw(DimensionMismatch("x, y and z must have same length"))
+        idx = map(x, y, z) do i, j, k
+            isfinite(i) && isfinite(j) && isfinite(k)
+        end
+        x[idx], y[idx], z[idx]
+    else
+        length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
+        idx = map(x, y) do i, j
+            isfinite(i) && isfinite(j)
+        end
+        x[idx], y[idx], z
+    end
+end
+
 function Plot(
-    X::AbstractVector{<:Number},
-    Y::AbstractVector{<:Number},
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Union{AbstractVector{<:Number},Nothing} = nothing,
     ::Type{C} = BrailleCanvas;
     title::AbstractString = KEYWORDS.title,
     xlabel::AbstractString = KEYWORDS.xlabel,
@@ -152,10 +184,12 @@ function Plot(
     grid::Bool = KEYWORDS.grid,
     min_width::Int = 5,
     min_height::Int = 2,
+    projection::Union{MVP,Symbol,Nothing} = nothing,
+    axes3d = KEYWORDS.axes3d,
+    kw...,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must have same length"))
 
     width === nothing && (width = DEFAULT_WIDTH[])
     height === nothing && (height = DEFAULT_HEIGHT[])
@@ -163,19 +197,44 @@ function Plot(
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
-    min_x, max_x = extend_limits(X, xlim, xscale)
-    min_y, max_y = extend_limits(Y, ylim, yscale)
+    x, y, z = validate_input(x, y, z)
 
-    p_width = max_x - min_x
-    p_height = max_y - min_y
+    if projection !== nothing  # 3D
+        (xscale !== :identity || yscale !== :identity) &&
+            throw(ArgumentError("xscale or yscale are unsupported in 3D"))
+
+        projection isa Symbol && (projection = MVP(x, y, z; kw...))
+
+        # normalized coordinates, but allow override (artifact for zooming):
+        # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
+        # should be close to using `zoom = 2`
+        mx, Mx = if xlim == (0, 0)
+            -1.0, 1.0
+        else
+            as_float(xlim)
+        end
+        my, My = if ylim == (0, 0)
+            -1.0, 1.0
+        else
+            as_float(ylim)
+        end
+
+        grid = blend = false
+    else  # 2D
+        mx, Mx = extend_limits(x, xlim, xscale)
+        my, My = extend_limits(y, ylim, yscale)
+    end
+
+    p_width = Mx - mx
+    p_height = My - my
 
     canvas = C(
         width,
         height,
         blend = blend,
         visible = visible,
-        origin_x = min_x,
-        origin_y = min_y,
+        origin_x = mx,
+        origin_y = my,
         width = p_width,
         height = p_height,
         xscale = xscale,
@@ -196,12 +255,13 @@ function Plot(
         colorbar = colorbar,
         colorbar_border = colorbar_border,
         colorbar_lim = colorbar_lim,
+        projection = projection,
     )
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     m_x, M_x, m_y, M_y = map(
         v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
-        (min_x, max_x, min_y, max_y),
+        (mx, Mx, my, My),
     )
     if unicode_exponent
         m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
@@ -214,25 +274,21 @@ function Plot(
     label!(plot, :bl, base_x_str * m_x, color = :light_black)
     label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
-        if min_y < 0 < max_y
-            for i in range(
-                min_x,
-                stop = max_x,
-                length = width * x_pixel_per_char(typeof(canvas)),
-            )
+        if my < 0 < My
+            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(typeof(canvas)))
                 points!(plot, i, 0.0, :normal)
             end
         end
-        if min_x < 0 < max_x
-            for i in range(
-                min_y,
-                stop = max_y,
-                length = height * y_pixel_per_char(typeof(canvas)),
-            )
+        if mx < 0 < Mx
+            for i in
+                range(my, stop = My, length = height * y_pixel_per_char(typeof(canvas)))
                 points!(plot, 0.0, i, :normal)
             end
         end
     end
+
+    (projection !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
+
     plot
 end
 
@@ -487,18 +543,24 @@ function annotate!(
     plot
 end
 
+transform(tr, args...) = args  # catch all
+transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
+transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
+    (tr(vcat(x', y', z'))..., args...)
+
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
-    lines!(plot.graphics, args...; kw...)
+    lines!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 
 function pixel!(plot::Plot{<:Canvas}, args...; kw...)
-    pixel!(plot.graphics, args...; kw...)
+    pixel!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 
 function points!(plot::Plot{<:Canvas}, args...; kw...)
-    points!(plot.graphics, args...; kw...)
+    points!(plot.graphics, transform(plot.projection, args...)...; kw...)
     plot
 end
 

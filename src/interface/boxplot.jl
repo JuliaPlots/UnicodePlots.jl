@@ -82,13 +82,13 @@ function boxplot(
 
     mean_x = (min_x + max_x) / 2
     min_x_str = compact_repr(
-        roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x,
+        roundable(min_x) ? round(Int, float(min_x), RoundNearestTiesUp) : min_x,
     )
     mean_x_str = compact_repr(
-        roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x,
+        roundable(mean_x) ? round(Int, float(mean_x), RoundNearestTiesUp) : mean_x,
     )
     max_x_str = compact_repr(
-        roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x,
+        roundable(max_x) ? round(Int, float(max_x), RoundNearestTiesUp) : max_x,
     )
     label!(plot, :bl, min_x_str, color = :light_black)
     label!(plot, :b, mean_x_str, color = :light_black)
@@ -129,13 +129,13 @@ function boxplot!(
     max_x = plot.graphics.max_x
     mean_x = (min_x + max_x) / 2
     min_x_str = compact_repr(
-        roundable(min_x) ? round(Int, Float64(min_x), RoundNearestTiesUp) : min_x,
+        roundable(min_x) ? round(Int, float(min_x), RoundNearestTiesUp) : min_x,
     )
     mean_x_str = compact_repr(
-        roundable(mean_x) ? round(Int, Float64(mean_x), RoundNearestTiesUp) : mean_x,
+        roundable(mean_x) ? round(Int, float(mean_x), RoundNearestTiesUp) : mean_x,
     )
     max_x_str = compact_repr(
-        roundable(max_x) ? round(Int, Float64(max_x), RoundNearestTiesUp) : max_x,
+        roundable(max_x) ? round(Int, float(max_x), RoundNearestTiesUp) : max_x,
     )
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)

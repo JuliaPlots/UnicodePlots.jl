@@ -2,6 +2,7 @@ using UnicodePlots, ReferenceTests, Test
 using ReferenceTests: BeforeAfterFull
 using Dates: Date, Day
 import Random: seed!
+using LinearAlgebra
 using ColorTypes
 using StableRNGs
 using StatsBase
@@ -68,10 +69,13 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
         "tst_histogram.jl",
         "tst_lineplot.jl",
         "tst_scatterplot.jl",
-        "tst_contourplot.jl",
         "tst_spy.jl",
         "tst_boxplot.jl",
         "tst_heatmap.jl",
+        "tst_contourplot.jl",
+        "tst_volume.jl",
+        "tst_surfaceplot.jl",
+        "tst_isosurface.jl",
         "tst_deprecated_warns.jl",
     )
         @testset "$test" begin

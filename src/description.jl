@@ -21,6 +21,14 @@ const KEYWORDS = (
     colorbar_lim = (0, 1),
     colorbar_border = :solid,
     colormap = :viridis,
+    projection = :orthographic,
+    elevation = round(atand(1 / √2); digits = 6),
+    azimuth = 45.0,
+    axes3d = true,
+    near = 1.0,
+    far = 100.0,
+    zoom = 1.0,
+    up = :z,
     colorbar = false,
     unicode_exponent = true,
     compact = false,
@@ -35,6 +43,7 @@ const DESCRIPTION = (
     # NOTE: this named tuple has to stay ordered
     x = "horizontal position for each point",
     y = "vertical position for each point",
+    z = "depth position for each point",
     symbols = "characters used to render the bars",
     title = "text displayed on top of the plot",
     name = "current drawing annotation displayed on the right",
@@ -61,6 +70,14 @@ const DESCRIPTION = (
     grid = "draws grid-lines at the origin",
     compact = "compact plot labels",
     unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`",
+    projection = "projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix)",
+    axes3d = "draw 3d axes (x -> red, y -> green, z -> blue)",
+    elevation = "elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`)",
+    azimuth = "azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`)",
+    zoom = "zooming factor in 3D",
+    up = "up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards",
+    near = "distance to the near clipping plane (`:perspective` projection only)",
+    far = "distance to the far clipping plane (`:perspective` projection only)",
     blend = "blend colors on the underlying canvas",
     fix_ar = "fix terminal aspect ratio (experimental)",
     visible = "visible canvas",
@@ -68,6 +85,8 @@ const DESCRIPTION = (
 
 const Z_DESCRIPTION =
     (:zlabel, :zlim, :colorbar, :colormap, :colorbar_lim, :colorbar_border)
+
+const PROJ_DESCRIPTION = (:projection, :azimuth, :elevation, :up, :zoom, :axes3d)
 
 const DEFAULT_KW = (
     # does not have to stay ordered
@@ -97,6 +116,7 @@ const DEFAULT_EXCLUDED = (
     :visible,  # internals
     :fix_ar,  # experimental
     Z_DESCRIPTION...,  # by default for 2D data
+    PROJ_DESCRIPTION...,  # 3D plots
 )
 
 base_type(x) = replace(string(typeof(x).name.name), "64" => "")
@@ -129,7 +149,7 @@ function keywords(
     remove::Tuple = (),
 )
     all_kw = (; KEYWORDS..., extra...)
-    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, DEFAULT_KW)
+    candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra goes first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
     join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")

@@ -13,7 +13,7 @@ $(arguments(
     (
         A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
         levels = "the number of contour levels",
-    ); add = (Z_DESCRIPTION..., :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
 # Author(s)
@@ -44,6 +44,9 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
       ⠀-1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀1⠀  ⠀⠀⠀⠀  
 ```
 
+# See also
+
+[`Plot`](@ref), [`scatterplot`](@ref)
 """
 function contourplot(
     x::AbstractVector,
@@ -53,27 +56,24 @@ function contourplot(
     name::AbstractString = KEYWORDS.name,
     levels::Integer = 3,
     colormap = KEYWORDS.colormap,
-    blend = false,
-    grid = false,
-    colorbar = true,
+    colorbar::Bool = true,
+    blend::Bool = false,
+    grid::Bool = false,
     kw...,
 )
     callback = colormap_callback(colormap)
     plot = Plot(
         extrema(x) |> collect,
         extrema(y) |> collect,
+        nothing,
         canvas;
         blend = blend,
         grid = grid,
-        colorbar = colorbar,
         colormap = callback,
+        colorbar = colorbar,
         kw...,
     )
-    if A isa Function
-        X = repeat(x', length(y), 1)
-        Y = repeat(y, 1, length(x))
-        A = map(A, X, Y) |> Matrix
-    end
+    A isa Function && (A = A.(x', y))
     contourplot!(plot, x, y, A; name = name, levels = levels, colormap = callback)
 end
 
@@ -84,12 +84,12 @@ function contourplot!(
     A::AbstractMatrix;
     name::AbstractString = "",
     levels::Integer = 3,
-    colormap = :viridis,
+    colormap = KEYWORDS.colormap,
 )
     name == "" || label!(plot, :r, string(name))
 
     plot.colormap = callback = colormap_callback(colormap)
-    mA, MA = extrema(A)
+    mA, MA = NaNMath.extrema(as_float(A))
 
     for cl in Contour.levels(Contour.contours(y, x, A, levels))
         color = callback(Contour.level(cl), mA, MA)
@@ -103,6 +103,8 @@ end
 
 """
     contourplot(A; kw...)
+
+# Usage
 
 Draws a contour plot of matrix `A` along axis `x` and `y` on a new canvas.
 
