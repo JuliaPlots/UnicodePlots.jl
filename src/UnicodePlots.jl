@@ -53,6 +53,7 @@ export GraphicsArea,
     stairs,
     stairs!,
     histogram,
+    verticalhistogram,
     densityplot,
     densityplot!,
     heatmap,
@@ -82,6 +83,7 @@ include("plot.jl")
 include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
+include("interface/verticalhistogram.jl")
 include("interface/scatterplot.jl")
 include("interface/contourplot.jl")
 include("interface/lineplot.jl")
