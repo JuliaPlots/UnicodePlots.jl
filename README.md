@@ -206,23 +206,33 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 
 #### Surface Plot
 
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
+
 ```julia
 sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
+surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
 ```
-![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot.png)
+![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot1.png)
 
-Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions. Use `lines=true` to draw using `lineplot` instead of `scatterplot`.
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`). To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
+
+```julia
+surfaceplot(
+  -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+  zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+)
+```
+![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot2.png)
 
 #### Isosurface Plot
 
+Uses the `Marching Cubes` algorithm to extract an isosurface, where `isovalue` controls the surface isovalue. Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). Back face culling (hide not visible facets) can be activated using `cull=true`. One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
+
 ```julia
-torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.5, .5), elevation = 50, border=:dotted)
+torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50, border=:dotted)
 ```
 ![Isosurface](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/isosurface.png)
-
-Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue. `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). One can use the legacy 'Marching Cubes' algorithm using `legacy=true`. Back face culling (hide not visible facets) can be activated using `cull=true`.
 
 ### Options
 
@@ -289,6 +299,14 @@ All plots support the set (or a subset) of the following named parameters:
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
+  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
+  - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
+  - `elevation::Float = 35.26439`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
+  - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
+  - `zoom::Float = 1.0`: zooming factor in 3D.
+  - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
+  - `near::Float = 1.0`: distance to the near clipping plane (`:perspective` projection only).
+  - `far::Float = 100.0`: distance to the far clipping plane (`:perspective` projection only).
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.
@@ -297,7 +315,7 @@ All plots support the set (or a subset) of the following named parameters:
 
 ### 3D plots
 
-3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to render 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the X-, Y-, and Z- axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
+3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
 
 ### Methods
 

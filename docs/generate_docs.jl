@@ -55,13 +55,19 @@ function main()
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
     heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
-    surfaceplot = ("Surfaceplot", """
+    surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-      surfaceplot(-8:.5:8, -8:.5:8, sombrero, border=:dotted)
+      surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
+      """),
+    surfaceplot2 = ("Surfaceplot", """
+      surfaceplot(
+        -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+        zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+      )
       """),
     isosurface = ("Isosurface", """
-      torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus; xlim = (-.5, .5), ylim = (-.5, .5), elevation = 50, border=:dotted)
+      torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
+      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50, border=:dotted)
       """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
@@ -270,15 +276,23 @@ $(examples.heatmap2)
 
 #### Surface Plot
 
-$(examples.surfaceplot)
+Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
 
-Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions. Use `lines=true` to draw using `lineplot` instead of `scatterplot`.
+$(examples.surfaceplot1)
+
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`).
+To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
+
+$(examples.surfaceplot2)
 
 #### Isosurface Plot
 
-$(examples.isosurface)
+Uses the `Marching Cubes` algorithm to extract an isosurface, where `isovalue` controls the surface isovalue.
+Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+Back face culling (hide not visible facets) can be activated using `cull=true`.
+One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
-Uses the `Marching Cubes` algorithm to extract an isosurface. `isovalue` controls the surface isovalue. `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). One can use the legacy 'Marching Cubes' algorithm using `legacy=true`. Back face culling (hide not visible facets) can be activated using `cull=true`.
+$(examples.isosurface)
 
 ### Options
 
@@ -290,7 +304,11 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 
 ### 3D plots
 
-3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to render 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the X-, Y-, and Z- axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size.
+3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
+Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
+The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`.
+Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword.
+For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
 
 ### Methods
 

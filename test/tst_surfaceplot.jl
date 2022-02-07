@@ -33,12 +33,14 @@ end
         data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2
     end
 
-    h = data[:, :, zc]
-    kw = (; zscale = h -> zc, colormap = :jet)
+    # NOTE: projection precision issues, force azimuth and elevation
+    kw = (; zscale = z -> zc, colormap = :jet, azimuth = -90, elevation = 90)
 
-    p = surfaceplot(x, y, h; kw...)
+    z = data[:, :, zc]
+
+    p = surfaceplot(x, y, z; kw...)
     test_ref("references/surfaceplot/slice_scatter.txt", @show_col(p))
 
-    p = surfaceplot(x, y, h; kw..., lines = true)
+    p = surfaceplot(x, y, z; kw..., lines = true)
     test_ref("references/surfaceplot/slice_lines.txt", @show_col(p))
 end

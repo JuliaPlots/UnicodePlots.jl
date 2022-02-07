@@ -2,7 +2,7 @@
     surfaceplot(x, y, A; kw...)
 
 Draws a 3D surface plot on a new canvas (masking values using `NaN`s is supported).
-For plotting a slice one can pass an anonymous function which maps to a constant height: `zscale = x -> some_constant_height`.
+To plot a slice one can pass an anonymous function which maps to a constant height: `zscale = z -> a_constant`.
 
 # Usage
 
@@ -134,21 +134,21 @@ function surfaceplot!(
     end
 
     if lines
-        nx, ny = size(X)
+        m, n = size(X)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             c = cmapped ? color[i, j] : color
             scatter = false
-            if i < nx
+            if i < m
                 lines!(plot, X[i:(i + 1), j], Y[i:(i + 1), j], Z[i:(i + 1), j], c)
             else
                 scatter = true
             end
-            if j < ny
+            if j < n
                 lines!(plot, X[i, j:(j + 1)], Y[i, j:(j + 1)], Z[i, j:(j + 1)], c)
             else
                 scatter = true
             end
-            if i < nx && j < ny
+            if i < m && j < n
                 lines!(
                     plot,
                     [X[i, j], X[i + 1, j + 1]],
