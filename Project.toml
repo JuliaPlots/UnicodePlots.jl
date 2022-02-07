@@ -2,7 +2,7 @@ name = "UnicodePlots"
 uuid = "b8865327-cd53-5732-bb35-84acbb429228"
 license = "MIT"
 desc = "Unicode-based scientific plotting for working in the terminal"
-authors = ["Christof Stocker <stocker.christof@gmail.com>"]
+authors = ["Christof Stocker <stocker.christof@gmail.com>", "T Bltg <tf.bltg@gmail.com>"]
 version = "2.8.0"
 
 [deps]
