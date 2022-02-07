@@ -59,21 +59,21 @@ end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     for test in (
-        # "tst_issues.jl",
-        # "tst_common.jl",
-        # "tst_graphics.jl",
-        # "tst_canvas.jl",
-        # "tst_plot.jl",
+        "tst_issues.jl",
+        "tst_common.jl",
+        "tst_graphics.jl",
+        "tst_canvas.jl",
+        "tst_plot.jl",
         "tst_barplot.jl",
         "tst_histogram.jl",
         "tst_verticalhistogram.jl",
-        # "tst_lineplot.jl",
-        # "tst_scatterplot.jl",
-        # "tst_contourplot.jl",
-        # "tst_spy.jl",
-        # "tst_boxplot.jl",
-        # "tst_heatmap.jl",
-        # "tst_deprecated_warns.jl",
+        "tst_lineplot.jl",
+        "tst_scatterplot.jl",
+        "tst_contourplot.jl",
+        "tst_spy.jl",
+        "tst_boxplot.jl",
+        "tst_heatmap.jl",
+        "tst_deprecated_warns.jl",
     )
         @testset "$test" begin
             include(test)
