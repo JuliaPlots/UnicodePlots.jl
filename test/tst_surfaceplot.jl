@@ -28,8 +28,8 @@ end
     x, y, z = (axes(data, d) for d in 1:ndims(data))
     xc, yc, zc = 30, 8, 8  # centers
     xr, yr, zr = 10, 6, 3  # radii
-    for k in z, j in y, i in x
-        data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2  # ellipsoid
+    for k in z, j in y, i in x  # ellipsoid
+        data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2
     end
     p = surfaceplot(x, y, data[:, :, zc], hscale = x -> zc, colormap = :jet)
     test_ref("references/surfaceplot/slice.txt", @show_col(p))
