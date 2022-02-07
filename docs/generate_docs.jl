@@ -40,6 +40,9 @@ function main()
       """),
     histogram1 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:left)"),
     histogram2 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
+    verticalhistogram1 = ("Verticalhistogram", """
+      verticalhistogram(randn(1000) .+ 2, width = 100, height = 5, title = "Random num generation histrogram")
+    """),
     boxplot1 = ("Boxplot", "boxplot([1, 3, 3, 4, 6, 10])"),
     boxplot2 = ("Boxplot", """
       boxplot(["one", "two"],
@@ -153,6 +156,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
   - [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
   - [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal)
+  - [`verticalhistogram`](https://github.com/JuliaPlots/UnicodePlots.jl#vertical-histogram) (Histogram - vertical)
   - [`boxplot`](https://github.com/JuliaPlots/UnicodePlots.jl#boxplot) (Box Plot - horizontal)
   - [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
   - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
@@ -219,6 +223,12 @@ $(examples.histogram1)
 The `histogram` function also supports axis scaling using the parameter `xscale`:
 
 $(examples.histogram2)
+
+#### Vertical histogram
+
+$(examples.verticalhistogram1)
+
+The `verticalhistogram` function also supports raw chart prints using `printstat = false`.
 
 #### Boxplot
 

@@ -1,10 +1,10 @@
 """
-    histogram(data; kw...)
+    histogram(x; kw...)
 
 # Description
 
-Draws a horizontal histogram of the given `data`.
-The positional parameter `data` can either be a `StatsBase.Histogram`, or some `AbstractArray`.
+Draws a horizontal histogram of the given `x`.
+The positional parameter `x` can either be a `StatsBase.Histogram`, or some `AbstractArray`.
 In the later case the `Histogram` will be fitted automatically.
 
 Note internally that `histogram` is a simply wrapper for
@@ -67,7 +67,7 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 function histogram(
     hist::Histogram;
     symb = nothing,  # deprecated
-    symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
+    symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale, "Frequency"),
     kw...,

@@ -1,25 +1,19 @@
 """
-    verticalhistogram(data; width=64, height=3, title="", printstat=true)
+    verticalhistogram(x; kw...)
 
 # Description
 
-Draws a verticalhorizontal histogram of the given `data`.
-The positional parameter `data` can either be `AbstractVector`.
+Draws a verticalhorizontal histogram of the given data.
 
 # Usage
-
-		verticalhistogram(randn(10000).+2, width=100, height=5, title="Random num generation histrogram", printstat=true)
-    histogram(hist; $(keywords((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
+    verticalhistogram(x; $(keywords((printstat = true,); remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
 
 # Arguments
 
 $(arguments(
     (
         x = "array of numbers for which the histogram should be computed",
-        nbins = "approximate number of bins that should be used",
-        closed = "if `:left` (default), the bin intervals are left-closed ``[a, b)``; if `:right`, intervals are right-closed ``(a, b]``",
-        xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
-        hist = "a fitted `StatsBase.Histogram` that should be plotted",
+        printstat = "print histogram statistics",
     ); add = (:symbols,)
 ))
 
@@ -44,27 +38,24 @@ julia> histogram(randn(1000).+2, width=100, height=5, title="Random num generati
 -1.187264                                                                                   5.468818
 Values (mean ± σ): 2.022943 ± 0.97807
 ```
-
-# See also
-
-[`histogram`](@ref)
 """
 function verticalhistogram(
-    data::AbstractVector;
+    x::AbstractVector;
     width = 64,
     height = 3,
+    symbols = (' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
     title = "",
     printstat = true,
+    kw...,
 )
     ϵ = 1e-11
-    histbars_blocks = [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█']
-    blocknum = length(histbars_blocks)
-    histbin_codes = fill('█', (blocknum - 1) * height, height)
+    blocknum = length(symbols)
+    histbin_codes = fill(symbols[end], (blocknum - 1) * height, height)
     for h in 1:height
         histbin_codes[
             ((h - 1) * (blocknum - 1) + 1):(h * (blocknum - 1)),
             height - h + 1,
-        ] .= histbars_blocks[2:end]
+        ] .= symbols[2:end]
     end
     histbin_codes[map(
         ci -> cld(ci[1], blocknum - 1) + ci[2] <= height,
@@ -86,6 +77,11 @@ function verticalhistogram(
         strength = bin / (maxbin + ϵ) * size(histbin_codes, 1)
         unicode_matrix[i, :] .= histbin_codes[floor(Int, strength) + 1, :]
     end
+
+    # FIXME: don't use print or printstyled, reuse e.g. `barplot` or if you cannot use:
+    # canvas = BarplotGraphics(...)  # if this is suited to your problem
+    # plot = Plot(canvas; kw...)
+    plot = nothing
 
     title !== "" &&
         printstyled(" "^max(0, cld((width - length(title)), 2)), title, "\n"; bold = true)
@@ -116,5 +112,6 @@ function verticalhistogram(
         # printstyled(lpad(round(endbin; digits=6), 6); color=:green, bold=true)
         println()
     end
-    v_mean, v_σ, firstbin, endbin
+
+    plot
 end
