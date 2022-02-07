@@ -12,7 +12,6 @@ This means that the two vectors must be of the same length and ordering.
 # Usage
 
     lineplot([x], y; $(keywords(; add = (:canvas,)))
-
     lineplot(fun, [start], [stop]; kw...)
 
 # Arguments
@@ -94,6 +93,8 @@ function lineplot!(
     col_vec = color isa AbstractVector
     name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if col_vec
+        length(x) == length(y) == length(color) ||
+            throw(ArgumentError("Invalid color vector"))
         for i in eachindex(color)
             lines!(plot, x[i], y[i], z === nothing ? z : z[i], color[i])
         end

@@ -5,7 +5,7 @@ Extract and plot isosurface from volumetric data, or implicit function.
 
 # Usage
 
-    isosurface(x, y, z, V; $(keywords((isovalue = 0, centroid = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    isosurface(x, y, z, V; $(keywords((isovalue = 0, centroid = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid, :name))))
 
 # Arguments
 
@@ -59,7 +59,6 @@ function isosurface(
     V::Union{Function,AbstractArray};
     canvas::Type = BrailleCanvas,
     color::UserColorType = KEYWORDS.color,
-    name::AbstractString = KEYWORDS.name,
     projection::Union{MVP,Symbol} = KEYWORDS.projection,
     isovalue::Number = 0,
     centroid::Bool = true,
@@ -98,7 +97,6 @@ function isosurface!(
     z::AbstractVector,
     V::AbstractArray;
     color::UserColorType = KEYWORDS.color,
-    name::AbstractString = KEYWORDS.name,
     isovalue::Number = 0,
     centroid::Bool = true,
     legacy::Bool = false,
@@ -140,5 +138,5 @@ function isosurface!(
         end
     end
     # triangles vertices or centroid
-    scatterplot!(plot, xs, ys, zs; color = cs, name = name)
+    scatterplot!(plot, xs, ys, zs; color = cs)
 end
