@@ -279,8 +279,8 @@ is_ortho(t::MVP, n::Symbol) = (user = t.ortho, orthographic = true, perspective 
 function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
     dat = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
-    xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
-    @inbounds for (i, w) in enumerate(ws)
+    xs, ys, zs = dat[1, :], dat[2, :], dat[3, :]
+    @inbounds for (i, w) in enumerate(@view(dat[4, :]))
         if abs(w) > eps(T)
             xs[i] /= w
             ys[i] /= w
