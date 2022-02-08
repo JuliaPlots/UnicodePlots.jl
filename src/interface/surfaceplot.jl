@@ -112,10 +112,10 @@ end
 
 function surfaceplot!(
     plot::Plot{<:Canvas},
-    X::AbstractMatrix,
-    Y::AbstractMatrix,
-    Z::AbstractMatrix,
-    H::AbstractMatrix;
+    X::AbstractVecOrMat,  # support AbstractVector for `Plots.jl`
+    Y::AbstractVecOrMat,
+    Z::AbstractVecOrMat,
+    H::AbstractVecOrMat;
     color::UserColorType = nothing,
     colormap = KEYWORDS.colormap,
     colorbar::Bool = true,
@@ -135,7 +135,7 @@ function surfaceplot!(
         (color == :auto) ? next_color!(plot) : color
     end
 
-    if lines
+    if lines && X isa AbstractMatrix && Y isa AbstractMatrix && Z isa AbstractMatrix
         m, n = size(X)
         lx, ly, lz = zeros(eltype(X), 2), zeros(eltype(Y), 2), zeros(eltype(Z), 2)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
