@@ -1,5 +1,6 @@
 *.jl.cov
 *.jl.mem
+*.mem
 *.cov
 *.swp
 
