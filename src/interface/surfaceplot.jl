@@ -129,50 +129,59 @@ function surfaceplot!(
     plot.colormap = callback = colormap_callback(colormap)
     plot.colorbar = colorbar && color === nothing
 
-    if (cmapped = color === nothing)
-        color = map(h -> isfinite(h) ? callback(h, mh, Mh) : nothing, H)
+    color = if (cmapped = color === nothing)
+        map(h -> isfinite(h) ? callback(h, mh, Mh) : nothing, H)
+    else
+        (color == :auto) ? next_color!(plot) : color
     end
 
     if lines
         m, n = size(X)
+        lx, ly, lz = zeros(eltype(X), 2), zeros(eltype(Y), 2), zeros(eltype(Z), 2)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             c = cmapped ? color[i, j] : color
             scatter = false
             if i < m
-                lines!(plot, X[i:(i + 1), j], Y[i:(i + 1), j], Z[i:(i + 1), j], c)
+                @views lx .= X[i:(i + 1), j]
+                @views ly .= Y[i:(i + 1), j]
+                @views lz .= Z[i:(i + 1), j]
+                lines!(plot, lx, ly, lz, c)
             else
                 scatter = true
             end
             if j < n
-                lines!(plot, X[i, j:(j + 1)], Y[i, j:(j + 1)], Z[i, j:(j + 1)], c)
+                @views lx .= X[i, j:(j + 1)]
+                @views ly .= Y[i, j:(j + 1)]
+                @views lz .= Z[i, j:(j + 1)]
+                lines!(plot, lx, ly, lz, c)
             else
                 scatter = true
             end
             if i < m && j < n
-                lines!(
-                    plot,
-                    [X[i, j], X[i + 1, j + 1]],
-                    [Y[i, j], Y[i + 1, j + 1]],
-                    [Z[i, j], Z[i + 1, j + 1]],
-                    c,
-                )
-                lines!(
-                    plot,
-                    [X[i + 1, j], X[i, j + 1]],
-                    [Y[i + 1, j], Y[i, j + 1]],
-                    [Z[i + 1, j], Z[i, j + 1]],
-                    c,
-                )
+                lx[1] = X[i, j]
+                lx[2] = X[i + 1, j + 1]
+                ly[1] = Y[i, j]
+                ly[2] = Y[i + 1, j + 1]
+                lz[1] = Z[i, j]
+                lz[2] = Z[i + 1, j + 1]
+                lines!(plot, lx, ly, lz, c)
+                lx[1] = X[i + 1, j]
+                lx[2] = X[i, j + 1]
+                ly[1] = Y[i + 1, j]
+                ly[2] = Y[i, j + 1]
+                lz[1] = Z[i + 1, j]
+                lz[2] = Z[i, j + 1]
+                lines!(plot, lx, ly, lz, c)
             end
             scatter && points!(plot, X[i, j], Y[i, j], Z[i, j], c)
         end
     else
-        scatterplot!(
+        points!(
             plot,
             @view(X[:]),
             @view(Y[:]),
-            @view(Z[:]);
-            color = cmapped ? @view(color[:]) : color,
+            @view(Z[:]),
+            cmapped ? @view(color[:]) : color,
         )
     end
     plot

@@ -271,23 +271,47 @@ struct MVP{T}
     end
 end
 
-transform_matrix(t::MVP, n::Symbol) =
-    (user = t.mvp_mat, orthographic = t.mvp_ortho_mat, perspective = t.mvp_persp_mat)[n]
+function transform_matrix(t::MVP, n::Symbol)
+    if n === :user
+        t.mvp_mat
+    elseif n === :orthographic
+        t.mvp_ortho_mat
+    elseif n === :perspective
+        t.mvp_persp_mat
+    else
+        throw(ArgumentError("invalid n=$n"))
+    end
+end
 
-is_ortho(t::MVP, n::Symbol) = (user = t.ortho, orthographic = true, perspective = false)[n]
+function is_ortho(t::MVP, n::Symbol)
+    if n === :user
+        t.ortho
+    elseif n === :orthographic
+        true
+    elseif n === :perspective
+        false
+    else
+        throw(ArgumentError("invalid n=$n"))
+    end
+end
 
 function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
     dat = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
-    xs, ys, zs, ws = dat[1, :], dat[2, :], dat[3, :], dat[4, :]
-    @inbounds for (i, w) in enumerate(ws)
+    xs, ys, zs = dat[1, :], dat[2, :], dat[3, :]
+    persp = !is_ortho(t, n)
+    @inbounds for (i, w) in enumerate(@view(dat[4, :]))
         if abs(w) > eps(T)
             xs[i] /= w
             ys[i] /= w
             zs[i] /= w
         end
+        if persp
+            xs[i] /= zs[i]
+            ys[i] /= zs[i]
+        end
     end
-    is_ortho(t, n) ? (xs, ys) : (xs ./ zs, ys ./ zs)
+    xs, ys
 end
 
 function (t::MVP{T})(v::Union{AbstractVector,NTuple{3}}, n::Symbol = :user) where {T}

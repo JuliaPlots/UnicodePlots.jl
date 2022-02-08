@@ -138,5 +138,5 @@ function isosurface!(
         end
     end
     # triangles vertices or centroid
-    scatterplot!(plot, xs, ys, zs; color = cs)
+    points!(plot, xs, ys, zs, cs)
 end
