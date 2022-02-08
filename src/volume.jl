@@ -271,7 +271,7 @@ struct MVP{T}
     end
 end
 
-transform_matrix(t::MVP, n::Symbol) = (
+function transform_matrix(t::MVP, n::Symbol)
     if n === :user
         t.mvp_mat
     elseif n === :orthographic
@@ -281,7 +281,7 @@ transform_matrix(t::MVP, n::Symbol) = (
     else
         throw(ArgumentError("invalid n=$n"))
     end
-)
+end
 
 is_ortho(t::MVP, n::Symbol) = (
     if n === :user
