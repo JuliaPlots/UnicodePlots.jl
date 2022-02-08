@@ -283,7 +283,7 @@ function transform_matrix(t::MVP, n::Symbol)
     end
 end
 
-is_ortho(t::MVP, n::Symbol) = (
+function is_ortho(t::MVP, n::Symbol)
     if n === :user
         t.ortho
     elseif n === :orthographic
@@ -293,7 +293,7 @@ is_ortho(t::MVP, n::Symbol) = (
     else
         throw(ArgumentError("invalid n=$n"))
     end
-)
+end
 
 function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
