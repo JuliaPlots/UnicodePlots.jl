@@ -1420,6 +1420,7 @@ function rgb2ansi(rgb)
 end
 
 function cmapcolor(z, minz, maxz, cmap)
+    isfinite(z) || return nothing
     i = if minz == maxz || z < minz
         1
     elseif z > maxz

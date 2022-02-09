@@ -125,26 +125,29 @@ function surfaceplot!(
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
+    cmapped = color === nothing
+    color = (color == :auto) ? next_color!(plot) : color
+
     plot.colorbar_lim = mh, Mh = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
     plot.colormap = callback = colormap_callback(colormap)
-    plot.colorbar = colorbar && color === nothing
+    plot.colorbar = colorbar && cmapped
 
-    color = if (cmapped = color === nothing)
-        map(h -> isfinite(h) ? callback(h, mh, Mh) : nothing, H)
-    else
-        (color == :auto) ? next_color!(plot) : color
-    end
-
-    if lines && X isa AbstractMatrix && Y isa AbstractMatrix && Z isa AbstractMatrix
+    if (
+        lines &&
+        X isa AbstractMatrix &&
+        Y isa AbstractMatrix &&
+        Z isa AbstractMatrix &&
+        H isa AbstractMatrix
+    )
         m, n = size(X)
         lx, ly, lz = zeros(eltype(X), 2), zeros(eltype(Y), 2), zeros(eltype(Z), 2)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
-            c = cmapped ? color[i, j] : color
             scatter = false
             if i < m
                 @views lx .= X[i:(i + 1), j]
                 @views ly .= Y[i:(i + 1), j]
                 @views lz .= Z[i:(i + 1), j]
+                c = cmapped ? callback((H[i, j] + H[i + 1, j]) / 2, mh, Mh) : color
                 lines!(plot, lx, ly, lz, c)
             else
                 scatter = true
@@ -153,6 +156,7 @@ function surfaceplot!(
                 @views lx .= X[i, j:(j + 1)]
                 @views ly .= Y[i, j:(j + 1)]
                 @views lz .= Z[i, j:(j + 1)]
+                c = cmapped ? callback((H[i, j] + H[i, j + 1]) / 2, mh, Mh) : color
                 lines!(plot, lx, ly, lz, c)
             else
                 scatter = true
@@ -164,6 +168,7 @@ function surfaceplot!(
                 ly[2] = Y[i + 1, j + 1]
                 lz[1] = Z[i, j]
                 lz[2] = Z[i + 1, j + 1]
+                c = cmapped ? callback((H[i, j] + H[i + 1, j + 1]) / 2, mh, Mh) : color
                 lines!(plot, lx, ly, lz, c)
                 lx[1] = X[i + 1, j]
                 lx[2] = X[i, j + 1]
@@ -171,11 +176,19 @@ function surfaceplot!(
                 ly[2] = Y[i, j + 1]
                 lz[1] = Z[i + 1, j]
                 lz[2] = Z[i, j + 1]
+                c = cmapped ? callback((H[i + 1, j] + H[i, j + 1]) / 2, mh, Mh) : color
                 lines!(plot, lx, ly, lz, c)
             end
-            scatter && points!(plot, X[i, j], Y[i, j], Z[i, j], c)
+            scatter && points!(
+                plot,
+                X[i, j],
+                Y[i, j],
+                Z[i, j],
+                cmapped ? callback(H[i, j], mh, Mh) : color,
+            )
         end
     else
+        cmapped && (color = map(h -> callback(h, mh, Mh), H))
         points!(
             plot,
             @view(X[:]),
