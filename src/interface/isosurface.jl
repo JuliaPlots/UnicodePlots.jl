@@ -5,7 +5,7 @@ Extract and plot isosurface from volumetric data, or implicit function.
 
 # Usage
 
-    isosurface(x, y, z, V; $(keywords((isovalue = 0, centroid = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid, :name))))
+    isosurface(x, y, z, V; $(keywords((isovalue = 0, centroid = true); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid, :name, :xscale, :yscale))))
 
 # Arguments
 
@@ -16,7 +16,7 @@ $(arguments(
         cull = "cull (hide) back faces",
         legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
         centroid = "display triangulation centroid instead of triangle vertices",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid)
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid, :xscale, :yscale)
 ))
 
 # Author(s)

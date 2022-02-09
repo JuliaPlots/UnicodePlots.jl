@@ -6,7 +6,7 @@ To plot a slice one can pass an anonymous function which maps to a constant heig
 
 # Usage
 
-    surfaceplot(x, y, A; $(keywords((; lines = false); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords((; lines = false); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid, :xscale, :yscale))))
 
 # Arguments
 
@@ -15,7 +15,7 @@ $(arguments(
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
         lines = "use `lineplot` instead of `scatterplot` (for regular increasing data)",
         zscale = "scale heights (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name)
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name, :xscale, :yscale)
 ))
 
 # Author(s)
@@ -140,44 +140,66 @@ function surfaceplot!(
         H isa AbstractMatrix
     )
         m, n = size(X)
-        lx, ly, lz = zeros(eltype(X), 2), zeros(eltype(Y), 2), zeros(eltype(Z), 2)
+        col_cb = h -> callback(h, mh, Mh)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             scatter = false
             if i < m
-                @views lx .= X[i:(i + 1), j]
-                @views ly .= Y[i:(i + 1), j]
-                @views lz .= Z[i:(i + 1), j]
-                c = cmapped ? callback((H[i, j] + H[i + 1, j]) / 2, mh, Mh) : color
-                lines!(plot, lx, ly, lz, c)
+                lines!(
+                    plot,
+                    X[i, j],
+                    X[i + 1, j],
+                    Y[i, j],
+                    Y[i + 1, j],
+                    Z[i, j],
+                    Z[i + 1, j],
+                    H[i, j],
+                    H[i + 1, j],
+                    col_cb,
+                )
             else
                 scatter = true
             end
             if j < n
-                @views lx .= X[i, j:(j + 1)]
-                @views ly .= Y[i, j:(j + 1)]
-                @views lz .= Z[i, j:(j + 1)]
-                c = cmapped ? callback((H[i, j] + H[i, j + 1]) / 2, mh, Mh) : color
-                lines!(plot, lx, ly, lz, c)
+                lines!(
+                    plot,
+                    X[i, j],
+                    X[i, j + 1],
+                    Y[i, j],
+                    Y[i, j + 1],
+                    Z[i, j],
+                    Z[i, j + 1],
+                    H[i, j],
+                    H[i, j + 1],
+                    col_cb,
+                )
             else
                 scatter = true
             end
             if i < m && j < n
-                lx[1] = X[i, j]
-                lx[2] = X[i + 1, j + 1]
-                ly[1] = Y[i, j]
-                ly[2] = Y[i + 1, j + 1]
-                lz[1] = Z[i, j]
-                lz[2] = Z[i + 1, j + 1]
-                c = cmapped ? callback((H[i, j] + H[i + 1, j + 1]) / 2, mh, Mh) : color
-                lines!(plot, lx, ly, lz, c)
-                lx[1] = X[i + 1, j]
-                lx[2] = X[i, j + 1]
-                ly[1] = Y[i + 1, j]
-                ly[2] = Y[i, j + 1]
-                lz[1] = Z[i + 1, j]
-                lz[2] = Z[i, j + 1]
-                c = cmapped ? callback((H[i + 1, j] + H[i, j + 1]) / 2, mh, Mh) : color
-                lines!(plot, lx, ly, lz, c)
+                lines!(
+                    plot,
+                    X[i, j],
+                    X[i + 1, j + 1],
+                    Y[i, j],
+                    Y[i + 1, j + 1],
+                    Z[i, j],
+                    Z[i + 1, j + 1],
+                    H[i, j],
+                    H[i + 1, j + 1],
+                    col_cb,
+                )
+                lines!(
+                    plot,
+                    X[i + 1, j],
+                    X[i, j + 1],
+                    Y[i + 1, j],
+                    Y[i, j + 1],
+                    Z[i + 1, j],
+                    Z[i, j + 1],
+                    H[i + 1, j],
+                    H[i, j + 1],
+                    col_cb,
+                )
             end
             scatter && points!(
                 plot,

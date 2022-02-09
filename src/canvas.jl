@@ -50,7 +50,9 @@ function lines!(
     y1::Number,
     x2::Number,
     y2::Number,
-    color::UserColorType,
+    c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
+    c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
+    col_cb = nothing,  # callback (map values to colors)
 )
     x1 = fscale(x1, c.xscale)
     x2 = fscale(x2, c.xscale)
@@ -77,21 +79,43 @@ function lines!(
     δx = Δx / nsteps
     δy = Δy / nsteps
 
-    px, Px = extrema([x2p(mx), x2p(Mx)])
-    py, Py = extrema([y2p(my), y2p(My)])
+    px, Px = extrema(@SVector([x2p(mx), x2p(Mx)]))
+    py, Py = extrema(@SVector([y2p(my), y2p(My)]))
 
-    pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
     max_num_iter = typemax(Int16)  # performance limit
-    for _ in if nsteps > max_num_iter
+    limited_range = if nsteps > max_num_iter
         range(1, stop = nsteps, length = max_num_iter)
     else
         range(1, stop = nsteps, step = 1)
     end
-        cur_x += δx
-        cur_y += δy
-        (cur_y < py || cur_y > Py) && continue
-        (cur_x < px || cur_x > Px) && continue
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
+
+    if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb !== nothing
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
+        iΔ = 1 / √(Δx^2 + Δy^2)
+        start_x = cur_x
+        start_y = cur_y
+        for i in limited_range
+            cur_x += δx
+            cur_y += δy
+            (cur_y < py || cur_y > Py) && continue
+            (cur_x < px || cur_x > Px) && continue
+            weight = √((cur_x - start_x)^2 + (cur_y - start_y)^2) * iΔ  # linear interpolation
+            pixel!(
+                c,
+                floor(Int, cur_x),
+                floor(Int, cur_y),
+                col_cb((1 - weight) * c_or_v1 + weight * c_or_v2),
+            )
+        end
+    else
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+        for _ in limited_range
+            cur_x += δx
+            cur_y += δy
+            (cur_y < py || cur_y > Py) && continue
+            (cur_x < px || cur_x > Px) && continue
+            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+        end
     end
     c
 end
@@ -107,11 +131,25 @@ lines!(
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    for i in 1:(length(X) - 1)
-        if !(isfinite(X[i]) && isfinite(X[i + 1]) && isfinite(Y[i]) && isfinite(Y[i + 1]))
+    for i in 2:length(X)
+        if !(isfinite(X[i - 1]) && isfinite(X[i]) && isfinite(Y[i - 1]) && isfinite(Y[i]))
             continue
         end
-        lines!(c, X[i], Y[i], X[i + 1], Y[i + 1], color)
+        lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], color)
+    end
+    c
+end
+
+function lines!(
+    c::Canvas,
+    X::AbstractVector,
+    Y::AbstractVector,
+    v1::AbstractFloat,
+    v2::AbstractFloat,
+    col_cb,
+)
+    for i in 2:length(X)  # fast path for 3D, without runtime checks !
+        lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], v1, v2, col_cb)
     end
     c
 end
