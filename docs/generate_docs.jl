@@ -61,8 +61,8 @@ function main()
       """),
     surfaceplot2 = ("Surfaceplot", """
       surfaceplot(
-        -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
-        zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+        -2:2, -2:2, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+        zscale=z -> 0, lines=true, colormap=:jet, border=:dotted
       )
       """),
     isosurface = ("Isosurface", """
@@ -287,7 +287,7 @@ $(examples.surfaceplot2)
 
 #### Isosurface Plot
 
-Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
+Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
 Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
 Back face culling (hide not visible facets) can be activated using `cull=true`.
 One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
@@ -439,14 +439,22 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     write(io, """
       #!/usr/bin/env bash
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
+
+      echo '== julia =='
       \${JULIA-julia} gen_imgs.jl
 
-      for f in $ver/*.txt; do
-        html=\${f%.txt}.html
-        cat \$f | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
+      txt2png() {
+        html=\${1%.txt}.html
+        cat \$1 | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
         sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
         \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
+      }
+
+      echo '== txt2png =='
+      for f in $ver/*.txt; do
+        txt2png \$f & pids+=(\$!)
       done
+      wait \${pids[@]}
 
       rm $ver/*.txt
       rm $ver/*.html

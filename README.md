@@ -218,15 +218,15 @@ Use `lines=true` to increase the density (underlying call to `lineplot` instead 
 
 ```julia
 surfaceplot(
-  -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
-  zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+  -2:2, -2:2, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+  zscale=z -> 0, lines=true, colormap=:jet, border=:dotted
 )
 ```
 ![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot2.png)
 
 #### Isosurface Plot
 
-Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue. Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). Back face culling (hide not visible facets) can be activated using `cull=true`. One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
+Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue. Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots). Back face culling (hide not visible facets) can be activated using `cull=true`. One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
 ```julia
 torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
@@ -300,7 +300,7 @@ All plots support the set (or a subset) of the following named parameters:
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
-  - `axes3d::Bool = true`: draw 3d axes (x -> red, y -> green, z -> blue).
+  - `axes3d::Bool = true`: draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`).
   - `elevation::Float = 35.26439`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
   - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
   - `zoom::Float = 1.0`: zooming factor in 3D.

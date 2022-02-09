@@ -317,11 +317,6 @@ end
 
 complement(color) = (col = crayon_256_color(color)) === nothing ? nothing : ~col
 
-average(c1::Union{Symbol,Nothing}, c2::Union{Symbol,Nothing}) = c1  # fallback
-average(c1::Integer, c2::Integer) = round(Int, √((Int(c1)^2 + Int(c2)^2) / 2))
-average(c1::NTuple{3,Integer}, c2::NTuple{3,Integer}) =
-    (average(c1[1], c2[1]), average(c1[2], c2[2]), average(c1[3], c2[3]))
-
 julia_color(color::Integer)::JuliaColorType = Int(color)
 julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
