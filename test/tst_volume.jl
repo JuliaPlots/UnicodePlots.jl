@@ -44,12 +44,10 @@
     @test UnicodePlots.transform_matrix(T, :user) isa AbstractMatrix
     @test UnicodePlots.transform_matrix(T, :orthographic) isa AbstractMatrix
     @test UnicodePlots.transform_matrix(T, :perspective) isa AbstractMatrix
-    @test_throws ArgumentError UnicodePlots.transform_matrix(T, :not_supported)
 
     @test UnicodePlots.is_ortho(T, :user)
     @test UnicodePlots.is_ortho(T, :orthographic)
     @test !UnicodePlots.is_ortho(T, :perspective)
-    @test_throws ArgumentError UnicodePlots.is_ortho(T, :not_supported)
 
     corners = UnicodePlots.cube_corners(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
     @test size(corners) == (3, 8)

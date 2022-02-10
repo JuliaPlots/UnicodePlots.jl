@@ -132,6 +132,7 @@ function surfaceplot!(
     plot.colormap = callback = colormap_callback(colormap)
     plot.colorbar = colorbar && cmapped
 
+    F = float(eltype(Z))
     if (
         lines &&
         X isa AbstractMatrix &&
@@ -141,7 +142,7 @@ function surfaceplot!(
     )
         m, n = size(X)
         col_cb = h -> callback(h, mh, Mh)
-        buf = @MMatrix(zeros(float(eltype(Z)), 4, 2))
+        buf = MMatrix{4,2,F}(undef)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             scatter = false
             if i < m
@@ -243,11 +244,16 @@ function surfaceplot!(
         end
     else
         cmapped && (color = map(h -> callback(h, mh, Mh), H))
+        npts = length(Z)
+        buf = Array{F}(undef, 4, npts)
+        plot.projection(
+            buf,
+            vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :), ones(1, npts)),
+        )
         points!(
-            plot,
-            @view(X[:]),
-            @view(Y[:]),
-            @view(Z[:]),
+            plot.graphics,
+            @view(buf[1, :]),
+            @view(buf[2, :]),
             cmapped ? @view(color[:]) : color,
         )
     end

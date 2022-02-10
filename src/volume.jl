@@ -133,20 +133,6 @@ ortho(l, r, b, t, n, f) = *(
     ]),
 )
 
-abstract type Projection end
-
-struct Orthographic{T} <: Projection where {T}
-    A::SMatrix{4,4,T}
-    Orthographic(args::T...) where {T} = new{float(T)}(ortho(args...))
-end
-
-struct Perspective{T} <: Projection where {T}
-    A::SMatrix{4,4,T}
-    Perspective(args::T...) where {T} = new{float(T)}(frustum(args...))
-end
-
-(t::Projection)(p::AbstractVecOrMat) = t.A * p
-
 """
     ctr_len_diag(x, y, z)
 
@@ -164,10 +150,10 @@ function ctr_len_diag(x, y, z)
     lz = Mz - mz
 
     (
-        @SVector([mx + 0.5lx, my + 0.5ly, mz + 0.5lz]),
-        @SVector([mx, my, mz]),
-        @SVector([Mx, My, Mz]),
-        @SVector([lx, ly, lz]),
+        SVector{3}(mx + 0.5lx, my + 0.5ly, mz + 0.5lz),
+        SVector{3}(mx, my, mz),
+        SVector{3}(Mx, My, Mz),
+        SVector{3}(lx, ly, lz),
         √(lx^2 + ly^2 + lz^2),
     )
 end
@@ -243,7 +229,7 @@ struct MVP{T}
         @assert -90 ≤ elevation ≤ 90
 
         F = Float64
-        ortho = projection === :orthographic
+        is_ortho = projection === :orthographic
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
         # half the diagonal (cam distance to the center)
@@ -260,68 +246,58 @@ struct MVP{T}
         # View Matrix
         V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)
         V_persp, view_dir = view_matrix(ctr, distp, elev, azimuth, up)
-        V = ortho ? V_ortho : V_persp
+        V = is_ortho ? V_ortho : V_persp
 
         # Projection Matrix
-        P_ortho = Orthographic(-disto, disto, -disto, disto, -disto, disto)
-        P_persp = Perspective(-distp, distp, -distp, distp, near, far)
-        P = ortho ? P_ortho : P_persp
+        P_ortho = ortho(-disto, disto, -disto, disto, -disto, disto)
+        P_persp = frustum(-distp, distp, -distp, distp, near, far)
 
-        new{F}(P(V * M), P_ortho(V_ortho * M), P_persp(V_persp * M), view_dir, dist, ortho)
+        MVP_ortho = P_ortho * V_ortho * M
+        MVP_persp = P_persp * V_persp * M
+
+        new{F}(
+            is_ortho ? MVP_ortho : MVP_persp,
+            MVP_ortho,
+            MVP_persp,
+            view_dir,
+            dist,
+            is_ortho,
+        )
     end
 end
 
-function transform_matrix(t::MVP, n::Symbol)
+function transform_matrix(t::MVP{T}, n::Symbol)::SMatrix{4,4,T} where {T}
     if n === :user
         t.mvp_mat
     elseif n === :orthographic
         t.mvp_ortho_mat
     elseif n === :perspective
         t.mvp_persp_mat
-    else
-        throw(ArgumentError("invalid n=$n"))
     end
 end
 
-function is_ortho(t::MVP, n::Symbol)
+function is_ortho(t::MVP, n::Symbol)::Bool
     if n === :user
         t.ortho
     elseif n === :orthographic
         true
     elseif n === :perspective
         false
-    else
-        throw(ArgumentError("invalid n=$n"))
     end
 end
 
-function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
-    # homogeneous coordinates
-    o = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
-    persp = !is_ortho(t, n)
-    @inbounds for i in axes(p, 2)
-        w = o[4, i]
-        if abs(w) > eps(T)
-            o[1, i] /= w
-            o[2, i] /= w
-            o[3, i] /= w
-        end
-        if persp
-            z = o[3, i]
-            if abs(z) > eps(T)
-                o[1, i] /= z
-                o[2, i] /= z
-            end
-        end
-    end
+"transform a matrix of points, with allocation"
+function (tr::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
+    o = Array{T}(undef, 4, size(p, 2))
+    tr(o, p, n)
     @view(o[1, :]), @view(o[2, :])
 end
 
-"inplace transformation"
-function (t::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {T}
+"inplace transform"
+function (tr::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {T}
+    mul!(o, transform_matrix(tr, n), p)
+    persp = !is_ortho(tr, n)
     # homogeneous coordinates
-    mul!(o, transform_matrix(t, n), p)
-    persp = !is_ortho(t, n)
     @inbounds for i in axes(p, 2)
         w = o[4, i]
         if abs(w) > eps(T)
@@ -340,15 +316,30 @@ function (t::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) wh
     return
 end
 
-function (t::MVP{T})(v::AbstractVector, n::Symbol = :user) where {T}
+"transform a vector"
+function (tr::MVP{T})(v::SVector{4}, n::Symbol = :user) where {T}
+    x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
-    x, y, z, w = transform_matrix(t, n) * (length(v) == 4 ? v : vcat(v, 1))
     if abs(w) > eps(T)
         x /= w
         y /= w
         z /= w
     end
-    is_ortho(t, n) ? (x, y) : (x / z, y / z)
+    is_ortho(tr, n) ? (x, y) : (x / z, y / z)
+end
+
+(tr::MVP)(v::AbstractVector, n::Symbol = :user) =
+    tr(length(v) == 4 ? SVector{4}(v) : SVector{4}(v..., 1))
+
+function axis_line(tr, proj, start::AbstractVector{T}, l, d) where {T}
+    stop = collect(start)
+    stop[d] += l[d]
+    tr(@SMatrix([
+        start[1] stop[1]
+        start[2] stop[2]
+        start[3] stop[3]
+        T(1) T(1)
+    ]), proj)
 end
 
 """
@@ -361,26 +352,20 @@ If `p = (x, y)` is given, draws at screen coordinates.
 """
 function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
     T = plot.projection
-    # constant apparent size
-    l = scale .* @SVector([T.dist, T.dist, T.dist])
+    # constant apparent size, independent of zoom level
+    len = scale .* SVector{3}(T.dist, T.dist, T.dist)
 
     proj = :orthographic  # force axes projection
 
-    pos = if length(p) == 2
-        (transform_matrix(T, proj) \ vcat(p, 0, 1))[1:3]
+    pos = SVector{3}(if length(p) == 2
+        (transform_matrix(T, proj) \ SVector{4}(p..., 0, 1))[1:3]
     else
-        p
-    end
+        float(p)
+    end)
 
-    axis(p, d) = begin
-        e = copy(p)
-        e[d] += l[d]
-        T(hcat(p, e), proj)
-    end
-
-    lines!(plot.graphics, axis(float(pos), 1)..., color = :red)
-    lines!(plot.graphics, axis(float(pos), 2)..., color = :green)
-    lines!(plot.graphics, axis(float(pos), 3)..., color = :blue)
+    lines!(plot.graphics, axis_line(T, proj, pos, len, 1)..., color = :red)
+    lines!(plot.graphics, axis_line(T, proj, pos, len, 2)..., color = :green)
+    lines!(plot.graphics, axis_line(T, proj, pos, len, 3)..., color = :blue)
 
     plot
 end

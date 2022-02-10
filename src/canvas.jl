@@ -43,6 +43,68 @@ end
 points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) =
     points!(c, X, Y, color)
 
+function const_color_line!(
+    c,
+    nsteps,
+    length,
+    step,
+    px,
+    Px,
+    py,
+    Py,
+    cur_x,
+    cur_y,
+    δx,
+    δy,
+    col,
+)
+    pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col)
+    for _ in range(1, stop = nsteps, length = length, step = step)
+        cur_x += δx
+        cur_y += δy
+        (cur_y < py || cur_y > Py) && continue
+        (cur_x < px || cur_x > Px) && continue
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col)
+    end
+    return
+end
+
+function interp_color_line!(
+    c,
+    nsteps,
+    length,
+    step,
+    px,
+    Px,
+    py,
+    Py,
+    cur_x,
+    cur_y,
+    δx,
+    δy,
+    iΔ,
+    val1,
+    val2,
+    col_cb,
+)
+    pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(val1))
+    start_x, start_y = cur_x, cur_y
+    for i in range(1, stop = nsteps, length = length, step = step)
+        cur_x += δx
+        cur_y += δy
+        (cur_y < py || cur_y > Py) && continue
+        (cur_x < px || cur_x > Px) && continue
+        weight = √((cur_x - start_x)^2 + (cur_y - start_y)^2) * iΔ
+        pixel!(
+            c,
+            floor(Int, cur_x),
+            floor(Int, cur_y),
+            col_cb((1 - weight) * val1 + weight * val2),
+        )
+    end
+    return
+end
+
 # Implementation of the digital differential analyser (DDA)
 function lines!(
     c::Canvas,
@@ -76,48 +138,32 @@ function lines!(
     nsteps = abs(Δx) > abs(Δy) ? abs(Δx) : abs(Δy)
     nsteps = min(nsteps, typemax(Int32))  # hard limit
 
-    δx = Δx / nsteps
-    δy = Δy / nsteps
-
     px, Px = x2p(mx), x2p(Mx)
-    px, Px = min(px, Px), max(px, Px)
     py, Py = y2p(my), y2p(My)
-    py, Py = min(py, Py), max(py, Py)
 
     max_num_iter = typemax(Int16)  # performance limit
-    limited_range = if nsteps > max_num_iter
-        range(1, stop = nsteps, length = max_num_iter)
+    rng = if nsteps > max_num_iter
+        nsteps, max_num_iter, nothing
     else
-        range(1, stop = nsteps, step = 1)
+        nsteps, nothing, 1
     end
 
+    args = (
+        rng...,
+        min(px, Px),
+        max(px, Px),
+        min(py, Py),
+        max(py, Py),
+        cur_x,
+        cur_y,
+        Δx / nsteps,
+        Δy / nsteps,
+    )
+
     if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb !== nothing
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
-        iΔ = 1 / √(Δx^2 + Δy^2)
-        start_x = cur_x
-        start_y = cur_y
-        for i in limited_range
-            cur_x += δx
-            cur_y += δy
-            (cur_y < py || cur_y > Py) && continue
-            (cur_x < px || cur_x > Px) && continue
-            weight = √((cur_x - start_x)^2 + (cur_y - start_y)^2) * iΔ  # linear interpolation
-            pixel!(
-                c,
-                floor(Int, cur_x),
-                floor(Int, cur_y),
-                col_cb((1 - weight) * c_or_v1 + weight * c_or_v2),
-            )
-        end
+        interp_color_line!(c, args..., 1 / √(Δx^2 + Δy^2), c_or_v1, c_or_v2, col_cb)
     else
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
-        for _ in limited_range
-            cur_x += δx
-            cur_y += δy
-            (cur_y < py || cur_y > Py) && continue
-            (cur_x < px || cur_x > Px) && continue
-            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
-        end
+        const_color_line!(c, args..., c_or_v1)
     end
     c
 end

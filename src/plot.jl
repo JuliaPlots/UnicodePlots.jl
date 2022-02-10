@@ -141,11 +141,9 @@ function validate_input(
 )
     length(x) == length(y) == length(z) ||
         throw(DimensionMismatch("x, y and z must have same length"))
-    idx = BitVector(
-        map(x, y, z) do i, j, k
-            isfinite(i) && isfinite(j) && isfinite(k)
-        end
-    )
+    idx = BitVector(map(x, y, z) do i, j, k
+        isfinite(i) && isfinite(j) && isfinite(k)
+    end)
     x[idx], y[idx], z[idx]
 end
 
@@ -155,11 +153,9 @@ function validate_input(
     z::Nothing,
 )
     length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
-    idx = BitVector(
-        map(x, y) do i, j
-            isfinite(i) && isfinite(j)
-        end
-    )
+    idx = BitVector(map(x, y) do i, j
+        isfinite(i) && isfinite(j)
+    end)
     x[idx], y[idx], z
 end
 
@@ -555,7 +551,7 @@ transform(tr, args...) = args  # catch all
 transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
 transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
 transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
-    (tr(vcat(x', y', z'))..., args...)
+    (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kw...)
