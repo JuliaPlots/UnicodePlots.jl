@@ -43,8 +43,8 @@ function CreateLookupCanvas(
     origin_y::Number = 0.0,
     width::Number = 1.0,
     height::Number = 1.0,
-    xscale::Union{Symbol,Function} = :identity,
-    yscale::Union{Symbol,Function} = :identity,
+    xscale::Function = identity,
+    yscale::Function = identity,
     min_char_height::Int = 5,
     min_char_width::Int = 2,
 ) where {T<:LookupCanvas}

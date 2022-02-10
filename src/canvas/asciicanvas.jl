@@ -119,8 +119,8 @@ struct AsciiCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Union{Symbol,Function}
-    yscale::Union{Symbol,Function}
+    xscale::Function
+    yscale::Function
 end
 
 @inline x_pixel_per_char(::Type{AsciiCanvas}) = 3

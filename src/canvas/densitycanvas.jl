@@ -20,8 +20,8 @@ mutable struct DensityCanvas <: Canvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Union{Symbol,Function}
-    yscale::Union{Symbol,Function}
+    xscale::Function
+    yscale::Function
     max_density::Float64
 end
 
@@ -46,8 +46,8 @@ function DensityCanvas(
     origin_y::Number = 0.0,
     width::Number = 1.0,
     height::Number = 1.0,
-    xscale::Union{Symbol,Function} = :identity,
-    yscale::Union{Symbol,Function} = :identity,
+    xscale::Function = identity,
+    yscale::Function = identity,
 )
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))

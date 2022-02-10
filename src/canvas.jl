@@ -8,8 +8,8 @@ pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :no
     pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
-    origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+    origin_x(c) <= (xs = c.xscale(x)) <= origin_x(c) + width(c) || return c
+    origin_y(c) <= (ys = c.yscale(y)) <= origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
@@ -108,18 +108,21 @@ end
 # Implementation of the digital differential analyser (DDA)
 function lines!(
     c::Canvas,
-    x1::Number,
-    y1::Number,
-    x2::Number,
-    y2::Number,
+    x1::T,
+    y1::T,
+    x2::T,
+    y2::T,
     c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
     c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
     col_cb = nothing,  # color callback (map values to colors)
-)
-    x1 = fscale(x1, c.xscale)
-    x2 = fscale(x2, c.xscale)
-    y1 = fscale(y1, c.yscale)
-    y2 = fscale(y2, c.yscale)
+) where {T<:Number}
+
+    # FIXME: type dispatch issues, because xscale `Function` is stored in a struct ?
+    # c.xscale(x1) is inferred as returning Any
+    x1::T = c.xscale(x1)
+    x2::T = c.xscale(x2)
+    y1::T = c.yscale(y1)
+    y2::T = c.yscale(y2)
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
@@ -302,8 +305,8 @@ function annotate!(
     halign = :center,
     valign = :center,
 )
-    xs = fscale(x, c.xscale)
-    ys = fscale(y, c.yscale)
+    xs = c.xscale(x)
+    ys = c.yscale(y)
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 
@@ -317,8 +320,8 @@ function annotate!(
 end
 
 function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
-    xs = fscale(x, c.xscale)
-    ys = fscale(y, c.yscale)
+    xs = c.xscale(x)
+    ys = c.yscale(y)
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 

@@ -203,8 +203,14 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
+    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
+    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
+
+    xscale = scale_function(xscale)
+    yscale = scale_function(yscale)
+
     if projection !== nothing  # 3D
-        (xscale !== :identity || yscale !== :identity) &&
+        (xscale !== identity || yscale !== identity) &&
             throw(ArgumentError("xscale or yscale are unsupported in 3D"))
 
         projection isa Symbol && (projection = MVP(x, y, z; kw...))
@@ -261,8 +267,6 @@ function Plot(
         colorbar_lim = colorbar_lim,
         projection = projection,
     )
-    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
-    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     m_x, M_x, m_y, M_y = map(
         v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
         (mx, Mx, my, My),

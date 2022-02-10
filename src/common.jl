@@ -195,13 +195,6 @@ end
 iterable(obj::AbstractVector) = obj
 iterable(obj) = Iterators.repeated(obj)
 
-fscale(x, s::Symbol) = FSCALES[s](x)
-iscale(x, s::Symbol) = ISCALES[s](x)
-
-# support arbitrary scale functions
-fscale(x, f::Function) = f(x)
-iscale(x, f::Function) = f(x)
-
 function transform_name(tr, basename = "")
     name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
     name == "identity" && return basename
@@ -270,9 +263,13 @@ function plotting_range_narrow(xmin, xmax)
     float(xmin), float(xmax)
 end
 
+scale_function(scale::Union{Symbol,Function})::Function =
+    scale isa Symbol ? FSCALES[scale] : scale
+
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
 function extend_limits(vec, limits, scale::Union{Symbol,Function})
+    scale = scale_function(scale)
     mi, ma = as_float(extrema(limits))
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))
@@ -281,8 +278,8 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
         ma = mi + 1
         mi = mi - 1
     end
-    if string(scale) != "identity"
-        fscale(mi, scale), fscale(ma, scale)
+    if scale != identity
+        scale(mi), scale(ma)
     else
         all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
