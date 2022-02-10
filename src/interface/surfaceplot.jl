@@ -141,12 +141,12 @@ function surfaceplot!(
     )
         m, n = size(X)
         col_cb = h -> callback(h, mh, Mh)
-        pts2d = @MMatrix(zeros(float(eltype(Z)), 4, 2))
+        buf = @MMatrix(zeros(float(eltype(Z)), 4, 2))
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             scatter = false
             if i < m
                 plot.projection(
-                    pts2d,
+                    buf,
                     @SMatrix(
                         [
                             X[i, j] X[i + 1, j]
@@ -158,10 +158,10 @@ function surfaceplot!(
                 )
                 lines!(
                     plot.graphics,
-                    pts2d[1, 1],
-                    pts2d[2, 1],
-                    pts2d[1, 2],
-                    pts2d[2, 2],
+                    buf[1, 1],
+                    buf[2, 1],
+                    buf[1, 2],
+                    buf[2, 2],
                     H[i, j],
                     H[i + 1, j],
                     col_cb,
@@ -171,7 +171,7 @@ function surfaceplot!(
             end
             if j < n
                 plot.projection(
-                    pts2d,
+                    buf,
                     @SMatrix(
                         [
                             X[i, j] X[i, j + 1]
@@ -183,10 +183,10 @@ function surfaceplot!(
                 )
                 lines!(
                     plot.graphics,
-                    pts2d[1, 1],
-                    pts2d[2, 1],
-                    pts2d[1, 2],
-                    pts2d[2, 2],
+                    buf[1, 1],
+                    buf[2, 1],
+                    buf[1, 2],
+                    buf[2, 2],
                     H[i, j],
                     H[i, j + 1],
                     col_cb,
@@ -196,7 +196,7 @@ function surfaceplot!(
             end
             if i < m && j < n
                 plot.projection(
-                    pts2d,
+                    buf,
                     @SMatrix(
                         [
                             X[i, j] X[i + 1, j + 1]
@@ -208,16 +208,16 @@ function surfaceplot!(
                 )
                 lines!(
                     plot.graphics,
-                    pts2d[1, 1],
-                    pts2d[2, 1],
-                    pts2d[1, 2],
-                    pts2d[2, 2],
+                    buf[1, 1],
+                    buf[2, 1],
+                    buf[1, 2],
+                    buf[2, 2],
                     H[i, j],
                     H[i + 1, j + 1],
                     col_cb,
                 )
                 plot.projection(
-                    pts2d,
+                    buf,
                     @SMatrix(
                         [
                             X[i + 1, j] X[i, j + 1]
@@ -229,10 +229,10 @@ function surfaceplot!(
                 )
                 lines!(
                     plot.graphics,
-                    pts2d[1, 1],
-                    pts2d[2, 1],
-                    pts2d[1, 2],
-                    pts2d[2, 2],
+                    buf[1, 1],
+                    buf[2, 1],
+                    buf[1, 2],
+                    buf[2, 2],
                     H[i + 1, j],
                     H[i, j + 1],
                     col_cb,

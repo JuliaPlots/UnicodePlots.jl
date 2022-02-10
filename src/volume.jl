@@ -242,7 +242,7 @@ struct MVP{T}
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
 
-        F = float(eltype(x))
+        F = Float64
         ortho = projection === :orthographic
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
@@ -255,7 +255,7 @@ struct MVP{T}
         elev = max(-90 + δ, min(elevation, 90 - δ))
 
         # Model Matrix
-        M = I  # we don't scale, nor translate, nor rotate input data
+        M = SMatrix{4,4,F}(I)  # we don't scale, nor translate, nor rotate input data
 
         # View Matrix
         V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)

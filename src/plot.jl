@@ -66,7 +66,7 @@ mutable struct Plot{T<:GraphicsArea}
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
-    projection::Union{MVP,Nothing}
+    projection::Union{MVP{Float64},Nothing}
 end
 
 function Plot(
@@ -137,22 +137,30 @@ Check for invalid input (length) and selects only finite input data.
 function validate_input(
     x::AbstractVector{<:Number},
     y::AbstractVector{<:Number},
-    z::Union{AbstractVector{<:Number},Nothing} = nothing,
+    z::AbstractVector{<:Number},
 )
-    if z !== nothing
-        length(x) == length(y) == length(z) ||
-            throw(DimensionMismatch("x, y and z must have same length"))
-        idx = map(x, y, z) do i, j, k
+    length(x) == length(y) == length(z) ||
+        throw(DimensionMismatch("x, y and z must have same length"))
+    idx = BitVector(
+        map(x, y, z) do i, j, k
             isfinite(i) && isfinite(j) && isfinite(k)
         end
-        x[idx], y[idx], z[idx]
-    else
-        length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
-        idx = map(x, y) do i, j
+    )
+    x[idx], y[idx], z[idx]
+end
+
+function validate_input(
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Nothing,
+)
+    length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
+    idx = BitVector(
+        map(x, y) do i, j
             isfinite(i) && isfinite(j)
         end
-        x[idx], y[idx], z
-    end
+    )
+    x[idx], y[idx], z
 end
 
 function Plot(
@@ -548,11 +556,6 @@ transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
 transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
 transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
     (tr(vcat(x', y', z'))..., args...)
-
-function transform(X::AbstractMatrix, Y::AbstractMatrix, Z::AbstractMatrix, args...)
-    x, y = tr(vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :)))
-    (reshape(x, size(X)...), reshape(y, size(Y)...), args...)
-end
 
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kw...)
