@@ -548,16 +548,11 @@ transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
 transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
 transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
     (tr(vcat(x', y', z'))..., args...)
-transform(
-    tr::MVP,
-    x1::Number,
-    x2::Number,
-    y1::Number,
-    y2::Number,
-    z1::Number,
-    z2::Number,
-    args...,
-) = (tr(@SMatrix([x1 x2; y1 y2; z1 z2]))..., args...)
+
+function transform(X::AbstractMatrix, Y::AbstractMatrix, Z::AbstractMatrix, args...)
+    x, y = tr(vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :)))
+    (reshape(x, size(X)...), reshape(y, size(Y)...), args...)
+end
 
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kw...)

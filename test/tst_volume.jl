@@ -40,7 +40,6 @@
 
     T = MVP([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0])
     @test length(T([1, 2, 3])) == 2
-    @test length(T((1, 2, 3))) == 2
 
     @test UnicodePlots.transform_matrix(T, :user) isa AbstractMatrix
     @test UnicodePlots.transform_matrix(T, :orthographic) isa AbstractMatrix

@@ -141,17 +141,27 @@ function surfaceplot!(
     )
         m, n = size(X)
         col_cb = h -> callback(h, mh, Mh)
+        pts2d = @MMatrix(zeros(float(eltype(Z)), 4, 2))
         @inbounds for j in axes(X, 2), i in axes(X, 1)
             scatter = false
             if i < m
+                plot.projection(
+                    pts2d,
+                    @SMatrix(
+                        [
+                            X[i, j] X[i + 1, j]
+                            Y[i, j] Y[i + 1, j]
+                            Z[i, j] Z[i + 1, j]
+                            1 1
+                        ]
+                    )
+                )
                 lines!(
-                    plot,
-                    X[i, j],
-                    X[i + 1, j],
-                    Y[i, j],
-                    Y[i + 1, j],
-                    Z[i, j],
-                    Z[i + 1, j],
+                    plot.graphics,
+                    pts2d[1, 1],
+                    pts2d[2, 1],
+                    pts2d[1, 2],
+                    pts2d[2, 2],
                     H[i, j],
                     H[i + 1, j],
                     col_cb,
@@ -160,14 +170,23 @@ function surfaceplot!(
                 scatter = true
             end
             if j < n
+                plot.projection(
+                    pts2d,
+                    @SMatrix(
+                        [
+                            X[i, j] X[i, j + 1]
+                            Y[i, j] Y[i, j + 1]
+                            Z[i, j] Z[i, j + 1]
+                            1 1
+                        ]
+                    )
+                )
                 lines!(
-                    plot,
-                    X[i, j],
-                    X[i, j + 1],
-                    Y[i, j],
-                    Y[i, j + 1],
-                    Z[i, j],
-                    Z[i, j + 1],
+                    plot.graphics,
+                    pts2d[1, 1],
+                    pts2d[2, 1],
+                    pts2d[1, 2],
+                    pts2d[2, 2],
                     H[i, j],
                     H[i, j + 1],
                     col_cb,
@@ -176,38 +195,51 @@ function surfaceplot!(
                 scatter = true
             end
             if i < m && j < n
+                plot.projection(
+                    pts2d,
+                    @SMatrix(
+                        [
+                            X[i, j] X[i + 1, j + 1]
+                            Y[i, j] Y[i + 1, j + 1]
+                            Z[i, j] Z[i + 1, j + 1]
+                            1 1
+                        ]
+                    )
+                )
                 lines!(
-                    plot,
-                    X[i, j],
-                    X[i + 1, j + 1],
-                    Y[i, j],
-                    Y[i + 1, j + 1],
-                    Z[i, j],
-                    Z[i + 1, j + 1],
+                    plot.graphics,
+                    pts2d[1, 1],
+                    pts2d[2, 1],
+                    pts2d[1, 2],
+                    pts2d[2, 2],
                     H[i, j],
                     H[i + 1, j + 1],
                     col_cb,
                 )
+                plot.projection(
+                    pts2d,
+                    @SMatrix(
+                        [
+                            X[i + 1, j] X[i, j + 1]
+                            Y[i + 1, j] Y[i, j + 1]
+                            Z[i + 1, j] Z[i, j + 1]
+                            1 1
+                        ]
+                    )
+                )
                 lines!(
-                    plot,
-                    X[i + 1, j],
-                    X[i, j + 1],
-                    Y[i + 1, j],
-                    Y[i, j + 1],
-                    Z[i + 1, j],
-                    Z[i, j + 1],
+                    plot.graphics,
+                    pts2d[1, 1],
+                    pts2d[2, 1],
+                    pts2d[1, 2],
+                    pts2d[2, 2],
                     H[i + 1, j],
                     H[i, j + 1],
                     col_cb,
                 )
             end
-            scatter && points!(
-                plot,
-                X[i, j],
-                Y[i, j],
-                Z[i, j],
-                cmapped ? callback(H[i, j], mh, Mh) : color,
-            )
+            scatter &&
+                points!(plot, X[i, j], Y[i, j], Z[i, j], cmapped ? col_cb(H[i, j]) : color)
         end
     else
         cmapped && (color = map(h -> callback(h, mh, Mh), H))

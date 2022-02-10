@@ -297,26 +297,52 @@ end
 
 function (t::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    dat = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
-    xs, ys, zs = dat[1, :], dat[2, :], dat[3, :]
+    o = transform_matrix(t, n) * (size(p, 1) == 4 ? p : vcat(p, ones(1, size(p, 2))))
     persp = !is_ortho(t, n)
-    @inbounds for (i, w) in enumerate(@view(dat[4, :]))
+    @inbounds for i in axes(p, 2)
+        w = o[4, i]
         if abs(w) > eps(T)
-            xs[i] /= w
-            ys[i] /= w
-            zs[i] /= w
+            o[1, i] /= w
+            o[2, i] /= w
+            o[3, i] /= w
         end
         if persp
-            xs[i] /= zs[i]
-            ys[i] /= zs[i]
+            z = o[3, i]
+            if abs(z) > eps(T)
+                o[1, i] /= z
+                o[2, i] /= z
+            end
         end
     end
-    xs, ys
+    @view(o[1, :]), @view(o[2, :])
 end
 
-function (t::MVP{T})(v::Union{AbstractVector,NTuple{3}}, n::Symbol = :user) where {T}
+"inplace transformation"
+function (t::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {T}
     # homogeneous coordinates
-    x, y, z, w = transform_matrix(t, n) * [v..., 1]
+    mul!(o, transform_matrix(t, n), p)
+    persp = !is_ortho(t, n)
+    @inbounds for i in axes(p, 2)
+        w = o[4, i]
+        if abs(w) > eps(T)
+            o[1, i] /= w
+            o[2, i] /= w
+            o[3, i] /= w
+        end
+        if persp
+            z = o[3, i]
+            if abs(z) > eps(T)
+                o[1, i] /= z
+                o[2, i] /= z
+            end
+        end
+    end
+    return
+end
+
+function (t::MVP{T})(v::AbstractVector, n::Symbol = :user) where {T}
+    # homogeneous coordinates
+    x, y, z, w = transform_matrix(t, n) * (length(v) == 4 ? v : vcat(v, 1))
     if abs(w) > eps(T)
         x /= w
         y /= w
@@ -326,17 +352,17 @@ function (t::MVP{T})(v::Union{AbstractVector,NTuple{3}}, n::Symbol = :user) wher
 end
 
 """
-    draw_axes!(plot; p = [0, 0, 0], len = nothing)
+    draw_axes!(plot; p = [0, 0, 0])
 
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
 If `p = (x, y)` is given, draws at screen coordinates.
 """
-function draw_axes!(plot, p = [0, 0, 0], len = nothing, scale = 0.25)
+function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
     T = plot.projection
     # constant apparent size
-    l = len === nothing ? scale .* @SVector([T.dist, T.dist, T.dist]) : len
+    l = scale .* @SVector([T.dist, T.dist, T.dist])
 
     proj = :orthographic  # force axes projection
 

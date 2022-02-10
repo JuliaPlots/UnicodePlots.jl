@@ -52,7 +52,7 @@ function lines!(
     y2::Number,
     c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
     c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
-    col_cb = nothing,  # callback (map values to colors)
+    col_cb = nothing,  # color callback (map values to colors)
 )
     x1 = fscale(x1, c.xscale)
     x2 = fscale(x2, c.xscale)
@@ -61,11 +61,11 @@ function lines!(
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
-    (x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx) && return c
+    ((x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx)) && return c
 
     my = origin_y(c)
     My = origin_y(c) + height(c)
-    (y1 < my && y2 < my) || (y1 > My && y2 > My) && return c
+    ((y1 < my && y2 < my) || (y1 > My && y2 > My)) && return c
 
     x2p(x) = (x - mx) / width(c) * pixel_width(c)
     y2p(y) = pixel_height(c) - (y - my) / height(c) * pixel_height(c)
@@ -79,8 +79,10 @@ function lines!(
     δx = Δx / nsteps
     δy = Δy / nsteps
 
-    px, Px = extrema(@SVector([x2p(mx), x2p(Mx)]))
-    py, Py = extrema(@SVector([y2p(my), y2p(My)]))
+    px, Px = x2p(mx), x2p(Mx)
+    px, Px = min(px, Px), max(px, Px)
+    py, Py = y2p(my), y2p(My)
+    py, Py = min(py, Py), max(py, Py)
 
     max_num_iter = typemax(Int16)  # performance limit
     limited_range = if nsteps > max_num_iter
@@ -132,24 +134,11 @@ lines!(
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
     for i in 2:length(X)
-        if !(isfinite(X[i - 1]) && isfinite(X[i]) && isfinite(Y[i - 1]) && isfinite(Y[i]))
-            continue
-        end
+        isfinite(X[i - 1]) || continue
+        isfinite(Y[i - 1]) || continue
+        isfinite(X[i]) || continue
+        isfinite(Y[i]) || continue
         lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], color)
-    end
-    c
-end
-
-function lines!(
-    c::Canvas,
-    X::AbstractVector,
-    Y::AbstractVector,
-    v1::AbstractFloat,
-    v2::AbstractFloat,
-    col_cb,
-)
-    for i in 2:length(X)  # fast path for 3D, without runtime checks !
-        lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], v1, v2, col_cb)
     end
     c
 end
