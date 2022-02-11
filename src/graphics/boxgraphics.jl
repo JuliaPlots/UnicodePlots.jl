@@ -61,16 +61,14 @@ BoxplotGraphics(
     color::Union{UserColorType,AbstractVector} = :green,
     min_x::Number = minimum(data),
     max_x::Number = maximum(data),
-) where {R<:Number} = BoxplotGraphics{R}(
-    data,
-    char_width,
-    visible,
-    color,
-    R(min_x),
-    R(max_x),
-)
+) where {R<:Number} =
+    BoxplotGraphics{R}(data, char_width, visible, color, R(min_x), R(max_x))
 
-function addseries!(c::BoxplotGraphics, data::AbstractVector{R}, color::UserColorType = nothing) where {R<:Number}
+function addseries!(
+    c::BoxplotGraphics,
+    data::AbstractVector{R},
+    color::UserColorType = nothing,
+) where {R<:Number}
     mi, ma = extrema(data)
     push!(
         c.data,

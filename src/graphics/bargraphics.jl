@@ -54,10 +54,13 @@ BarplotGraphics(
     visible::Bool = true,
     color::Union{UserColorType,AbstractVector} = :green,
     symbols = ['■'],
-) where {R<:Number} =
-    BarplotGraphics(bars, char_width, visible, color, symbols, transform)
+) where {R<:Number} = BarplotGraphics(bars, char_width, visible, color, symbols, transform)
 
-function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}, color::Union{UserColorType,AbstractVector} = nothing) where {R<:Number}
+function addrow!(
+    g::BarplotGraphics{R},
+    bars::AbstractVector{R},
+    color::Union{UserColorType,AbstractVector} = nothing,
+) where {R<:Number}
     append!(g.bars, bars)
     colors = if color isa AbstractVector
         crayon_256_color.(color)
@@ -70,7 +73,11 @@ function addrow!(g::BarplotGraphics{R}, bars::AbstractVector{R}, color::Union{Us
     g
 end
 
-function addrow!(g::BarplotGraphics{R}, bar::Number, color::UserColorType = nothing) where {R<:Number}
+function addrow!(
+    g::BarplotGraphics{R},
+    bar::Number,
+    color::UserColorType = nothing,
+) where {R<:Number}
     push!(g.bars, R(bar))
     push!(g.colors, color === nothing ? g.colors[end] : crayon_256_color(color))
     g.max_freq, i = findmax(g.transform.(g.bars))
