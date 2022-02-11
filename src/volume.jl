@@ -205,13 +205,24 @@ Build up the "Model - View - Projection" transformation matrix (see codinglabs.n
 This is typically used to adjust how 3D plot is viewed, see also
 the `projection` keyword in [`surfaceplot`](@ref), [`isosurface`](@ref).
 """
-struct MVP{T}
+struct MVP{E,T}
     mvp_mat::SMatrix{4,4,T}
     mvp_ortho_mat::SMatrix{4,4,T}
     mvp_persp_mat::SMatrix{4,4,T}
     view_dir::SVector{3,T}
-    dist::T
     ortho::Bool
+    dist::T
+
+    # placeholder for 2D (disabled)
+    MVP() = new{Val{false},Bool}(
+        zeros(Bool, 4, 4),
+        zeros(Bool, 4, 4),
+        zeros(Bool, 4, 4),
+        zeros(Bool, 3),
+        true,
+        true,
+    )
+
     function MVP(
         x,
         y,
@@ -228,7 +239,7 @@ struct MVP{T}
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
 
-        F = Float64
+        F = float(eltype(z))
         is_ortho = projection === :orthographic
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
@@ -255,18 +266,21 @@ struct MVP{T}
         MVP_ortho = P_ortho * V_ortho * M
         MVP_persp = P_persp * V_persp * M
 
-        new{F}(
+        new{Val{true},F}(
             is_ortho ? MVP_ortho : MVP_persp,
             MVP_ortho,
             MVP_persp,
             view_dir,
-            dist,
             is_ortho,
+            dist,
         )
     end
 end
 
-function transform_matrix(t::MVP{T}, n::Symbol)::SMatrix{4,4,T} where {T}
+is_enabled(::MVP{Val{false}}) = false
+is_enabled(::MVP{Val{true}}) = true
+
+function transform_matrix(t::MVP{E,T}, n::Symbol)::SMatrix{4,4,T} where {E,T}
     if n === :user
         t.mvp_mat
     elseif n === :orthographic
@@ -287,14 +301,14 @@ function is_ortho(t::MVP, n::Symbol)::Bool
 end
 
 "transform a matrix of points, with allocation"
-function (tr::MVP{T})(p::AbstractMatrix, n::Symbol = :user) where {T}
+function (tr::MVP{E,T})(p::AbstractMatrix, n::Symbol = :user) where {E,T}
     o = Array{T}(undef, 4, size(p, 2))
     tr(o, p, n)
     @view(o[1, :]), @view(o[2, :])
 end
 
 "inplace transform"
-function (tr::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {T}
+function (tr::MVP{E,T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {E,T}
     mul!(o, transform_matrix(tr, n), p)
     persp = !is_ortho(tr, n)
     # homogeneous coordinates
@@ -317,7 +331,7 @@ function (tr::MVP{T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) w
 end
 
 "transform a vector"
-function (tr::MVP{T})(v::SVector{4}, n::Symbol = :user) where {T}
+function (tr::MVP{E,T})(v::SVector{4}, n::Symbol = :user) where {E,T}
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
     if abs(w) > eps(T)
