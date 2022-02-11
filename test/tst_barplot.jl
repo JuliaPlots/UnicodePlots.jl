@@ -139,3 +139,12 @@ end
     p = barplot(["B", "A"], [2, 1], color = (200, 50, 0))
     test_ref("references/barplot/col2.txt", @print_col(p))
 end
+
+@testset "different colors" begin
+    p = @inferred barplot(
+        [:a, :b, :c, :d, :e],
+        [20, 30, 60, 50, 40],
+        color = [:red, :green, :blue, :yellow, :normal],
+    )
+    test_ref("references/barplot/colors.txt", @print_col(p))
+end

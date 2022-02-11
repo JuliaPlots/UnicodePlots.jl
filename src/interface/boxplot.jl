@@ -61,7 +61,7 @@ function boxplot(
     text::AbstractVector{<:AbstractString},
     data::AbstractVector{<:AbstractArray{<:Number}};
     border = :corners,
-    color::UserColorType = :green,
+    color::Union{UserColorType,AbstractVector} = :green,
     out_stream::Union{Nothing,IO} = nothing,
     width::Int = out_stream_width(out_stream),
     xlim = KEYWORDS.xlim,
