@@ -96,7 +96,7 @@ function Plot(
     colors_right = Dict{Int,JuliaColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
-    p = Plot{T}(
+    p = Plot(
         graphics,
         title,
         xlabel,
@@ -283,13 +283,12 @@ function Plot(
     label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
         if my < 0 < My
-            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(typeof(canvas)))
+            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
                 points!(plot, i, 0.0, :normal)
             end
         end
         if mx < 0 < Mx
-            for i in
-                range(my, stop = My, length = height * y_pixel_per_char(typeof(canvas)))
+            for i in range(my, stop = My, length = height * y_pixel_per_char(C))
                 points!(plot, 0.0, i, :normal)
             end
         end

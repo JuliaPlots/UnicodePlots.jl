@@ -4,9 +4,9 @@ It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character
 into two pixels (top and bottom).
 """
-struct HeatmapCanvas <: LookupCanvas
-    grid::Array{UInt8,2}
-    colors::Array{ColorType,2}
+struct HeatmapCanvas{XS<:Function,YS<:Function} <: LookupCanvas
+    grid::Matrix{UInt8}
+    colors::Matrix{ColorType}
     min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
@@ -16,13 +16,14 @@ struct HeatmapCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Function
-    yscale::Function
+    xscale::XS
+    yscale::YS
 end
 
 const HALF_BLOCK = '▄'
-@inline x_pixel_per_char(::Type{HeatmapCanvas}) = 1
-@inline y_pixel_per_char(::Type{HeatmapCanvas}) = 2
+
+@inline x_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 1
+@inline y_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 2
 
 @inline lookup_encode(::HeatmapCanvas) = [0 0; 1 1]
 @inline lookup_decode(::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
@@ -31,6 +32,7 @@ const HALF_BLOCK = '▄'
 
 HeatmapCanvas(args...; kw...) = CreateLookupCanvas(
     HeatmapCanvas,
+    UInt8,
     (0, 1),
     args...;
     min_char_width = 1,

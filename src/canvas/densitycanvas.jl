@@ -9,9 +9,9 @@ drawn in that character. Together with a variable
 that keeps track of the maximum frequency,
 the canvas can thus draw the density of datapoints.
 """
-mutable struct DensityCanvas <: Canvas
-    grid::Array{UInt,2}
-    colors::Array{ColorType,2}
+mutable struct DensityCanvas{XS<:Function,YS<:Function} <: Canvas
+    grid::Matrix{UInt}
+    colors::Matrix{ColorType}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -20,8 +20,8 @@ mutable struct DensityCanvas <: Canvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Function
-    yscale::Function
+    xscale::XS
+    yscale::YS
     max_density::Float64
 end
 
@@ -34,8 +34,8 @@ end
 @inline nrows(c::DensityCanvas) = size(c.grid, 2)
 @inline ncols(c::DensityCanvas) = size(c.grid, 1)
 
-@inline x_pixel_per_char(::Type{DensityCanvas}) = 1
-@inline y_pixel_per_char(::Type{DensityCanvas}) = 2
+@inline x_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 1
+@inline y_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 2
 
 function DensityCanvas(
     char_width::Int,
@@ -55,8 +55,9 @@ function DensityCanvas(
     char_height = max(char_height, 5)
     pixel_width = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
-    grid = fill(0, char_width, char_height)
-    colors = fill(nothing, char_width, char_height)
+    grid = fill(UInt(0), char_width, char_height)
+    colors = Array{ColorType}(undef, char_width, char_height)
+    fill!(colors, nothing)
     DensityCanvas(
         grid,
         colors,
@@ -70,7 +71,7 @@ function DensityCanvas(
         Float64(height),
         xscale,
         yscale,
-        1,
+        1.0,
     )
 end
 

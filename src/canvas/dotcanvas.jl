@@ -21,9 +21,9 @@ with `scatterplot`.
 For `lineplot` we suggest to use the `AsciiCanvas`
 instead.
 """
-struct DotCanvas <: LookupCanvas
-    grid::Array{UInt16,2}
-    colors::Array{ColorType,2}
+struct DotCanvas{XS<:Function,YS<:Function} <: LookupCanvas
+    grid::Matrix{UInt16}
+    colors::Matrix{ColorType}
     min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
@@ -33,17 +33,18 @@ struct DotCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Function
-    yscale::Function
+    xscale::XS
+    yscale::YS
 end
 
-@inline x_pixel_per_char(::Type{DotCanvas}) = 1
-@inline y_pixel_per_char(::Type{DotCanvas}) = 2
+@inline x_pixel_per_char(::Type{C}) where {C<:DotCanvas} = 1
+@inline y_pixel_per_char(::Type{C}) where {C<:DotCanvas} = 2
 
 @inline lookup_encode(::DotCanvas) = dot_signs
 @inline lookup_decode(::DotCanvas) = dot_decode
 
-DotCanvas(args...; kw...) = CreateLookupCanvas(DotCanvas, (0b00, 0b11), args...; kw...)
+DotCanvas(args...; kw...) =
+    CreateLookupCanvas(DotCanvas, UInt16, (0b00, 0b11), args...; kw...)
 
 function char_point!(
     c::DotCanvas,

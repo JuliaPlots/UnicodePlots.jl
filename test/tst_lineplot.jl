@@ -13,9 +13,9 @@ y = [2, 0, -5, 2, -5]
 @test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, 1:2)
 
 @testset "Nan / Inf" begin
-    lineplot([0, NaN], [0, 0])
-    lineplot([0, 0], [+Inf, 0])
-    lineplot([0, 0], [0, -Inf])
+    @test lineplot([0, NaN], [0, 0]) isa Plot
+    @test lineplot([0, 0], [+Inf, 0]) isa Plot
+    @test lineplot([0, 0], [0, -Inf]) isa Plot
 end
 
 @testset "numeric array types" begin

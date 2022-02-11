@@ -108,21 +108,18 @@ end
 # Implementation of the digital differential analyser (DDA)
 function lines!(
     c::Canvas,
-    x1::T,
-    y1::T,
-    x2::T,
-    y2::T,
+    x1::Number,
+    y1::Number,
+    x2::Number,
+    y2::Number,
     c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
     c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
     col_cb = nothing,  # color callback (map values to colors)
-) where {T<:Number}
-
-    # FIXME: type dispatch issues, because xscale `Function` is stored in a struct ?
-    # c.xscale(x1) is inferred as returning Any
-    x1::T = c.xscale(x1)
-    x2::T = c.xscale(x2)
-    y1::T = c.yscale(y1)
-    y2::T = c.yscale(y2)
+)
+    x1 = c.xscale(x1)
+    x2 = c.xscale(x2)
+    y1 = c.yscale(y1)
+    y2 = c.yscale(y2)
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
