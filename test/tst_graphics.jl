@@ -28,6 +28,10 @@
         @test @inferred(nrows(g)) === 9
         @test @inferred(ncols(g)) === 30
         test_ref("references/graphics/bar_addrow_vector.txt", @show_col(g))
+        @test @inferred(addrow!(g, [25, 12], [:blue, :red])) === g
+        test_ref("references/graphics/bar_addrow_vector_colors.txt", @show_col(g))
+        @test @inferred(nrows(g)) === 11
+        @test @inferred(ncols(g)) === 30
     end
 
     @testset "Constructor parameter" begin
