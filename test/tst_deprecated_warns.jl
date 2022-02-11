@@ -17,7 +17,7 @@ end
 end
 
 @testset "plot" begin
-    p = @inferred Plot([1, 2], [-1, 1])
+    p = Plot([1, 2], [-1, 1])
     @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, "text 1")
     @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, "text 2", :red)
     @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, "text 3", color = :blue)

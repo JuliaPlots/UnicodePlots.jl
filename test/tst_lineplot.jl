@@ -20,56 +20,56 @@ end
 
 @testset "numeric array types" begin
     for p in (
-        @inferred(lineplot(x, y)),
-        @inferred(lineplot(float.(x), y)),
-        @inferred(lineplot(x, float.(y))),
+        @binf(lineplot(x, y)),
+        @binf(lineplot(float.(x), y)),
+        @binf(lineplot(x, float.(y))),
     )
         @test p isa Plot
         test_ref("references/lineplot/default.txt", @show_col(p))
     end
 
-    for p in (@inferred(lineplot(y)), @inferred(lineplot(float.(y))))
+    for p in (@binf(lineplot(y)), @binf(lineplot(float.(y))))
         @test p isa Plot
         test_ref("references/lineplot/y_only.txt", @show_col(p))
     end
 
-    p = @inferred lineplot(6:10)
+    p = @binf lineplot(6:10)
     @test p isa Plot
     test_ref("references/lineplot/range1.txt", @show_col(p))
 
-    p = @inferred lineplot(11:15, 6:10)
+    p = @binf lineplot(11:15, 6:10)
     @test p isa Plot
     test_ref("references/lineplot/range2.txt", @show_col(p))
 end
 
 @testset "axis scaling and offsets" begin
-    p = @inferred lineplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
+    p = @binf lineplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
     test_ref("references/lineplot/scale1.txt", @show_col(p))
 
-    p = @inferred lineplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
+    p = @binf lineplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
     test_ref("references/lineplot/scale2.txt", @show_col(p))
     tx = [-1.0, 2, 3, 700000]
     ty = [1.0, 2, 9, 4000000]
-    p = @inferred lineplot(tx, ty)
+    p = @binf lineplot(tx, ty)
     test_ref("references/lineplot/scale3.txt", @show_col(p))
-    p = @inferred lineplot(tx, ty, width = 5, height = 5)
+    p = @binf lineplot(tx, ty, width = 5, height = 5)
     test_ref("references/lineplot/scale3_small.txt", @show_col(p))
 end
 
 @testset "dates" begin
     d = collect(Date(1999, 12, 31):Day(1):Date(2000, 1, 30))
     v = range(0, stop = 3pi, length = 31)
-    p = @inferred lineplot(d, sin.(v), name = "sin", height = 5, xlabel = "date")
+    p = @binf lineplot(d, sin.(v), name = "sin", height = 5, xlabel = "date")
     test_ref("references/lineplot/dates1.txt", @show_col(p))
-    @test @inferred(lineplot!(p, d, cos.(v), name = "cos")) === p
+    @test @binf(lineplot!(p, d, cos.(v), name = "cos")) === p
     test_ref("references/lineplot/dates2.txt", @show_col(p))
 end
 
 @testset "line with intercept and slope" begin
-    p = @inferred lineplot(y)
-    @test @inferred(lineplot!(p, -3, 1)) === p
+    p = @binf lineplot(y)
+    @test @binf(lineplot!(p, -3, 1)) === p
     test_ref("references/lineplot/slope1.txt", @show_col(p))
-    @test @inferred(lineplot!(p, -4, 0.5, color = :cyan, name = "foo")) === p
+    @test @binf(lineplot!(p, -4, 0.5, color = :cyan, name = "foo")) === p
     test_ref("references/lineplot/slope2.txt", @show_col(p))
 end
 
@@ -86,34 +86,34 @@ end
         color = (0, 0, 255),
         ylim = [-1.0, 1.0, 2.0],
     )
-    p = @inferred lineplot(sin)
+    p = @binf lineplot(sin)
     test_ref("references/lineplot/sin.txt", @show_col(p))
-    @test @inferred(lineplot!(p, cos)) === p
+    @test @binf(lineplot!(p, cos)) === p
     test_ref("references/lineplot/sincos.txt", @show_col(p))
-    p = @inferred lineplot([sin, cos])
+    p = @binf lineplot([sin, cos])
     test_ref("references/lineplot/sincos.txt", @show_col(p))
 
-    p = @inferred lineplot(sin, -0.5, 6)
+    p = @binf lineplot(sin, -0.5, 6)
     test_ref("references/lineplot/sin2.txt", @show_col(p))
-    @test @inferred(lineplot!(p, cos)) === p
+    @test @binf(lineplot!(p, cos)) === p
     test_ref("references/lineplot/sincos2.txt", @show_col(p))
-    @test @inferred(lineplot!(p, tan, 2.5, 3.5)) === p
+    @test @binf(lineplot!(p, tan, 2.5, 3.5)) === p
     test_ref("references/lineplot/sincostan2.txt", @show_col(p))
 
-    p = @inferred lineplot([sin, cos], -0.5, 3)
+    p = @binf lineplot([sin, cos], -0.5, 3)
     test_ref("references/lineplot/sincos3.txt", @show_col(p))
 
     tmp = [-0.5, 0.6, 1.4, 2.5]
-    p = @inferred lineplot(sin, tmp)
+    p = @binf lineplot(sin, tmp)
     test_ref("references/lineplot/sin4.txt", @show_col(p))
-    @test @inferred(lineplot!(p, cos, tmp)) === p
+    @test @binf(lineplot!(p, cos, tmp)) === p
     test_ref("references/lineplot/sincos4.txt", @show_col(p))
-    p = @inferred lineplot([sin, cos], tmp)
+    p = @binf lineplot([sin, cos], tmp)
     test_ref("references/lineplot/sincos4.txt", @show_col(p))
 
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, color = [:red])
-    p = @inferred lineplot(
+    p = @binf lineplot(
         [sin, cos],
         -0.5,
         3,
@@ -126,7 +126,7 @@ end
         ylim = (-0.9, 1.2),
     )
     test_ref("references/lineplot/sincos_parameters.txt", @show_col(p))
-    p = @inferred lineplot(
+    p = @binf lineplot(
         [sin, cos],
         -0.5,
         3,
@@ -142,18 +142,18 @@ end
 end
 
 @testset "keyword arguments" begin
-    p = @inferred lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+    p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
     test_ref("references/lineplot/limits.txt", @show_col(p))
-    p = @inferred lineplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
+    p = @binf lineplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
     test_ref("references/lineplot/limits.txt", @show_col(p))
 
-    p = @inferred lineplot(x, y, grid = false)
+    p = @binf lineplot(x, y, grid = false)
     test_ref("references/lineplot/nogrid.txt", @show_col(p))
 
-    p = @inferred lineplot(x, y, color = 20, name = "points1")
+    p = @binf lineplot(x, y, color = 20, name = "points1")
     test_ref("references/lineplot/blue.txt", @show_col(p))
 
-    p = @inferred lineplot(
+    p = @binf lineplot(
         x,
         y,
         name = "points1",
@@ -164,10 +164,10 @@ end
     @test p isa Plot
     test_ref("references/lineplot/parameters1.txt", @show_col(p))
 
-    @test @inferred(lineplot!(p, [0.5, 1, 1.5], name = "points2")) === p
+    @test @binf(lineplot!(p, [0.5, 1, 1.5], name = "points2")) === p
     test_ref("references/lineplot/parameters2.txt", @show_col(p))
 
-    @test @inferred(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
+    @test @binf(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
     test_ref("references/lineplot/parameters3.txt", @show_col(p))
     test_ref("references/lineplot/nocolor.txt", @show_nocol(p))
 
@@ -180,19 +180,19 @@ end
     sx = [1, 2, 4, 7, 8]
     sy = [1, 3, 4, 2, 7]
 
-    p = @inferred stairs(sx, sy, style = :pre)
+    p = @binf stairs(sx, sy, style = :pre)
     @test p isa Plot
     test_ref("references/lineplot/stairs_pre.txt", @show_col(p))
 
-    p = @inferred stairs(sx, sy)
+    p = @binf stairs(sx, sy)
     test_ref("references/lineplot/stairs_post.txt", @show_col(p))
-    p = @inferred stairs(sx, sy, style = :post)
+    p = @binf stairs(sx, sy, style = :post)
     test_ref("references/lineplot/stairs_post.txt", @show_col(p))
 
-    p = @inferred stairs(sx, sy, title = "Foo", color = :red, xlabel = "x", name = "1")
-    @test @inferred(stairs!(p, sx .- 0.2, sy .+ 1.5, name = "2")) === p
+    p = @binf stairs(sx, sy, title = "Foo", color = :red, xlabel = "x", name = "1")
+    @test @binf(stairs!(p, sx .- 0.2, sy .+ 1.5, name = "2")) === p
     test_ref("references/lineplot/stairs_parameters.txt", @show_col(p))
-    @test @inferred(stairs!(p, sx, sy, name = "3", style = :pre)) === p
+    @test @binf(stairs!(p, sx, sy, name = "3", style = :pre)) === p
     test_ref("references/lineplot/stairs_parameters2.txt", @show_col(p))
     test_ref("references/lineplot/stairs_parameters2_nocolor.txt", @show_nocol(p))
 

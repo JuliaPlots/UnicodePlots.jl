@@ -5,24 +5,24 @@ end
 
 @testset "arbitrary colormap" begin
     colormap = :cividis
-    p = @inferred contourplot(gaussian_2d()...; colormap = colormap)
+    p = @binf contourplot(gaussian_2d()...; colormap = colormap)
     test_ref("references/contourplot/gauss_$colormap.txt", @show_col(p))
 end
 
 @testset "number of levels" begin
     levels = 5
-    p = @inferred contourplot(gaussian_2d()...; levels = levels)
+    p = @binf contourplot(gaussian_2d()...; levels = levels)
     test_ref("references/contourplot/gauss_$(levels)levels.txt", @show_col(p))
 end
 
 @testset "update contourplot" begin
-    p = @inferred contourplot(gaussian_2d()...; levels = 2)
+    p = @binf contourplot(gaussian_2d()...; levels = 2)
     contourplot!(p, gaussian_2d(; σx = 0.5, σy = 0.25)...; levels = 1, colormap = :magma)
     test_ref("references/contourplot/gauss_nested.txt", @show_col(p))
 end
 
 @testset "function" begin
-    p = @inferred contourplot(
+    p = @binf contourplot(
         -3:0.01:3,
         -3:0.01:4,
         (x, y) -> (exp(-x^2 - y^2) + exp(-(x - 1)^2 - 2(y - 2)^2))^2,
