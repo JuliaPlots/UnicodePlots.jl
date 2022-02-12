@@ -320,19 +320,22 @@ julia_color(color::Symbol)::JuliaColorType = color
 julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
 @inline function set_color!(
-    colors::Array{ColorType,2},
+    colors::Matrix{ColorType},
     x::Int,
     y::Int,
-    color::ColorType,
+    color::UInt8,
     blend::Bool,
 )
-    if color === nothing || colors[x, y] === nothing || !blend
+    if colors[x, y] === nothing || !blend
         colors[x, y] = color
     else
         colors[x, y] |= color
     end
     nothing
 end
+
+@inline set_color!(colors::Matrix{ColorType}, x::Int, y::Int, color::Nothing, args...) =
+    (colors[x, y] = color; nothing)
 
 out_stream_size(out_stream::Union{Nothing,IO}) =
     out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)

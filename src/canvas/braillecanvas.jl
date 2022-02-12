@@ -52,13 +52,12 @@ function BrailleCanvas(
 )
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width = max(char_width, 5)
-    char_height = max(char_height, 2)
-    pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
+    char_width   = max(char_width, 5)
+    char_height  = max(char_height, 2)
+    pixel_width  = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
-    grid = fill(Char(BLANK_BRAILLE), char_width, char_height)
-    colors = Array{ColorType}(undef, char_width, char_height)
-    fill!(colors, nothing)
+    grid         = fill(Char(BLANK_BRAILLE), char_width, char_height)
+    colors       = Array{ColorType}(nothing, char_width, char_height)
     BrailleCanvas(
         grid,
         colors,

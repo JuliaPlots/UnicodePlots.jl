@@ -51,13 +51,12 @@ function DensityCanvas(
 )
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width = max(char_width, 5)
-    char_height = max(char_height, 5)
-    pixel_width = char_width * x_pixel_per_char(DensityCanvas)
+    char_width   = max(char_width, 5)
+    char_height  = max(char_height, 5)
+    pixel_width  = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
-    grid = fill(UInt(0), char_width, char_height)
-    colors = Array{ColorType}(undef, char_width, char_height)
-    fill!(colors, nothing)
+    grid         = fill(UInt(0), char_width, char_height)
+    colors       = Array{ColorType}(nothing, char_width, char_height)
     DensityCanvas(
         grid,
         colors,

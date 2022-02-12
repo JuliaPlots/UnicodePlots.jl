@@ -32,7 +32,7 @@ function points!(
     Y::AbstractVector,
     color::AbstractVector{T},
 ) where {T<:UserColorType}
-    (length(X) == length(color) && length(X) == length(Y)) ||
+    length(X) == length(Y) == length(color) ||
         throw(DimensionMismatch("X, Y, and color must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
