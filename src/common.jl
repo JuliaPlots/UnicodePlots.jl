@@ -263,13 +263,12 @@ function plotting_range_narrow(xmin, xmax)
     float(xmin), float(xmax)
 end
 
-scale_function(scale::Union{Symbol,Function})::Function =
-    scale isa Symbol ? FSCALES[scale] : scale
+scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale
 
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
 function extend_limits(vec, limits, scale::Union{Symbol,Function})
-    scale = scale_function(scale)
+    scale = scale_callback(scale)
     mi, ma = as_float(extrema(limits))
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))

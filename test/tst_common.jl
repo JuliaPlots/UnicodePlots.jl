@@ -88,6 +88,11 @@ end
     @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
 end
 
+struct Scale{T}
+    r::T
+end
+(f::Scale)(x) = f.r * x
+
 @testset "miscellaneous" begin
     @test UnicodePlots.char_marker('a') === 'a'
     @test UnicodePlots.char_marker("a") === 'a'
@@ -96,11 +101,12 @@ end
     @test UnicodePlots.iterable([1, 2]) == [1, 2]
     @test collect(Iterators.take(UnicodePlots.iterable(:abc), 2)) == [:abc, :abc]
 
-    @test UnicodePlots.scale_function(:identity)(1) === 1
-    @test UnicodePlots.scale_function(:log10)(10) ≈ 1
-    @test UnicodePlots.scale_function(:log2)(2) ≈ 1
-    @test UnicodePlots.scale_function(:ln)(ℯ) ≈ 1
-    @test UnicodePlots.scale_function(x -> x)(1) === 1
+    @test UnicodePlots.scale_callback(:identity)(1) === 1
+    @test UnicodePlots.scale_callback(:log10)(10) ≈ 1
+    @test UnicodePlots.scale_callback(:log2)(2) ≈ 1
+    @test UnicodePlots.scale_callback(:ln)(ℯ) ≈ 1
+    @test UnicodePlots.scale_callback(x -> x)(1) === 1
+    @test UnicodePlots.scale_callback(Scale(π))(1) ≈ π
 
     @test UnicodePlots.out_stream_width(nothing) == 40
     @test UnicodePlots.out_stream_height(nothing) == 15

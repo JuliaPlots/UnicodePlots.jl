@@ -206,8 +206,8 @@ function Plot(
     base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
     base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
 
-    xscale = scale_function(xscale)
-    yscale = scale_function(yscale)
+    xscale = scale_callback(xscale)
+    yscale = scale_callback(yscale)
 
     if projection !== nothing  # 3D
         (xscale !== identity || yscale !== identity) &&
