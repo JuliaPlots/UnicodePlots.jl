@@ -5,9 +5,8 @@
 
 Draws a staircase plot on a new canvas.
 
-The first (optional) vector `x` should contain the horizontal
-positions for all the points. The second vector `y` should then
-contain the corresponding vertical positions respectively.
+The first (optional) vector `x` should contain the horizontal positions for all the points.
+The second vector `y` should then contain the corresponding vertical positions respectively.
 This means that the two vectors must be of the same length and ordering.
 
 # Usage
@@ -20,10 +19,6 @@ $(arguments(
     (; style = "specifies where the transition of the stair takes place (can be either `:pre` or `:post`)");
     add = (:x, :y, :canvas)
 ))
-
-# Returns
-
-A plot object of type `Plot{T<:Canvas}`.
 
 # Author(s)
 

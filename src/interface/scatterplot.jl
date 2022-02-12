@@ -5,9 +5,8 @@
 
 Draws the given points on a new canvas.
 
-The first (optional) vector `x` should contain the horizontal
-positions for all the points. The second vector `y` should then
-contain the corresponding vertical positions respectively.
+The first (optional) vector `x` should contain the horizontal positions for all the points.
+The second vector `y` should then contain the corresponding vertical positions respectively.
 This means that the two vectors must be of the same length and ordering.
 
 # Usage
@@ -17,13 +16,11 @@ This means that the two vectors must be of the same length and ordering.
 # Arguments
 
 $(arguments(
-    (; marker = "choose a marker from $(keys(MARKERS)), a `Char`, a unit length `String` or a `Vector` of these");
-    add = (:x, :y, :canvas)
+    (
+        marker = "choose a marker from $(keys(MARKERS)), a `Char`, a unit length `String` or a `Vector` of these",
+        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
+    ); add = (:x, :y, :canvas)
 ))
-
-# Returns
-
-A plot object of type `Plot{T<:Canvas}`
 
 Author(s)
 

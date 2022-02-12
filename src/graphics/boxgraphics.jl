@@ -8,7 +8,7 @@ end
 
 mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
-    color::ColorType
+    colors::Vector{ColorType}
     char_width::Int
     visible::Bool
     min_x::R
@@ -18,7 +18,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
         data::AbstractVector{R},
         char_width::Int,
         visible::Bool,
-        color::UserColorType,
+        color::Union{UserColorType,AbstractVector},
         min_x::R,
         max_x::R,
     ) where {R}
@@ -26,6 +26,11 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
         if min_x == max_x
             min_x = min_x - 1
             max_x = max_x + 1
+        end
+        colors = if color isa AbstractVector
+            crayon_256_color.(color)
+        else
+            [crayon_256_color(color)]
         end
         new{R}(
             [
@@ -37,7 +42,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
                     maximum(data),
                 ),
             ],
-            crayon_256_color(color),
+            colors,
             char_width,
             visible,
             min_x,
@@ -53,19 +58,17 @@ BoxplotGraphics(
     data::AbstractVector{R},
     char_width::Int;
     visible::Bool = true,
-    color::UserColorType = :green,
+    color::Union{UserColorType,AbstractVector} = :green,
     min_x::Number = minimum(data),
     max_x::Number = maximum(data),
-) where {R<:Number} = BoxplotGraphics{R}(
-    data,
-    char_width,
-    visible,
-    crayon_256_color(color),
-    R(min_x),
-    R(max_x),
-)
+) where {R<:Number} =
+    BoxplotGraphics{R}(data, char_width, visible, color, R(min_x), R(max_x))
 
-function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R<:Number}
+function addseries!(
+    c::BoxplotGraphics,
+    data::AbstractVector{R},
+    color::UserColorType = nothing,
+) where {R<:Number}
     mi, ma = extrema(data)
     push!(
         c.data,
@@ -77,6 +80,7 @@ function addseries!(c::BoxplotGraphics, data::AbstractVector{R}) where {R<:Numbe
             ma,
         ),
     )
+    push!(c.colors, suitable_color(c, color))
     c.min_x = min(mi, c.min_x)
     c.max_x = max(ma, c.max_x)
     c
@@ -84,7 +88,8 @@ end
 
 function printrow(io::IO, c::BoxplotGraphics, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    series = c.data[ceil(Int, row / 3)]
+    idx = ceil(Int, row / 3)
+    series = c.data[idx]
 
     transform(value) = clamp(
         round(Int, (value - c.min_x) / (c.max_x - c.min_x) * c.char_width),
@@ -126,6 +131,6 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
         line[i] = line_char
     end
 
-    print_color(c.color, io, join(line))
+    print_color(c.colors[idx], io, join(line))
     nothing
 end

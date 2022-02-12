@@ -61,3 +61,8 @@ end
     p = @inferred boxplot(["one", "two"], [[1, 2, 3], [4, 5, 6]], color = (187, 0, 187))
     test_ref("references/boxplot/col2.txt", @show_col(p))
 end
+
+@testset "different colors" begin
+    p = @inferred boxplot(["one", "two"], [[1, 2, 3], [4, 5, 6]], color = [:red, :green])
+    test_ref("references/boxplot/colors.txt", @show_col(p))
+end

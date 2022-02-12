@@ -28,10 +28,6 @@ $(arguments(
     ); add = (:symbols,)
 ))
 
-# Returns
-
-A plot object of type `Plot{BarplotGraphics}`.
-
 # Author(s)
 
 - Iain Dunning (github.com/IainNZ)

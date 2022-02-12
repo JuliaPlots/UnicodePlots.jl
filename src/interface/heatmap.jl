@@ -23,10 +23,6 @@ $(arguments(
     ); add = (Z_DESCRIPTION..., :fix_ar)
 ))
 
-# Returns
-
-A plot object of type `Plot{HeatmapCanvas}`.
-
 # Author(s)
 
 - Rowan Katekar (github.com/rjkat)

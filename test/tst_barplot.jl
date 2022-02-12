@@ -139,3 +139,25 @@ end
     p = barplot(["B", "A"], [2, 1], color = (200, 50, 0))
     test_ref("references/barplot/col2.txt", @print_col(p))
 end
+
+@testset "different colors" begin
+    p = @inferred barplot(
+        [:a, :b, :c, :d, :e],
+        [20, 30, 60, 50, 40],
+        color = [:red, :green, :blue, :yellow, :normal],
+    )
+    test_ref("references/barplot/colors.txt", @print_col(p))
+end
+
+@testset "maximum - labels" begin
+    p = barplot(
+        ["1", "2", "3"],
+        [1, 2, 3],
+        color = :blue,
+        name = "1ˢᵗ series",
+        maximum = 10,
+    )
+    test_ref("references/barplot/maximum_series1.txt", @print_col(p))
+    barplot!(p, ["4", "5", "6"], [6, 1, 10], color = :red, name = "2ⁿᵈ series")
+    test_ref("references/barplot/maximum_series2.txt", @print_col(p))
+end
