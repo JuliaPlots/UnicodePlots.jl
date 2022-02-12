@@ -17,10 +17,6 @@ The two vectors must thus be of the same length and ordering.
 
 $(arguments(; add = (:x, :y), remove = (:grid,)))
 
-# Returns
-
-A plot object of type `Plot{DensityCanvas}`.
-
 # Author(s)
 
 - Christof Stocker (github.com/Evizero)

@@ -25,12 +25,9 @@ $(arguments(
         heights = "the values / heights of the bars",
         dict = "a dictonary in which the keys will be used as `text` and the values will be used as `heights`",
         xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
+        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
     ); remove = (:xlim, :ylim, :xscale, :yscale, :height, :grid), add = (:symbols,),
 ))
-
-# Returns
-
-A plot object of type `Plot{BarplotGraphics}`.
 
 # Author(s)
 

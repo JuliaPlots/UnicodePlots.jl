@@ -12,6 +12,7 @@ This means that the two vectors must be of the same length and ordering.
 # Usage
 
     lineplot([x], y; $(keywords(; add = (:canvas,)))
+
     lineplot(fun, [start], [stop]; kw...)
 
 # Arguments
@@ -21,12 +22,9 @@ $(arguments(
         fun = "a unary function ``f: R -> R`` that should be evaluated, and drawn as a path from `start` to `stop` (numbers in the domain)",
         head_tail = "color the line head and/or tail with the complement of the chosen color (`:head`, `:tail`, `:both`)",
         x = "horizontal position for each point (can be a real number or of type `TimeType`), if omitted, the axes of `y` will be used as `x`",
+        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
     ) ; add = (:x, :y, :canvas)
 ))
-
-# Returns
-
-A plot object of type `Plot{T<:Canvas}`.
 
 # Author(s)
 
@@ -69,7 +67,7 @@ function lineplot(
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
     canvas::Type = KEYWORDS.canvas,
-    color::UserColorType = KEYWORDS.color,
+    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
     kw...,

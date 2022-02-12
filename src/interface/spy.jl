@@ -29,10 +29,6 @@ $(arguments(
     ); add=(:fix_ar, :canvas),
 ))
 
-# Returns
-
-A plot object of type `Plot{T<:Canvas}`.
-
 # Author(s)
 
 - Dominique Orban (github.com/dpo)

@@ -29,12 +29,9 @@ $(arguments(
         text = "the labels/captions of the boxes (optional)",
         data = "a vector of vectors, with each inner vector representing a data series (choose a vector of vectors over a matrix to allow series of different lengths)",
         dict = "a dictonary in which the keys will be used as `text` and the values will be used as `data`",
+        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
     ); remove = (:ylim, :yscale, :height, :grid)
 ))
-
-# Returns
-
-A plot object of type `Plot{BoxplotGraphics}`.
 
 # Author(s)
 
