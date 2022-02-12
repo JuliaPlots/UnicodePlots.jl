@@ -3,27 +3,29 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     colors::Vector{ColorType}
     char_width::Int
     visible::Bool
-    max_freq::Number
+    maximum::Union{Nothing,Number}
+    max_val::Number
     max_len::Int
     symbols::AbstractVector{String}
-    transform
+    xscale  # Union{Symbol,Function} ==> no, we support functors which are <: Any
 
     function BarplotGraphics(
         bars::AbstractVector{R},
         char_width::Int,
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
+        maximum::Union{Nothing,Number},
         symbols::AbstractVector{S},
-        transform,
+        xscale,
     ) where {R,S<:Union{Char,String}}
         for s in symbols
             length(s) == 1 || throw(
                 ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
             )
         end
-        transform_func = transform isa Symbol ? getfield(Main, transform) : transform
+        xscale = xscale isa Symbol ? FSCALES[xscale] : xscale
         char_width = max(char_width, 10)
-        max_freq, i = findmax(transform_func.(bars))
+        max_val, i = findmax(xscale.(bars))
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
         colors = if color isa AbstractVector
@@ -36,68 +38,71 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
             colors,
             char_width,
             visible,
-            max_freq,
+            maximum,
+            max_val,
             max_len,
             map(string, symbols),
-            transform_func,
+            xscale,
         )
     end
 end
 
-nrows(g::BarplotGraphics) = length(g.bars)
-ncols(g::BarplotGraphics) = g.char_width
+nrows(c::BarplotGraphics) = length(c.bars)
+ncols(c::BarplotGraphics) = c.char_width
 
 BarplotGraphics(
     bars::AbstractVector{R},
     char_width::Int,
-    transform = :identity;
+    xscale = :identity;
     visible::Bool = true,
     color::Union{UserColorType,AbstractVector} = :green,
-    symbols = ['■'],
-) where {R<:Number} = BarplotGraphics(bars, char_width, visible, color, symbols, transform)
+    maximum::Union{Nothing,Number} = nothing,
+    symbols = KEYWORDS.symbols,
+) where {R<:Number} =
+    BarplotGraphics(bars, char_width, visible, color, maximum, symbols, xscale)
 
 function addrow!(
-    g::BarplotGraphics{R},
+    c::BarplotGraphics{R},
     bars::AbstractVector{R},
     color::Union{UserColorType,AbstractVector} = nothing,
 ) where {R<:Number}
-    append!(g.bars, bars)
+    append!(c.bars, bars)
     colors = if color isa AbstractVector
         crayon_256_color.(color)
     else
-        fill(crayon_256_color(color === nothing ? g.colors[end] : color), length(bars))
+        fill(suitable_color(c, color), length(bars))
     end
-    append!(g.colors, colors)
-    g.max_freq, i = findmax(g.transform.(g.bars))
-    g.max_len = length(string(g.bars[i]))
-    g
+    append!(c.colors, colors)
+    c.max_val, i = findmax(c.xscale.(c.bars))
+    c.max_len = length(string(c.bars[i]))
+    c
 end
 
 function addrow!(
-    g::BarplotGraphics{R},
+    c::BarplotGraphics{R},
     bar::Number,
     color::UserColorType = nothing,
 ) where {R<:Number}
-    push!(g.bars, R(bar))
-    push!(g.colors, color === nothing ? g.colors[end] : crayon_256_color(color))
-    g.max_freq, i = findmax(g.transform.(g.bars))
-    g.max_len = length(string(g.bars[i]))
-    g
+    push!(c.bars, R(bar))
+    push!(c.colors, suitable_color(c, color))
+    c.max_val, i = findmax(c.xscale.(c.bars))
+    c.max_len = length(string(c.bars[i]))
+    c
 end
 
-function printrow(io::IO, g::BarplotGraphics, row::Int)
-    0 < row <= nrows(g) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
-    bar = g.bars[row]
-    max_freq = g.max_freq
-    max_bar_width = max(g.char_width - 2 - g.max_len, 1)
-    val = g.transform(bar)
-    nsyms = length(g.symbols)
-    frac = float(max_freq > 0 ? max(val, zero(val)) / max_freq : 0)
+function printrow(io::IO, c::BarplotGraphics, row::Int)
+    0 < row <= nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
+    bar = c.bars[row]
+    max_val = c.maximum === nothing ? c.max_val : max(c.max_val, c.maximum)
+    max_bar_width = max(c.char_width - 2 - c.max_len, 1)
+    val = c.xscale(bar)
+    nsyms = length(c.symbols)
+    frac = float(max_val > 0 ? max(val, zero(val)) / max_val : 0)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
-    print_color(g.colors[row], io, max_freq > 0 ? repeat(g.symbols[nsyms], bar_head) : "")
+    print_color(c.colors[row], io, max_val > 0 ? repeat(c.symbols[nsyms], bar_head) : "")
     if nsyms > 1
         rem = (frac * max_bar_width - bar_head) * (nsyms - 2)
-        print_color(g.colors[row], io, rem > 0 ? g.symbols[1 + round(Int, rem)] : " ")
+        print_color(c.colors[row], io, rem > 0 ? c.symbols[1 + round(Int, rem)] : " ")
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
@@ -107,7 +112,7 @@ function printrow(io::IO, g::BarplotGraphics, row::Int)
     else
         len = -1
     end
-    pad_len = max(max_bar_width + 1 + g.max_len - bar_head - len, 0)
+    pad_len = max(max_bar_width + 1 + c.max_len - bar_head - len, 0)
     print(io, repeat(" ", round(Int, pad_len)))
     nothing
 end

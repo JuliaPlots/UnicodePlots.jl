@@ -148,3 +148,16 @@ end
     )
     test_ref("references/barplot/colors.txt", @print_col(p))
 end
+
+@testset "maximum - labels" begin
+    p = barplot(
+        ["1", "2", "3"],
+        [1, 2, 3],
+        color = :blue,
+        name = "1ˢᵗ series",
+        maximum = 10,
+    )
+    test_ref("references/barplot/maximum_series1.txt", @print_col(p))
+    barplot!(p, ["4", "5", "6"], [6, 1, 10], color = :red, name = "2ⁿᵈ series")
+    test_ref("references/barplot/maximum_series2.txt", @print_col(p))
+end

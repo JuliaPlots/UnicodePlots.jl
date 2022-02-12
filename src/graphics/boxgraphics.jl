@@ -80,7 +80,7 @@ function addseries!(
             ma,
         ),
     )
-    push!(c.colors, color === nothing ? c.colors[end] : crayon_256_color(color))
+    push!(c.colors, suitable_color(c, color))
     c.min_x = min(mi, c.min_x)
     c.max_x = max(ma, c.max_x)
     c
