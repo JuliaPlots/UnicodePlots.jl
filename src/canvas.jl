@@ -8,8 +8,8 @@ pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :no
     pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) <= (xs = c.xscale(x)) <= origin_x(c) + width(c) || return c
-    origin_y(c) <= (ys = c.yscale(y)) <= origin_y(c) + height(c) || return c
+    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
+    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
@@ -52,40 +52,37 @@ function lines!(
     y2::Number,
     c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
     c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
-    col_cb = nothing,  # color callback (map values to colors)
+    col_cb::Union{Nothing,Function} = nothing,  # color callback (map values to colors)
 )
-    x1 = c.xscale(x1)
-    x2 = c.xscale(x2)
-    y1 = c.yscale(y1)
-    y2 = c.yscale(y2)
+    x1s = c.xscale(x1)
+    x2s = c.xscale(x2)
+    y1s = c.yscale(y1)
+    y2s = c.yscale(y2)
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
-    ((x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx)) && return c
+    (mx ≤ x1s ≤ Mx || mx ≤ x2s ≤ Mx) || return c
 
     my = origin_y(c)
     My = origin_y(c) + height(c)
-    ((y1 < my && y2 < my) || (y1 > My && y2 > My)) && return c
+    (my ≤ y1s ≤ My || my ≤ y2s ≤ My) || return c
 
     x2p(x) = (x - mx) / width(c) * pixel_width(c)
     y2p(y) = pixel_height(c) - (y - my) / height(c) * pixel_height(c)
 
-    Δx = x2p(x2) - (cur_x = x2p(x1))
-    Δy = y2p(y2) - (cur_y = y2p(y1))
+    Δx = x2p(x2s) - (cur_x = x2p(x1s))
+    Δy = y2p(y2s) - (cur_y = y2p(y1s))
 
-    nsteps = abs(Δx) > abs(Δy) ? abs(Δx) : abs(Δy)
-    nsteps = min(nsteps, typemax(Int32))  # hard limit
+    nsteps = min(max(abs(Δx), abs(Δy)), typemax(Int32))  # hard limit
+    len = min(floor(Int, nsteps), typemax(Int16))  # performance limit
+
+    δx = Δx / nsteps
+    δy = Δy / nsteps
 
     px, Px = x2p(mx), x2p(Mx)
     py, Py = y2p(my), y2p(My)
     px, Px = min(px, Px), max(px, Px)
     py, Py = min(py, Py), max(py, Py)
-
-    δx = Δx / nsteps
-    δy = Δy / nsteps
-
-    max_num_iter = typemax(Int16)  # performance limit
-    len = nsteps > max_num_iter ? max_num_iter : floor(Int, nsteps)
 
     if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb !== nothing
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
