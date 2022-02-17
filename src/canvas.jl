@@ -8,8 +8,8 @@ pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :no
     pixel!(c, pixel_x, pixel_y, color)
 
 function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) <= (xs = fscale(x, c.xscale)) <= origin_x(c) + width(c) || return c
-    origin_y(c) <= (ys = fscale(y, c.yscale)) <= origin_y(c) + height(c) || return c
+    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
+    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
     pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
@@ -32,7 +32,7 @@ function points!(
     Y::AbstractVector,
     color::AbstractVector{T},
 ) where {T<:UserColorType}
-    (length(X) == length(color) && length(X) == length(Y)) ||
+    length(X) == length(Y) == length(color) ||
         throw(DimensionMismatch("X, Y, and color must be the same length"))
     for i in 1:length(X)
         points!(c, X[i], Y[i], color[i])
@@ -50,48 +50,66 @@ function lines!(
     y1::Number,
     x2::Number,
     y2::Number,
-    color::UserColorType,
+    c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
+    c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
+    col_cb::Union{Nothing,Function} = nothing,  # color callback (map values to colors)
 )
-    x1 = fscale(x1, c.xscale)
-    x2 = fscale(x2, c.xscale)
-    y1 = fscale(y1, c.yscale)
-    y2 = fscale(y2, c.yscale)
+    x1s = c.xscale(x1)
+    x2s = c.xscale(x2)
+    y1s = c.yscale(y1)
+    y2s = c.yscale(y2)
 
     mx = origin_x(c)
     Mx = origin_x(c) + width(c)
-    (x1 < mx && x2 < mx) || (x1 > Mx && x2 > Mx) && return c
+    (mx ≤ x1s ≤ Mx || mx ≤ x2s ≤ Mx) || return c
 
     my = origin_y(c)
     My = origin_y(c) + height(c)
-    (y1 < my && y2 < my) || (y1 > My && y2 > My) && return c
+    (my ≤ y1s ≤ My || my ≤ y2s ≤ My) || return c
 
     x2p(x) = (x - mx) / width(c) * pixel_width(c)
     y2p(y) = pixel_height(c) - (y - my) / height(c) * pixel_height(c)
 
-    Δx = x2p(x2) - (cur_x = x2p(x1))
-    Δy = y2p(y2) - (cur_y = y2p(y1))
+    Δx = x2p(x2s) - (cur_x = x2p(x1s))
+    Δy = y2p(y2s) - (cur_y = y2p(y1s))
 
-    nsteps = abs(Δx) > abs(Δy) ? abs(Δx) : abs(Δy)
-    nsteps = min(nsteps, typemax(Int32))  # hard limit
+    nsteps = min(max(abs(Δx), abs(Δy)), typemax(Int32))  # hard limit
+    len = min(floor(Int, nsteps), typemax(Int16))  # performance limit
 
     δx = Δx / nsteps
     δy = Δy / nsteps
 
-    px, Px = extrema([x2p(mx), x2p(Mx)])
-    py, Py = extrema([y2p(my), y2p(My)])
+    px, Px = x2p(mx), x2p(Mx)
+    py, Py = y2p(my), y2p(My)
+    px, Px = min(px, Px), max(px, Px)
+    py, Py = min(py, Py), max(py, Py)
 
-    pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
-    max_num_iter = typemax(Int16)  # performance limit
-    for _ in if nsteps > max_num_iter
-        range(1, stop = nsteps, length = max_num_iter)
+    if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb !== nothing
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
+        start_x, start_y = cur_x, cur_y
+        iΔ = 1 / √(Δx^2 + Δy^2)
+        for _ in range(1, length = len)
+            cur_x += δx
+            cur_y += δy
+            (cur_y < py || cur_y > Py) && continue
+            (cur_x < px || cur_x > Px) && continue
+            weight = √((cur_x - start_x)^2 + (cur_y - start_y)^2) * iΔ
+            pixel!(
+                c,
+                floor(Int, cur_x),
+                floor(Int, cur_y),
+                col_cb((1 - weight) * c_or_v1 + weight * c_or_v2),
+            )
+        end
     else
-        range(1, stop = nsteps, step = 1)
-    end
-        cur_x += δx
-        cur_y += δy
-        (cur_y < py || cur_y > Py) && continue
-        (cur_x < px || cur_x > Px) && continue
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+        for _ in range(1, length = len)
+            cur_x += δx
+            cur_y += δy
+            (cur_y < py || cur_y > Py) && continue
+            (cur_x < px || cur_x > Px) && continue
+            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+        end
     end
     c
 end
@@ -107,11 +125,12 @@ lines!(
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
-    for i in 1:(length(X) - 1)
-        if !(isfinite(X[i]) && isfinite(X[i + 1]) && isfinite(Y[i]) && isfinite(Y[i + 1]))
-            continue
-        end
-        lines!(c, X[i], Y[i], X[i + 1], Y[i + 1], color)
+    for i in 2:length(X)
+        isfinite(X[i - 1]) || continue
+        isfinite(Y[i - 1]) || continue
+        isfinite(X[i]) || continue
+        isfinite(Y[i]) || continue
+        lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], color)
     end
     c
 end
@@ -229,8 +248,8 @@ function annotate!(
     halign = :center,
     valign = :center,
 )
-    xs = fscale(x, c.xscale)
-    ys = fscale(y, c.yscale)
+    xs = c.xscale(x)
+    ys = c.yscale(y)
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 
@@ -244,8 +263,8 @@ function annotate!(
 end
 
 function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
-    xs = fscale(x, c.xscale)
-    ys = fscale(y, c.yscale)
+    xs = c.xscale(x)
+    ys = c.yscale(y)
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 

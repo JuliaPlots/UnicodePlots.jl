@@ -27,8 +27,8 @@ end
             @test @inferred(origin_y(c)) === -1.5
             @test @inferred(ncols(c)) === 30
             @test @inferred(nrows(c)) === (T == HeatmapCanvas ? 8 : 15)
-            @test @inferred(UnicodePlots.x_pixel_per_char(typeof(c))) === xres
-            @test @inferred(UnicodePlots.y_pixel_per_char(typeof(c))) === yres
+            @test @inferred(UnicodePlots.x_pixel_per_char(T)) === xres
+            @test @inferred(UnicodePlots.y_pixel_per_char(T)) === yres
             @test @inferred(pixel_width(c)) === 30 * xres
             @test @inferred(pixel_height(c)) === 15 * yres
             @test @inferred(pixel_size(c)) === (pixel_width(c), pixel_height(c))

@@ -195,13 +195,6 @@ end
 iterable(obj::AbstractVector) = obj
 iterable(obj) = Iterators.repeated(obj)
 
-fscale(x, s::Symbol) = FSCALES[s](x)
-iscale(x, s::Symbol) = ISCALES[s](x)
-
-# support arbitrary scale functions
-fscale(x, f::Function) = f(x)
-iscale(x, f::Function) = f(x)
-
 function transform_name(tr, basename = "")
     name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
     name == "identity" && return basename
@@ -270,9 +263,12 @@ function plotting_range_narrow(xmin, xmax)
     float(xmin), float(xmax)
 end
 
+scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale
+
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
 function extend_limits(vec, limits, scale::Union{Symbol,Function})
+    scale = scale_callback(scale)
     mi, ma = as_float(extrema(limits))
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))
@@ -281,8 +277,8 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
         ma = mi + 1
         mi = mi - 1
     end
-    if string(scale) != "identity"
-        fscale(mi, scale), fscale(ma, scale)
+    if scale != identity
+        scale(mi), scale(ma)
     else
         all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
@@ -323,19 +319,22 @@ julia_color(color::Symbol)::JuliaColorType = color
 julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
 
 @inline function set_color!(
-    colors::Array{ColorType,2},
+    colors::Matrix{ColorType},
     x::Int,
     y::Int,
-    color::ColorType,
+    color::UInt8,
     blend::Bool,
 )
-    if color === nothing || colors[x, y] === nothing || !blend
+    if colors[x, y] === nothing || !blend
         colors[x, y] = color
     else
         colors[x, y] |= color
     end
     nothing
 end
+
+@inline set_color!(colors::Matrix{ColorType}, x::Int, y::Int, color::Nothing, args...) =
+    (colors[x, y] = color; nothing)
 
 out_stream_size(out_stream::Union{Nothing,IO}) =
     out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)

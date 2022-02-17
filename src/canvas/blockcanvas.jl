@@ -32,9 +32,9 @@ This canvas effectively turns every character
 into 4 pixels that can individually be manipulated
 using binary operations.
 """
-struct BlockCanvas <: LookupCanvas
-    grid::Array{UInt16,2}
-    colors::Array{ColorType,2}
+struct BlockCanvas{XS<:Function,YS<:Function} <: LookupCanvas
+    grid::Matrix{UInt16}
+    colors::Matrix{ColorType}
     min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
@@ -44,18 +44,18 @@ struct BlockCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Union{Symbol,Function}
-    yscale::Union{Symbol,Function}
+    xscale::XS
+    yscale::YS
 end
 
-@inline x_pixel_per_char(::Type{BlockCanvas}) = 2
-@inline y_pixel_per_char(::Type{BlockCanvas}) = 2
+@inline x_pixel_per_char(::Type{C}) where {C<:BlockCanvas} = 2
+@inline y_pixel_per_char(::Type{C}) where {C<:BlockCanvas} = 2
 
 @inline lookup_encode(::BlockCanvas) = block_signs
 @inline lookup_decode(::BlockCanvas) = block_decode
 
 BlockCanvas(args...; kw...) =
-    CreateLookupCanvas(BlockCanvas, (0b0000, 0b1111), args...; kw...)
+    CreateLookupCanvas(BlockCanvas, UInt16, (0b0000, 0b1111), args...; kw...)
 
 function char_point!(
     c::BlockCanvas,

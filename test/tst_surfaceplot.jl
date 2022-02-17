@@ -23,6 +23,21 @@ end
     test_ref("references/surfaceplot/matrix.txt", @show_col(p))
 end
 
+@testset "color interpolation" begin
+    p = surfaceplot(
+        -2:2,
+        -2:2,
+        (x, y) -> 15sinc(√(x^2 + y^2) / π),
+        elevation = 80,
+        width = 80,
+        height = 30,
+        zoom = 1.8,
+        colormap = :jet,
+        lines = true,
+    )
+    test_ref("references/surfaceplot/interpolation.txt", @show_col(p))
+end
+
 @testset "slice" begin
     data = zeros(40, 20, 20)
     x, y, z = (axes(data, d) for d in 1:ndims(data))

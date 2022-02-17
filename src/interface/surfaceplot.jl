@@ -6,7 +6,7 @@ To plot a slice one can pass an anonymous function which maps to a constant heig
 
 # Usage
 
-    surfaceplot(x, y, A; $(keywords((; lines = false); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid))))
+    surfaceplot(x, y, A; $(keywords((; lines = false); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :canvas), remove = (:blend, :grid, :xscale, :yscale))))
 
 # Arguments
 
@@ -15,7 +15,7 @@ $(arguments(
         A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
         lines = "use `lineplot` instead of `scatterplot` (for regular increasing data)",
         zscale = "scale heights (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name)
+    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name, :xscale, :yscale)
 ))
 
 # Author(s)
@@ -125,62 +125,68 @@ function surfaceplot!(
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
+    cmapped = color === nothing
+    color = (color == :auto) ? next_color!(plot) : color
+
     plot.colorbar_lim = mh, Mh = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
     plot.colormap = callback = colormap_callback(colormap)
-    plot.colorbar = colorbar && color === nothing
+    plot.colorbar = colorbar && cmapped
 
-    color = if (cmapped = color === nothing)
-        map(h -> isfinite(h) ? callback(h, mh, Mh) : nothing, H)
-    else
-        (color == :auto) ? next_color!(plot) : color
-    end
-
-    if lines && X isa AbstractMatrix && Y isa AbstractMatrix && Z isa AbstractMatrix
+    F = float(eltype(Z))
+    if (
+        lines &&
+        X isa AbstractMatrix &&
+        Y isa AbstractMatrix &&
+        Z isa AbstractMatrix &&
+        H isa AbstractMatrix
+    )
         m, n = size(X)
-        lx, ly, lz = zeros(eltype(X), 2), zeros(eltype(Y), 2), zeros(eltype(Z), 2)
+        col_cb = h -> callback(h, mh, Mh)
+        buf = MMatrix{4,2,F}(undef)
+        incs = (0, 0, 1, 0), (0, 0, 0, 1), (0, 0, 1, 1), (1, 0, 0, 1)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
-            c = cmapped ? color[i, j] : color
-            scatter = false
-            if i < m
-                @views lx .= X[i:(i + 1), j]
-                @views ly .= Y[i:(i + 1), j]
-                @views lz .= Z[i:(i + 1), j]
-                lines!(plot, lx, ly, lz, c)
-            else
-                scatter = true
+            for inc in incs
+                (i1 = i + inc[1]) > m && continue
+                (j1 = j + inc[2]) > n && continue
+                (i2 = i + inc[3]) > m && continue
+                (j2 = j + inc[4]) > n && continue
+                plot.projection(
+                    buf,
+                    @SMatrix(
+                        [
+                            X[i1, j1] X[i2, j2]
+                            Y[i1, j1] Y[i2, j2]
+                            Z[i1, j1] Z[i2, j2]
+                            1 1
+                        ]
+                    )
+                )
+                lines!(
+                    plot.graphics,
+                    buf[1, 1],
+                    buf[2, 1],
+                    buf[1, 2],
+                    buf[2, 2],
+                    H[i1, j1],
+                    H[i2, j2],
+                    col_cb,
+                )
             end
-            if j < n
-                @views lx .= X[i, j:(j + 1)]
-                @views ly .= Y[i, j:(j + 1)]
-                @views lz .= Z[i, j:(j + 1)]
-                lines!(plot, lx, ly, lz, c)
-            else
-                scatter = true
-            end
-            if i < m && j < n
-                lx[1] = X[i, j]
-                lx[2] = X[i + 1, j + 1]
-                ly[1] = Y[i, j]
-                ly[2] = Y[i + 1, j + 1]
-                lz[1] = Z[i, j]
-                lz[2] = Z[i + 1, j + 1]
-                lines!(plot, lx, ly, lz, c)
-                lx[1] = X[i + 1, j]
-                lx[2] = X[i, j + 1]
-                ly[1] = Y[i + 1, j]
-                ly[2] = Y[i, j + 1]
-                lz[1] = Z[i + 1, j]
-                lz[2] = Z[i, j + 1]
-                lines!(plot, lx, ly, lz, c)
-            end
-            scatter && points!(plot, X[i, j], Y[i, j], Z[i, j], c)
+            (i == m || j == n) &&
+                points!(plot, X[i, j], Y[i, j], Z[i, j], cmapped ? col_cb(H[i, j]) : color)
         end
     else
+        cmapped && (color = map(h -> callback(h, mh, Mh), H))
+        npts = length(Z)
+        buf = Array{F}(undef, 4, npts)
+        plot.projection(
+            buf,
+            vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :), ones(1, npts)),
+        )
         points!(
-            plot,
-            @view(X[:]),
-            @view(Y[:]),
-            @view(Z[:]),
+            plot.graphics,
+            @view(buf[1, :]),
+            @view(buf[2, :]),
             cmapped ? @view(color[:]) : color,
         )
     end

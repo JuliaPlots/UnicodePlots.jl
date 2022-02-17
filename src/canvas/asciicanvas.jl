@@ -107,9 +107,9 @@ with `lineplot`.
 For `scatterplot` we suggest to use the `DotCanvas`
 instead.
 """
-struct AsciiCanvas <: LookupCanvas
-    grid::Array{UInt16,2}
-    colors::Array{ColorType,2}
+struct AsciiCanvas{XS<:Function,YS<:Function} <: LookupCanvas
+    grid::Matrix{UInt16}
+    colors::Matrix{ColorType}
     min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
@@ -119,18 +119,18 @@ struct AsciiCanvas <: LookupCanvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Union{Symbol,Function}
-    yscale::Union{Symbol,Function}
+    xscale::XS
+    yscale::YS
 end
 
-@inline x_pixel_per_char(::Type{AsciiCanvas}) = 3
-@inline y_pixel_per_char(::Type{AsciiCanvas}) = 3
+@inline x_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
+@inline y_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
 
 @inline lookup_encode(::AsciiCanvas) = ascii_signs
 @inline lookup_decode(::AsciiCanvas) = ascii_decode
 
 AsciiCanvas(args...; kw...) =
-    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; kw...)
+    CreateLookupCanvas(AsciiCanvas, UInt16, (0b000_000_000, 0b111_111_111), args...; kw...)
 
 function char_point!(
     c::AsciiCanvas,

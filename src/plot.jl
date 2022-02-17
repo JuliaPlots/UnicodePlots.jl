@@ -44,7 +44,7 @@ Author(s)
 [`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
 [`BlockCanvas`](@ref), [`AsciiCanvas`](@ref)
 """
-mutable struct Plot{T<:GraphicsArea}
+mutable struct Plot{T<:GraphicsArea,E,F}
     graphics::T
     title::String
     xlabel::String
@@ -66,7 +66,7 @@ mutable struct Plot{T<:GraphicsArea}
     colorbar_border::Symbol
     colorbar_lim::Tuple{Number,Number}
     autocolor::Int
-    projection::Union{MVP,Nothing}
+    projection::MVP{E,F}
 end
 
 function Plot(
@@ -84,9 +84,9 @@ function Plot(
     colorbar_border::Symbol = KEYWORDS.colorbar_border,
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
-    projection::Union{MVP,Nothing} = nothing,
+    projection::MVP{E,F} = MVP(),
     ignored...,
-) where {T<:GraphicsArea}
+) where {T<:GraphicsArea,E,F}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -96,7 +96,7 @@ function Plot(
     colors_right = Dict{Int,JuliaColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,JuliaColorType}()
-    p = Plot{T}(
+    p = Plot{T,E,F}(
         graphics,
         title,
         xlabel,
@@ -137,22 +137,26 @@ Check for invalid input (length) and selects only finite input data.
 function validate_input(
     x::AbstractVector{<:Number},
     y::AbstractVector{<:Number},
-    z::Union{AbstractVector{<:Number},Nothing} = nothing,
+    z::AbstractVector{<:Number},
 )
-    if z !== nothing
-        length(x) == length(y) == length(z) ||
-            throw(DimensionMismatch("x, y and z must have same length"))
-        idx = map(x, y, z) do i, j, k
-            isfinite(i) && isfinite(j) && isfinite(k)
-        end
-        x[idx], y[idx], z[idx]
-    else
-        length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
-        idx = map(x, y) do i, j
-            isfinite(i) && isfinite(j)
-        end
-        x[idx], y[idx], z
-    end
+    length(x) == length(y) == length(z) ||
+        throw(DimensionMismatch("x, y and z must have same length"))
+    idx = BitVector(map(x, y, z) do i, j, k
+        isfinite(i) && isfinite(j) && isfinite(k)
+    end)
+    x[idx], y[idx], z[idx]
+end
+
+function validate_input(
+    x::AbstractVector{<:Number},
+    y::AbstractVector{<:Number},
+    z::Nothing,
+)
+    length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
+    idx = BitVector(map(x, y) do i, j
+        isfinite(i) && isfinite(j)
+    end)
+    x[idx], y[idx], z
 end
 
 function Plot(
@@ -184,7 +188,7 @@ function Plot(
     grid::Bool = KEYWORDS.grid,
     min_width::Int = 5,
     min_height::Int = 2,
-    projection::Union{MVP,Symbol,Nothing} = nothing,
+    projection::Union{Nothing,Symbol,MVP} = nothing,
     axes3d = KEYWORDS.axes3d,
     kw...,
 ) where {C<:Canvas}
@@ -199,8 +203,14 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
+    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
+    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
+
+    xscale = scale_callback(xscale)
+    yscale = scale_callback(yscale)
+
     if projection !== nothing  # 3D
-        (xscale !== :identity || yscale !== :identity) &&
+        (xscale !== identity || yscale !== identity) &&
             throw(ArgumentError("xscale or yscale are unsupported in 3D"))
 
         projection isa Symbol && (projection = MVP(x, y, z; kw...))
@@ -221,6 +231,7 @@ function Plot(
 
         grid = blend = false
     else  # 2D
+        projection = MVP()
         mx, Mx = extend_limits(x, xlim, xscale)
         my, My = extend_limits(y, ylim, yscale)
     end
@@ -257,8 +268,6 @@ function Plot(
         colorbar_lim = colorbar_lim,
         projection = projection,
     )
-    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
-    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
     m_x, M_x, m_y, M_y = map(
         v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
         (mx, Mx, my, My),
@@ -275,19 +284,18 @@ function Plot(
     label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
         if my < 0 < My
-            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(typeof(canvas)))
+            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
                 points!(plot, i, 0.0, :normal)
             end
         end
         if mx < 0 < Mx
-            for i in
-                range(my, stop = My, length = height * y_pixel_per_char(typeof(canvas)))
+            for i in range(my, stop = My, length = height * y_pixel_per_char(C))
                 points!(plot, 0.0, i, :normal)
             end
         end
     end
 
-    (projection !== nothing && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
+    (is_enabled(projection) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
 
     plot
 end
@@ -544,10 +552,10 @@ function annotate!(
 end
 
 transform(tr, args...) = args  # catch all
-transform(tr::Union{MVP,Nothing}, x, y, c::UserColorType) = (x, y, c)
-transform(tr::Union{MVP,Nothing}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
-transform(tr::MVP, x, y, z::Union{AbstractVector,Number}, args...) =
-    (tr(vcat(x', y', z'))..., args...)
+transform(tr::MVP{Val{false}}, x, y, c::UserColorType) = (x, y, c)
+transform(tr::MVP{Val{false}}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector,Number}, args...) =
+    (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kw...)

@@ -34,6 +34,7 @@ function lookup_decode end
 
 function CreateLookupCanvas(
     ::Type{T},
+    G,
     min_max,
     char_width::Int,
     char_height::Int;
@@ -43,8 +44,8 @@ function CreateLookupCanvas(
     origin_y::Number = 0.0,
     width::Number = 1.0,
     height::Number = 1.0,
-    xscale::Union{Symbol,Function} = :identity,
-    yscale::Union{Symbol,Function} = :identity,
+    xscale::Function = identity,
+    yscale::Function = identity,
     min_char_height::Int = 5,
     min_char_width::Int = 2,
 ) where {T<:LookupCanvas}
@@ -54,12 +55,12 @@ function CreateLookupCanvas(
     char_height  = max(char_height, min_char_height)
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
-    grid         = fill(0x00, char_width, char_height)
-    colors       = fill(nothing, char_width, char_height)
+    grid         = fill(G(0), char_width, char_height)
+    colors       = Array{ColorType}(nothing, char_width, char_height)
     T(
         grid,
         colors,
-        min_max,
+        NTuple{2,UInt64}(min_max),
         blend,
         visible,
         pixel_width,

@@ -23,7 +23,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
                 ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
             )
         end
-        xscale = xscale isa Symbol ? FSCALES[xscale] : xscale
+        xscale = scale_callback(xscale)
         char_width = max(char_width, 10)
         max_val, i = findmax(xscale.(bars))
         max_len = length(string(bars[i]))
@@ -113,6 +113,6 @@ function printrow(io::IO, c::BarplotGraphics, row::Int)
         len = -1
     end
     pad_len = max(max_bar_width + 1 + c.max_len - bar_head - len, 0)
-    print(io, repeat(" ", round(Int, pad_len)))
+    print(io, ' '^round(Int, pad_len))
     nothing
 end

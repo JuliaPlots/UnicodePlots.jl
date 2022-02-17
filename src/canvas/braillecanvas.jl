@@ -11,9 +11,9 @@ the Braille symbols to represent individual pixel.
 This effectively turns every character into 8 pixels
 that can individually be manipulated using binary operations.
 """
-struct BrailleCanvas <: Canvas
-    grid::Array{Char,2}
-    colors::Array{ColorType,2}
+struct BrailleCanvas{XS<:Function,YS<:Function} <: Canvas
+    grid::Matrix{Char}
+    colors::Matrix{ColorType}
     blend::Bool
     visible::Bool
     pixel_width::Int
@@ -22,8 +22,8 @@ struct BrailleCanvas <: Canvas
     origin_y::Float64
     width::Float64
     height::Float64
-    xscale::Union{Symbol,Function}
-    yscale::Union{Symbol,Function}
+    xscale::XS
+    yscale::YS
 end
 
 @inline pixel_width(c::BrailleCanvas) = c.pixel_width
@@ -35,8 +35,8 @@ end
 @inline nrows(c::BrailleCanvas) = size(c.grid, 2)
 @inline ncols(c::BrailleCanvas) = size(c.grid, 1)
 
-@inline x_pixel_per_char(::Type{BrailleCanvas}) = 2
-@inline y_pixel_per_char(::Type{BrailleCanvas}) = 4
+@inline x_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 2
+@inline y_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 4
 
 function BrailleCanvas(
     char_width::Int,
@@ -47,17 +47,17 @@ function BrailleCanvas(
     origin_y::Number = 0.0,
     width::Number = 1.0,
     height::Number = 1.0,
-    xscale::Union{Symbol,Function} = :identity,
-    yscale::Union{Symbol,Function} = :identity,
+    xscale::Function = identity,
+    yscale::Function = identity,
 )
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width = max(char_width, 5)
-    char_height = max(char_height, 2)
-    pixel_width = char_width * x_pixel_per_char(BrailleCanvas)
+    char_width   = max(char_width, 5)
+    char_height  = max(char_height, 2)
+    pixel_width  = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
-    grid = fill(Char(BLANK_BRAILLE), char_width, char_height)
-    colors = fill(nothing, char_width, char_height)
+    grid         = fill(Char(BLANK_BRAILLE), char_width, char_height)
+    colors       = Array{ColorType}(nothing, char_width, char_height)
     BrailleCanvas(
         grid,
         colors,

@@ -61,8 +61,8 @@ function main()
       """),
     surfaceplot2 = ("Surfaceplot", """
       surfaceplot(
-        -8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π),
-        zscale=z -> 0, lines=true, azimuth=-90, elevation=90, colormap=:jet, border=:dotted
+        -2:2, -2:2, (x, y) -> 15sinc(√(x^2 + y^2) / π),
+        zscale=z -> 0, lines=true, colormap=:jet, border=:dotted
       )
       """),
     isosurface = ("Isosurface", """
@@ -150,6 +150,7 @@ function main()
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html)
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml)
 [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl)
+[![JuliaHub deps](https://juliahub.com/docs/UnicodePlots/deps.svg)](https://juliahub.com/ui/Packages/UnicodePlots/Ctj9q?t=2)
 [![UnicodePlots Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/UnicodePlots)](https://pkgs.genieframework.com?packages=UnicodePlots)
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
@@ -280,14 +281,14 @@ Plot a colored surface using height values `z` above a `x-y` plane, in three dim
 
 $(examples.surfaceplot1)
 
-Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`).
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
 To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 $(examples.surfaceplot2)
 
 #### Isosurface Plot
 
-Uses [`MarchingCubes.jl`](https://github.com/t-bltg/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
+Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
 Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
 Back face culling (hide not visible facets) can be activated using `cull=true`.
 One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
@@ -439,14 +440,22 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     write(io, """
       #!/usr/bin/env bash
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
+
+      echo '== julia =='
       \${JULIA-julia} gen_imgs.jl
 
-      for f in $ver/*.txt; do
-        html=\${f%.txt}.html
-        cat \$f | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
+      txt2png() {
+        html=\${1%.txt}.html
+        cat \$1 | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
         sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
         \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
+      }
+
+      echo '== txt2png =='
+      for f in $ver/*.txt; do
+        txt2png \$f & pids+=(\$!)
       done
+      wait \${pids[@]}
 
       rm $ver/*.txt
       rm $ver/*.html
