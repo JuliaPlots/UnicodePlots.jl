@@ -1,7 +1,7 @@
 <!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead, and run $ julia generate_docs.jl to render README.md !! -->
 # UnicodePlots
 
-[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md) [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html) [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml) [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl) [![UnicodePlots Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/UnicodePlots)](https://pkgs.genieframework.com?packages=UnicodePlots)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md) [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html) [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml) [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl) [![JuliaHub deps](https://juliahub.com/docs/UnicodePlots/deps.svg)](https://juliahub.com/ui/Packages/UnicodePlots/Ctj9q?t=2) [![UnicodePlots Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/UnicodePlots)](https://pkgs.genieframework.com?packages=UnicodePlots)
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
@@ -214,7 +214,7 @@ surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
 ```
 ![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot1.png)
 
-Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`). To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation). To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 ```julia
 surfaceplot(
@@ -295,7 +295,7 @@ All plots support the set (or a subset) of the following named parameters:
   - `colormap::Symbol = :viridis`: choose from (`:viridis`, `:cividis`, `:plasma`, `:jet`, `:gray`, `keys(UnicodePlots.COLOR_MAP_DATA)`...), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
   - `colorbar_lim::Tuple = (0, 1)`: colorbar limit.
   - `colorbar_border::Symbol = :solid`: color bar bounding box style (`:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
-  - `canvas::DataType = BrailleCanvas`: type of canvas used for drawing.
+  - `canvas::UnionAll = BrailleCanvas`: type of canvas used for drawing.
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.

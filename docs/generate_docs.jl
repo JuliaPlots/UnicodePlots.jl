@@ -150,6 +150,7 @@ function main()
 [![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html)
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml)
 [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl)
+[![JuliaHub deps](https://juliahub.com/docs/UnicodePlots/deps.svg)](https://juliahub.com/ui/Packages/UnicodePlots/Ctj9q?t=2)
 [![UnicodePlots Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/UnicodePlots)](https://pkgs.genieframework.com?packages=UnicodePlots)
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
@@ -280,7 +281,7 @@ Plot a colored surface using height values `z` above a `x-y` plane, in three dim
 
 $(examples.surfaceplot1)
 
-Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`).
+Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
 To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 $(examples.surfaceplot2)
