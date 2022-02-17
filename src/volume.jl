@@ -213,15 +213,10 @@ struct MVP{E,T}
     ortho::Bool
     dist::T
 
-    # placeholder for 2D (disabled)
-    MVP() = new{Val{false},Bool}(
-        zeros(Bool, 4, 4),
-        zeros(Bool, 4, 4),
-        zeros(Bool, 4, 4),
-        zeros(Bool, 3),
-        true,
-        true,
-    )
+    function MVP()  # placeholder for 2D (disabled)
+        dummy = zeros(Bool, 4, 4)
+        new{Val{false},Bool}(dummy, dummy, dummy, zeros(Bool, 3), true, true)
+    end
 
     function MVP(
         x,
@@ -248,7 +243,7 @@ struct MVP{E,T}
         distp = disto / 2
 
         # avoid `NaN`s in `V` when `elevation` is close to ±90
-        δ = 100eps()
+        δ = 100eps(F)
         elev = max(-90 + δ, min(elevation, 90 - δ))
 
         # Model Matrix
