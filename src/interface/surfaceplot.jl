@@ -143,16 +143,20 @@ function surfaceplot!(
         m, n = size(X)
         col_cb = h -> callback(h, mh, Mh)
         buf = MMatrix{4,2,F}(undef)
+        incs = (0, 0, 1, 0), (0, 0, 0, 1), (0, 0, 1, 1), (1, 0, 0, 1)
         @inbounds for j in axes(X, 2), i in axes(X, 1)
-            scatter = false
-            if i < m
+            for inc in incs
+                (i1 = i + inc[1]) > m && continue
+                (j1 = j + inc[2]) > n && continue
+                (i2 = i + inc[3]) > m && continue
+                (j2 = j + inc[4]) > n && continue
                 plot.projection(
                     buf,
                     @SMatrix(
                         [
-                            X[i, j] X[i + 1, j]
-                            Y[i, j] Y[i + 1, j]
-                            Z[i, j] Z[i + 1, j]
+                            X[i1, j1] X[i2, j2]
+                            Y[i1, j1] Y[i2, j2]
+                            Z[i1, j1] Z[i2, j2]
                             1 1
                         ]
                     )
@@ -163,83 +167,12 @@ function surfaceplot!(
                     buf[2, 1],
                     buf[1, 2],
                     buf[2, 2],
-                    H[i, j],
-                    H[i + 1, j],
-                    col_cb,
-                )
-            else
-                scatter = true
-            end
-            if j < n
-                plot.projection(
-                    buf,
-                    @SMatrix(
-                        [
-                            X[i, j] X[i, j + 1]
-                            Y[i, j] Y[i, j + 1]
-                            Z[i, j] Z[i, j + 1]
-                            1 1
-                        ]
-                    )
-                )
-                lines!(
-                    plot.graphics,
-                    buf[1, 1],
-                    buf[2, 1],
-                    buf[1, 2],
-                    buf[2, 2],
-                    H[i, j],
-                    H[i, j + 1],
-                    col_cb,
-                )
-            else
-                scatter = true
-            end
-            if i < m && j < n
-                plot.projection(
-                    buf,
-                    @SMatrix(
-                        [
-                            X[i, j] X[i + 1, j + 1]
-                            Y[i, j] Y[i + 1, j + 1]
-                            Z[i, j] Z[i + 1, j + 1]
-                            1 1
-                        ]
-                    )
-                )
-                lines!(
-                    plot.graphics,
-                    buf[1, 1],
-                    buf[2, 1],
-                    buf[1, 2],
-                    buf[2, 2],
-                    H[i, j],
-                    H[i + 1, j + 1],
-                    col_cb,
-                )
-                plot.projection(
-                    buf,
-                    @SMatrix(
-                        [
-                            X[i + 1, j] X[i, j + 1]
-                            Y[i + 1, j] Y[i, j + 1]
-                            Z[i + 1, j] Z[i, j + 1]
-                            1 1
-                        ]
-                    )
-                )
-                lines!(
-                    plot.graphics,
-                    buf[1, 1],
-                    buf[2, 1],
-                    buf[1, 2],
-                    buf[2, 2],
-                    H[i + 1, j],
-                    H[i, j + 1],
+                    H[i1, j1],
+                    H[i2, j2],
                     col_cb,
                 )
             end
-            scatter &&
+            (i == m || j == n) &&
                 points!(plot, X[i, j], Y[i, j], Z[i, j], cmapped ? col_cb(H[i, j]) : color)
         end
     else
