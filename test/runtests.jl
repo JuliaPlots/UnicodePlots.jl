@@ -6,6 +6,7 @@ using LinearAlgebra
 using ColorTypes
 using StableRNGs
 using StatsBase
+using Unitful
 
 include("fixes.jl")
 
@@ -73,7 +74,8 @@ macro dinf(ex)
     :(@inferred(Plot{DensityCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
 end
 
-withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+# github./JuliaPlots/UnicodePlots.jl/issues/134
+withenv("FORCE_COLOR" => "X", "UNITFUL_FANCY_EXPONENTS" => "false") do
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

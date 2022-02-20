@@ -149,6 +149,32 @@ function lineplot!(
     lineplot!(plot, d, y; kw...)
 end
 
+# Unitful
+function lineplot(
+    x::AbstractVector{<:RealOrRealQuantity},
+    y::AbstractVector{<:Quantity};
+    xlabel = "",
+    ylabel = "",
+    kw...,
+)
+    x, ux = number_unit(x)
+    y, uy = number_unit(y)
+    lineplot(
+        ustrip.(x),
+        ustrip.(y);
+        xlabel = unit_label(xlabel, ux),
+        ylabel = unit_label(ylabel, uy),
+        kw...,
+    )
+end
+
+lineplot!(
+    plot::Plot{<:Canvas},
+    x::AbstractVector{<:RealOrRealQuantity},
+    y::AbstractVector{<:Quantity};
+    kw...,
+) = lineplot!(plot, ustrip.(x), ustrip.(y); kw...)
+
 # slope and intercept
 
 function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...)

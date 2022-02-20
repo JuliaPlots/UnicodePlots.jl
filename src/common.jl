@@ -209,37 +209,57 @@ compact_repr(num::Number) = repr(num, context = :compact => true)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x, m) = (
-    x == 0 ? 0 :
-    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m)))
-)
-round_down_tick(x, m) = (
-    x == 0 ? 0 :
-    (x > 0 ? floor(x, digits = ceil_neg_log10(m)) : -ceil(-x, digits = ceil_neg_log10(m)))
-)
-round_up_subtick(x, m) = (
-    x == 0 ? 0 :
+round_up_tick(x::F, m) where {F} =
     (
-        x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
-        -floor(-x, digits = ceil_neg_log10(m) + 1)
-    )
-)
-round_down_subtick(x, m) = (
-    x == 0 ? 0 :
+        x == 0 ? 0 :
+        (
+            x > 0 ? ceil(x, digits = ceil_neg_log10(m)) :
+            -floor(-x, digits = ceil_neg_log10(m))
+        )
+    ) |> F
+round_down_tick(x::F, m) where {F} =
     (
-        x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
-        -ceil(-x, digits = ceil_neg_log10(m) + 1)
-    )
-)
-float_round_log10(x::F, m) where {F<:AbstractFloat} = (
-    x == 0 ? F(0) :
+        x == 0 ? 0 :
+        (
+            x > 0 ? floor(x, digits = ceil_neg_log10(m)) :
+            -ceil(-x, digits = ceil_neg_log10(m))
+        )
+    ) |> F
+round_up_subtick(x::F, m) where {F} =
     (
-        x > 0 ? round(x, digits = ceil_neg_log10(m) + 1)::F :
-        -round(-x, digits = ceil_neg_log10(m) + 1)::F
-    )
-)
+        x == 0 ? 0 :
+        (
+            x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
+            -floor(-x, digits = ceil_neg_log10(m) + 1)
+        )
+    ) |> F
+round_down_subtick(x::F, m) where {F} =
+    (
+        x == 0 ? 0 :
+        (
+            x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
+            -ceil(-x, digits = ceil_neg_log10(m) + 1)
+        )
+    ) |> F
+float_round_log10(x::F, m) where {F<:AbstractFloat} =
+    (
+        x == 0 ? 0 :
+        (
+            x > 0 ? round(x, digits = ceil_neg_log10(m) + 1) :
+            -round(-x, digits = ceil_neg_log10(m) + 1)
+        )
+    ) |> F
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
+
+number_unit(x::AbstractVector{<:Quantity}) = ustrip.(x), x |> first |> unit |> string
+number_unit(x::Quantity) = ustrip(x), x |> unit |> string
+number_unit(x::AbstractVector) = x, nothing
+number_unit(x::Number) = x, nothing
+
+unit_label(label::AbstractString, unit::AbstractString) =
+    label == "" ? unit : "$label ($unit)"
+unit_label(label::AbstractString, unit::Nothing) = label
 
 function superscript(s::AbstractString)
     v = collect(s)
@@ -250,17 +270,19 @@ function superscript(s::AbstractString)
 end
 
 function plotting_range(xmin, xmax)
+    xmin, xmax = float(xmin), float(xmax)
     diff = xmax - xmin
     xmax = round_up_tick(xmax, diff)
     xmin = round_down_tick(xmin, diff)
-    float(xmin), float(xmax)
+    xmin, xmax
 end
 
 function plotting_range_narrow(xmin, xmax)
+    xmin, xmax = float(xmin), float(xmax)
     diff = xmax - xmin
     xmax = round_up_subtick(xmax, diff)
     xmin = round_down_subtick(xmin, diff)
-    float(xmin), float(xmax)
+    xmin, xmax
 end
 
 scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale

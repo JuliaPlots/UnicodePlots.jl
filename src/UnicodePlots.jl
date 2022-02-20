@@ -7,6 +7,7 @@ using SparseArrays: AbstractSparseMatrix, findnz
 using LinearAlgebra
 using StaticArrays
 
+import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
 import MarchingCubes
 import NaNMath
 import Contour
