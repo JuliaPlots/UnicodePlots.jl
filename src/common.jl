@@ -252,10 +252,16 @@ float_round_log10(x::F, m) where {F<:AbstractFloat} =
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 
-number_unit(x::AbstractVector{<:Quantity}) = ustrip.(x), x |> first |> unit |> string
-number_unit(x::Quantity) = ustrip(x), x |> unit |> string
-number_unit(x::AbstractVector) = x, nothing
-number_unit(x::Number) = x, nothing
+function unit_str(x, fancy)
+    io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
+    show(io, unit(x))
+    read(io, String)
+end
+number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
+    ustrip.(x), unit_str(first(x), fancy)
+number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
+number_unit(x::AbstractVector, args...) = x, nothing
+number_unit(x::Number, args...) = x, nothing
 
 unit_label(label::AbstractString, unit::AbstractString) =
     label == "" ? unit : "$label ($unit)"

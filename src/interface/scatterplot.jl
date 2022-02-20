@@ -103,15 +103,17 @@ scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
 function scatterplot(
     x::AbstractVector{<:RealOrRealQuantity},
     y::AbstractVector{<:Quantity};
-    xlabel = "",
-    ylabel = "",
+    unicode_exponent::Bool = KEYWORDS.unicode_exponent,
+    xlabel = KEYWORDS.xlabel,
+    ylabel = KEYWORDS.ylabel,
     kw...,
 )
-    x, ux = number_unit(x)
-    y, uy = number_unit(y)
+    x, ux = number_unit(x, unicode_exponent)
+    y, uy = number_unit(y, unicode_exponent)
     scatterplot(
         ustrip.(x),
         ustrip.(y);
+        unicode_exponent = unicode_exponent,
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         kw...,

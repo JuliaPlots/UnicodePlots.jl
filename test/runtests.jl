@@ -75,7 +75,7 @@ macro dinf(ex)
 end
 
 # github./JuliaPlots/UnicodePlots.jl/issues/134
-withenv("FORCE_COLOR" => "X", "UNITFUL_FANCY_EXPONENTS" => "false") do
+withenv("FORCE_COLOR" => "X") do
     for test in (
         "tst_issues.jl",
         "tst_common.jl",
