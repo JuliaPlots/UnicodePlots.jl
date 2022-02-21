@@ -136,4 +136,8 @@ end
     @test UnicodePlots.number_unit(1) == (1, nothing)
     @test UnicodePlots.number_unit(x * u"°C") == (x, "°C")
     @test UnicodePlots.number_unit(1u"°C") == (1, "°C")
+
+    @test UnicodePlots.unit_label("  fancy label  ", "Hz") == "  fancy label (Hz)"
+    @test UnicodePlots.unit_label("  ", "dB") == "dB"
+    @test UnicodePlots.unit_label("  no units  ", nothing) == "  no units"
 end

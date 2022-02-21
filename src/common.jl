@@ -209,46 +209,46 @@ compact_repr(num::Number) = repr(num, context = :compact => true)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x::F, m) where {F} =
+round_up_tick(x::T, m) where {T} =
     (
         x == 0 ? 0 :
         (
             x > 0 ? ceil(x, digits = ceil_neg_log10(m)) :
             -floor(-x, digits = ceil_neg_log10(m))
         )
-    ) |> F
-round_down_tick(x::F, m) where {F} =
+    ) |> T
+round_down_tick(x::T, m) where {T} =
     (
         x == 0 ? 0 :
         (
             x > 0 ? floor(x, digits = ceil_neg_log10(m)) :
             -ceil(-x, digits = ceil_neg_log10(m))
         )
-    ) |> F
-round_up_subtick(x::F, m) where {F} =
+    ) |> T
+round_up_subtick(x::T, m) where {T} =
     (
         x == 0 ? 0 :
         (
             x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
             -floor(-x, digits = ceil_neg_log10(m) + 1)
         )
-    ) |> F
-round_down_subtick(x::F, m) where {F} =
+    ) |> T
+round_down_subtick(x::T, m) where {T} =
     (
         x == 0 ? 0 :
         (
             x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
             -ceil(-x, digits = ceil_neg_log10(m) + 1)
         )
-    ) |> F
-float_round_log10(x::F, m) where {F<:AbstractFloat} =
+    ) |> T
+float_round_log10(x::T, m) where {T<:AbstractFloat} =
     (
         x == 0 ? 0 :
         (
             x > 0 ? round(x, digits = ceil_neg_log10(m) + 1) :
             -round(-x, digits = ceil_neg_log10(m) + 1)
         )
-    ) |> F
+    ) |> T
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 
@@ -264,8 +264,8 @@ number_unit(x::AbstractVector, args...) = x, nothing
 number_unit(x::Number, args...) = x, nothing
 
 unit_label(label::AbstractString, unit::AbstractString) =
-    label == "" ? unit : "$label ($unit)"
-unit_label(label::AbstractString, unit::Nothing) = label
+    (lab_strip = rstrip(label)) == "" ? unit : "$lab_strip ($unit)"
+unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 function superscript(s::AbstractString)
     v = collect(s)
