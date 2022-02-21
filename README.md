@@ -7,6 +7,8 @@ Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library des
 
 `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/generated/unicodeplots/#unicodeplots-ref17).
 
+Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+
 ## High-level Interface
 
 There are a couple of ways to generate typical plots without much verbosity.
@@ -82,6 +84,8 @@ scatterplot([1, 2, 3], [3, 4, 1],
 ```
 ![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/scatterplot4.png)
 
+As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
+
 #### Lineplot
 
 ```julia
@@ -102,6 +106,15 @@ You can also plot lines by specifying an intercept and slope:
 lineplot!(plt, -.5, .2, name="line")
 ```
 ![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot6.png)
+
+Physical units are supported through `Unitful`:
+
+```julia
+a = 1u"m/s^2"
+t = (0:100) * u"s"
+lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
+```
+![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot7.png)
 
 #### Staircase plot
 
