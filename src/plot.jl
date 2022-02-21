@@ -186,6 +186,8 @@ function Plot(
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
     grid::Bool = KEYWORDS.grid,
+    xticks::Bool = KEYWORDS.xticks,
+    yticks::Bool = KEYWORDS.yticks,
     min_width::Int = 5,
     min_height::Int = 2,
     projection::Union{Nothing,Symbol,MVP} = nothing,
@@ -268,20 +270,26 @@ function Plot(
         colorbar_lim = colorbar_lim,
         projection = projection,
     )
-    m_x, M_x, m_y, M_y = map(
-        v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
-        (mx, Mx, my, My),
-    )
-    if unicode_exponent
-        m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
-        m_y, M_y = map(v -> base_y !== nothing ? superscript(v) : v, (m_y, M_y))
+    if xticks || yticks
+        m_x, M_x, m_y, M_y = map(
+            v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
+            (mx, Mx, my, My),
+        )
+        if unicode_exponent
+            m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
+            m_y, M_y = map(v -> base_y !== nothing ? superscript(v) : v, (m_y, M_y))
+        end
+        if xticks
+            base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
+            label!(plot, :bl, base_x_str * m_x, color = :light_black)
+            label!(plot, :br, base_x_str * M_x, color = :light_black)
+        end
+        if yticks
+            base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
+            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
+            label!(plot, :l, 1, base_y_str * M_y, color = :light_black)
+        end
     end
-    base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-    base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-    label!(plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
-    label!(plot, :l, 1, base_y_str * M_y, color = :light_black)
-    label!(plot, :bl, base_x_str * m_x, color = :light_black)
-    label!(plot, :br, base_x_str * M_x, color = :light_black)
     if grid
         if my < 0 < My
             for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
