@@ -291,6 +291,8 @@ All plots support the set (or a subset) of the following named parameters:
   - `xlim::Tuple = (0, 0)`: plotting range for the `x` axis (`(0, 0)` stands for automatic).
   - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis.
   - `zlim::Tuple = (0, 0)`: colormap scaled data range.
+  - `xticks::Bool = true`: set `false` to disable ticks on `x`-axis.
+  - `yticks::Bool = true`: set `false` to disable ticks on `y`-axis.
   - `colorbar::Bool = false`: toggle the colorbar.
   - `colormap::Symbol = :viridis`: choose from (`:viridis`, `:cividis`, `:plasma`, `:jet`, `:gray`, `keys(UnicodePlots.COLOR_MAP_DATA)`...), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
   - `colorbar_lim::Tuple = (0, 1)`: colorbar limit.

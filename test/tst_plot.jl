@@ -150,3 +150,11 @@ end
     p = Plot([0], [0], width = 0)
     @test !p.graphics.visible
 end
+
+@testset "x/y ticks" begin
+    p = Plot([0, 1], [0, 1], xticks = false)
+    test_ref("references/plot/no_xticks.txt", @show_col(p))
+
+    p = Plot([0, 1], [0, 1], yticks = false)
+    test_ref("references/plot/no_yticks.txt", @show_col(p))
+end
