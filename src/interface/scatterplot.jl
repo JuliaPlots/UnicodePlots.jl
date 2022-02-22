@@ -98,3 +98,31 @@ end
 
 scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
     scatterplot!(plot, axes(y, 1), y; kw...)
+
+# Unitful
+function scatterplot(
+    x::AbstractVector{<:RealOrRealQuantity},
+    y::AbstractVector{<:Quantity};
+    unicode_exponent::Bool = KEYWORDS.unicode_exponent,
+    xlabel = KEYWORDS.xlabel,
+    ylabel = KEYWORDS.ylabel,
+    kw...,
+)
+    x, ux = number_unit(x, unicode_exponent)
+    y, uy = number_unit(y, unicode_exponent)
+    scatterplot(
+        ustrip.(x),
+        ustrip.(y);
+        unicode_exponent = unicode_exponent,
+        xlabel = unit_label(xlabel, ux),
+        ylabel = unit_label(ylabel, uy),
+        kw...,
+    )
+end
+
+scatterplot!(
+    plot::Plot{<:Canvas},
+    x::AbstractVector{<:RealOrRealQuantity},
+    y::AbstractVector{<:Quantity};
+    kw...,
+) = scatterplot!(plot, ustrip.(x), ustrip.(y); kw...)

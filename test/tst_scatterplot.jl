@@ -99,3 +99,11 @@ end
         test_ref("references/scatterplot/markers_$(canvas).txt", @show_col(p))
     end
 end
+
+@testset "units" begin
+    y1 = [22.0, 23.0, 24.0] * u"°C"
+    p = scatterplot(y1, marker = :circle)
+    y2 = [23.5, 22.5, 23.0] * u"°C"
+    p = scatterplot!(p, y2, marker = :cross, color = :red)
+    test_ref("references/scatterplot/units_temp.txt", @show_col(p))
+end

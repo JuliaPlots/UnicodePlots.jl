@@ -266,3 +266,13 @@ end
     lineplot!(p, x, y, color = [:red, :green, :blue])
     test_ref("references/lineplot/color_vector.txt", @show_col(p))
 end
+
+@testset "units" begin
+    a = 1u"m/s^2"
+    t = collect(Float64, 0:100) * u"s"
+    x = a / 2 * t .^ 2
+    v = a * t
+    p = lineplot(x, v, xlabel = "position", ylabel = "speed")
+    lineplot!(p, extrema(x) |> collect, [maximum(v), maximum(v)], color = :red)
+    test_ref("references/lineplot/units_pos_vel.txt", @show_col(p))
+end

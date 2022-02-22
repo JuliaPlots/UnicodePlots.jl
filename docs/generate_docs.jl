@@ -17,17 +17,23 @@ function main()
                title="Example Plot", name="my line",
                xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
-    lineplot3 = ("Basic Canvas", """lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")"""),
-    scatterplot1 = ("Scatterplot", """scatterplot(randn(50), randn(50), title="My Scatterplot", border=:dotted)"""),
+    lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name=\"other line\")"),
+    scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\", border=:dotted)"),
     scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)"),
     scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)"),
     scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1],
                   marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
       """),
-    lineplot4 = ("Lineplot", """lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted)"""),
+    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\", border=:dotted)"),
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)"),
-    lineplot6 = ("Lineplot", """lineplot!(plt, -.5, .2, name="line")"""),
+    lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
+    lineplot7 = ("Lineplot", """
+      using Unitful
+      a = 1u"m/s^2"
+      t = (0:100) * u"s"
+      lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
+      """),
     stairs1 = ("Staircase", """
       # supported style are :pre and :post
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
@@ -53,7 +59,7 @@ function main()
       densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
-    heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
+    heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
@@ -157,6 +163,8 @@ Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library des
 
 `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/generated/unicodeplots/#unicodeplots-ref17).
 
+Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+
 ## High-level Interface
 
 There are a couple of ways to generate typical plots without much verbosity.
@@ -207,6 +215,8 @@ One can also provide a vector of `marker`s and/or `color`s as in the following e
 
 $(examples.scatterplot4)
 
+As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
+
 #### Lineplot
 
 $(examples.lineplot4)
@@ -218,6 +228,10 @@ $(examples.lineplot5)
 You can also plot lines by specifying an intercept and slope:
 
 $(examples.lineplot6)
+
+Physical units are supported through `Unitful`:
+
+$(examples.lineplot7)
 
 #### Staircase plot
 
@@ -419,7 +433,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   open("imgs/gen_imgs.jl", "w") do io
     println(io, """
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
-      using UnicodePlots, StableRNGs, SparseArrays
+      using UnicodePlots, StableRNGs, SparseArrays, Unitful
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
       RNG = StableRNG(1337)

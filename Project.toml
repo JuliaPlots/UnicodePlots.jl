@@ -15,6 +15,7 @@ NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 Contour = "0.5"
@@ -23,6 +24,7 @@ MarchingCubes = "0.1"
 NaNMath = "0.3, 1"
 StaticArrays = "0.12, 1"
 StatsBase = "0.32, 0.33"
+Unitful = "1"
 julia = "1.6"
 
 [extras]
