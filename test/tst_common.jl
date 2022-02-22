@@ -130,7 +130,7 @@ end
     @test UnicodePlots.default_with_type(:foo_bar) isa String
 end
 
-@testset "unit" begin
+@testset "units" begin
     x = [1.0, 2.0, 3.0]
     @test UnicodePlots.number_unit(x) == (x, nothing)
     @test UnicodePlots.number_unit(1) == (1, nothing)

@@ -74,8 +74,7 @@ macro dinf(ex)
     :(@inferred(Plot{DensityCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
 end
 
-# github./JuliaPlots/UnicodePlots.jl/issues/134
-withenv("FORCE_COLOR" => "X") do
+withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

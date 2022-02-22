@@ -29,6 +29,7 @@ function main()
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)"),
     lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
     lineplot7 = ("Lineplot", """
+      using Unitful
       a = 1u"m/s^2"
       t = (0:100) * u"s"
       lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
@@ -58,7 +59,7 @@ function main()
       densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
-    heatmap1 = ("Heatmap", """heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")"""),
+    heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)

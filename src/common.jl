@@ -276,19 +276,17 @@ function superscript(s::AbstractString)
 end
 
 function plotting_range(xmin, xmax)
-    xmin, xmax = float(xmin), float(xmax)
     diff = xmax - xmin
     xmax = round_up_tick(xmax, diff)
     xmin = round_down_tick(xmin, diff)
-    xmin, xmax
+    float(xmin), float(xmax)
 end
 
 function plotting_range_narrow(xmin, xmax)
-    xmin, xmax = float(xmin), float(xmax)
     diff = xmax - xmin
     xmax = round_up_subtick(xmax, diff)
     xmin = round_down_subtick(xmin, diff)
-    xmin, xmax
+    float(xmin), float(xmax)
 end
 
 scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale

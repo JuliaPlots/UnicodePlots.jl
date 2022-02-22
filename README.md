@@ -110,6 +110,7 @@ lineplot!(plt, -.5, .2, name="line")
 Physical units are supported through `Unitful`:
 
 ```julia
+using Unitful
 a = 1u"m/s^2"
 t = (0:100) * u"s"
 lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
