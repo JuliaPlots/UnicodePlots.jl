@@ -315,7 +315,7 @@ All plots support the set (or a subset) of the following named parameters:
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
-  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Matrix-View-Projection` (MVP) matrix).
+  - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Model-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`).
   - `elevation::Float = 35.26439`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
   - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
@@ -331,7 +331,7 @@ All plots support the set (or a subset) of the following named parameters:
 
 ### 3D plots
 
-3d plots use a so-called "Matrix-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
+3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen. Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera. The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`. Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword. For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
 
 ### Methods
 

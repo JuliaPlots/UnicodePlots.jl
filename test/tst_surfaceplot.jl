@@ -19,7 +19,7 @@ end
 end
 
 @testset "matrix" begin
-    p = surfaceplot(collect(1:10) * collect(0.1:0.1:1)')
+    p = surfaceplot(collect(1:10) * collect(0.1:0.1:1)', axes3d = false)
     test_ref("references/surfaceplot/matrix.txt", @show_col(p))
 end
 
