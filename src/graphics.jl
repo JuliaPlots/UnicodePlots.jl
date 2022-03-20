@@ -20,14 +20,15 @@ end
 
 function Base.show(io::IO, c::GraphicsArea)
     b = BORDER_SOLID
+    bc = BORDER_COLOR[]
     border_length = ncols(c)
-    print_border(io, :t, border_length, "", "\n", b, :light_black)
+    print_border(io, :t, border_length, "", "\n", b, bc)
     for row in 1:nrows(c)
-        print_color(:light_black, io, b[:l])
+        print_color(bc, io, b[:l])
         printrow(io, c, row)
-        print_color(:light_black, io, b[:r])
+        print_color(bc, io, b[:r])
         row < nrows(c) && println(io)
     end
-    print_border(io, :b, border_length, "\n", "", b, :light_black)
+    print_border(io, :b, border_length, "\n", "", b, bc)
     nothing
 end
