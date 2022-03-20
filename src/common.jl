@@ -448,12 +448,12 @@ end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType =
-    if color < THRESHOLD
+    if color == INVALID_COLOR
+        INVALID_COLOR
+    elseif color < THRESHOLD
         r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
     elseif color != INVALID_COLOR
         THRESHOLD + ~UInt8(color |> rgb2ansi)
-    else
-        INVALID_COLOR
     end
 
 base_color(color::ColorType)::BaseColorType =
