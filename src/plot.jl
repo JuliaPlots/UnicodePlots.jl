@@ -593,7 +593,7 @@ function print_title(
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = repeat(blank, offset > 0 ? offset : 0)
     print(io, left_pad, pre_pad)
-    print_color(color, io, title)
+    print_color(io, color, title)
     post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
     print(io, post_pad, right_pad)
     nothing
@@ -610,8 +610,8 @@ function print_border(
 )
     print(io, left_pad)
     print_color(
-        color,
         io,
+        color,
         bmap[Symbol(loc, :l)],
         repeat(bmap[loc], length),
         bmap[Symbol(loc, :r)],
@@ -645,15 +645,15 @@ function print_labels(
         mid_len   = length(mid_str)
         right_len = length(right_str)
         print(io, left_pad)
-        print_color(left_col, io, left_str)
+        print_color(io, left_col, left_str)
         cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
         pad = cnt > 0 ? repeat(blank, cnt) : ""
         print(io, pad)
-        print_color(mid_col, io, mid_str)
+        print_color(io, mid_col, mid_str)
         cnt = border_length - right_len - left_len - mid_len + 2 - cnt
         pad = cnt > 0 ? repeat(blank, cnt) : ""
         print(io, pad)
-        print_color(right_col, io, right_str)
+        print_color(io, right_col, right_str)
         print(io, right_pad)
     end
     nothing
@@ -737,6 +737,8 @@ function Base.show(io::IO, p::Plot)
 
     callback = colormap_callback(p.colormap)
 
+    bc = BORDER_COLOR[]
+
     # plot all rows
     for row in 1:nrows(c)
         # print left annotations
@@ -744,9 +746,9 @@ function Base.show(io::IO, p::Plot)
         if p.labels
             # Current labels to left and right of the row and their length
             left_str  = get(p.labels_left, row, "")
-            left_col  = get(p.colors_left, row, BORDER_COLOR[])
+            left_col  = get(p.colors_left, row, bc)
             right_str = get(p.labels_right, row, "")
-            right_col = get(p.colors_right, row, BORDER_COLOR[])
+            right_col = get(p.colors_right, row, bc)
             left_len  = length(_nocolor_string(left_str))
             right_len = length(_nocolor_string(right_str))
             if !get(io, :color, false)
@@ -755,27 +757,27 @@ function Base.show(io::IO, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_color(:normal, io, p.ylabel)
+                print_color(io, :normal, p.ylabel)
                 print(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
                 print(io, repeat(🗷, max_len_l - left_len))
             end
             # print the left annotation
-            print_color(left_col, io, left_str)
+            print_color(io, left_col, left_str)
         end
         if c.visible
             # print left border
             print(io, plot_padding)
-            print_color(BORDER_COLOR[], io, bmap[:l])
+            print_color(io, bc, bmap[:l])
             # print canvas row
             printrow(io, c, row)
             # print right label and padding
-            print_color(BORDER_COLOR[], io, bmap[:r])
+            print_color(io, bc, bmap[:r])
         end
         if p.labels
             print(io, plot_padding)
-            print_color(right_col, io, right_str)
+            print_color(io, right_col, right_str)
             print(io, repeat(🗷, max_len_r - right_len))
         end
         # print colorbar

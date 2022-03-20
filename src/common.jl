@@ -163,7 +163,6 @@ const BaseColorType = Union{Symbol,Int}  # color type for Base.printstyled (defi
 const ColorType = UInt32  # internal UnicodePlots color type (canvas)
 
 const THRESHOLD = UInt32(256^3)
-const CRAYONS_FAST = Ref(true)
 const COLORDEPTH = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
 
@@ -171,8 +170,9 @@ const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # f
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
-const EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
-const RESET = Crayons.CSI * "0" * Crayons.END_ANSI
+const CRAYONS_FAST = Ref(true)
+const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
+const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
 #! format: on
 
@@ -359,29 +359,29 @@ crayon_color(color::ColorType, ::Nothing) = (
     end
 )
 
-function print_crayon(io, c, args...)
+function print_crayons(io, c, args...)
     if CRAYONS_FAST[]
         if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
             print(io, Crayons.CSI)
             Crayons._print(io, c)
-            print(io, Crayons.END_ANSI, args..., RESET)
+            print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
         else
-            print(io, args)
+            print(io, args...)
         end
     else
-        print(io, c, args..., RESET)
+        print(io, c, args..., CRAYONS_RESET)
     end
 end
 
-print_color(color::BaseColorType, io::IO, args...) = printstyled(io, args...; color = color)
-function print_color(color::ColorType, io::IO, args...; bgcol = missing)
+print_color(io::IO, color::BaseColorType, args...) = printstyled(io, args...; color = color)
+function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if color == INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
         depth = color < THRESHOLD ? nothing : Crayons.COLORS_256
-        print_crayon(
+        print_crayons(
             io,
-            Crayon(crayon_color(color, depth), crayon_color(bgcol, depth), EMPTY_STYLES...),
+            Crayon(crayon_color(color, depth), crayon_color(bgcol, depth), CRAYONS_EMPTY_STYLES...),
             args...,
         )
     end
@@ -402,8 +402,7 @@ end
         return a  # fastpath
     else
         if a < THRESHOLD && b < THRESHOLD
-            # NOTE: convert to UInt32 to prevent Integer overflow
-            return (
+            return (  # NOTE: convert to UInt32 to prevent UInt overflow
                 r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
                 g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
                 b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))

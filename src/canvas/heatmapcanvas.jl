@@ -51,19 +51,11 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     # extend the plot upwards by half a row
     isodd(size(grid(c), 2)) && (y -= 1)
 
-    iscolor = get(io, :color, false)
     for x in 1:ncols(c)
-        if iscolor
-            if y > 1
-                print_color(c.colors[x, y], io, HALF_BLOCK; bgcol = c.colors[x, y - 1])
-            else  # for odd numbers of rows, only print the foreground for the top row
-                print_color(c.colors[x, y], io, HALF_BLOCK)
-            end
-        else
-            print(io, HALF_BLOCK)
-        end
+        # for odd numbers of rows, only print the foreground for the top row
+        bgcol = y > 1 ? c.colors[x, y - 1] : missing
+        print_color(io, c.colors[x, y], HALF_BLOCK; bgcol = bgcol)
     end
-    iscolor && print(io, Crayon(reset = true))
 
     nothing
 end

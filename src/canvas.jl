@@ -287,23 +287,24 @@ function printcolorbarrow(
     blank::Char,
 )
     b = BORDERMAP[border]
+    bc = BORDER_COLOR[]
     min_z, max_z = lim
     label = ""
     if row == 1
         label = lim_str[2]
         # print top border and maximum z value
-        print_color(BORDER_COLOR[], io, b[:tl], b[:t], b[:t], b[:tr])
+        print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
         print(io, plot_padding)
-        print_color(BORDER_COLOR[], io, label)
+        print_color(io, bc, label)
     elseif row == nrows(c)
         label = lim_str[1]
         # print bottom border and minimum z value
-        print_color(BORDER_COLOR[], io, b[:bl], b[:b], b[:b], b[:br])
+        print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
         print(io, plot_padding)
-        print_color(BORDER_COLOR[], io, label)
+        print_color(io, bc, label)
     else
         # print gradient
-        print_color(BORDER_COLOR[], io, b[:l])
+        print_color(io, bc, b[:l])
         if min_z == max_z  # if min and max are the same, single color
             fgcol = bgcol = colormap(1, 1, 1)
         else  # otherwise, blend from min to max
@@ -314,8 +315,8 @@ function printcolorbarrow(
         end
         @assert 0 ≤ fgcol ≤ 255
         @assert 0 ≤ bgcol ≤ 255
-        print_color(ansi_color(fgcol), io, HALF_BLOCK, HALF_BLOCK; bgcol = ansi_color(bgcol))
-        print_color(BORDER_COLOR[], io, b[:r])
+        print_color(io, ansi_color(fgcol), HALF_BLOCK, HALF_BLOCK; bgcol = ansi_color(bgcol))
+        print_color(io, bc, b[:r])
         print(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1

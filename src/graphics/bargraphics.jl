@@ -99,15 +99,15 @@ function printrow(io::IO, c::BarplotGraphics, row::Int)
     nsyms = length(c.symbols)
     frac = float(max_val > 0 ? max(val, zero(val)) / max_val : 0)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
-    print_color(c.colors[row], io, max_val > 0 ? repeat(c.symbols[nsyms], bar_head) : "")
+    print_color(io, c.colors[row], max_val > 0 ? repeat(c.symbols[nsyms], bar_head) : "")
     if nsyms > 1
         rem = (frac * max_bar_width - bar_head) * (nsyms - 2)
-        print_color(c.colors[row], io, rem > 0 ? c.symbols[1 + round(Int, rem)] : " ")
+        print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : " ")
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
     if bar >= 0
-        print_color(:normal, io, " ", bar_lbl)
+        print_color(io, :normal, " ", bar_lbl)
         len = length(bar_lbl)
     else
         len = -1

@@ -110,7 +110,7 @@ function printrow(io::IO, c::LookupCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_color(colors(c)[x, y], io, lookup_decode(c)[grid(c)[x, y] + 1])
+        print_color(io, colors(c)[x, y], lookup_decode(c)[grid(c)[x, y] + 1])
     end
     nothing
 end

@@ -131,6 +131,6 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
         line[i] = line_char
     end
 
-    print_color(c.colors[idx], io, join(line))
+    print_color(io, c.colors[idx], join(line))
     nothing
 end
