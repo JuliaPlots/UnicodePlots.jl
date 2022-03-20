@@ -145,7 +145,8 @@ const SUPERSCRIPT = Dict(
     '8' => '⁸',
     '9' => '⁹',
 )
-const COLOR_CYCLE = (:green, :blue, :red, :magenta, :yellow, :cyan)
+const COLOR_CYCLE = :green, :blue, :red, :magenta, :yellow, :cyan
+const BORDER_COLOR = Ref(:light_black)
 
 # standard terminals seem to respect a 4:3 aspect ratio
 # unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio

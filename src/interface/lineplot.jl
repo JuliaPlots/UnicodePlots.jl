@@ -135,8 +135,8 @@ function lineplot(
     d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
     plot = lineplot(d, y; xlim = dlim, kw...)
-    label!(plot, :bl, string(xlim[1]), color = :light_black)
-    label!(plot, :br, string(xlim[2]), color = :light_black)
+    label!(plot, :bl, string(xlim[1]), color = BORDER_COLOR[])
+    label!(plot, :br, string(xlim[2]), color = BORDER_COLOR[])
 end
 
 function lineplot!(

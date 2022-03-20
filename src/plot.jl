@@ -281,13 +281,13 @@ function Plot(
         end
         if xticks
             base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * m_x, color = :light_black)
-            label!(plot, :br, base_x_str * M_x, color = :light_black)
+            label!(plot, :bl, base_x_str * m_x, color = BORDER_COLOR[])
+            label!(plot, :br, base_x_str * M_x, color = BORDER_COLOR[])
         end
         if yticks
             base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = :light_black)
-            label!(plot, :l, 1, base_y_str * M_y, color = :light_black)
+            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = BORDER_COLOR[])
+            label!(plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
         end
     end
     if grid
@@ -606,7 +606,7 @@ function print_border(
     left_pad::AbstractString,
     right_pad::AbstractString,
     bmap = BORDERMAP[:solid],
-    color::UserColorType = :light_black,
+    color::UserColorType = BORDER_COLOR[],
 )
     print(io, left_pad)
     print_color(
@@ -635,11 +635,11 @@ function print_labels(
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
-    left_col  = get(p.colors_deco, lloc, :light_black)
+    left_col  = get(p.colors_deco, lloc, BORDER_COLOR[])
     mid_str   = get(p.decorations, mloc, "")
-    mid_col   = get(p.colors_deco, mloc, :light_black)
+    mid_col   = get(p.colors_deco, mloc, BORDER_COLOR[])
     right_str = get(p.decorations, rloc, "")
-    right_col = get(p.colors_deco, rloc, :light_black)
+    right_col = get(p.colors_deco, rloc, BORDER_COLOR[])
     if left_str != "" || right_str != "" || mid_str != ""
         left_len  = length(left_str)
         mid_len   = length(mid_str)
@@ -744,9 +744,9 @@ function Base.show(io::IO, p::Plot)
         if p.labels
             # Current labels to left and right of the row and their length
             left_str  = get(p.labels_left, row, "")
-            left_col  = get(p.colors_left, row, :light_black)
+            left_col  = get(p.colors_left, row, BORDER_COLOR[])
             right_str = get(p.labels_right, row, "")
-            right_col = get(p.colors_right, row, :light_black)
+            right_col = get(p.colors_right, row, BORDER_COLOR[])
             left_len  = length(_nocolor_string(left_str))
             right_len = length(_nocolor_string(right_str))
             if !get(io, :color, false)
@@ -767,11 +767,11 @@ function Base.show(io::IO, p::Plot)
         if c.visible
             # print left border
             print(io, plot_padding)
-            print_color(:light_black, io, bmap[:l])
+            print_color(BORDER_COLOR[], io, bmap[:l])
             # print canvas row
             printrow(io, c, row)
             # print right label and padding
-            print_color(:light_black, io, bmap[:r])
+            print_color(BORDER_COLOR[], io, bmap[:r])
         end
         if p.labels
             print(io, plot_padding)
