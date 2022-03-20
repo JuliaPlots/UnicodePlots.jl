@@ -64,7 +64,12 @@ end
 end
 
 @testset "colors" begin
+    @test_throws ErrorException UnicodePlots.colordepth!(123456789)
+
     @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
+    @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
+    @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
+    @test UnicodePlots.base_color(nothing) == :normal
 
     _depth = UnicodePlots.COLORDEPTH[]
     UnicodePlots.colordepth!(8)
@@ -85,6 +90,15 @@ end
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     UnicodePlots.COLORDEPTH[] = _depth
+
+    io = PipeBuffer()
+    _cfast = UnicodePlots.CRAYONS_FAST[]
+    for fast in (false, true)
+        UnicodePlots.CRAYONS_FAST[] = fast
+        UnicodePlots.print_crayons(io, UnicodePlots.Crayons.Crayon(foreground = :red), 123)
+        UnicodePlots.print_crayons(io, UnicodePlots.Crayons.Crayon(), 123)
+    end
+    UnicodePlots.CRAYONS_FAST[] = _cfast
 
     @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
           Function
