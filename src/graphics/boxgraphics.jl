@@ -28,9 +28,9 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
             max_x = max_x + 1
         end
         colors = if color isa AbstractVector
-            crayon_256_color.(color)
+            crayon_8bit_color.(color)
         else
-            [crayon_256_color(color)]
+            [crayon_8bit_color(color)]
         end
         new{R}(
             [

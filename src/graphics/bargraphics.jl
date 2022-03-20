@@ -29,9 +29,9 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
         max_len = length(string(bars[i]))
         char_width = max(char_width, max_len + 7)
         colors = if color isa AbstractVector
-            crayon_256_color.(color)
+            crayon_8bit_color.(color)
         else
-            fill(crayon_256_color(color), length(bars))
+            fill(crayon_8bit_color(color), length(bars))
         end
         new{R}(
             bars,
@@ -68,7 +68,7 @@ function addrow!(
 ) where {R<:Number}
     append!(c.bars, bars)
     colors = if color isa AbstractVector
-        crayon_256_color.(color)
+        crayon_8bit_color.(color)
     else
         fill(suitable_color(c, color), length(bars))
     end

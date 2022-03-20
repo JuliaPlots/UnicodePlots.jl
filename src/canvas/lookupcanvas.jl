@@ -102,7 +102,7 @@ function pixel!(
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color), blend)
+    set_color!(c.colors, char_x, char_y, crayon_8bit_color(color), blend)
     c
 end
 

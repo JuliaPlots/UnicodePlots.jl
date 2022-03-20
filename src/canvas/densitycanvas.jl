@@ -89,7 +89,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x, char_y] += 1
     c.max_density = max(c.max_density, c.grid[char_x, char_y])
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
+    set_color!(c.colors, char_x, char_y, crayon_8bit_color(color), c.blend)
     c
 end
 

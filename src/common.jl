@@ -327,7 +327,7 @@ end
 print_color(color::UserColorType, io::IO, args...) =
     printstyled(io, string(args...); color = julia_color(color))
 
-function crayon_256_color(color::UserColorType)::ColorType
+function crayon_8bit_color(color::UserColorType)::ColorType
     color in (:normal, :default, :nothing, nothing) && return nothing
     ansicolor = Crayons._parse_color(color)
     if ansicolor.style == Crayons.COLORS_16
@@ -338,12 +338,12 @@ function crayon_256_color(color::UserColorType)::ColorType
     Crayons.val(ansicolor)
 end
 
-complement(color) = (col = crayon_256_color(color)) === nothing ? nothing : ~col
+complement(color) = (col = crayon_8bit_color(color)) === nothing ? nothing : ~col
 
 julia_color(color::Integer)::JuliaColorType = Int(color)
 julia_color(color::Nothing)::JuliaColorType = :normal
 julia_color(color::Symbol)::JuliaColorType = color
-julia_color(color)::JuliaColorType = julia_color(crayon_256_color(color))
+julia_color(color)::JuliaColorType = julia_color(crayon_8bit_color(color))
 
 @inline function set_color!(
     colors::Matrix{ColorType},
