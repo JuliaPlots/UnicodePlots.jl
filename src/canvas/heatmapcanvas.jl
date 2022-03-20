@@ -30,17 +30,19 @@ const HALF_BLOCK = '▄'
 
 @inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
 
-HeatmapCanvas(args...; kw...) = CreateLookupCanvas(
-    HeatmapCanvas,
-    UInt8,
-    (0, 1),
-    args...;
-    min_char_width = 1,
-    min_char_height = 1,
-    kw...,
-)
-
-_toCrayon(c) = c === nothing ? 0 : (c isa Unsigned ? Int(c) : c)
+function HeatmapCanvas(args...; kw...)
+    c = CreateLookupCanvas(
+        HeatmapCanvas,
+        UInt8,
+        (0, 1),
+        args...;
+        min_char_width = 1,
+        min_char_height = 1,
+        kw...,
+    )
+    fill!(c.colors, 0)  # black background by default
+    c
+end
 
 function printrow(io::IO, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
@@ -52,13 +54,10 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     iscolor = get(io, :color, false)
     for x in 1:ncols(c)
         if iscolor
-            fgcol = _toCrayon(c.colors[x, y])
             if y > 1
-                bgcol = _toCrayon(c.colors[x, y - 1])
-                print(io, Crayon(foreground = fgcol, background = bgcol), HALF_BLOCK)
-                # for odd numbers of rows, only print the foreground for the top row
-            else
-                print(io, Crayon(foreground = fgcol), HALF_BLOCK)
+                print_color(c.colors[x, y], io, HALF_BLOCK; bgcol = c.colors[x, y - 1])
+            else  # for odd numbers of rows, only print the foreground for the top row
+                print_color(c.colors[x, y], io, HALF_BLOCK)
             end
         else
             print(io, HALF_BLOCK)

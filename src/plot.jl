@@ -55,11 +55,11 @@ mutable struct Plot{T<:GraphicsArea,E,F}
     border::Symbol
     compact::Bool
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,JuliaColorType}
+    colors_left::Dict{Int,BaseColorType}
     labels_right::Dict{Int,String}
-    colors_right::Dict{Int,JuliaColorType}
+    colors_right::Dict{Int,BaseColorType}
     decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,JuliaColorType}
+    colors_deco::Dict{Symbol,BaseColorType}
     labels::Bool
     colormap::Any
     colorbar::Bool
@@ -91,11 +91,11 @@ function Plot(
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,JuliaColorType}()
+    colors_left = Dict{Int,BaseColorType}()
     labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,JuliaColorType}()
+    colors_right = Dict{Int,BaseColorType}()
     decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,JuliaColorType}()
+    colors_deco = Dict{Symbol,BaseColorType}()
     p = Plot{T,E,F}(
         graphics,
         title,
@@ -293,12 +293,12 @@ function Plot(
     if grid
         if my < 0 < My
             for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
-                points!(plot, i, 0.0, :normal)
+                points!(plot, i, 0.0, nothing)
             end
         end
         if mx < 0 < Mx
             for i in range(my, stop = My, length = height * y_pixel_per_char(C))
-                points!(plot, 0.0, i, :normal)
+                points!(plot, 0.0, i, nothing)
             end
         end
     end
@@ -417,20 +417,20 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
             if loc == :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
-                    plot.colors_left[row] = julia_color(color)
+                    plot.colors_left[row] = base_color(color)
                     break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
-                    plot.colors_right[row] = julia_color(color)
+                    plot.colors_right[row] = base_color(color)
                     break
                 end
             end
         end
     else
         plot.decorations[loc] = value
-        plot.colors_deco[loc] = julia_color(color)
+        plot.colors_deco[loc] = base_color(color)
     end
     plot
 end
@@ -462,10 +462,10 @@ function label!(
 )
     if loc == :l
         plot.labels_left[row] = value
-        plot.colors_left[row] = julia_color(color)
+        plot.colors_left[row] = base_color(color)
     elseif loc == :r
         plot.labels_right[row] = value
-        plot.colors_right[row] = julia_color(color)
+        plot.colors_right[row] = base_color(color)
     else
         throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
     end

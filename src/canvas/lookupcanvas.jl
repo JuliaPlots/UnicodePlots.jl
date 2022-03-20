@@ -56,7 +56,7 @@ function CreateLookupCanvas(
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid         = fill(G(0), char_width, char_height)
-    colors       = Array{ColorType}(nothing, char_width, char_height)
+    colors       = fill(typemax(ColorType), char_width, char_height)
     T(
         grid,
         colors,
@@ -102,7 +102,7 @@ function pixel!(
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-    set_color!(c.colors, char_x, char_y, crayon_8bit_color(color), blend)
+    set_color!(c.colors, char_x, char_y, ansi_color(color), blend)
     c
 end
 

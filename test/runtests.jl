@@ -75,6 +75,8 @@ macro dinf(ex)
 end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+    UnicodePlots.colormode_8bit()  # NOTE: for now only test 8bit mode
+    UnicodePlots.CRAYONS_FAST[] = false
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

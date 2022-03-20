@@ -5,7 +5,7 @@ function ncols end
 function printrow end
 
 suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) =
-    crayon_8bit_color(
+    ansi_color(
         color === nothing && length(c.colors) > 0 ? c.colors[end] :
         (color isa AbstractVector ? first(color) : color),
     )
