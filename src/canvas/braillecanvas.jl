@@ -57,7 +57,7 @@ function BrailleCanvas(
     pixel_width  = char_width * x_pixel_per_char(BrailleCanvas)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
     grid         = fill(Char(BLANK_BRAILLE), char_width, char_height)
-    colors       = fill(typemax(ColorType), char_width, char_height)
+    colors       = fill(INVALID_COLOR, char_width, char_height)
     BrailleCanvas(
         grid,
         colors,

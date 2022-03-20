@@ -4,11 +4,10 @@ function nrows end
 function ncols end
 function printrow end
 
-suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) =
-    ansi_color(
-        color === nothing && length(c.colors) > 0 ? c.colors[end] :
-        (color isa AbstractVector ? first(color) : color),
-    )
+suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) = ansi_color(
+    color === nothing && length(c.colors) > 0 ? c.colors[end] :
+    (color isa AbstractVector ? first(color) : color),
+)
 
 function Base.print(io::IO, c::GraphicsArea)
     for row in 1:nrows(c)

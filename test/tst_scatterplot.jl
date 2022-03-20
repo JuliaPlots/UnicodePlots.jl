@@ -17,45 +17,45 @@ y = [2, 0, -5, 2, -5]
         @binf(scatterplot(x, float.(y))),
     )
         @test p isa Plot
-        test_ref("references/scatterplot/default.txt", @show_col(p))
+        test_ref("scatterplot/default.txt", @show_col(p))
     end
 
     for p in (@binf(scatterplot(y)), @binf(scatterplot(float.(y))))
         @test p isa Plot
-        test_ref("references/scatterplot/y_only.txt", @show_col(p))
+        test_ref("scatterplot/y_only.txt", @show_col(p))
     end
 
     p = @binf scatterplot(6:10)
     @test p isa Plot
-    test_ref("references/scatterplot/range1.txt", @show_col(p))
+    test_ref("scatterplot/range1.txt", @show_col(p))
 
     p = @binf scatterplot(11:15, 6:10)
     @test p isa Plot
-    test_ref("references/scatterplot/range2.txt", @show_col(p))
+    test_ref("scatterplot/range2.txt", @show_col(p))
 
     p = @binf scatterplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
-    test_ref("references/scatterplot/scale1.txt", @show_col(p))
+    test_ref("scatterplot/scale1.txt", @show_col(p))
     p = @binf scatterplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
-    test_ref("references/scatterplot/scale2.txt", @show_col(p))
+    test_ref("scatterplot/scale2.txt", @show_col(p))
     miny = -1.2796649117521434e218
     maxy = -miny
     p = @binf scatterplot([1], [miny], xlim = (1, 1), ylim = (miny, maxy))
-    test_ref("references/scatterplot/scale3.txt", @show_col(p))
+    test_ref("scatterplot/scale3.txt", @show_col(p))
     p = @binf scatterplot([1], [miny], xlim = [1, 1], ylim = [miny, maxy])
-    test_ref("references/scatterplot/scale3.txt", @show_col(p))
+    test_ref("scatterplot/scale3.txt", @show_col(p))
 end
 
 @testset "keyword arguments" begin
     p = @binf scatterplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
-    test_ref("references/scatterplot/limits.txt", @show_col(p))
+    test_ref("scatterplot/limits.txt", @show_col(p))
     p = @binf scatterplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
-    test_ref("references/scatterplot/limits.txt", @show_col(p))
+    test_ref("scatterplot/limits.txt", @show_col(p))
 
     p = @binf scatterplot(x, y, grid = false)
-    test_ref("references/scatterplot/nogrid.txt", @show_col(p))
+    test_ref("scatterplot/nogrid.txt", @show_col(p))
 
     p = @binf scatterplot(x, y, color = :blue, name = "points1")
-    test_ref("references/scatterplot/blue.txt", @show_col(p))
+    test_ref("scatterplot/blue.txt", @show_col(p))
 
     p = @binf scatterplot(
         x,
@@ -66,18 +66,18 @@ end
         ylabel = "y",
     )
     @test p isa Plot
-    test_ref("references/scatterplot/parameters1.txt", @show_col(p))
+    test_ref("scatterplot/parameters1.txt", @show_col(p))
 
     @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) === p
-    test_ref("references/scatterplot/parameters2.txt", @show_col(p))
+    test_ref("scatterplot/parameters2.txt", @show_col(p))
 
     @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
-    test_ref("references/scatterplot/parameters3.txt", @show_col(p))
-    test_ref("references/scatterplot/nocolor.txt", @show_nocol(p))
+    test_ref("scatterplot/parameters3.txt", @show_col(p))
+    test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 
     p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
     @test p isa Plot
-    test_ref("references/scatterplot/canvassize.txt", @show_col(p))
+    test_ref("scatterplot/canvassize.txt", @show_col(p))
 end
 
 @testset "markers" begin
@@ -88,7 +88,7 @@ end
         marker = [:circle, "!", '.', :star5, :vline],
         color = [:red, :green, :yellow, :blue, :cyan],
     )
-    test_ref("references/scatterplot/markers_vector.txt", @show_col(p))
+    test_ref("scatterplot/markers_vector.txt", @show_col(p))
 
     scatterplot(x, y, marker = :circle)
 
@@ -96,7 +96,7 @@ end
     m = collect(keys(UnicodePlots.MARKERS))
     for canvas in (BrailleCanvas, DotCanvas, AsciiCanvas)
         p = scatterplot(n, n, title = "Supported markers", marker = m)
-        test_ref("references/scatterplot/markers_$(canvas).txt", @show_col(p))
+        test_ref("scatterplot/markers_$(canvas).txt", @show_col(p))
     end
 end
 
@@ -105,5 +105,5 @@ end
     p = scatterplot(y1, marker = :circle)
     y2 = [23.5, 22.5, 23.0] * u"°C"
     p = scatterplot!(p, y2, marker = :cross, color = :red)
-    test_ref("references/scatterplot/units_temp.txt", @show_col(p))
+    test_ref("scatterplot/units_temp.txt", @show_col(p))
 end

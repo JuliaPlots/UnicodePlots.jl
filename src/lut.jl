@@ -1,7 +1,7 @@
 # lookup tables
 
 # ansi: 8bit - 256 colors
-const LUT_8bit = UInt32[
+const LUT_8BIT = UInt32[
     0x000000
     0x800000
     0x008000

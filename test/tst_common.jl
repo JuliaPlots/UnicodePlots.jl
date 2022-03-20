@@ -64,9 +64,10 @@ end
 end
 
 @testset "colors" begin
-    old_mode = UnicodePlots.COLORMODE[]
+    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
 
-    UnicodePlots.colormode_8bit()
+    _depth = UnicodePlots.COLORDEPTH[]
+    UnicodePlots.colordepth!(8)
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
@@ -75,7 +76,7 @@ end
     @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
 
-    UnicodePlots.colormode_24bit()
+    UnicodePlots.colordepth!(24)
     @test UnicodePlots.ansi_color(0x80) == 0x00af00d7  # ansi 128
     @test UnicodePlots.ansi_color(128) == 0x00af00d7  # ansi 128
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
@@ -83,7 +84,7 @@ end
     @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x04
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
-    UnicodePlots.COLORMODE[] = old_mode
+    UnicodePlots.COLORDEPTH[] = _depth
 
     @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
           Function

@@ -14,8 +14,12 @@ const RNG = StableRNG(1337)
 const T_SZ = (24, 80)  # terminal size
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
-test_ref(reference, actual) =
-    @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+test_ref(reference, actual) = @test_reference(
+    joinpath("references_$(UnicodePlots.colordepth())", reference),
+    actual,
+    render = BeforeAfterFull(),
+    format = "TXT"
+)
 
 # helpers
 macro show_col(p, kv...)
@@ -75,8 +79,8 @@ macro dinf(ex)
 end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
-    UnicodePlots.colormode_8bit()  # NOTE: for now only test 8bit mode
     UnicodePlots.CRAYONS_FAST[] = false
+    println("using colordepth=$(UnicodePlots.colordepth())")
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

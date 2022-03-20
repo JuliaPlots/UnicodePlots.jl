@@ -56,7 +56,7 @@ function DensityCanvas(
     pixel_width  = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
     grid         = fill(UInt(0), char_width, char_height)
-    colors       = fill(typemax(ColorType), char_width, char_height)
+    colors       = fill(INVALID_COLOR, char_width, char_height)
     DensityCanvas(
         grid,
         colors,

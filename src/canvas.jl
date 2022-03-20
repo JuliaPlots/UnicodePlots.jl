@@ -309,13 +309,12 @@ function printcolorbarrow(
         else  # otherwise, blend from min to max
             n = 2(nrows(c) - 2)
             r = row - 2
-            bgcol = colormap(n - 2r, 1, n)
             fgcol = colormap(n - 2r - 1, 1, n)
+            bgcol = colormap(n - 2r, 1, n)
         end
         @assert 0 ≤ fgcol ≤ 255
         @assert 0 ≤ bgcol ≤ 255
-        print_color(ColorType(fgcol + THRESHOLD), io, HALF_BLOCK; bgcol = ColorType(bgcol + THRESHOLD))
-        print(io, HALF_BLOCK, Crayon(reset=true))
+        print_color(ansi_color(fgcol), io, HALF_BLOCK, HALF_BLOCK; bgcol = ansi_color(bgcol))
         print_color(BORDER_COLOR[], io, b[:r])
         print(io, plot_padding)
         # print z label

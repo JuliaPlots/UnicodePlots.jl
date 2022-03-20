@@ -55,11 +55,11 @@ end
         @testset "$(nameof(T))" begin
             c = T(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
             if T == BrailleCanvas
-                test_ref("references/canvas/empty_braille_show.txt", @show_col(c))
+                test_ref("canvas/empty_braille_show.txt", @show_col(c))
             elseif T == HeatmapCanvas
-                test_ref("references/canvas/empty_heatmap_show.txt", @show_col(c))
+                test_ref("canvas/empty_heatmap_show.txt", @show_col(c))
             else
-                test_ref("references/canvas/empty_show.txt", @show_col(c))
+                test_ref("canvas/empty_show.txt", @show_col(c))
             end
             @test @inferred(lines!(c, 0.0, 0.0, 1.0, 1.0, :blue)) === c
             @test @inferred(points!(c, x1, y1, :white)) === c
@@ -72,13 +72,13 @@ end
             lines!(c, 0, 0, 1, 1, color = :blue)
             lines!(c, 0.1, 0.7, 0.9, 0.6, :red)
             test_ref(
-                "references/canvas/$(str)_printrow.txt",
+                "canvas/$(str)_printrow.txt",
                 @io2str(printrow(IOContext(::IO, :color => true), c, 3))
             )
-            test_ref("references/canvas/$(str)_print.txt", @print_col(c))
-            test_ref("references/canvas/$(str)_print_nocolor.txt", @print_nocol(c))
-            test_ref("references/canvas/$(str)_show.txt", @show_col(c))
-            test_ref("references/canvas/$(str)_show_nocolor.txt", @show_nocol(c))
+            test_ref("canvas/$(str)_print.txt", @print_col(c))
+            test_ref("canvas/$(str)_print_nocolor.txt", @print_nocol(c))
+            test_ref("canvas/$(str)_show.txt", @show_col(c))
+            test_ref("canvas/$(str)_show_nocolor.txt", @show_nocol(c))
         end
     end
 end
@@ -100,7 +100,7 @@ end
     lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
     lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
     lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
-    test_ref("references/canvas/color_mixing.txt", @print_col(c))
+    test_ref("canvas/color_mixing.txt", @print_col(c))
 end
 
 @testset "colors" begin
@@ -120,5 +120,5 @@ end
     lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
     lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
     lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
-    test_ref("references/canvas/colors.txt", @print_col(c))
+    test_ref("canvas/colors.txt", @print_col(c))
 end
