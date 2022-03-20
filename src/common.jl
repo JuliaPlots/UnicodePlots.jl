@@ -381,7 +381,11 @@ function print_color(io::IO, color::ColorType, args...; bgcol = missing)
         depth = color < THRESHOLD ? nothing : Crayons.COLORS_256
         print_crayons(
             io,
-            Crayon(crayon_color(color, depth), crayon_color(bgcol, depth), CRAYONS_EMPTY_STYLES...),
+            Crayon(
+                crayon_color(color, depth),
+                crayon_color(bgcol, depth),
+                CRAYONS_EMPTY_STYLES...,
+            ),
             args...,
         )
     end
@@ -458,10 +462,12 @@ complement(color::ColorType)::ColorType =
 
 base_color(color::ColorType)::BaseColorType =
     color == INVALID_COLOR ? :normal : Int(rgb2ansi(color))
-base_color(color::Integer)::BaseColorType = (@assert 0 ≤ color ≤ 255;
-Int(color))
 base_color(color::Nothing)::BaseColorType = :normal
 base_color(color::Symbol)::BaseColorType = color  # no-op
+function base_color(color::Integer)::BaseColorType
+    @assert 0 ≤ color ≤ 255
+    Int(color)
+end
 
 @inline function set_color!(
     colors::Matrix{ColorType},
