@@ -360,12 +360,12 @@ function sorted_keys_values(dict::Dict; k2s = true)
     first.(keys_vals), last.(keys_vals)
 end
 
-crayon_color(::Union{Missing,Nothing}, colormode) = Crayons.ANSIColor()
-crayon_color(color::ColorType, colormode) =
-    if colormode == Crayons.COLORS_24BIT
-        Crayons.ANSIColor(Crayons._torgb(color |> rgb2ansi)..., colormode)
-    else
-        Crayons.ANSIColor(color |> rgb2ansi, colormode)
+crayon_color(::Union{Missing,Nothing}) = Crayons.ANSIColor()
+crayon_color(color::ColorType) =
+    if color < THRESHOLD  # 24bit
+        Crayons.ANSIColor(red(color), grn(color), blu(color), Crayons.COLORS_24BIT)
+    else  # 8bit
+        Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
     end
 
 function print_crayons(io, c, args...)
@@ -389,14 +389,9 @@ function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if color == INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
-        colormode = color < THRESHOLD ? Crayons.COLORS_24BIT : Crayons.COLORS_256
         print_crayons(
             io,
-            Crayon(
-                crayon_color(color, colormode),
-                crayon_color(bgcol, colormode),
-                CRAYONS_EMPTY_STYLES...,
-            ),
+            Crayon(crayon_color(color), crayon_color(bgcol), CRAYONS_EMPTY_STYLES...),
             args...,
         )
     end
@@ -410,8 +405,6 @@ end
 @inline grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
 @inline blu(c::UInt32)::UInt8 = c & 0xff
 
-@inline rgb2ansi(v::Integer) = v ≥ THRESHOLD ? v - THRESHOLD : v
-
 @inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
     if a == b
         a  # fastpath
@@ -421,7 +414,7 @@ end
         g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
         b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
     elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
-        THRESHOLD + (UInt8(a |> rgb2ansi) | UInt8(b |> rgb2ansi))
+        THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
     elseif a != INVALID_COLOR && b != INVALID_COLOR
         max(a, b)
     else
@@ -471,7 +464,7 @@ complement(color::ColorType)::ColorType =
     elseif color < THRESHOLD
         r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
     elseif color != INVALID_COLOR
-        THRESHOLD + ~UInt8(color |> rgb2ansi)
+        THRESHOLD + ~UInt8(color - THRESHOLD)
     end
 
 @inline function set_color!(

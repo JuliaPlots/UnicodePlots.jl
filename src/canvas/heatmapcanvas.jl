@@ -40,7 +40,7 @@ function HeatmapCanvas(args...; kw...)
         min_char_height = 1,
         kw...,
     )
-    fill!(c.colors, 0)  # black background by default
+    fill!(c.colors, ansi_color(:black))  # black background by default
     c
 end
 
