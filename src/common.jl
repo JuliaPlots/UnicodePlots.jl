@@ -206,13 +206,16 @@ brightcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT; nothing)
 faintcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_FAINT; nothing)
 
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
-is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
+terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
+
+# specific to UnicodePlots
+forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) in ("24", "24bit", "truecolor")
+forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) in ("8", "8bit")
 
 function __init__()
-    if is_24bit_supported()
+    if (terminal_24bit() || forced_24bit()) && !forced_8bit()
         truecolors!()
-        # NOTE: when using LUT[], using brightcolors!() will look better
-        faintcolors!()
+        USE_LUT[] ? brightcolors!() : faintcolors!()
     else
         colors256!()
         faintcolors!()
@@ -224,13 +227,15 @@ function default_size!(;
     width::Union{Integer,Nothing} = nothing,
     height::Union{Integer,Nothing} = nothing,
 )
-    @assert (width === nothing) ⊻ (height === nothing)
+    @assert width === nothing || height === nothing
     if width !== nothing
         DEFAULT_WIDTH[] = width
         DEFAULT_HEIGHT[] = round(Int, width / 2ASPECT_RATIO)
     elseif height !== nothing
         DEFAULT_HEIGHT[] = height
         DEFAULT_WIDTH[] = round(Int, height * 2ASPECT_RATIO)
+    else
+        default_size!(height = 15)
     end
     nothing
 end
@@ -426,11 +431,11 @@ end
         a  # fastpath
     elseif a < THRESHOLD && b < THRESHOLD  # 24bit
         # physical average (UInt32 to prevent UInt8 overflow)
-        # r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-        # g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-        # b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+        r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
+        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
         # binary or
-        r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
+        # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
     elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
         THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
     elseif a != INVALID_COLOR && b != INVALID_COLOR

@@ -83,42 +83,59 @@ end
     end
 end
 
-@testset "color mixing" begin
-    c = BrailleCanvas(40, 15, origin_x = 0.0, origin_y = 0.0, width = 1.2, height = 1.2)
-    lines!(c, 0.0, 0.0, 1.2, 0.0, :blue)
-    lines!(c, 0.0, 0.2, 1.2, 0.2, :red)
-    lines!(c, 0.0, 0.4, 1.2, 0.4, :green)
-    lines!(c, 0.0, 0.6, 1.2, 0.6, :yellow)
-    lines!(c, 0.0, 0.8, 1.2, 0.8, :magenta)
-    lines!(c, 0.0, 1.0, 1.2, 1.0, :cyan)
-    lines!(c, 0.0, 1.2, 1.2, 1.2, :white)
+vline!(c, m, M, x, col) = lines!(c, x, m, x, M, col)
+hline!(c, m, M, y, col) = lines!(c, m, y, M, y, col)
 
-    lines!(c, 0.0, 0.0, 0.0, 1.2, :blue)
-    lines!(c, 0.2, 0.0, 0.2, 1.2, :red)
-    lines!(c, 0.4, 0.0, 0.4, 1.2, :green)
-    lines!(c, 0.6, 0.0, 0.6, 1.2, :yellow)
-    lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
-    lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
-    lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
-    test_ref("canvas/color_mixing.txt", @print_col(c))
+@testset "color mixing 4bit" begin
+    m, M = 0.0, 1.4
+    c = BrailleCanvas(40, 15, origin_x = m, origin_y = m, width = M, height = M)
+
+    for line in (vline!, hline!)
+        line(c, m, M, 0.0, :dark_gray)
+        line(c, m, M, 0.2, :light_red)
+        line(c, m, M, 0.4, :light_green)
+        line(c, m, M, 0.6, :light_yellow)
+        line(c, m, M, 0.8, :light_blue)
+        line(c, m, M, 1.0, :light_magenta)
+        line(c, m, M, 1.2, :light_cyan)
+        line(c, m, M, 1.4, :white)
+    end
+
+    test_ref("canvas/color_mixing_4bit.txt", @print_col(c))
 end
 
-@testset "colors" begin
-    c = BrailleCanvas(40, 15, origin_x = 0.0, origin_y = 0.0, width = 1.2, height = 1.2)
-    lines!(c, 0.0, 0.0, 1.2, 0.0, (0, 0, 255))
-    lines!(c, 0.0, 0.2, 1.2, 0.2, (255, 0, 0))
-    lines!(c, 0.0, 0.4, 1.2, 0.4, (0, 255, 0))
-    lines!(c, 0.0, 0.6, 1.2, 0.6, (255, 255, 0))
-    lines!(c, 0.0, 0.8, 1.2, 0.8, 127)
-    lines!(c, 0.0, 1.0, 1.2, 1.0, 51)
-    lines!(c, 0.0, 1.2, 1.2, 1.2, 231)
+@testset "color mixing (8bit)" begin
+    m, M = 0.0, 1.4
+    c = BrailleCanvas(40, 15, origin_x = m, origin_y = m, width = M, height = M)
 
-    lines!(c, 0.0, 0.0, 0.0, 1.2, :blue)
-    lines!(c, 0.2, 0.0, 0.2, 1.2, :red)
-    lines!(c, 0.4, 0.0, 0.4, 1.2, :green)
-    lines!(c, 0.6, 0.0, 0.6, 1.2, :yellow)
-    lines!(c, 0.8, 0.0, 0.8, 1.2, :magenta)
-    lines!(c, 1.0, 0.0, 1.0, 1.2, :cyan)
-    lines!(c, 1.2, 0.0, 1.2, 1.2, :normal)
-    test_ref("canvas/colors.txt", @print_col(c))
+    for line in (vline!, hline!)
+        line(c, m, M, 0.0, 8)
+        line(c, m, M, 0.2, 9)
+        line(c, m, M, 0.4, 10)
+        line(c, m, M, 0.6, 11)
+        line(c, m, M, 0.8, 12)
+        line(c, m, M, 1.0, 13)
+        line(c, m, M, 1.2, 14)
+        line(c, m, M, 1.4, 15)
+    end
+
+    test_ref("canvas/color_mixing_8bit.txt", @print_col(c))
+end
+
+@testset "color mixing (24bit)" begin
+    m, M = 0.0, 1.4
+    c = BrailleCanvas(40, 15, origin_x = m, origin_y = m, width = M, height = M)
+
+    for line in (vline!, hline!)
+        line(c, m, M, 0.0, (0, 0, 0))
+        line(c, m, M, 0.2, (255, 0, 0))
+        line(c, m, M, 0.4, (0, 255, 0))
+        line(c, m, M, 0.6, (255, 255, 0))
+        line(c, m, M, 0.8, (0, 0, 255))
+        line(c, m, M, 1.0, (255, 0, 255))
+        line(c, m, M, 1.2, (0, 255, 255))
+        line(c, m, M, 1.4, (255, 255, 255))
+    end
+
+    test_ref("canvas/color_mixing_24bit.txt", @print_col(c))
 end

@@ -70,8 +70,8 @@ end
     UnicodePlots.faintcolors!()
     UnicodePlots.COLOR_CYCLE[] = _cycle
 
-    @test UnicodePlots.c256(0.) == 0
-    @test UnicodePlots.c256(1.) == 255
+    @test UnicodePlots.c256(0.0) == 0
+    @test UnicodePlots.c256(1.0) == 255
     @test UnicodePlots.c256(0) == 0
     @test UnicodePlots.c256(255) == 255
 
@@ -121,8 +121,17 @@ end
 
     UnicodePlots.colormode!(_color_mode)
 
-    # @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)  # physical average
-    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(255)  # binary or
+    if true  # physical average
+        @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
+        @test UnicodePlots.blend_colors(0xff0000, 0x00ff00) == 0xb4b400  # red & green -> yellow
+        @test UnicodePlots.blend_colors(0x00ff00, 0x0000ff) == 0x00b4b4  # green & blue -> cyan
+        @test UnicodePlots.blend_colors(0xff0000, 0x0000ff) == 0xb400b4  # red & blue -> magenta
+    else  # binary or
+        @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(255)
+        @test UnicodePlots.blend_colors(0xff0000, 0x00ff00) == 0xffff00
+        @test UnicodePlots.blend_colors(0x00ff00, 0x0000ff) == 0x00ffff
+        @test UnicodePlots.blend_colors(0xff0000, 0x0000ff) == 0xff00ff
+    end
 
     @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
     @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
@@ -175,10 +184,16 @@ end
     @test UnicodePlots.superscript("+2") == "⁺²"
 
     @test_throws AssertionError UnicodePlots.default_size!(width = 8, height = 8)
+
+    UnicodePlots.default_size!(height = 30)
+    @test UnicodePlots.DEFAULT_WIDTH[] == 80
+    @test UnicodePlots.DEFAULT_HEIGHT[] == 30
+
     UnicodePlots.default_size!(width = 64)
     @test UnicodePlots.DEFAULT_WIDTH[] == 64
     @test UnicodePlots.DEFAULT_HEIGHT[] == 24
-    UnicodePlots.default_size!(height = 15)
+
+    UnicodePlots.default_size!()
     @test UnicodePlots.DEFAULT_WIDTH[] == 40
     @test UnicodePlots.DEFAULT_HEIGHT[] == 15
 end
