@@ -178,7 +178,14 @@ const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
-colormode() = COLORMODE[] == Crayons.COLORS_256 ? 8 : 24
+colormode() =
+    if (cm = COLORMODE[]) == Crayons.COLORS_256
+        8
+    elseif cm == Crayons.COLORS_24BIT
+        24
+    else
+        error("Unsupported color mode=$cm.")
+    end
 
 function colormode!(mode)
     if mode == 8
@@ -188,6 +195,7 @@ function colormode!(mode)
     else
         error("Unsupported color mode=$mode, choose 8 or 24.")
     end
+    nothing
 end
 
 __init__() = is_24bit_supported() && colormode!(24)
@@ -427,7 +435,6 @@ ignored_color(color::Symbol) = color === :normal || color === :default || color 
 ignored_color(::Nothing) = true
 ignored_color(::Any) = false
 
-nocolor_string(str::Char) = nocolor_string(string(str))
 nocolor_string(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
 
 function ansi_4bit_to_8bit(c::UInt8)::UInt8
@@ -439,17 +446,16 @@ ansi_color(color::ColorType)::ColorType = color  # no-op
 function ansi_color(color::UserColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
     c = Crayons._parse_color(color)
-    if COLORMODE[] == Crayons.COLORS_24BIT
-        col = if c.style == Crayons.COLORS_24BIT
+    col = if COLORMODE[] == Crayons.COLORS_24BIT
+        if c.style == Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)
         elseif c.style == Crayons.COLORS_256
             LUT_8BIT[c.r + 1]
         elseif c.style == Crayons.COLORS_16
             THRESHOLD + ansi_4bit_to_8bit(c.r)  # 0-255 ansi
         end
-        return ColorType(col)
     else  # 0-255 ansi stored in a UInt32
-        col = if c.style == Crayons.COLORS_24BIT
+        if c.style == Crayons.COLORS_24BIT
             THRESHOLD + Crayons.to_256_colors(c).r
         elseif c.style == Crayons.COLORS_256
             THRESHOLD + c.r

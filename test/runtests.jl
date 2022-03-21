@@ -6,6 +6,7 @@ using LinearAlgebra
 using ColorTypes
 using StableRNGs
 using StatsBase
+using Crayons
 using Unitful
 
 include("fixes.jl")

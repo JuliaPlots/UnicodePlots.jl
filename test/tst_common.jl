@@ -66,11 +66,10 @@ end
 @testset "colors" begin
     @test_throws ErrorException UnicodePlots.colormode!(123456789)
 
-    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
-    @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
-    @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
-
     _color_mode = UnicodePlots.COLORMODE[]
+    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit
+    @test_throws ErrorException UnicodePlots.colormode()
+
     UnicodePlots.colormode!(8)
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
@@ -96,12 +95,16 @@ end
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     UnicodePlots.COLORMODE[] = _color_mode
 
+    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
+    @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
+    @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
+
     io = PipeBuffer()
     _cfast = UnicodePlots.CRAYONS_FAST[]
     for fast in (false, true)
         UnicodePlots.CRAYONS_FAST[] = fast
-        UnicodePlots.print_crayons(io, UnicodePlots.Crayons.Crayon(foreground = :red), 123)
-        UnicodePlots.print_crayons(io, UnicodePlots.Crayons.Crayon(), 123)
+        UnicodePlots.print_crayons(io, Crayon(foreground = :red), 123)
+        UnicodePlots.print_crayons(io, Crayon(), 123)
     end
     UnicodePlots.CRAYONS_FAST[] = _cfast
 
