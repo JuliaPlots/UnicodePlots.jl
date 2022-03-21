@@ -145,9 +145,9 @@ const SUPERSCRIPT = Dict(
     '8' => '⁸',
     '9' => '⁹',
 )
-const COLOR_CYCLE_DARK = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_LIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_DARK)
-const COLOR_CYCLE = Ref(COLOR_CYCLE_DARK)
+const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
+const COLOR_CYCLE_BRIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_FAINT)
+const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
 const BORDER_COLOR = Ref(:dark_gray)
 
@@ -202,7 +202,16 @@ end
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
-__init__() = colormode!(is_24bit_supported() ? 24 : 8)
+function __init__()
+    if is_24bit_supported()
+        colormode!(24)
+        COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
+    else
+        colormode!(8)
+        COLOR_CYCLE[] = COLOR_CYCLE_FAINT
+    end
+    nothing
+end
 
 function default_size!(;
     width::Union{Integer,Nothing} = nothing,
@@ -409,10 +418,12 @@ end
     if a == b
         a  # fastpath
     elseif a < THRESHOLD && b < THRESHOLD  # 24bit
-        # NOTE: convert to UInt32 to prevent UInt overflow
-        r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+        # physical average (UInt32 to prevent UInt8 overflow)
+        # r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
+        # g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+        # b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+        # binary or
+        r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
     elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
         THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
     elseif a != INVALID_COLOR && b != INVALID_COLOR

@@ -95,7 +95,9 @@ end
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     UnicodePlots.COLORMODE[] = _color_mode
 
-    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
+    # @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)  # physical average
+    @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(255)  # binary or
+
     @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
     @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
 
