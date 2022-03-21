@@ -83,14 +83,14 @@ end
     @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
 
     UnicodePlots.colormode!(24)
-    @test UnicodePlots.ansi_color(0x80) == 0x00af00d7  # ansi 128
-    @test UnicodePlots.ansi_color(128) == 0x00af00d7  # ansi 128
-    @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
-    @test UnicodePlots.ansi_color(:green) == UnicodePlots.THRESHOLD + 0x02
-    @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x04
-    @test UnicodePlots.ansi_color(:light_red) == UnicodePlots.THRESHOLD + 0x09  # bright := normal + 8
-    @test UnicodePlots.ansi_color(:light_green) == UnicodePlots.THRESHOLD + 0x0a
-    @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
+    @test UnicodePlots.ansi_color(0x80) == 0xaf00d7  # ansi 128
+    @test UnicodePlots.ansi_color(128) == 0xaf00d7  # ansi 128
+    @test UnicodePlots.ansi_color(:red) == 0x800000
+    @test UnicodePlots.ansi_color(:green) == 0x008000
+    @test UnicodePlots.ansi_color(:blue) == 0x000080
+    @test UnicodePlots.ansi_color(:light_red) == 0xff0000
+    @test UnicodePlots.ansi_color(:light_green) == 0x00ff00
+    @test UnicodePlots.ansi_color(:light_blue) == 0x0000ff
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     UnicodePlots.COLORMODE[] = _color_mode
@@ -118,13 +118,6 @@ end
     values = collect(1:10)
     callback = UnicodePlots.colormap_callback(:viridis)
     colors = [callback(v, values[2], values[end - 1]) for v in values]
-
-    # en.wikipedia.org/wiki/ANSI_escape_code#8-bit
-    @test UnicodePlots.rgb2ansi((0, 0, 0)) == 016  # black
-    @test UnicodePlots.rgb2ansi((1, 0, 0)) == 196  # red
-    @test UnicodePlots.rgb2ansi((0, 1, 0)) == 046  # green
-    @test UnicodePlots.rgb2ansi((0, 0, 1)) == 021  # blue
-    @test UnicodePlots.rgb2ansi((1, 1, 1)) == 231  # white
 end
 
 struct Scale{T}

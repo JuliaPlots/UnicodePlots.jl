@@ -309,8 +309,8 @@ function Plot(
 end
 
 function next_color!(plot::Plot{<:GraphicsArea})
-    cur_color = COLOR_CYCLE[plot.autocolor + 1]
-    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE))
+    cur_color = COLOR_CYCLE[][plot.autocolor + 1]
+    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE[]))
     cur_color
 end
 
@@ -630,14 +630,15 @@ function print_labels(
     blank::Char,
 )
     p.labels || return
+    bc        = BORDER_COLOR[]
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
-    left_col  = get(p.colors_deco, lloc, BORDER_COLOR[])
+    left_col  = get(p.colors_deco, lloc, bc)
     mid_str   = get(p.decorations, mloc, "")
-    mid_col   = get(p.colors_deco, mloc, BORDER_COLOR[])
+    mid_col   = get(p.colors_deco, mloc, bc)
     right_str = get(p.decorations, rloc, "")
-    right_col = get(p.colors_deco, rloc, BORDER_COLOR[])
+    right_col = get(p.colors_deco, rloc, bc)
     if left_str != "" || right_str != "" || mid_str != ""
         left_len  = length(left_str)
         mid_len   = length(mid_str)

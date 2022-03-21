@@ -313,15 +313,7 @@ function printcolorbarrow(
             fgcol = colormap(n - 2r - 1, 1, n)
             bgcol = colormap(n - 2r, 1, n)
         end
-        @assert 0 ≤ fgcol ≤ 255
-        @assert 0 ≤ bgcol ≤ 255
-        print_color(
-            io,
-            ansi_color(fgcol),
-            HALF_BLOCK,
-            HALF_BLOCK;
-            bgcol = ansi_color(bgcol),
-        )
+        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
         print_color(io, bc, b[:r])
         print(io, plot_padding)
         # print z label

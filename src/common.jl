@@ -145,7 +145,10 @@ const SUPERSCRIPT = Dict(
     '8' => '⁸',
     '9' => '⁹',
 )
-const COLOR_CYCLE = :green, :blue, :red, :magenta, :yellow, :cyan
+const COLOR_CYCLE_DARK = :green, :blue, :red, :magenta, :yellow, :cyan
+const COLOR_CYCLE_LIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_DARK)
+const COLOR_CYCLE = Ref(COLOR_CYCLE_DARK)
+
 const BORDER_COLOR = Ref(:dark_gray)
 
 # standard terminals seem to respect a 4:3 aspect ratio
@@ -164,6 +167,7 @@ const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
 const THRESHOLD = UInt32(256^3)
 const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
+const USE_LUT = Ref(true)
 
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
@@ -174,9 +178,6 @@ const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
 #! format: on
-
-# see gist.github.com/XVilka/8346728#checking-for-colorterm
-is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
 colormode() =
     if (cm = COLORMODE[]) == Crayons.COLORS_256
@@ -198,7 +199,10 @@ function colormode!(mode)
     nothing
 end
 
-__init__() = is_24bit_supported() && colormode!(24)
+# see gist.github.com/XVilka/8346728#checking-for-colorterm
+is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
+
+__init__() = colormode!(is_24bit_supported() ? 24 : 8)
 
 function default_size!(;
     width::Union{Integer,Nothing} = nothing,
@@ -212,7 +216,7 @@ function default_size!(;
         DEFAULT_HEIGHT[] = height
         DEFAULT_WIDTH[] = round(Int, height * 2ASPECT_RATIO)
     end
-    return
+    nothing
 end
 
 function char_marker(marker::MarkerType)::Char
@@ -356,14 +360,12 @@ function sorted_keys_values(dict::Dict; k2s = true)
     first.(keys_vals), last.(keys_vals)
 end
 
-crayon_color(::Union{Missing,Nothing}, colormode = nothing) = Crayons.ANSIColor()
-crayon_color(color::ColorType, colormode::Any) =
-    Crayons.ANSIColor(color |> rgb2ansi, colormode)
-crayon_color(color::ColorType, ::Nothing) =
-    if (cm = COLORMODE[]) == Crayons.COLORS_24BIT
-        Crayons.ANSIColor(Crayons._torgb(color |> rgb2ansi)..., cm)
+crayon_color(::Union{Missing,Nothing}, colormode) = Crayons.ANSIColor()
+crayon_color(color::ColorType, colormode) =
+    if colormode == Crayons.COLORS_24BIT
+        Crayons.ANSIColor(Crayons._torgb(color |> rgb2ansi)..., colormode)
     else
-        Crayons.ANSIColor(color |> rgb2ansi, cm)
+        Crayons.ANSIColor(color |> rgb2ansi, colormode)
     end
 
 function print_crayons(io, c, args...)
@@ -380,15 +382,14 @@ function print_crayons(io, c, args...)
     end
 end
 
+print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
-print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
-
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if color == INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
-        colormode = color < THRESHOLD ? nothing : Crayons.COLORS_256
+        colormode = color < THRESHOLD ? Crayons.COLORS_24BIT : Crayons.COLORS_256
         print_crayons(
             io,
             Crayon(
@@ -411,25 +412,21 @@ end
 
 @inline rgb2ansi(v::Integer) = v ≥ THRESHOLD ? v - THRESHOLD : v
 
-@inline function blend_colors(a::UInt32, b::UInt32)::UInt32
+@inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
     if a == b
-        return a  # fastpath
+        a  # fastpath
+    elseif a < THRESHOLD && b < THRESHOLD  # 24bit
+        # NOTE: convert to UInt32 to prevent UInt overflow
+        r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
+        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+    elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
+        THRESHOLD + (UInt8(a |> rgb2ansi) | UInt8(b |> rgb2ansi))
+    elseif a != INVALID_COLOR && b != INVALID_COLOR
+        max(a, b)
     else
-        if a < THRESHOLD && b < THRESHOLD
-            return (  # NOTE: convert to UInt32 to prevent UInt overflow
-                r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-                g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-                b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
-            )
-        elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR
-            return THRESHOLD + (UInt8(a |> rgb2ansi) | UInt8(b |> rgb2ansi))
-        elseif a != INVALID_COLOR && b != INVALID_COLOR
-            return max(a, b)
-        else
-            return INVALID_COLOR
-        end
+        INVALID_COLOR
     end
-end
 
 ignored_color(color::Symbol) = color === :normal || color === :default || color === :nothing
 ignored_color(::Nothing) = true
@@ -450,9 +447,10 @@ function ansi_color(color::UserColorType)::ColorType
         if c.style == Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)
         elseif c.style == Crayons.COLORS_256
-            LUT_8BIT[c.r + 1]
+            USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
         elseif c.style == Crayons.COLORS_16
-            THRESHOLD + ansi_4bit_to_8bit(c.r)  # 0-255 ansi
+            c8 = ansi_4bit_to_8bit(c.r)
+            USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
         end
     else  # 0-255 ansi stored in a UInt32
         if c.style == Crayons.COLORS_24BIT
@@ -463,7 +461,7 @@ function ansi_color(color::UserColorType)::ColorType
             THRESHOLD + ansi_4bit_to_8bit(c.r)
         end
     end
-    return ColorType(col)
+    ColorType(col)
 end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))

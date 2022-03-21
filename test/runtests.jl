@@ -81,7 +81,7 @@ end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
-    println("using colormode=$(UnicodePlots.colormode())")
+    println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     for test in (
         "tst_issues.jl",
         "tst_common.jl",
