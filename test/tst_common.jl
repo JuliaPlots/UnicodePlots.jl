@@ -64,36 +64,62 @@ end
 end
 
 @testset "colors" begin
+    # coverage
+    _cycle = UnicodePlots.COLOR_CYCLE[]
+    UnicodePlots.brightcolors!()
+    UnicodePlots.faintcolors!()
+    UnicodePlots.COLOR_CYCLE[] = _cycle
+
+    @test UnicodePlots.c256(0.) == 0
+    @test UnicodePlots.c256(1.) == 255
+    @test UnicodePlots.c256(0) == 0
+    @test UnicodePlots.c256(255) == 255
+
     @test_throws ErrorException UnicodePlots.colormode!(123456789)
 
-    _color_mode = UnicodePlots.COLORMODE[]
+    _color_mode = UnicodePlots.colormode()
     UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit
     @test_throws ErrorException UnicodePlots.colormode()
 
-    UnicodePlots.colormode!(8)
+    UnicodePlots.colors256!()
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
+    @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
+    @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
     @test UnicodePlots.ansi_color(:green) == UnicodePlots.THRESHOLD + 0x02
     @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x04
     @test UnicodePlots.ansi_color(:light_red) == UnicodePlots.THRESHOLD + 0x09  # bright := normal + 8
     @test UnicodePlots.ansi_color(:light_green) == UnicodePlots.THRESHOLD + 0x0a
     @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
-    @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
-    @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
 
-    UnicodePlots.colormode!(24)
-    @test UnicodePlots.ansi_color(0x80) == 0xaf00d7  # ansi 128
-    @test UnicodePlots.ansi_color(128) == 0xaf00d7  # ansi 128
+    UnicodePlots.truecolors!()
+    _lut = UnicodePlots.USE_LUT[]
+    UnicodePlots.USE_LUT[] = true
+    @test UnicodePlots.ansi_color(0x80) == 0xaf00d7
+    @test UnicodePlots.ansi_color(128) == 0xaf00d7
+    @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
+    @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     @test UnicodePlots.ansi_color(:red) == 0x800000
     @test UnicodePlots.ansi_color(:green) == 0x008000
     @test UnicodePlots.ansi_color(:blue) == 0x000080
     @test UnicodePlots.ansi_color(:light_red) == 0xff0000
     @test UnicodePlots.ansi_color(:light_green) == 0x00ff00
     @test UnicodePlots.ansi_color(:light_blue) == 0x0000ff
+    UnicodePlots.USE_LUT[] = false
+    @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80
+    @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
-    UnicodePlots.COLORMODE[] = _color_mode
+    @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x1
+    @test UnicodePlots.ansi_color(:green) == UnicodePlots.THRESHOLD + 0x2
+    @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x4
+    @test UnicodePlots.ansi_color(:light_red) == UnicodePlots.THRESHOLD + 0x09
+    @test UnicodePlots.ansi_color(:light_green) == UnicodePlots.THRESHOLD + 0x0a
+    @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
+    UnicodePlots.USE_LUT[] = _lut
+
+    UnicodePlots.colormode!(_color_mode)
 
     # @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)  # physical average
     @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(255)  # binary or

@@ -167,7 +167,7 @@ const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
 const THRESHOLD = UInt32(256^3)
 const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
-const USE_LUT = Ref(true)
+const USE_LUT = Ref(false)
 
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
@@ -188,27 +188,34 @@ colormode() =
         error("Unsupported color mode=$cm.")
     end
 
+colors256!() = (COLORMODE[] = Crayons.COLORS_256; nothing)
+truecolors!() = (COLORMODE[] = Crayons.COLORS_24BIT; nothing)
+
 function colormode!(mode)
     if mode == 8
-        COLORMODE[] = Crayons.COLORS_256
+        colors256!()
     elseif mode == 24
-        COLORMODE[] = Crayons.COLORS_24BIT
+        truecolors!()
     else
         error("Unsupported color mode=$mode, choose 8 or 24.")
     end
     nothing
 end
 
+brightcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT; nothing)
+faintcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_FAINT; nothing)
+
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
 function __init__()
     if is_24bit_supported()
-        colormode!(24)
-        COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
+        truecolors!()
+        # NOTE: when using LUT[], using brightcolors!() will look better
+        faintcolors!()
     else
-        colormode!(8)
-        COLOR_CYCLE[] = COLOR_CYCLE_FAINT
+        colors256!()
+        faintcolors!()
     end
     nothing
 end
