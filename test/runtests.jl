@@ -15,7 +15,7 @@ const T_SZ = (24, 80)  # terminal size
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(
-    joinpath("references_$(UnicodePlots.colordepth())", reference),
+    joinpath("references_$(UnicodePlots.colormode())", reference),
     actual,
     render = BeforeAfterFull(),
     format = "TXT"
@@ -80,7 +80,7 @@ end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
-    println("using colordepth=$(UnicodePlots.colordepth())")
+    println("using colormode=$(UnicodePlots.colormode())")
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

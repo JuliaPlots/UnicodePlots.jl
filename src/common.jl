@@ -146,7 +146,7 @@ const SUPERSCRIPT = Dict(
     '9' => '⁹',
 )
 const COLOR_CYCLE = :green, :blue, :red, :magenta, :yellow, :cyan
-const BORDER_COLOR = Ref(:light_black)
+const BORDER_COLOR = Ref(:dark_gray)
 
 # standard terminals seem to respect a 4:3 aspect ratio
 # unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
@@ -158,12 +158,11 @@ const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO))
 
 const MarkerType = Union{Symbol,Char,AbstractString}
-const UserColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
-const BaseColorType = Union{Symbol,Int}  # color type for Base.printstyled (defined in base/util.jl)...
-const ColorType = UInt32  # internal UnicodePlots color type (canvas)
+const UserColorType = Union{Crayon,Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
 
 const THRESHOLD = UInt32(256^3)
-const COLORDEPTH = Ref(Crayons.COLORS_256)
+const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
 
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
@@ -179,19 +178,19 @@ const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 is_24bit_supported() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
 
-colordepth() = COLORDEPTH[] == Crayons.COLORS_256 ? 8 : 24
+colormode() = COLORMODE[] == Crayons.COLORS_256 ? 8 : 24
 
-function colordepth!(depth)
-    if depth == 8
-        COLORDEPTH[] = Crayons.COLORS_256
-    elseif depth == 24
-        COLORDEPTH[] = Crayons.COLORS_24BIT
+function colormode!(mode)
+    if mode == 8
+        COLORMODE[] = Crayons.COLORS_256
+    elseif mode == 24
+        COLORMODE[] = Crayons.COLORS_24BIT
     else
-        error("Unsupported bit depth=$depth, choose 8 or 24.")
+        error("Unsupported color mode=$mode, choose 8 or 24.")
     end
 end
 
-__init__() = is_24bit_supported() && colordepth!(24)
+__init__() = is_24bit_supported() && colormode!(24)
 
 function default_size!(;
     width::Union{Integer,Nothing} = nothing,
@@ -349,15 +348,15 @@ function sorted_keys_values(dict::Dict; k2s = true)
     first.(keys_vals), last.(keys_vals)
 end
 
-crayon_color(::Union{Missing,Nothing}, depth) = Crayons.ANSIColor()
-crayon_color(color::ColorType, depth) = Crayons.ANSIColor(color |> rgb2ansi, depth)
-crayon_color(color::ColorType, ::Nothing) = (
-    if (cm = COLORDEPTH[]) == Crayons.COLORS_24BIT
+crayon_color(::Union{Missing,Nothing}, colormode = nothing) = Crayons.ANSIColor()
+crayon_color(color::ColorType, colormode::Any) =
+    Crayons.ANSIColor(color |> rgb2ansi, colormode)
+crayon_color(color::ColorType, ::Nothing) =
+    if (cm = COLORMODE[]) == Crayons.COLORS_24BIT
         Crayons.ANSIColor(Crayons._torgb(color |> rgb2ansi)..., cm)
     else
         Crayons.ANSIColor(color |> rgb2ansi, cm)
     end
-)
 
 function print_crayons(io, c, args...)
     if CRAYONS_FAST[]
@@ -373,17 +372,20 @@ function print_crayons(io, c, args...)
     end
 end
 
-print_color(io::IO, color::BaseColorType, args...) = printstyled(io, args...; color = color)
+print_color(io::IO, color::UserColorType, args...) =
+    print_color(io, ansi_color(color), args...)
+print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
+
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if color == INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
-        depth = color < THRESHOLD ? nothing : Crayons.COLORS_256
+        colormode = color < THRESHOLD ? nothing : Crayons.COLORS_256
         print_crayons(
             io,
             Crayon(
-                crayon_color(color, depth),
-                crayon_color(bgcol, depth),
+                crayon_color(color, colormode),
+                crayon_color(bgcol, colormode),
                 CRAYONS_EMPTY_STYLES...,
             ),
             args...,
@@ -425,29 +427,37 @@ ignored_color(color::Symbol) = color === :normal || color === :default || color 
 ignored_color(::Nothing) = true
 ignored_color(::Any) = false
 
+nocolor_string(str::Char) = nocolor_string(string(str))
+nocolor_string(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
+
+function ansi_4bit_to_8bit(c::UInt8)::UInt8
+    q, r = divrem(c, UInt8(60))
+    r + (q > 0x0 ? 0x8 : 0x0)
+end
+
 ansi_color(color::ColorType)::ColorType = color  # no-op
 function ansi_color(color::UserColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
     c = Crayons._parse_color(color)
-    if COLORDEPTH[] == Crayons.COLORS_24BIT
+    if COLORMODE[] == Crayons.COLORS_24BIT
         col = if c.style == Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)
         elseif c.style == Crayons.COLORS_256
             LUT_8BIT[c.r + 1]
         elseif c.style == Crayons.COLORS_16
-            THRESHOLD + c.r % 60  # 0-255 ansi
+            THRESHOLD + ansi_4bit_to_8bit(c.r)  # 0-255 ansi
         end
         return ColorType(col)
-    else
+    else  # 0-255 ansi stored in a UInt32
         col = if c.style == Crayons.COLORS_24BIT
-            Crayons.to_256_colors(c).r
+            THRESHOLD + Crayons.to_256_colors(c).r
         elseif c.style == Crayons.COLORS_256
-            c.r
+            THRESHOLD + c.r
         elseif c.style == Crayons.COLORS_16
-            c.r % 60
+            THRESHOLD + ansi_4bit_to_8bit(c.r)
         end
-        return ColorType(THRESHOLD + col)  # 0-255 ansi stored in a UInt32
     end
+    return ColorType(col)
 end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
@@ -459,15 +469,6 @@ complement(color::ColorType)::ColorType =
     elseif color != INVALID_COLOR
         THRESHOLD + ~UInt8(color |> rgb2ansi)
     end
-
-base_color(color::ColorType)::BaseColorType =
-    color == INVALID_COLOR ? :normal : Int(rgb2ansi(color))
-base_color(color::Nothing)::BaseColorType = :normal
-base_color(color::Symbol)::BaseColorType = color  # no-op
-function base_color(color::Integer)::BaseColorType
-    @assert 0 ≤ color ≤ 255
-    Int(color)
-end
 
 @inline function set_color!(
     colors::Matrix{ColorType},

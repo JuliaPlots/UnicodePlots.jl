@@ -55,11 +55,11 @@ mutable struct Plot{T<:GraphicsArea,E,F}
     border::Symbol
     compact::Bool
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,BaseColorType}
+    colors_left::Dict{Int,ColorType}
     labels_right::Dict{Int,String}
-    colors_right::Dict{Int,BaseColorType}
+    colors_right::Dict{Int,ColorType}
     decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,BaseColorType}
+    colors_deco::Dict{Symbol,ColorType}
     labels::Bool
     colormap::Any
     colorbar::Bool
@@ -91,11 +91,11 @@ function Plot(
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,BaseColorType}()
+    colors_left = Dict{Int,ColorType}()
     labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,BaseColorType}()
+    colors_right = Dict{Int,ColorType}()
     decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,BaseColorType}()
+    colors_deco = Dict{Symbol,ColorType}()
     p = Plot{T,E,F}(
         graphics,
         title,
@@ -417,20 +417,20 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
             if loc == :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
-                    plot.colors_left[row] = base_color(color)
+                    plot.colors_left[row] = ansi_color(color)
                     break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
-                    plot.colors_right[row] = base_color(color)
+                    plot.colors_right[row] = ansi_color(color)
                     break
                 end
             end
         end
     else
         plot.decorations[loc] = value
-        plot.colors_deco[loc] = base_color(color)
+        plot.colors_deco[loc] = ansi_color(color)
     end
     plot
 end
@@ -462,10 +462,10 @@ function label!(
 )
     if loc == :l
         plot.labels_left[row] = value
-        plot.colors_left[row] = base_color(color)
+        plot.colors_left[row] = ansi_color(color)
     elseif loc == :r
         plot.labels_right[row] = value
-        plot.colors_right[row] = base_color(color)
+        plot.colors_right[row] = ansi_color(color)
     else
         throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
     end
@@ -587,7 +587,7 @@ function print_title(
     right_pad::AbstractString,
     blank::Char;
     p_width::Int = 0,
-    color = :normal,
+    color::UserColorType = :normal,
 )
     title == "" && return
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
@@ -619,8 +619,6 @@ function print_border(
     print(io, right_pad)
     nothing
 end
-
-_nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
 
 function print_labels(
     io::IO,
@@ -674,12 +672,12 @@ function Base.show(io::IO, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(_nocolor_string(l)) for l in values(p.labels_left)])
+        maximum([length(nocolor_string(l)) for l in values(p.labels_left)])
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(_nocolor_string(l)) for l in values(p.labels_right)])
+        maximum([length(nocolor_string(l)) for l in values(p.labels_right)])
     else
         0
     end
@@ -698,7 +696,7 @@ function Base.show(io::IO, p::Plot)
         min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
         max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
         cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(_nocolor_string(p.zlabel)))
+            max(length(min_z_str), length(max_z_str), length(nocolor_string(p.zlabel)))
         cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
     else
         cbar_pad = ""
@@ -718,7 +716,7 @@ function Base.show(io::IO, p::Plot)
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
-        color = :bold,
+        color = Crayon(bold = true),
     )
     print_labels(
         io,
@@ -749,11 +747,11 @@ function Base.show(io::IO, p::Plot)
             left_col  = get(p.colors_left, row, bc)
             right_str = get(p.labels_right, row, "")
             right_col = get(p.colors_right, row, bc)
-            left_len  = length(_nocolor_string(left_str))
-            right_len = length(_nocolor_string(right_str))
+            left_len  = length(nocolor_string(left_str))
+            right_len = length(nocolor_string(right_str))
             if !get(io, :color, false)
-                left_str  = _nocolor_string(left_str)
-                right_str = _nocolor_string(right_str)
+                left_str  = nocolor_string(left_str)
+                right_str = nocolor_string(right_str)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel

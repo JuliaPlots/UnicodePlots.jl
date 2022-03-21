@@ -64,32 +64,37 @@ end
 end
 
 @testset "colors" begin
-    @test_throws ErrorException UnicodePlots.colordepth!(123456789)
+    @test_throws ErrorException UnicodePlots.colormode!(123456789)
 
     @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
     @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
     @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
-    @test UnicodePlots.base_color(nothing) == :normal
 
-    _depth = UnicodePlots.COLORDEPTH[]
-    UnicodePlots.colordepth!(8)
+    _color_mode = UnicodePlots.COLORMODE[]
+    UnicodePlots.colormode!(8)
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
     @test UnicodePlots.ansi_color(:green) == UnicodePlots.THRESHOLD + 0x02
     @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x04
+    @test UnicodePlots.ansi_color(:light_red) == UnicodePlots.THRESHOLD + 0x09  # bright := normal + 8
+    @test UnicodePlots.ansi_color(:light_green) == UnicodePlots.THRESHOLD + 0x0a
+    @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
     @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
 
-    UnicodePlots.colordepth!(24)
+    UnicodePlots.colormode!(24)
     @test UnicodePlots.ansi_color(0x80) == 0x00af00d7  # ansi 128
     @test UnicodePlots.ansi_color(128) == 0x00af00d7  # ansi 128
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
     @test UnicodePlots.ansi_color(:green) == UnicodePlots.THRESHOLD + 0x02
     @test UnicodePlots.ansi_color(:blue) == UnicodePlots.THRESHOLD + 0x04
+    @test UnicodePlots.ansi_color(:light_red) == UnicodePlots.THRESHOLD + 0x09  # bright := normal + 8
+    @test UnicodePlots.ansi_color(:light_green) == UnicodePlots.THRESHOLD + 0x0a
+    @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
-    UnicodePlots.COLORDEPTH[] = _depth
+    UnicodePlots.COLORMODE[] = _color_mode
 
     io = PipeBuffer()
     _cfast = UnicodePlots.CRAYONS_FAST[]
