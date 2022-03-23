@@ -33,7 +33,7 @@ end
         @test_logs (:warn, r"`annotate!`.+renamed") annotate!(p, :l, i, "$i", :yellow)
     end
 
-    @test_logs (:warn, r"`UnicodePlots.savefig`.+text") savefig(p, tempname() * ".png")
+    @test_throws ErrorException savefig(p, tempname() * ".jpg")
 end
 
 @testset "spy" begin

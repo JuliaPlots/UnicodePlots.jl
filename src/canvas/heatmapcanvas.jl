@@ -44,7 +44,7 @@ function HeatmapCanvas(args...; kw...)
     c
 end
 
-function printrow(io::IO, c::HeatmapCanvas, row::Int)
+function printrow(io::IO, print_nc, print_col, c::HeatmapCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = 2row
 
@@ -54,7 +54,7 @@ function printrow(io::IO, c::HeatmapCanvas, row::Int)
     for x in 1:ncols(c)
         # for odd numbers of rows, only print the foreground for the top row
         bgcol = y > 1 ? c.colors[x, y - 1] : missing
-        print_color(io, c.colors[x, y], HALF_BLOCK; bgcol = bgcol)
+        print_col(io, c.colors[x, y], HALF_BLOCK; bgcol = bgcol)
     end
 
     nothing

@@ -114,11 +114,11 @@ function char_point!(
     c
 end
 
-function printrow(io::IO, c::BrailleCanvas, row::Int)
+function printrow(io::IO, print_nc, print_col, c::BrailleCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_color(io, c.colors[x, y], c.grid[x, y])
+        print_col(io, c.colors[x, y], c.grid[x, y])
     end
     nothing
 end

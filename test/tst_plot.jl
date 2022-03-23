@@ -158,3 +158,17 @@ end
     p = Plot([0, 1], [0, 1], yticks = false)
     test_ref("plot/no_yticks.txt", @show_col(p))
 end
+
+@testset "save as png" begin
+    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π)
+
+    for tr in (true, false)
+        tmp = tempname() * ".png"
+
+        savefig(p, tmp; transparent = tr)
+        @test filesize(tmp) > 10_000
+
+        img = FileIO.load(tmp)
+        @test all(size(img) .> (400, 600))
+    end
+end

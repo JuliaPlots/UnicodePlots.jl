@@ -582,6 +582,8 @@ end
 
 function print_title(
     io::IO,
+    print_nc,
+    print_col,
     left_pad::AbstractString,
     title::AbstractString,
     right_pad::AbstractString,
@@ -589,39 +591,46 @@ function print_title(
     p_width::Int = 0,
     color::UserColorType = :normal,
 )
-    title == "" && return
+    title == "" && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = repeat(blank, offset > 0 ? offset : 0)
-    print(io, left_pad, pre_pad)
-    print_color(io, color, title)
+    print_nc(io, left_pad, pre_pad)
+    print_col(io, color, title)
     post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
-    print(io, post_pad, right_pad)
-    nothing
+    print_nc(io, post_pad, right_pad)
+    (
+        count("\n", title) + 1,
+        length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
+    )
 end
 
 function print_border(
     io::IO,
+    print_nc,
+    print_col,
     loc::Symbol,
     length::Int,
-    left_pad::AbstractString,
-    right_pad::AbstractString,
+    left_pad::Union{Char,AbstractString},
+    right_pad::Union{Char,AbstractString},
     bmap = BORDERMAP[:solid],
     color::UserColorType = BORDER_COLOR[],
 )
-    print(io, left_pad)
-    print_color(
+    print_nc(io, left_pad)
+    print_col(
         io,
         color,
         bmap[Symbol(loc, :l)],
         repeat(bmap[loc], length),
         bmap[Symbol(loc, :r)],
     )
-    print(io, right_pad)
+    print_nc(io, right_pad)
     nothing
 end
 
 function print_labels(
     io::IO,
+    print_nc,
+    print_col,
     mloc::Symbol,
     p::Plot,
     border_length,
@@ -643,22 +652,24 @@ function print_labels(
         left_len  = length(left_str)
         mid_len   = length(mid_str)
         right_len = length(right_str)
-        print(io, left_pad)
-        print_color(io, left_col, left_str)
+        print_nc(io, left_pad)
+        print_col(io, left_col, left_str)
         cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
         pad = cnt > 0 ? repeat(blank, cnt) : ""
-        print(io, pad)
-        print_color(io, mid_col, mid_str)
+        print_nc(io, pad)
+        print_col(io, mid_col, mid_str)
         cnt = border_length - right_len - left_len - mid_len + 2 - cnt
         pad = cnt > 0 ? repeat(blank, cnt) : ""
-        print(io, pad)
-        print_color(io, right_col, right_str)
-        print(io, right_pad)
+        print_nc(io, pad)
+        print_col(io, right_col, right_str)
+        print_nc(io, right_pad)
     end
     nothing
 end
 
-function Base.show(io::IO, p::Plot)
+Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
+
+function _show(io::IO, print_nc, print_col, p::Plot)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
     🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
@@ -666,8 +677,9 @@ function Base.show(io::IO, p::Plot)
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
     ############################################################
-    border_length = ncols(c)
-    p_width = border_length + 2  # left corner + border + right corner
+    nr = nrows(c)
+    nc = ncols(c)
+    p_width = nc + 2  # left corner + border length (number of canvas cols) + right corner
 
     bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
 
@@ -710,8 +722,10 @@ function Base.show(io::IO, p::Plot)
     border_right_pad = repeat(🗷, max_len_r) * plot_padding * cbar_pad
 
     # plot the title and the top border
-    print_title(
+    h_ttl, w_ttl = print_title(
         io,
+        print_nc,
+        print_col,
         border_left_pad,
         p.title,
         border_right_pad * '\n',
@@ -721,15 +735,25 @@ function Base.show(io::IO, p::Plot)
     )
     print_labels(
         io,
+        print_nc,
+        print_col,
         :t,
         p,
-        border_length - 2,
+        nc - 2,
         border_left_pad * 🗹,
         🗹 * border_right_pad * '\n',
         🗹,
     )
-    c.visible &&
-        print_border(io, :t, border_length, border_left_pad, border_right_pad * '\n', bmap)
+    c.visible && print_border(
+        io,
+        print_nc,
+        print_col,
+        :t,
+        nc,
+        border_left_pad,
+        border_right_pad * '\n',
+        bmap,
+    )
 
     # compute position of ylabel
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
@@ -739,9 +763,9 @@ function Base.show(io::IO, p::Plot)
     bc = BORDER_COLOR[]
 
     # plot all rows
-    for row in 1:nrows(c)
+    for row in 1:nr
         # print left annotations
-        print(io, repeat(🗷, p.margin))
+        print_nc(io, repeat(🗷, p.margin))
         if p.labels
             # Current labels to left and right of the row and their length
             left_str  = get(p.labels_left, row, "")
@@ -756,34 +780,36 @@ function Base.show(io::IO, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_color(io, :normal, p.ylabel)
-                print(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
+                print_col(io, :normal, p.ylabel)
+                print_nc(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
-                print(io, repeat(🗷, max_len_l - left_len))
+                print_nc(io, repeat(🗷, max_len_l - left_len))
             end
             # print the left annotation
-            print_color(io, left_col, left_str)
+            print_col(io, left_col, left_str)
         end
         if c.visible
             # print left border
-            print(io, plot_padding)
-            print_color(io, bc, bmap[:l])
+            print_nc(io, plot_padding)
+            print_col(io, bc, bmap[:l])
             # print canvas row
-            printrow(io, c, row)
+            printrow(io, print_nc, print_col, c, row)
             # print right label and padding
-            print_color(io, bc, bmap[:r])
+            print_col(io, bc, bmap[:r])
         end
         if p.labels
-            print(io, plot_padding)
-            print_color(io, right_col, right_str)
-            print(io, repeat(🗷, max_len_r - right_len))
+            print_nc(io, plot_padding)
+            print_col(io, right_col, right_str)
+            print_nc(io, repeat(🗷, max_len_r - right_len))
         end
         # print colorbar
         if p.colorbar
-            print(io, plot_padding)
-            printcolorbarrow(
+            print_nc(io, plot_padding)
+            print_colorbar_row(
                 io,
+                print_nc,
+                print_col,
                 c,
                 row,
                 callback,
@@ -796,54 +822,212 @@ function Base.show(io::IO, p::Plot)
                 🗷,
             )
         end
-        row < nrows(c) && println(io)
+        row < nrows(c) && print_nc(io, '\n')
     end
 
     # draw bottom border and bottom labels  
-    c.visible &&
-        print_border(io, :b, border_length, '\n' * border_left_pad, border_right_pad, bmap)
+    c.visible && print_border(
+        io,
+        print_nc,
+        print_col,
+        :b,
+        nc,
+        '\n' * border_left_pad,
+        border_right_pad,
+        bmap,
+    )
+    h_lbl = w_lbl = 0
     if p.labels
         print_labels(
             io,
+            print_nc,
+            print_col,
             :b,
             p,
-            border_length - 2,
+            nc - 2,
             '\n' * border_left_pad * 🗹,
             🗹 * border_right_pad,
             🗹,
         )
-        p.compact || print_title(
-            io,
-            '\n' * border_left_pad,
-            p.xlabel,
-            border_right_pad,
-            🗹;
-            p_width = p_width,
+        h_lbl += 1
+        if !p.compact
+            h_w = print_title(
+                io,
+                print_nc,
+                print_col,
+                '\n' * border_left_pad,
+                p.xlabel,
+                border_right_pad,
+                🗹;
+                p_width = p_width,
+            )
+            h_lbl += h_w[1]
+            w_lbl += h_w[2]
+        end
+    end
+    # approximate image size
+    (
+        h_ttl + 1 + nr + 1 + h_lbl,  # +1: borders
+        max(w_ttl, w_lbl, length(border_left_pad) + p_width + length(border_right_pad)),
+    )
+end
+
+# COV_EXCL_START
+fallback_font(mono::Bool = false) =
+    if Sys.islinux()
+        mono ? "DejaVu Sans Mono" : "DejaVu Sans"
+    elseif Sys.isbsd()
+        mono ? "Courier New" : "Helvetica"
+    elseif Sys.iswindows()
+        mono ? "Courier New" : "Arial"
+    else
+        @warn "unsupported $(Base.KERNEL)"
+        mono ? "Courier" : "Helvetica"
+    end
+# COV_EXCL_STOP
+
+"""
+    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
+
+Render `png` image.
+
+# Arguments
+- `pixelsize::Integer = 16`: controls the image size scaling.
+- `font::Union{Nothing,AbstractString} = nothing`: select a font by name, or fall-back to a system font.
+- `transparent::Bool = true`: use a transparent background.
+- `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
+- `background::UserColorType = nothing`, choose a background color for the rendered image.
+
+"""
+function png_image(
+    p::Plot;
+    font::Union{Nothing,AbstractString} = nothing,
+    pixelsize::Integer = 16,
+    transparent::Bool = true,
+    foreground::UserColorType = nothing,
+    background::UserColorType = nothing,
+)
+    RGB24 = ColorTypes.RGB24
+    RGBA = ColorTypes.RGBA
+    RGB = ColorTypes.RGB
+
+    fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
+    bg_color = ansi_color(something(background, :black))
+
+    rgba(color::ColorType, alpha) = begin
+        color == INVALID_COLOR && (color = fg_color)
+        color < THRESHOLD || (color = LUT_8BIT[1 + (color - THRESHOLD)])
+        RGBA{Float32}(convert(RGB{Float32}, reinterpret(RGB24, color)), alpha)
+    end
+
+    default_fg_color = rgba(fg_color, 1.0)
+    default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
+
+    # compute final image size
+    noop = (args...) -> nothing
+    nr, nc = _show(devnull, noop, noop, p)
+
+    # hack printing to collect chars & colors
+    chars = sizehint!(Char[], nr * nc)
+    colors = sizehint!(RGBA{Float32}[], nr * nc)
+
+    print_nc(io, args...) = begin
+        line = string(args...)
+        append!(chars, line)
+        append!(colors, fill(default_fg_color, length(line)))
+    end
+
+    print_col(io, color, args...) = begin
+        color = rgba(ansi_color(color), 1.0)
+        line = string(args...)
+        append!(chars, line)
+        append!(colors, fill(color, length(line)))
+    end
+
+    # compute 1D stream of chars and colors
+    _show(IOContext(devnull, :color => true), print_nc, print_col, p)
+
+    # compute 2D grid (image) of chars and colors
+    lchrs = sizehint!([Char[]], nr)
+    lcols = sizehint!([RGBA{Float32}[]], nr)
+    r = 1
+    for (chr, col) in zip(chars, colors)
+        if chr === '\n'
+            r += 1
+            push!(lchrs, Char[])
+            push!(lcols, RGBA{Float32}[])
+            continue
+        end
+        push!(lchrs[r], chr)
+        push!(lcols[r], col)
+    end
+
+    # render image
+    face = nothing
+    for font_name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
+        if (ft = FreeTypeAbstraction.findfont(font_name)) !== nothing
+            face = ft
+            break
+        end
+    end
+
+    kr = ASPECT_RATIO
+    kc = kr / 2
+
+    img = fill(
+        default_bg_color,
+        ceil(Int, (kr * pixelsize) * nr),
+        ceil(Int, (kc * pixelsize) * nc),
+    )
+
+    y0 = round(Int, kr * pixelsize)
+    for (r, (chrs, cols)) in enumerate(zip(lchrs, lcols))
+        y = round(Int, y0 + (kr * pixelsize) * (r - 1))
+        FreeTypeAbstraction.renderstring!(
+            img,
+            String(chrs),
+            face,
+            pixelsize,
+            y,
+            0;
+            fcolor = cols,
+            bcolor = transparent ? nothing : default_bg_color,
+            valign = :vbottom,
+            halign = :hleft,
         )
     end
-    nothing
+
+    img
 end
 
 """
-    savefig(p, filename; color=false)
+    savefig(p, filename; color = false, kw...)
 
-Print the given plot `p` to a text file.
+Save the given plot to a `txt or `png` file.
 
-By default, it does not write ANSI color codes to the file. To enable this, set the keyword `color=true`.
+# Arguments - `txt`
+- `color::Bool = false`: output the ANSI color codes to the file.
+
+# Arguments - `png`
+see help?> UnicodePlots.png_image
 
 # Examples
+
 ```julia-repl
 julia> savefig(lineplot([0, 1]), "foo.txt")
-
+julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
 ```
 """
-function savefig(p::Plot, filename::String; color::Bool = false)
+function savefig(p::Plot, filename::String; color::Bool = false, kw...)
     ext = lowercase(splitext(filename)[2])
-    if ext in (".png", ".jpg", ".jpeg", ".tif", ".gif", ".svg")
-        @warn "`UnicodePlots.savefig` only support writing to text files"
-    end
-    open(filename, "w") do io
-        print(IOContext(io, :color => color), p)
+    if ext in ("", ".txt")
+        open(filename, "w") do io
+            show(IOContext(io, :color => color), p)
+        end
+    elseif ext == ".png"
+        FileIO.save(filename, png_image(p; kw...))
+    else
+        error("`savefig` only supports writing to `txt` or `png` files")
     end
     nothing
 end
