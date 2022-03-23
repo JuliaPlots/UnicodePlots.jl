@@ -160,13 +160,13 @@ end
 end
 
 @testset "save as png" begin
-    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π)
+    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title")
 
     for tr in (true, false)
         tmp = tempname() * ".png"
 
         savefig(p, tmp; transparent = tr)
-        @test filesize(tmp) > 10_000
+        @test filesize(tmp) > 9000
 
         img = FileIO.load(tmp)
         @test all(size(img) .> (400, 600))

@@ -33,9 +33,9 @@ Here is a quick hello world example of a typical use-case:
 ```julia
 using UnicodePlots
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
-               title="Example Plot", name="my line", xlabel="x", ylabel="y", border=:dotted)
+               title="Example Plot", name="my line", xlabel="x", ylabel="y")
 ```
-![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot1.png)
+![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot1.png)
 
 There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
 
@@ -46,66 +46,66 @@ lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
          title="Example Plot", name="my line",
          xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
 ```
-![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot2.png)
+![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot2.png)
 
 Some plot methods have a mutating variant that ends with a exclamation mark:
 
 ```julia
 lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")
 ```
-![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot3.png)
+![Basic Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot3.png)
 
 #### Scatterplot
 
 ```julia
-scatterplot(randn(50), randn(50), title="My Scatterplot", border=:dotted)
+scatterplot(randn(50), randn(50), title="My Scatterplot")
 ```
-![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/scatterplot1.png)
+![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot1.png)
 
 Axis scaling (`xscale` and/or `yscale`) is supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function:
 
 ```julia
-scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)
+scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln)
 ```
-![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/scatterplot2.png)
+![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot2.png)
 
 For the axis scale exponent, one can revert to using `ASCII` characters instead of `Unicode` ones using the keyword `unicode_exponent=false`:
 
 ```julia
-scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)
+scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, unicode_exponent=false)
 ```
-![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/scatterplot3.png)
+![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot3.png)
 
 Using a `marker` is supported, choose a `Char`, a unit length `String` or a symbol name such as `:circle` (more from `keys(UnicodePlots.MARKERS)`). One can also provide a vector of `marker`s and/or `color`s as in the following example:
 
 ```julia
 scatterplot([1, 2, 3], [3, 4, 1],
-            marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
+            marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow])
 ```
-![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/scatterplot4.png)
+![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot4.png)
 
 As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
 
 #### Lineplot
 
 ```julia
-lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot", border=:dotted)
+lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot")
 ```
-![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot4.png)
+![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot4.png)
 
 It's also possible to specify a function and a range:
 
 ```julia
-plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)
+plt = lineplot([cos, sin], -π/2, 2π)
 ```
-![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot5.png)
+![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot5.png)
 
 You can also plot lines by specifying an intercept and slope:
 
 ```julia
 lineplot!(plt, -.5, .2, name="line")
 ```
-![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot6.png)
+![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot6.png)
 
 Physical units are supported through `Unitful`:
 
@@ -113,18 +113,18 @@ Physical units are supported through `Unitful`:
 using Unitful
 a = 1u"m/s^2"
 t = (0:100) * u"s"
-lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
+lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed")
 ```
-![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/lineplot7.png)
+![Lineplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot7.png)
 
 #### Staircase plot
 
 ```julia
 # supported style are :pre and :post
 stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
-       color=:red, style=:post, title="My Staircase Plot", border=:dotted)
+       color=:red, style=:post, title="My Staircase Plot")
 ```
-![Staircase](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/stairs1.png)
+![Staircase](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/stairs1.png)
 
 #### Barplot
 
@@ -133,7 +133,7 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title="Population")
 ```
-![Barplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/barplot1.png)
+![Barplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/barplot1.png)
 
 *Note*: You can use the keyword argument `symbols` to specify the characters that should be used to plot the bars (e.g. `symbols=['#']`).
 
@@ -142,44 +142,44 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 ```julia
 histogram(randn(1000) .* .1, nbins=15, closed=:left)
 ```
-![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/histogram1.png)
+![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram1.png)
 
 The `histogram` function also supports axis scaling using the parameter `xscale`:
 
 ```julia
 histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)
 ```
-![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/histogram2.png)
+![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram2.png)
 
 #### Boxplot
 
 ```julia
 boxplot([1, 3, 3, 4, 6, 10])
 ```
-![Boxplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/boxplot1.png)
+![Boxplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/boxplot1.png)
 
 ```julia
 boxplot(["one", "two"],
         [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]],
         title="Grouped Boxplot", xlabel="x")
 ```
-![Boxplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/boxplot2.png)
+![Boxplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/boxplot2.png)
 
 #### Sparsity Pattern
 
 ```julia
 using SparseArrays
-spy(sprandn(50, 120, .05), border=:dotted)
+spy(sprandn(50, 120, .05))
 ```
-![Spy](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/spy1.png)
+![Spy](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/spy1.png)
 
 Plotting the zeros pattern is also possible using `show_zeros=true`:
 
 ```julia
 using SparseArrays
-spy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)
+spy(sprandn(50, 120, .9), show_zeros=true)
 ```
-![Spy](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/spy2.png)
+![Spy](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/spy2.png)
 
 #### Density Plot
 
@@ -187,14 +187,14 @@ spy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)
 plt = densityplot(randn(1000), randn(1000))
 densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
 ```
-![Densityplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/densityplot1.png)
+![Densityplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/densityplot1.png)
 
 #### Contour Plot
 
 ```julia
-contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)
+contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))
 ```
-![Contourplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/contourplot1.png)
+![Contourplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/contourplot1.png)
 
 The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar=false`.
 
@@ -203,7 +203,7 @@ The keyword `levels` controls the number of contour levels. One can also choose 
 ```julia
 heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 ```
-![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/heatmap1.png)
+![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/heatmap1.png)
 
 The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
 
@@ -216,7 +216,7 @@ The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorb
 ```julia
 heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)
 ```
-![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/heatmap2.png)
+![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/heatmap2.png)
 
 #### Surface Plot
 
@@ -224,19 +224,19 @@ Plot a colored surface using height values `z` above a `x-y` plane, in three dim
 
 ```julia
 sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
+surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet)
 ```
-![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot1.png)
+![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/surfaceplot1.png)
 
 Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation). To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 ```julia
 surfaceplot(
   -2:2, -2:2, (x, y) -> 15sinc(√(x^2 + y^2) / π),
-  zscale=z -> 0, lines=true, colormap=:jet, border=:dotted
+  zscale=z -> 0, lines=true, colormap=:jet
 )
 ```
-![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/surfaceplot2.png)
+![Surfaceplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/surfaceplot2.png)
 
 #### Isosurface Plot
 
@@ -244,9 +244,9 @@ Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to 
 
 ```julia
 torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50, border=:dotted)
+isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
 ```
-![Isosurface](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/isosurface.png)
+![Isosurface](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/isosurface.png)
 
 ### Options
 
@@ -262,45 +262,45 @@ All plots support the set (or a subset) of the following named parameters:
   - `yscale::Symbol = :identity`: `y`-axis scale.
   - `labels::Bool = true`: show plot labels.
     ```julia
-    lineplot(sin, 1:.5:20, labels=false, border=:dotted)
+    lineplot(sin, 1:.5:20, labels=false)
     ```
-    ![Labels](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/labels.png)
+    ![Labels](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/labels.png)
     
   - `border::Symbol = :solid`: plot bounding box style (`:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
     ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
     ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/border_bold.png)
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_bold.png)
     
     ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
     ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/border_dashed.png)
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dashed.png)
     
     ```julia
-    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4])
     ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/border_dotted.png)
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dotted.png)
     
     ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)
     ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/border_none.png)
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_none.png)
     
   - `margin::Int = 3`: number of empty characters to the left of the whole plot.
   - `padding::Int = 1`: left and right space between the labels and the canvas.
   - `color::Symbol = :auto`: choose from (`:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, `:auto`), use an integer in `[0-255]`, or provide `3` integers as `RGB` components.
   - `width::Int = 40`: number of characters per canvas row.
     ```julia
-    lineplot(sin, 1:.5:20, width=60, border=:dotted)
+    lineplot(sin, 1:.5:20, width=60)
     ```
-    ![Width](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/width.png)
+    ![Width](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/width.png)
     
   - `height::Int = 15`: number of canvas rows.
     ```julia
-    lineplot(sin, 1:.5:20, height=18, border=:dotted)
+    lineplot(sin, 1:.5:20, height=18)
     ```
-    ![Height](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/height.png)
+    ![Height](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/height.png)
     
   - `xlim::Tuple = (0, 0)`: plotting range for the `x` axis (`(0, 0)` stands for automatic).
   - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis.
@@ -371,7 +371,7 @@ The method `label!` is responsible for the setting all the textual decorations o
     end
     plt
     ```
-    ![Decorate](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/decorate.png)
+    ![Decorate](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/decorate.png)
     
 
   * `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
@@ -414,9 +414,9 @@ lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
 points!(canvas, rand(50), rand(50), :red)         # virtual space
 lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
 pixel!(canvas, 5, 8, :red)                        # pixel space
-Plot(canvas, border=:dotted)
+Plot(canvas)
 ```
-![Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/canvas.png)
+![Canvas](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/canvas.png)
 
 You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
@@ -427,9 +427,9 @@ canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
 lines!(canvas, 0., 0., 1., 1., :blue)
 lines!(canvas, .25, 1., .5, 0., :yellow)
 lines!(canvas, .2, .8, 1., 0., :red)
-Plot(canvas, border=:dotted)
+Plot(canvas)
 ```
-![Blending](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.x/blending.png)
+![Blending](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/blending.png)
 
 The following types of `Canvas` are implemented:
 
@@ -456,7 +456,7 @@ The following snippet:
 ```bash
 cd docs
 julia generate_docs.jl
-(cd imgs; bash gen_imgs.sh)
+(cd imgs; julia gen_imgs.jl)
 ```
 
 will regenerate `README.md` and the example images with root (prefix) url https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs.

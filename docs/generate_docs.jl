@@ -4,13 +4,13 @@ import Markdown: MD, Paragraph, plain
 
 function main()
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
-  ver = "2.x"
+  ver = "2.10"
 
   exs = (
     lineplot1 = ("Basic Canvas", """
       using UnicodePlots
       plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
-                     title="Example Plot", name="my line", xlabel="x", ylabel="y", border=:dotted)
+                     title="Example Plot", name="my line", xlabel="x", ylabel="y")
       """),
     lineplot2 = ("Basic Canvas", """
       lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
@@ -18,26 +18,26 @@ function main()
                xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
     lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name=\"other line\")"),
-    scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\", border=:dotted)"),
-    scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted)"),
-    scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, border=:dotted, unicode_exponent=false)"),
+    scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\")"),
+    scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln)"),
+    scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, unicode_exponent=false)"),
     scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1],
-                  marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow], border=:dotted)
+                  marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow])
       """),
-    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\", border=:dotted)"),
-    lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π, border=:dotted)"),
+    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
+    lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
     lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
     lineplot7 = ("Lineplot", """
       using Unitful
       a = 1u"m/s^2"
       t = (0:100) * u"s"
-      lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed", border=:dotted)
+      lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed")
       """),
     stairs1 = ("Staircase", """
       # supported style are :pre and :post
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
-             color=:red, style=:post, title="My Staircase Plot", border=:dotted)
+             color=:red, style=:post, title="My Staircase Plot")
       """),
     barplot1 = ("Barplot", """
       barplot(["Paris", "New York", "Moskau", "Madrid"],
@@ -52,35 +52,35 @@ function main()
               [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6, 7, 8, 9]],
               title="Grouped Boxplot", xlabel="x")
       """),
-    spy1 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .05), border=:dotted)"),
-    spy2 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true, border=:dotted)"),
+    spy1 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .05))"),
+    spy2 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true)"),
     densityplot1 = ("Densityplot", """
       plt = densityplot(randn(1000), randn(1000))
       densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
       """),
-    contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2), border=:dotted)"),
+    contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
-      surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet, border=:dotted)
+      surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet)
       """),
     surfaceplot2 = ("Surfaceplot", """
       surfaceplot(
         -2:2, -2:2, (x, y) -> 15sinc(√(x^2 + y^2) / π),
-        zscale=z -> 0, lines=true, colormap=:jet, border=:dotted
+        zscale=z -> 0, lines=true, colormap=:jet
       )
       """),
     isosurface = ("Isosurface", """
       torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
-      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50, border=:dotted)
+      isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
       """),
-    width = ("Width", "lineplot(sin, 1:.5:20, width=60, border=:dotted)"),
-    height = ("Height", "lineplot(sin, 1:.5:20, height=18, border=:dotted)"),
-    labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false, border=:dotted)"),
+    width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
+    height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
+    labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false)"),
     border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
     border_dashed = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
-    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"),
+    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4])"),
     border_none = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
     decorate = ("Decorate", """
       x = y = collect(1:10)
@@ -106,14 +106,14 @@ function main()
       points!(canvas, rand(50), rand(50), :red)         # virtual space
       lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
       pixel!(canvas, 5, 8, :red)                        # pixel space
-      Plot(canvas, border=:dotted)
+      Plot(canvas)
       """),
     blending = ("Blending", """
       canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
       lines!(canvas, 0., 0., 1., 1., :blue)
       lines!(canvas, .25, 1., .5, 0., :yellow)
       lines!(canvas, .2, .8, 1., 0., :red)
-      Plot(canvas, border=:dotted)
+      Plot(canvas)
       """),
   )
 
@@ -426,7 +426,7 @@ The following snippet:
 ```bash
 cd docs
 julia generate_docs.jl
-(cd imgs; bash gen_imgs.sh)
+(cd imgs; julia gen_imgs.jl)
 ```
 will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
 
@@ -444,19 +444,31 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     println(io, """
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       using UnicodePlots, StableRNGs, SparseArrays, Unitful
+
+      UnicodePlots.brightcolors!()
+
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
       RNG = StableRNG(1337)
 
-      save(p, nm) = savefig(p, "$ver/\$(nm).txt"; color=true)
+      save(p, nm) = savefig(p, "$ver/\$(nm).png"; transparent = false)
       """
     )
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
       code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ", r"\brand\b\(" => "rand(RNG, ") for c in code]
-      println(io, "_ex_$i() = begin\n$(indent(join(code, '\n'), 1))\nend")
-      println(io, "plt = _ex_$i(); save(plt, \"$k\")")
+      println(
+        io,
+        """
+        println("ex n°$i")
+        _ex_$i() = begin
+          $(indent(join(code, '\n'), 1))
+        end
+        plt = _ex_$i()
+        save(plt, \"$k\")
+        """
+      )
     end
   end
 
@@ -464,23 +476,19 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     write(io, """
       #!/usr/bin/env bash
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
-
       echo '== julia =='
-      \${JULIA-julia} gen_imgs.jl
-
+      \${JULIA-julia} gen_imgs_old.jl
       txt2png() {
         html=\${1%.txt}.html
         cat \$1 | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
         sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
         \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
       }
-
       echo '== txt2png =='
       for f in $ver/*.txt; do
         txt2png \$f & pids+=(\$!)
       done
       wait \${pids[@]}
-
       rm $ver/*.txt
       rm $ver/*.html
       """
