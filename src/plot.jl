@@ -873,7 +873,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 end
 
 # COV_EXCL_START
-default_font(mono::Bool = false) =
+fallback_font(mono::Bool = false) =
     if Sys.islinux()
         mono ? "DejaVu Sans Mono" : "DejaVu Sans"
     elseif Sys.isbsd()
@@ -887,20 +887,129 @@ default_font(mono::Bool = false) =
 # COV_EXCL_STOP
 
 """
-    savefig(p, filename; color = false, font = default_font(), pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
+    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
 
-Save the given plot to a `txt or `png` file.
+Render `png` image.
 
-# Arguments (`txt` files)
-- `color::Bool = false`: output the ANSI color codes to the file.
-
-# Arguments (`png` files)
-
+# Arguments
 - `pixelsize::Integer = 16`: controls the image size scaling.
-- `font::AbstractString = default_font()`: select a font by name.
+- `font::Union{Nothing,AbstractString} = nothing`: select a font by name, or fall-back to a system font.
 - `transparent::Bool = true`: use a transparent background.
 - `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
 - `background::UserColorType = nothing`, choose a background color for the rendered image.
+
+"""
+function png_image(
+    p::Plot;
+    font::Union{Nothing,AbstractString} = nothing,
+    pixelsize::Integer = 16,
+    transparent::Bool = true,
+    foreground::UserColorType = nothing,
+    background::UserColorType = nothing,
+)
+    RGB24 = ColorTypes.RGB24
+    RGBA = ColorTypes.RGBA
+    RGB = ColorTypes.RGB
+
+    fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
+    bg_color = ansi_color(something(background, :black))
+
+    rgba(color::ColorType, alpha) = begin
+        color == INVALID_COLOR && (color = fg_color)
+        color < THRESHOLD || (color = LUT_8BIT[1 + (color - THRESHOLD)])
+        RGBA{Float32}(convert(RGB{Float32}, reinterpret(RGB24, color)), alpha)
+    end
+
+    default_fg_color = rgba(fg_color, 1.0)
+    default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
+
+    # compute final image size
+    noop = (args...) -> nothing
+    nr, nc = _show(devnull, noop, noop, p)
+
+    # hack printing to collect chars & colors
+    chars = sizehint!(Char[], nr * nc)
+    colors = sizehint!(RGBA{Float32}[], nr * nc)
+
+    print_nc(io, args...) = begin
+        line = string(args...)
+        append!(chars, line)
+        append!(colors, fill(default_fg_color, length(line)))
+    end
+
+    print_col(io, color, args...) = begin
+        color = rgba(ansi_color(color), 1.0)
+        line = string(args...)
+        append!(chars, line)
+        append!(colors, fill(color, length(line)))
+    end
+
+    # compute 1D stream of chars and colors
+    _show(IOContext(devnull, :color => true), print_nc, print_col, p)
+
+    # compute 2D grid (image) of chars and colors
+    lchrs = sizehint!([Char[]], nr)
+    lcols = sizehint!([RGBA{Float32}[]], nr)
+    r = 1
+    for (chr, col) in zip(chars, colors)
+        if chr === '\n'
+            r += 1
+            push!(lchrs, Char[])
+            push!(lcols, RGBA{Float32}[])
+            continue
+        end
+        push!(lchrs[r], chr)
+        push!(lcols[r], col)
+    end
+
+    # render image
+    face = nothing
+    for font_name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
+        if (ft = FreeTypeAbstraction.findfont(font_name)) !== nothing
+            face = ft
+            break
+        end
+    end
+
+    kr = ASPECT_RATIO
+    kc = kr / 2
+
+    img = fill(
+        default_bg_color,
+        ceil(Int, (kr * pixelsize) * nr),
+        ceil(Int, (kc * pixelsize) * nc),
+    )
+
+    y0 = round(Int, kr * pixelsize)
+    for (r, (chrs, cols)) in enumerate(zip(lchrs, lcols))
+        y = round(Int, y0 + (kr * pixelsize) * (r - 1))
+        FreeTypeAbstraction.renderstring!(
+            img,
+            String(chrs),
+            face,
+            pixelsize,
+            y,
+            0;
+            fcolor = cols,
+            bcolor = transparent ? nothing : default_bg_color,
+            valign = :vbottom,
+            halign = :hleft,
+        )
+    end
+
+    img
+end
+
+"""
+    savefig(p, filename; color = false, kw...)
+
+Save the given plot to a `txt or `png` file.
+
+# Arguments - `txt`
+- `color::Bool = false`: output the ANSI color codes to the file.
+
+# Arguments - `png`
+see help?> UnicodePlots.png_image
 
 # Examples
 
@@ -909,106 +1018,14 @@ julia> savefig(lineplot([0, 1]), "foo.txt")
 julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
 ```
 """
-function savefig(
-    p::Plot,
-    filename::String;
-    color::Bool = false,
-    font::AbstractString = default_font(),
-    pixelsize::Integer = 16,
-    transparent::Bool = true,
-    foreground::UserColorType = nothing,
-    background::UserColorType = nothing,
-)
+function savefig(p::Plot, filename::String; color::Bool = false, kw...)
     ext = lowercase(splitext(filename)[2])
     if ext in ("", ".txt")
         open(filename, "w") do io
             show(IOContext(io, :color => color), p)
         end
     elseif ext == ".png"
-        RGB24 = ColorTypes.RGB24
-        RGBA = ColorTypes.RGBA
-        RGB = ColorTypes.RGB
-
-        fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
-        bg_color = ansi_color(something(background, :black))
-
-        rgba(color::ColorType, alpha) = begin
-            color == INVALID_COLOR && (color = fg_color)
-            color < THRESHOLD || (color = LUT_8BIT[1 + (color - THRESHOLD)])
-            RGBA{Float32}(convert(RGB{Float32}, reinterpret(RGB24, color)), alpha)
-        end
-
-        default_fg_color = rgba(fg_color, 1.0)
-        default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
-
-        # compute final image size
-        noop = (args...) -> nothing
-        nr, nc = _show(devnull, noop, noop, p)
-
-        # hack printing to collect chars & colors
-        chars = sizehint!(Char[], nr * nc)
-        colors = sizehint!(RGBA{Float32}[], nr * nc)
-
-        print_nc(io, args...) = begin
-            line = string(args...)
-            append!(chars, line)
-            append!(colors, fill(default_fg_color, length(line)))
-        end
-
-        print_col(io, color, args...) = begin
-            color = rgba(ansi_color(color), 1.0)
-            line = string(args...)
-            append!(chars, line)
-            append!(colors, fill(color, length(line)))
-        end
-
-        # compute 1D stream of chars and colors
-        _show(IOContext(devnull, :color => true), print_nc, print_col, p)
-
-        # compute 2D grid (image) of chars and colors
-        lchrs = sizehint!([Char[]], nr)
-        lcols = sizehint!([RGBA{Float32}[]], nr)
-        r = 1
-        for (chr, col) in zip(chars, colors)
-            if chr === '\n'
-                r += 1
-                push!(lchrs, Char[])
-                push!(lcols, RGBA{Float32}[])
-                continue
-            end
-            push!(lchrs[r], chr)
-            push!(lcols[r], col)
-        end
-
-        # render image
-        face = FreeTypeAbstraction.findfont(font)
-
-        kr = ASPECT_RATIO
-        kc = kr / 2
-
-        img = fill(
-            default_bg_color,
-            ceil(Int, (kr * pixelsize) * nr),
-            ceil(Int, (kc * pixelsize) * nc),
-        )
-
-        y0 = round(Int, kr * pixelsize)
-        for (r, (chrs, cols)) in enumerate(zip(lchrs, lcols))
-            y = round(Int, y0 + (kr * pixelsize) * (r - 1))
-            FreeTypeAbstraction.renderstring!(
-                img,
-                String(chrs),
-                face,
-                pixelsize,
-                y,
-                0;
-                fcolor = cols,
-                bcolor = transparent ? nothing : default_bg_color,
-                valign = :vbaseline,
-                halign = :hleft,
-            )
-        end
-        FileIO.save(filename, img)
+        FileIO.save(filename, png_image(p; kw...))
     else
         error("`savefig` only supports writing to `txt` or `png` files")
     end
