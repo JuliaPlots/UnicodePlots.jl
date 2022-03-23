@@ -166,7 +166,7 @@ end
         tmp = tempname() * ".png"
 
         savefig(p, tmp; transparent = tr)
-        @test filesize(tmp) > 10_000
+        @test filesize(tmp) > 9000
 
         img = FileIO.load(tmp)
         @test all(size(img) .> (400, 600))
