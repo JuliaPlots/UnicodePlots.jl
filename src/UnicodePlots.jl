@@ -13,6 +13,7 @@ import NaNMath
 import Contour
 
 import FreeTypeAbstraction
+import ColorTypes
 import FileIO
 
 export GraphicsArea,

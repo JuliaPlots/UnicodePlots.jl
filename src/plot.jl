@@ -872,43 +872,38 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     )
 end
 
+# COV_EXCL_START
 default_font(mono::Bool = false) =
-    if mono
-        if Sys.islinux()
-            "DejaVu Sans Mono"
-        elseif Sys.isbsd()
-            "Courier New"
-        elseif Sys.iswindows()
-            "Courier New"
-        else
-            @warn "unsupported $(Base.KERNEL)"
-            "Courier"
-        end
+    if Sys.islinux()
+        mono ? "DejaVu Sans Mono" : "DejaVu Sans"
+    elseif Sys.isbsd()
+        mono ? "Courier New" : "Helvetica"
+    elseif Sys.iswindows()
+        mono ? "Courier New" : "Arial"
     else
-        if Sys.islinux()
-            "DejaVu Sans"
-        elseif Sys.isbsd()
-            "Helvetica"
-        elseif Sys.iswindows()
-            "Arial"
-        else
-            @warn "unsupported $(Base.KERNEL)"
-            "Helvetica"
-        end
+        @warn "unsupported $(Base.KERNEL)"
+        mono ? "Courier" : "Helvetica"
     end
+# COV_EXCL_STOP
 
 """
-    savefig(p, filename; color = false, font = default_font(), pixelsize = 16)
+    savefig(p, filename; color = false, font = default_font(), pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
 
-Save the given plot `p` to a `txt or `png` file.
+Save the given plot to a `txt or `png` file.
 
-For text files, `savefig` does not write ANSI color codes to the file.
-To enable this, set the keyword `color=true`.
+# Arguments (`txt` files)
+- `color::Bool = false`: output the ANSI color codes to the file.
 
-For png files, `pixelsize` controls the image size scaling (defaults to `16`), and `font` the chosen font.
-To disable transparency use `transparent = false`.
+# Arguments (`png` files)
+
+- `pixelsize::Integer = 16`: controls the image size scaling.
+- `font::AbstractString = default_font()`: select a font by name.
+- `transparent::Bool = true`: use a transparent background.
+- `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
+- `background::UserColorType = nothing`, choose a background color for the rendered image.
 
 # Examples
+
 ```julia-repl
 julia> savefig(lineplot([0, 1]), "foo.txt")
 julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
@@ -920,7 +915,7 @@ function savefig(
     color::Bool = false,
     font::AbstractString = default_font(),
     pixelsize::Integer = 16,
-    transparent::Bool = false,
+    transparent::Bool = true,
     foreground::UserColorType = nothing,
     background::UserColorType = nothing,
 )
@@ -930,9 +925,9 @@ function savefig(
             show(IOContext(io, :color => color), p)
         end
     elseif ext == ".png"
-        RGB24 = FreeTypeAbstraction.Colors.RGB24
-        RGBA = FreeTypeAbstraction.Colors.RGBA
-        RGB = FreeTypeAbstraction.Colors.RGB
+        RGB24 = ColorTypes.RGB24
+        RGBA = ColorTypes.RGBA
+        RGB = ColorTypes.RGB
 
         fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
         bg_color = ansi_color(something(background, :black))
@@ -975,7 +970,7 @@ function savefig(
         lcols = sizehint!([RGBA{Float32}[]], nr)
         r = 1
         for (chr, col) in zip(chars, colors)
-            if chr == '\n'
+            if chr === '\n'
                 r += 1
                 push!(lchrs, Char[])
                 push!(lcols, RGBA{Float32}[])

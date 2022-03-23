@@ -6,6 +6,7 @@ authors = ["Christof Stocker <stocker.christof@gmail.com>", "T Bltg <tf.bltg@gma
 version = "2.9.0"
 
 [deps]
+ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 Contour = "d38c429a-6771-53c6-b99e-75d170b6e991"
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -20,6 +21,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
+ColorTypes = "0.10, 0.11"
 Contour = "0.5"
 Crayons = "4.1"
 FileIO = "1"

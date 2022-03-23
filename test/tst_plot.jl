@@ -161,6 +161,10 @@ end
 
 @testset "save as png" begin
     p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π)
-    tmp = tempname() * ".png"
-    savefig(p, tmp)
+
+    for tr in (true, false)
+        tmp = tempname() * ".png"
+        savefig(p, tmp; transparent = tr)
+        @test filesize(tmp) > 10_000
+    end
 end
