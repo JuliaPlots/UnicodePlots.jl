@@ -8,6 +8,7 @@ using StableRNGs
 using StatsBase
 using Crayons
 using Unitful
+import FileIO
 
 include("fixes.jl")
 
