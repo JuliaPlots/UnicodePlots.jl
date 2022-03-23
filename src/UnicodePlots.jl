@@ -12,6 +12,9 @@ import MarchingCubes
 import NaNMath
 import Contour
 
+import FreeTypeAbstraction
+import FileIO
+
 export GraphicsArea,
     Canvas,
     BrailleCanvas,

@@ -90,7 +90,7 @@ function addrow!(
     c
 end
 
-function printrow(io::IO, c::BarplotGraphics, row::Int)
+function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
     max_val = c.maximum === nothing ? c.max_val : max(c.max_val, c.maximum)
@@ -99,20 +99,20 @@ function printrow(io::IO, c::BarplotGraphics, row::Int)
     nsyms = length(c.symbols)
     frac = float(max_val > 0 ? max(val, zero(val)) / max_val : 0)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
-    print_color(io, c.colors[row], max_val > 0 ? repeat(c.symbols[nsyms], bar_head) : "")
+    print_col(io, c.colors[row], max_val > 0 ? repeat(c.symbols[nsyms], bar_head) : "")
     if nsyms > 1
         rem = (frac * max_bar_width - bar_head) * (nsyms - 2)
-        print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : " ")
+        print_col(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : " ")
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
     if bar >= 0
-        print_color(io, :normal, " ", bar_lbl)
+        print_col(io, :normal, " ", bar_lbl)
         len = length(bar_lbl)
     else
         len = -1
     end
     pad_len = max(max_bar_width + 1 + c.max_len - bar_head - len, 0)
-    print(io, ' '^round(Int, pad_len))
+    print_nc(io, ' '^round(Int, pad_len))
     nothing
 end

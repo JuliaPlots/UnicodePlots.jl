@@ -416,6 +416,7 @@ function print_color(io::IO, color::ColorType, args...; bgcol = missing)
             args...,
         )
     end
+    nothing
 end
 
 @inline r32(r::Integer)::UInt32 = (r & 0xffffff) << 16

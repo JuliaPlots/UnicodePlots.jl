@@ -158,3 +158,9 @@ end
     p = Plot([0, 1], [0, 1], yticks = false)
     test_ref("plot/no_yticks.txt", @show_col(p))
 end
+
+@testset "save as png" begin
+    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π)
+    tmp = tempname() * ".png"
+    savefig(p, tmp)
+end

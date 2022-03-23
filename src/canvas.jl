@@ -273,8 +273,10 @@ function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColor
     c
 end
 
-function printcolorbarrow(
+function print_colorbar_row(
     io::IO,
+    print_nc,
+    print_col,
     c::Canvas,
     row::Int,
     colormap::Function,
@@ -293,18 +295,18 @@ function printcolorbarrow(
     if row == 1
         label = lim_str[2]
         # print top border and maximum z value
-        print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
-        print(io, plot_padding)
-        print_color(io, bc, label)
+        print_col(io, bc, b[:tl], b[:t], b[:t], b[:tr])
+        print_nc(io, plot_padding)
+        print_col(io, bc, label)
     elseif row == nrows(c)
         label = lim_str[1]
         # print bottom border and minimum z value
-        print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
-        print(io, plot_padding)
-        print_color(io, bc, label)
+        print_col(io, bc, b[:bl], b[:b], b[:b], b[:br])
+        print_nc(io, plot_padding)
+        print_col(io, bc, label)
     else
         # print gradient
-        print_color(io, bc, b[:l])
+        print_col(io, bc, b[:l])
         if min_z == max_z  # if min and max are the same, single color
             fgcol = bgcol = colormap(1, 1, 1)
         else  # otherwise, blend from min to max
@@ -313,15 +315,15 @@ function printcolorbarrow(
             fgcol = colormap(n - 2r - 1, 1, n)
             bgcol = colormap(n - 2r, 1, n)
         end
-        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
-        print_color(io, bc, b[:r])
-        print(io, plot_padding)
+        print_col(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
+        print_col(io, bc, b[:r])
+        print_nc(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1
             label = zlabel
-            print(io, label)
+            print_nc(io, label)
         end
     end
-    print(io, repeat(blank, max_len - length(label)))
+    print_nc(io, repeat(blank, max_len - length(label)))
     nothing
 end
