@@ -160,7 +160,7 @@ end
 end
 
 @testset "save as png" begin
-    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π)
+    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title")
 
     for tr in (true, false)
         tmp = tempname() * ".png"

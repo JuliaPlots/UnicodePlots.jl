@@ -92,20 +92,17 @@ function histogram(
         val2 = float_round_log10(val1 + binwidth, binwidth)
         a1 = Base.alignment(IOBuffer(), val1)
         a2 = Base.alignment(IOBuffer(), val2)
-        labels[i] =
-            "\e[90m" *
-            l_str *
-            "\e[0m" *
-            repeat(" ", pad_left - a1[1]) *
-            string(val1) *
-            repeat(" ", pad_right - a1[2]) *
-            "\e[90m, \e[0m" *
-            repeat(" ", pad_left - a2[1]) *
-            string(val2) *
-            repeat(" ", pad_right - a2[2]) *
-            "\e[90m" *
-            r_str *
-            "\e[0m"
+        labels[i] = string(
+            l_str,
+            repeat(" ", pad_left - a1[1]),
+            string(val1),
+            repeat(" ", pad_right - a1[2]),
+            ", ",
+            repeat(" ", pad_left - a2[1]),
+            string(val2),
+            repeat(" ", pad_right - a2[2]),
+            r_str,
+        )
     end
     barplot(
         labels,

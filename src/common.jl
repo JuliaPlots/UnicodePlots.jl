@@ -161,7 +161,8 @@ const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO))
 
 const MarkerType = Union{Symbol,Char,AbstractString}
-const UserColorType = Union{Crayon,Integer,Symbol,NTuple{3,Integer},Nothing}  # allowed color type
+const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
+const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
 
 const THRESHOLD = UInt32(256^3)
@@ -457,9 +458,12 @@ function ansi_4bit_to_8bit(c::UInt8)::UInt8
 end
 
 ansi_color(color::ColorType)::ColorType = color  # no-op
-function ansi_color(color::UserColorType)::ColorType
+ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
+function ansi_color(color::CrayonColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
-    c = Crayons._parse_color(color)
+    ansi_color(Crayons._parse_color(color))
+end
+function ansi_color(c::Crayons.ANSIColor)::ColorType
     col = if COLORMODE[] == Crayons.COLORS_24BIT
         if c.style == Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)

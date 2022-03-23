@@ -924,42 +924,55 @@ function png_image(
     default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
 
     # compute final image size
-    noop = (args...) -> nothing
+    noop = (args...; kw...) -> nothing
     nr, nc = _show(devnull, noop, noop, p)
 
     # hack printing to collect chars & colors
     chars = sizehint!(Char[], nr * nc)
-    colors = sizehint!(RGBA{Float32}[], nr * nc)
+    fcolors = sizehint!(RGBA{Float32}[], nr * nc)
+    gcolors = sizehint!(RGBA{Float32}[], nr * nc)
 
     print_nc(io, args...) = begin
         line = string(args...)
+        len = length(line)
         append!(chars, line)
-        append!(colors, fill(default_fg_color, length(line)))
+        append!(fcolors, fill(default_fg_color, len))
+        append!(gcolors, fill(default_bg_color, len))
     end
 
-    print_col(io, color, args...) = begin
-        color = rgba(ansi_color(color), 1.0)
+    print_col(io, color, args...; bgcol = missing) = begin
+        fcolor = rgba(ansi_color(color), 1.0)
+        gcolor = if ismissing(bgcol)
+            default_bg_color
+        else
+            rgba(ansi_color(bgcol), 1.0)
+        end
         line = string(args...)
+        len = length(line)
         append!(chars, line)
-        append!(colors, fill(color, length(line)))
+        append!(fcolors, fill(fcolor, len))
+        append!(gcolors, fill(gcolor, len))
     end
 
     # compute 1D stream of chars and colors
     _show(IOContext(devnull, :color => true), print_nc, print_col, p)
 
     # compute 2D grid (image) of chars and colors
-    lchrs = sizehint!([Char[]], nr)
-    lcols = sizehint!([RGBA{Float32}[]], nr)
+    lchars = sizehint!([Char[]], nr)
+    lfcols = sizehint!([RGBA{Float32}[]], nr)
+    lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
-    for (chr, col) in zip(chars, colors)
-        if chr === '\n'
+    for (char, fcol, gcol) in zip(chars, fcolors, gcolors)
+        if char === '\n'
             r += 1
-            push!(lchrs, Char[])
-            push!(lcols, RGBA{Float32}[])
+            push!(lchars, Char[])
+            push!(lfcols, RGBA{Float32}[])
+            push!(lgcols, RGBA{Float32}[])
             continue
         end
-        push!(lchrs[r], chr)
-        push!(lcols[r], col)
+        push!(lchars[r], char)
+        push!(lfcols[r], fcol)
+        push!(lgcols[r], gcol)
     end
 
     # render image
@@ -981,16 +994,17 @@ function png_image(
     )
 
     y0 = round(Int, kr * pixelsize)
-    for (r, (chrs, cols)) in enumerate(zip(lchrs, lcols))
+    for (r, (chars, fcols, gcols)) in enumerate(zip(lchars, lfcols, lgcols))
         y = round(Int, y0 + (kr * pixelsize) * (r - 1))
         FreeTypeAbstraction.renderstring!(
             img,
-            String(chrs),
+            String(chars),
             face,
             pixelsize,
             y,
             0;
-            fcolor = cols,
+            fcolor = fcols,
+            gcolor = gcols,
             bcolor = transparent ? nothing : default_bg_color,
             valign = :vbottom,
             halign = :hleft,
