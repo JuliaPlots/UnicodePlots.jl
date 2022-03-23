@@ -4,11 +4,10 @@ function nrows end
 function ncols end
 function printrow end
 
-suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) =
-    crayon_256_color(
-        color === nothing && length(c.colors) > 0 ? c.colors[end] :
-        (color isa AbstractVector ? first(color) : color),
-    )
+suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) = ansi_color(
+    color === nothing && length(c.colors) > 0 ? c.colors[end] :
+    (color isa AbstractVector ? first(color) : color),
+)
 
 function Base.print(io::IO, c::GraphicsArea)
     for row in 1:nrows(c)
@@ -24,9 +23,9 @@ function Base.show(io::IO, c::GraphicsArea)
     border_length = ncols(c)
     print_border(io, :t, border_length, "", "\n", b, bc)
     for row in 1:nrows(c)
-        print_color(bc, io, b[:l])
+        print_color(io, bc, b[:l])
         printrow(io, c, row)
-        print_color(bc, io, b[:r])
+        print_color(io, bc, b[:r])
         row < nrows(c) && println(io)
     end
     print_border(io, :b, border_length, "\n", "", b, bc)

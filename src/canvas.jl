@@ -287,39 +287,34 @@ function printcolorbarrow(
     blank::Char,
 )
     b = BORDERMAP[border]
+    bc = BORDER_COLOR[]
     min_z, max_z = lim
     label = ""
     if row == 1
         label = lim_str[2]
         # print top border and maximum z value
-        print_color(BORDER_COLOR[], io, b[:tl], b[:t], b[:t], b[:tr])
+        print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
         print(io, plot_padding)
-        print_color(BORDER_COLOR[], io, label)
+        print_color(io, bc, label)
     elseif row == nrows(c)
         label = lim_str[1]
         # print bottom border and minimum z value
-        print_color(BORDER_COLOR[], io, b[:bl], b[:b], b[:b], b[:br])
+        print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
         print(io, plot_padding)
-        print_color(BORDER_COLOR[], io, label)
+        print_color(io, bc, label)
     else
         # print gradient
-        print_color(BORDER_COLOR[], io, b[:l])
+        print_color(io, bc, b[:l])
         if min_z == max_z  # if min and max are the same, single color
             fgcol = bgcol = colormap(1, 1, 1)
         else  # otherwise, blend from min to max
             n = 2(nrows(c) - 2)
             r = row - 2
-            bgcol = colormap(n - 2r, 1, n)
             fgcol = colormap(n - 2r - 1, 1, n)
+            bgcol = colormap(n - 2r, 1, n)
         end
-        print(
-            io,
-            Crayon(foreground = fgcol, background = bgcol),
-            HALF_BLOCK,
-            HALF_BLOCK,
-            Crayon(reset = true),
-        )
-        print_color(BORDER_COLOR[], io, b[:r])
+        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
+        print_color(io, bc, b[:r])
         print(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1

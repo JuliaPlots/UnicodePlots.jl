@@ -56,7 +56,7 @@ function CreateLookupCanvas(
     pixel_width  = char_width * x_pixel_per_char(T)
     pixel_height = char_height * y_pixel_per_char(T)
     grid         = fill(G(0), char_width, char_height)
-    colors       = Array{ColorType}(nothing, char_width, char_height)
+    colors       = fill(INVALID_COLOR, char_width, char_height)
     T(
         grid,
         colors,
@@ -102,7 +102,7 @@ function pixel!(
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color), blend)
+    set_color!(c.colors, char_x, char_y, ansi_color(color), blend)
     c
 end
 
@@ -110,7 +110,7 @@ function printrow(io::IO, c::LookupCanvas, row::Int)
     0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_color(colors(c)[x, y], io, lookup_decode(c)[grid(c)[x, y] + 1])
+        print_color(io, colors(c)[x, y], lookup_decode(c)[grid(c)[x, y] + 1])
     end
     nothing
 end

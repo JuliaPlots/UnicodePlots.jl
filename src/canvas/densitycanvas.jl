@@ -56,7 +56,7 @@ function DensityCanvas(
     pixel_width  = char_width * x_pixel_per_char(DensityCanvas)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
     grid         = fill(UInt(0), char_width, char_height)
-    colors       = Array{ColorType}(nothing, char_width, char_height)
+    colors       = fill(INVALID_COLOR, char_width, char_height)
     DensityCanvas(
         grid,
         colors,
@@ -89,7 +89,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x, char_y] += 1
     c.max_density = max(c.max_density, c.grid[char_x, char_y])
-    set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
+    set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     c
 end
 
@@ -101,7 +101,7 @@ function printrow(io::IO, c::DensityCanvas, row::Int)
     val_scale = (den_sign_count - 1) / c.max_density
     for x in 1:ncols(c)
         den_index = round(Int, c.grid[x, y] * val_scale, RoundNearestTiesUp) + 1
-        print_color(c.colors[x, y], io, signs[den_index])
+        print_color(io, c.colors[x, y], signs[den_index])
     end
     nothing
 end

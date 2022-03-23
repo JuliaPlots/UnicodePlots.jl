@@ -55,11 +55,11 @@ mutable struct Plot{T<:GraphicsArea,E,F}
     border::Symbol
     compact::Bool
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,JuliaColorType}
+    colors_left::Dict{Int,ColorType}
     labels_right::Dict{Int,String}
-    colors_right::Dict{Int,JuliaColorType}
+    colors_right::Dict{Int,ColorType}
     decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,JuliaColorType}
+    colors_deco::Dict{Symbol,ColorType}
     labels::Bool
     colormap::Any
     colorbar::Bool
@@ -91,11 +91,11 @@ function Plot(
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,JuliaColorType}()
+    colors_left = Dict{Int,ColorType}()
     labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,JuliaColorType}()
+    colors_right = Dict{Int,ColorType}()
     decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,JuliaColorType}()
+    colors_deco = Dict{Symbol,ColorType}()
     p = Plot{T,E,F}(
         graphics,
         title,
@@ -293,12 +293,12 @@ function Plot(
     if grid
         if my < 0 < My
             for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
-                points!(plot, i, 0.0, :normal)
+                points!(plot, i, 0.0, nothing)
             end
         end
         if mx < 0 < Mx
             for i in range(my, stop = My, length = height * y_pixel_per_char(C))
-                points!(plot, 0.0, i, :normal)
+                points!(plot, 0.0, i, nothing)
             end
         end
     end
@@ -309,8 +309,8 @@ function Plot(
 end
 
 function next_color!(plot::Plot{<:GraphicsArea})
-    cur_color = COLOR_CYCLE[plot.autocolor + 1]
-    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE))
+    cur_color = COLOR_CYCLE[][plot.autocolor + 1]
+    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE[]))
     cur_color
 end
 
@@ -417,20 +417,20 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
             if loc == :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
-                    plot.colors_left[row] = julia_color(color)
+                    plot.colors_left[row] = ansi_color(color)
                     break
                 end
             elseif loc == :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
-                    plot.colors_right[row] = julia_color(color)
+                    plot.colors_right[row] = ansi_color(color)
                     break
                 end
             end
         end
     else
         plot.decorations[loc] = value
-        plot.colors_deco[loc] = julia_color(color)
+        plot.colors_deco[loc] = ansi_color(color)
     end
     plot
 end
@@ -462,10 +462,10 @@ function label!(
 )
     if loc == :l
         plot.labels_left[row] = value
-        plot.colors_left[row] = julia_color(color)
+        plot.colors_left[row] = ansi_color(color)
     elseif loc == :r
         plot.labels_right[row] = value
-        plot.colors_right[row] = julia_color(color)
+        plot.colors_right[row] = ansi_color(color)
     else
         throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
     end
@@ -587,13 +587,13 @@ function print_title(
     right_pad::AbstractString,
     blank::Char;
     p_width::Int = 0,
-    color = :normal,
+    color::UserColorType = :normal,
 )
     title == "" && return
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = repeat(blank, offset > 0 ? offset : 0)
     print(io, left_pad, pre_pad)
-    print_color(color, io, title)
+    print_color(io, color, title)
     post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
     print(io, post_pad, right_pad)
     nothing
@@ -610,8 +610,8 @@ function print_border(
 )
     print(io, left_pad)
     print_color(
-        color,
         io,
+        color,
         bmap[Symbol(loc, :l)],
         repeat(bmap[loc], length),
         bmap[Symbol(loc, :r)],
@@ -619,8 +619,6 @@ function print_border(
     print(io, right_pad)
     nothing
 end
-
-_nocolor_string(str) = replace(string(str), r"\e\[[0-9]+m" => "")
 
 function print_labels(
     io::IO,
@@ -632,28 +630,29 @@ function print_labels(
     blank::Char,
 )
     p.labels || return
+    bc        = BORDER_COLOR[]
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
-    left_col  = get(p.colors_deco, lloc, BORDER_COLOR[])
+    left_col  = get(p.colors_deco, lloc, bc)
     mid_str   = get(p.decorations, mloc, "")
-    mid_col   = get(p.colors_deco, mloc, BORDER_COLOR[])
+    mid_col   = get(p.colors_deco, mloc, bc)
     right_str = get(p.decorations, rloc, "")
-    right_col = get(p.colors_deco, rloc, BORDER_COLOR[])
+    right_col = get(p.colors_deco, rloc, bc)
     if left_str != "" || right_str != "" || mid_str != ""
         left_len  = length(left_str)
         mid_len   = length(mid_str)
         right_len = length(right_str)
         print(io, left_pad)
-        print_color(left_col, io, left_str)
+        print_color(io, left_col, left_str)
         cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
         pad = cnt > 0 ? repeat(blank, cnt) : ""
         print(io, pad)
-        print_color(mid_col, io, mid_str)
+        print_color(io, mid_col, mid_str)
         cnt = border_length - right_len - left_len - mid_len + 2 - cnt
         pad = cnt > 0 ? repeat(blank, cnt) : ""
         print(io, pad)
-        print_color(right_col, io, right_str)
+        print_color(io, right_col, right_str)
         print(io, right_pad)
     end
     nothing
@@ -674,12 +673,12 @@ function Base.show(io::IO, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(_nocolor_string(l)) for l in values(p.labels_left)])
+        maximum([length(nocolor_string(l)) for l in values(p.labels_left)])
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(_nocolor_string(l)) for l in values(p.labels_right)])
+        maximum([length(nocolor_string(l)) for l in values(p.labels_right)])
     else
         0
     end
@@ -698,7 +697,7 @@ function Base.show(io::IO, p::Plot)
         min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
         max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
         cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(_nocolor_string(p.zlabel)))
+            max(length(min_z_str), length(max_z_str), length(nocolor_string(p.zlabel)))
         cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
     else
         cbar_pad = ""
@@ -718,7 +717,7 @@ function Base.show(io::IO, p::Plot)
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
-        color = :bold,
+        color = Crayon(bold = true),
     )
     print_labels(
         io,
@@ -737,6 +736,8 @@ function Base.show(io::IO, p::Plot)
 
     callback = colormap_callback(p.colormap)
 
+    bc = BORDER_COLOR[]
+
     # plot all rows
     for row in 1:nrows(c)
         # print left annotations
@@ -744,38 +745,38 @@ function Base.show(io::IO, p::Plot)
         if p.labels
             # Current labels to left and right of the row and their length
             left_str  = get(p.labels_left, row, "")
-            left_col  = get(p.colors_left, row, BORDER_COLOR[])
+            left_col  = get(p.colors_left, row, bc)
             right_str = get(p.labels_right, row, "")
-            right_col = get(p.colors_right, row, BORDER_COLOR[])
-            left_len  = length(_nocolor_string(left_str))
-            right_len = length(_nocolor_string(right_str))
+            right_col = get(p.colors_right, row, bc)
+            left_len  = length(nocolor_string(left_str))
+            right_len = length(nocolor_string(right_str))
             if !get(io, :color, false)
-                left_str  = _nocolor_string(left_str)
-                right_str = _nocolor_string(right_str)
+                left_str  = nocolor_string(left_str)
+                right_str = nocolor_string(right_str)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_color(:normal, io, p.ylabel)
+                print_color(io, :normal, p.ylabel)
                 print(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
             else
                 # print padding to fill ylabel length
                 print(io, repeat(🗷, max_len_l - left_len))
             end
             # print the left annotation
-            print_color(left_col, io, left_str)
+            print_color(io, left_col, left_str)
         end
         if c.visible
             # print left border
             print(io, plot_padding)
-            print_color(BORDER_COLOR[], io, bmap[:l])
+            print_color(io, bc, bmap[:l])
             # print canvas row
             printrow(io, c, row)
             # print right label and padding
-            print_color(BORDER_COLOR[], io, bmap[:r])
+            print_color(io, bc, bmap[:r])
         end
         if p.labels
             print(io, plot_padding)
-            print_color(right_col, io, right_str)
+            print_color(io, right_col, right_str)
             print(io, repeat(🗷, max_len_r - right_len))
         end
         # print colorbar

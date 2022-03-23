@@ -6,6 +6,7 @@ using LinearAlgebra
 using ColorTypes
 using StableRNGs
 using StatsBase
+using Crayons
 using Unitful
 
 include("fixes.jl")
@@ -14,8 +15,12 @@ const RNG = StableRNG(1337)
 const T_SZ = (24, 80)  # terminal size
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
-test_ref(reference, actual) =
-    @test_reference(reference, actual, render = BeforeAfterFull(), format = "TXT")
+test_ref(reference, actual) = @test_reference(
+    joinpath("references_$(UnicodePlots.colormode())", reference),
+    actual,
+    render = BeforeAfterFull(),
+    format = "TXT"
+)
 
 # helpers
 macro show_col(p, kv...)
@@ -75,6 +80,8 @@ macro dinf(ex)
 end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+    UnicodePlots.CRAYONS_FAST[] = false
+    println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     for test in (
         "tst_issues.jl",
         "tst_common.jl",

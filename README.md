@@ -390,6 +390,16 @@ For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.n
 
 You can pass `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio (this keyword is experimental and might be unnecessary in future versions).
 
+## Color mode
+
+When the `COLORTERM` environment variable is set to either `24bit` or `truecolor`, `UnicodePlots` will use [24bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) as opposed to [8bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) or even [4bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) for named colors.
+
+One can force a specific colormode using either `UnicodePlots.truecolors!()` or `UnicodePlots.colors256!()`.
+
+Named colors such as `:red` or `:light_red` will use `256` color values (rendering will be terminal dependent). In order to force named colors to use true colors instead, use `UnicodePlots.USE_LUT[]=true`.
+
+The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
+
 ## Low-level Interface
 
 The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.

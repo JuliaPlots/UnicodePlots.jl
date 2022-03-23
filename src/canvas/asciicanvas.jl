@@ -141,7 +141,7 @@ function char_point!(
 )
     if checkbounds(Bool, c.grid, char_x, char_y)
         c.grid[char_x, char_y] = n_ascii + char
-        set_color!(c.colors, char_x, char_y, crayon_256_color(color), c.blend)
+        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c
 end

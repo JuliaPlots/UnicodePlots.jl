@@ -28,9 +28,9 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
             max_x = max_x + 1
         end
         colors = if color isa AbstractVector
-            crayon_256_color.(color)
+            ansi_color.(color)
         else
-            [crayon_256_color(color)]
+            [ansi_color(color)]
         end
         new{R}(
             [
@@ -131,6 +131,6 @@ function printrow(io::IO, c::BoxplotGraphics, row::Int)
         line[i] = line_char
     end
 
-    print_color(c.colors[idx], io, join(line))
+    print_color(io, c.colors[idx], join(line))
     nothing
 end

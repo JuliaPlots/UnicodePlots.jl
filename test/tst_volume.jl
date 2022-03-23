@@ -75,7 +75,7 @@ end
         )
         scatterplot!(p, x, y, z)
 
-        test_ref("references/volume/ellipsoid_$plane.txt", @show_col(p))
+        test_ref("volume/ellipsoid_$plane.txt", @show_col(p))
     end
 end
 
@@ -118,7 +118,7 @@ end
             lineplot!(p, segment2xyz(s)...)
         end
 
-        test_ref("references/volume/cube_$proj.txt", @show_col(p))
+        test_ref("volume/cube_$proj.txt", @show_col(p))
     end
 end
 
@@ -149,6 +149,6 @@ end
 
         title = "zoom=$zoom"
         p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = title)
-        test_ref("references/volume/cube_$(zoom).txt", @show_col(p))
+        test_ref("volume/cube_$(zoom).txt", @show_col(p))
     end
 end

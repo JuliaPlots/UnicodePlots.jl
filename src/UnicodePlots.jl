@@ -73,6 +73,7 @@ export GraphicsArea,
     savefig
 
 include("common.jl")
+include("lut.jl")
 
 include("graphics.jl")
 include("graphics/bargraphics.jl")

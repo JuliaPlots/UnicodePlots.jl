@@ -9,7 +9,7 @@
         cull = true,
         zoom = 2,
     )
-    test_ref("references/isosurface/sphere.txt", @show_col(p))
+    test_ref("isosurface/sphere.txt", @show_col(p))
 end
 
 @testset "torus" begin
@@ -23,10 +23,10 @@ end
         cull = true,
         zoom = 2,
     )
-    test_ref("references/isosurface/torus.txt", @show_col(p))
+    test_ref("isosurface/torus.txt", @show_col(p))
 end
 
 @testset "hyperboloid" begin
     p = isosurface(-3:0.6:3, -3:0.6:3, -3:0.6:3, (x, y, z) -> x^2 + y^2 - z^2 - 1;)
-    test_ref("references/isosurface/hyperboloid.txt", @show_col(p))
+    test_ref("isosurface/hyperboloid.txt", @show_col(p))
 end

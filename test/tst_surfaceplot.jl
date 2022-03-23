@@ -2,25 +2,25 @@
     sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
-    test_ref("references/surfaceplot/sombrero.txt", @show_col(p))
+    test_ref("surfaceplot/sombrero.txt", @show_col(p))
 
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero, zscale = :aspect)
-    test_ref("references/surfaceplot/sombrero_aspect.txt", @show_col(p))
+    test_ref("surfaceplot/sombrero_aspect.txt", @show_col(p))
 
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero, zscale = h -> h / 2)
-    test_ref("references/surfaceplot/sombrero_zscale.txt", @show_col(p))
+    test_ref("surfaceplot/sombrero_zscale.txt", @show_col(p))
 
     @test_throws ArgumentError surfaceplot([1 2; 3 4], zscale = :not_supported)
 end
 
 @testset "single color - no colormap" begin
     p = surfaceplot(0:0.5:(2π), 0:0.5:(2π), (x, y) -> sin(x) + cos(y), color = :yellow)
-    test_ref("references/surfaceplot/single_color.txt", @show_col(p))
+    test_ref("surfaceplot/single_color.txt", @show_col(p))
 end
 
 @testset "matrix" begin
     p = surfaceplot(collect(1:10) * collect(0.1:0.1:1)', axes3d = false)
-    test_ref("references/surfaceplot/matrix.txt", @show_col(p))
+    test_ref("surfaceplot/matrix.txt", @show_col(p))
 end
 
 @testset "color interpolation" begin
@@ -35,7 +35,7 @@ end
         colormap = :jet,
         lines = true,
     )
-    test_ref("references/surfaceplot/interpolation.txt", @show_col(p))
+    test_ref("surfaceplot/interpolation.txt", @show_col(p))
 end
 
 @testset "slice" begin
@@ -54,8 +54,8 @@ end
     z = data[:, :, zc]
 
     p = surfaceplot(x, y, z; kw...)
-    test_ref("references/surfaceplot/slice_scatter.txt", @show_col(p))
+    test_ref("surfaceplot/slice_scatter.txt", @show_col(p))
 
     p = surfaceplot(x, y, z; kw..., lines = true)
-    test_ref("references/surfaceplot/slice_lines.txt", @show_col(p))
+    test_ref("surfaceplot/slice_lines.txt", @show_col(p))
 end
