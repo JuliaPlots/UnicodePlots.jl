@@ -23,7 +23,7 @@ function main()
     scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, unicode_exponent=false)"),
     scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1],
-                  marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow])
+                  marker=[:circle, '', "∫"], color=[:red, nothing, :yellow])
       """),
     lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
@@ -377,6 +377,9 @@ Named colors such as `:red` or `:light_red` will use `256` color values (renderi
 
 The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
 
+## Saving figures
+Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and shall not be considered stable).
+
 ## Low-level Interface
 
 The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.
@@ -445,31 +448,34 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       using UnicodePlots, StableRNGs, SparseArrays, Unitful
 
-      UnicodePlots.brightcolors!()
+      # UnicodePlots.brightcolors!()
 
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
       RNG = StableRNG(1337)
 
-      save(p, nm) = savefig(p, "$ver/\$(nm).png"; transparent = false)
+      bb() = parse(Bool, get(ENV, "BB", "false")) ? 196 : nothing
+      bb_glyph() = parse(Bool, get(ENV, "BB_GL", "false")) ? 28 : nothing
+
+      main() = begin
       """
     )
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
       code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ", r"\brand\b\(" => "rand(RNG, ") for c in code]
-      println(
-        io,
-        """
-        println("ex n°$i")
+      println(io, """
+        println("ex n°$i - $k")
         _ex_$i() = begin
           $(indent(join(code, '\n'), 1))
         end
         plt = _ex_$i()
-        save(plt, \"$k\")
+        display(plt)
+        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb(), bounding_box_glyph=bb_glyph(), pixelsize=32)
         """
       )
     end
+    println(io, "\nreturn\nend")
   end
 
   open("imgs/gen_imgs.sh", "w") do io

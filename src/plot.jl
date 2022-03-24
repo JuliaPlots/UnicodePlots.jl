@@ -896,8 +896,9 @@ Render `png` image.
 - `font::Union{Nothing,AbstractString} = nothing`: select a font by name, or fall-back to a system font.
 - `transparent::Bool = true`: use a transparent background.
 - `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
-- `background::UserColorType = nothing`, choose a background color for the rendered image.
-
+- `background::UserColorType = nothing`: choose a background color for the rendered image.
+- `bounding_box::UserColorType = nothing`: debugging bounding box color.
+- `bounding_box_glyph::UserColorType = nothing`: debugging glyph bounding box color.
 """
 function png_image(
     p::Plot;
@@ -906,22 +907,34 @@ function png_image(
     transparent::Bool = true,
     foreground::UserColorType = nothing,
     background::UserColorType = nothing,
+    bounding_box_glyph::UserColorType = nothing,
+    bounding_box::UserColorType = nothing,
 )
     RGB24 = ColorTypes.RGB24
     RGBA = ColorTypes.RGBA
     RGB = ColorTypes.RGB
 
-    fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
-    bg_color = ansi_color(something(background, :black))
+    fg_color = ansi_color(something(foreground, transparent ? 244 : 252))
+    bg_color = ansi_color(something(background, 234))
 
-    rgba(color::ColorType, alpha) = begin
+    rgba(color::ColorType, alpha = 1.0) = begin
         color == INVALID_COLOR && (color = fg_color)
         color < THRESHOLD || (color = LUT_8BIT[1 + (color - THRESHOLD)])
         RGBA{Float32}(convert(RGB{Float32}, reinterpret(RGB24, color)), alpha)
     end
 
-    default_fg_color = rgba(fg_color, 1.0)
+    default_fg_color = rgba(fg_color)
     default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
+    bbox = if bounding_box !== nothing
+        rgba(ansi_color(bounding_box))
+    else
+        bounding_box
+    end
+    bbox_glyph = if bounding_box_glyph !== nothing
+        rgba(ansi_color(bounding_box_glyph))
+    else
+        bounding_box_glyph
+    end
 
     # compute final image size
     noop = (args...; kw...) -> nothing
@@ -941,11 +954,11 @@ function png_image(
     end
 
     print_col(io, color, args...; bgcol = missing) = begin
-        fcolor = rgba(ansi_color(color), 1.0)
+        fcolor = rgba(ansi_color(color))
         gcolor = if ismissing(bgcol)
             default_bg_color
         else
-            rgba(ansi_color(bgcol), 1.0)
+            rgba(ansi_color(bgcol))
         end
         line = string(args...)
         len = length(line)
@@ -987,27 +1000,34 @@ function png_image(
     kr = ASPECT_RATIO
     kc = kr / 2
 
+    # @show kr, kc
+    # @show nr, nc
+    # @assert kr ≥ 1 && kc ≥ 1
+
     img = fill(
         default_bg_color,
         ceil(Int, (kr * pixelsize) * nr),
         ceil(Int, (kc * pixelsize) * nc),
     )
 
-    y0 = round(Int, kr * pixelsize)
+    y0 = pixelsize  # depends on valign
+    x0 = 1  # 2pixelsize
     for (r, (chars, fcols, gcols)) in enumerate(zip(lchars, lfcols, lgcols))
         y = round(Int, y0 + (kr * pixelsize) * (r - 1))
         FreeTypeAbstraction.renderstring!(
             img,
-            String(chars),
+            chars,
             face,
             pixelsize,
             y,
-            0;
+            x0;
             fcolor = fcols,
             gcolor = gcols,
-            bcolor = transparent ? nothing : default_bg_color,
-            valign = :vbottom,
+            bcolor = nothing,  # not needed (initial fill, avoid overlaps)
+            valign = :vbaseline,
             halign = :hleft,
+            bbox_glyph = bbox_glyph,
+            bbox = bbox,
         )
     end
 
