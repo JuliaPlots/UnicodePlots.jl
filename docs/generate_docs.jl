@@ -456,10 +456,10 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
       RNG = StableRNG(1337)
 
-      bb() = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
-      bb_glyph() = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
-
       main() = begin
+
+      bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
+      bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
       """
     )
     for (i, (k, e)) in enumerate(pairs(exs))
@@ -473,8 +473,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         end
         plt = _ex_$i()
         display(plt)
-        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb(), bounding_box_glyph=bb_glyph(), pixelsize=64)
-        savefig(plt, "$ver/$k.txt"; color=false)
+        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
+        # savefig(plt, "$ver/$k.txt"; color=false)
         """
       )
     end

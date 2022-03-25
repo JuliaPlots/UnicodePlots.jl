@@ -890,7 +890,7 @@ fallback_font(mono::Bool = false) =
 # COV_EXCL_STOP
 
 """
-    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
+    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 
 Render `png` image.
 
@@ -902,6 +902,7 @@ Render `png` image.
 - `background::UserColorType = nothing`: choose a background color for the rendered image.
 - `bounding_box::UserColorType = nothing`: debugging bounding box color.
 - `bounding_box_glyph::UserColorType = nothing`: debugging glyph bounding box color.
+- `row_fact::Real = 1.0`: row spacing multiplier (e.g. for histogram).
 """
 function png_image(
     p::Plot;
@@ -912,7 +913,23 @@ function png_image(
     background::UserColorType = nothing,
     bounding_box_glyph::UserColorType = nothing,
     bounding_box::UserColorType = nothing,
+    row_fact::Union{Nothing,Real} = nothing,
 )
+    canvas = p.graphics
+    #####################################
+    # visual fixes
+    incx = if canvas isa HeatmapCanvas || canvas isa BarplotGraphics || p.colorbar
+        -1
+    else
+        0
+    end
+    row_fact = something(row_fact, if canvas isa BarplotGraphics  # histogram
+        1.05
+    else
+        1.0
+    end)
+    #####################################
+
     RGB24 = ColorTypes.RGB24
     RGBA = ColorTypes.RGBA
     RGB = ColorTypes.RGB
@@ -1009,29 +1026,23 @@ function png_image(
     kr = ASPECT_RATIO
     kc = kr / 2
 
-    # @show kr, kc
-    # @show nr, nc
-    # @assert kr ≥ 1 && kc ≥ 1
-
     img = fill(
         default_bg_color,
-        ceil(Int, (kr * pixelsize) * nr),
-        ceil(Int, (kc * pixelsize) * nc),
+        ceil(Int, kr * pixelsize * nr * row_fact),
+        ceil(Int, kc * pixelsize * nc),
     )
 
-    # y0 = pixelsize  # depends on valign
-    # x0 = 1  # 2pixelsize
     y0 = round(Int, (kr * pixelsize) / 2)
     x0 = round(Int, (kc * pixelsize * nc) / 2)
 
     for (r, (fchars, gchars, fcols, gcols)) in
         enumerate(zip(lfchars, lgchars, lfcols, lgcols))
-        y = round(Int, y0 + (kr * pixelsize) * (r - 1))
-        FreeTypeAbstraction.renderstring!(
+        y = round(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
+        incy = FreeTypeAbstraction.renderstring!(
             img,
             fchars,
             face,
-            pixelsize - 2,  # -2: avoid overlaps (histogram, heatmaps)
+            pixelsize,
             y,
             x0;
             fcolor = fcols,
@@ -1042,6 +1053,8 @@ function png_image(
             bbox_glyph = bbox_glyph,
             bbox = bbox,
             gstr = gchars,
+            off_bg = 1,
+            incx = incx,
         )
     end
 
