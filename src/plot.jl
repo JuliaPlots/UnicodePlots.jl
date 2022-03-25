@@ -941,14 +941,16 @@ function png_image(
     nr, nc = _show(devnull, noop, noop, p)
 
     # hack printing to collect chars & colors
-    chars = sizehint!(Char[], nr * nc)
+    fchars = sizehint!(Char[], nr * nc)
+    gchars = sizehint!(Char[], nr * nc)
     fcolors = sizehint!(RGBA{Float32}[], nr * nc)
     gcolors = sizehint!(RGBA{Float32}[], nr * nc)
 
     print_nc(io, args...) = begin
         line = string(args...)
         len = length(line)
-        append!(chars, line)
+        append!(fchars, line)
+        append!(gchars, line)
         append!(fcolors, fill(default_fg_color, len))
         append!(gcolors, fill(default_bg_color, len))
     end
@@ -962,7 +964,8 @@ function png_image(
         end
         line = string(args...)
         len = length(line)
-        append!(chars, line)
+        append!(fchars, line)
+        append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))
         append!(fcolors, fill(fcolor, len))
         append!(gcolors, fill(gcolor, len))
     end
@@ -971,19 +974,22 @@ function png_image(
     _show(IOContext(devnull, :color => true), print_nc, print_col, p)
 
     # compute 2D grid (image) of chars and colors
-    lchars = sizehint!([Char[]], nr)
+    lfchars = sizehint!([Char[]], nr)
+    lgchars = sizehint!([Char[]], nr)
     lfcols = sizehint!([RGBA{Float32}[]], nr)
     lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
-    for (char, fcol, gcol) in zip(chars, fcolors, gcolors)
-        if char === '\n'
+    for (fchar, gchar, fcol, gcol) in zip(fchars, gchars, fcolors, gcolors)
+        if fchar === '\n'
             r += 1
-            push!(lchars, Char[])
+            push!(lfchars, Char[])
+            push!(lgchars, Char[])
             push!(lfcols, RGBA{Float32}[])
             push!(lgcols, RGBA{Float32}[])
             continue
         end
-        push!(lchars[r], char)
+        push!(lfchars[r], fchar)
+        push!(lgchars[r], gchar)
         push!(lfcols[r], fcol)
         push!(lgcols[r], gcol)
     end
@@ -1010,13 +1016,15 @@ function png_image(
         ceil(Int, (kc * pixelsize) * nc),
     )
 
-    y0 = pixelsize  # depends on valign
-    x0 = 1  # 2pixelsize
-    for (r, (chars, fcols, gcols)) in enumerate(zip(lchars, lfcols, lgcols))
+    # y0 = pixelsize  # depends on valign
+    # x0 = 1  # 2pixelsize
+    y0 = round(Int, (kr * pixelsize) / 2)
+    x0 = round(Int, (kc * pixelsize * nc) / 2)
+    for (r, (fchars, gchars, fcols, gcols)) in enumerate(zip(lfchars, lgchars, lfcols, lgcols))
         y = round(Int, y0 + (kr * pixelsize) * (r - 1))
         FreeTypeAbstraction.renderstring!(
             img,
-            chars,
+            fchars,
             face,
             pixelsize,
             y,
@@ -1024,10 +1032,11 @@ function png_image(
             fcolor = fcols,
             gcolor = gcols,
             bcolor = nothing,  # not needed (initial fill, avoid overlaps)
-            valign = :vbaseline,
-            halign = :hleft,
+            valign = :vcenter,
+            halign = :hcenter,
             bbox_glyph = bbox_glyph,
             bbox = bbox,
+            gstr = gchars,
         )
     end
 

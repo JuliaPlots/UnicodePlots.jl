@@ -3,6 +3,9 @@ const BLANK = 0x0020
 const BLANK_BRAILLE = 0x2800
 const FULL_BRAILLE = 0x28ff
 
+const FULL_BLOCK = '█'
+const HALF_BLOCK = '▄'
+
 const BORDER_SOLID = (
     tl = '┌',
     tr = '┐',

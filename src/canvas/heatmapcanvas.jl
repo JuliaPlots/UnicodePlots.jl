@@ -20,8 +20,6 @@ struct HeatmapCanvas{XS<:Function,YS<:Function} <: LookupCanvas
     yscale::YS
 end
 
-const HALF_BLOCK = '▄'
-
 @inline x_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 1
 @inline y_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 2
 
