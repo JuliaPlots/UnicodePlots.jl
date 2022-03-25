@@ -268,17 +268,22 @@ All plots support the set (or a subset) of the following named parameters:
     
   - `border::Symbol = :solid`: plot bounding box style (`:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
     ```julia
-    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
-    ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_bold.png)
-    
-    ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
     ```
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dashed.png)
     
     ```julia
-    lineplot([-1., 2, 3, 7], [1.,2, 9, 4])
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)
+    ```
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_ascii.png)
+    
+    ```julia
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
+    ```
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_bold.png)
+    
+    ```julia
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)
     ```
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dotted.png)
     

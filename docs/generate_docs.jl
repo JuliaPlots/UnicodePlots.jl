@@ -2,7 +2,7 @@ using UnicodePlots
 using Markdown
 import Markdown: MD, Paragraph, plain
 
-function main()
+main() = begin
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "2.10"
 
@@ -78,9 +78,10 @@ function main()
     width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
     labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false)"),
-    border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
     border_dashed = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
-    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4])"),
+    border_ascii = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)"),
+    border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
+    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"),
     border_none = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
     decorate = ("Decorate", """
       x = y = collect(1:10)
@@ -131,8 +132,9 @@ function main()
     if k == :border
       join((
         d,
-        indent(examples.border_bold, n),
         indent(examples.border_dashed, n),
+        indent(examples.border_ascii, n),
+        indent(examples.border_bold, n),
         indent(examples.border_dotted, n),
         indent(examples.border_none, n),
       ), '\n')
@@ -454,8 +456,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
       RNG = StableRNG(1337)
 
-      bb() = parse(Bool, get(ENV, "BB", "false")) ? 196 : nothing
-      bb_glyph() = parse(Bool, get(ENV, "BB_GL", "false")) ? 28 : nothing
+      bb() = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
+      bb_glyph() = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
 
       main() = begin
       """
@@ -471,7 +473,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         end
         plt = _ex_$i()
         display(plt)
-        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb(), bounding_box_glyph=bb_glyph(), pixelsize=32)
+        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb(), bounding_box_glyph=bb_glyph(), pixelsize=64)
+        savefig(plt, "$ver/$k.txt"; color=false)
         """
       )
     end

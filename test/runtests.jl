@@ -85,6 +85,7 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
     println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     for test in (
         "tst_issues.jl",
+        "tst_io.jl",
         "tst_common.jl",
         "tst_graphics.jl",
         "tst_canvas.jl",

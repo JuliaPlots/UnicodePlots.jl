@@ -670,6 +670,7 @@ end
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 function _show(io::IO, print_nc, print_col, p::Plot)
+    io_color = get(io, :color, false)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
     🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
@@ -685,12 +686,12 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(nocolor_string(l)) for l in values(p.labels_left)])
+        maximum([length(no_ansi_escape(l)) for l in values(p.labels_left)])
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(nocolor_string(l)) for l in values(p.labels_right)])
+        maximum([length(no_ansi_escape(l)) for l in values(p.labels_right)])
     else
         0
     end
@@ -709,7 +710,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
         max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
         cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(nocolor_string(p.zlabel)))
+            max(length(min_z_str), length(max_z_str), length(no_ansi_escape(p.zlabel)))
         cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
     else
         cbar_pad = ""
@@ -719,7 +720,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     border_left_pad = repeat(🗷, plot_offset)
 
     # trailing
-    border_right_pad = repeat(🗷, max_len_r) * plot_padding * cbar_pad
+    border_right_pad = repeat(🗷, max_len_r) * (p.labels ? plot_padding : "") * cbar_pad
 
     # plot the title and the top border
     h_ttl, w_ttl = print_title(
@@ -731,7 +732,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
-        color = Crayon(bold = true),
+        color = io_color ? Crayon(bold = true) : :normal,
     )
     print_labels(
         io,
@@ -768,15 +769,17 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         print_nc(io, repeat(🗷, p.margin))
         if p.labels
             # Current labels to left and right of the row and their length
-            left_str  = get(p.labels_left, row, "")
-            left_col  = get(p.colors_left, row, bc)
-            right_str = get(p.labels_right, row, "")
-            right_col = get(p.colors_right, row, bc)
-            left_len  = length(nocolor_string(left_str))
-            right_len = length(nocolor_string(right_str))
-            if !get(io, :color, false)
-                left_str  = nocolor_string(left_str)
-                right_str = nocolor_string(right_str)
+            left_str   = get(p.labels_left, row, "")
+            left_col   = get(p.colors_left, row, bc)
+            right_str  = get(p.labels_right, row, "")
+            right_col  = get(p.colors_right, row, bc)
+            left_str_  = no_ansi_escape(left_str)
+            right_str_ = no_ansi_escape(right_str)
+            left_len   = length(left_str_)
+            right_len  = length(right_str_)
+            if !io_color
+                left_str  = left_str_
+                right_str = right_str_
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
@@ -867,7 +870,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     end
     # approximate image size
     (
-        h_ttl + 1 + nr + 1 + h_lbl,  # +1: borders
+        h_ttl + 1 + nr + 1 + h_lbl,  # +1 for borders
         max(w_ttl, w_lbl, length(border_left_pad) + p_width + length(border_right_pad)),
     )
 end
@@ -965,7 +968,7 @@ function png_image(
         line = string(args...)
         len = length(line)
         append!(fchars, line)
-        append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))
+        append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))  # for heatmap, colorbars - BORDER_SOLID[:l]
         append!(fcolors, fill(fcolor, len))
         append!(gcolors, fill(gcolor, len))
     end
@@ -1020,13 +1023,15 @@ function png_image(
     # x0 = 1  # 2pixelsize
     y0 = round(Int, (kr * pixelsize) / 2)
     x0 = round(Int, (kc * pixelsize * nc) / 2)
-    for (r, (fchars, gchars, fcols, gcols)) in enumerate(zip(lfchars, lgchars, lfcols, lgcols))
+
+    for (r, (fchars, gchars, fcols, gcols)) in
+        enumerate(zip(lfchars, lgchars, lfcols, lgcols))
         y = round(Int, y0 + (kr * pixelsize) * (r - 1))
         FreeTypeAbstraction.renderstring!(
             img,
             fchars,
             face,
-            pixelsize,
+            pixelsize - 2,  # -2: avoid overlaps (histogram, heatmaps)
             y,
             x0;
             fcolor = fcols,

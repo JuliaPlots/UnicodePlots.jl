@@ -453,7 +453,7 @@ ignored_color(color::Symbol) = color === :normal || color === :default || color 
 ignored_color(::Nothing) = true
 ignored_color(::Any) = false
 
-nocolor_string(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
+no_ansi_escape(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
 
 function ansi_4bit_to_8bit(c::UInt8)::UInt8
     q, r = divrem(c, UInt8(60))

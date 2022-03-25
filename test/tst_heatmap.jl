@@ -181,12 +181,12 @@ end
     seed!(RNG, 1337)
     p = @hinf heatmap(randn(RNG, 200, 200), colorbar = false)
     test_ref(
-        "heatmap/parameters_200x200_no_colorbar.txt",
+        "heatmap/parameters_200x200_nocolorbar.txt",
         @show_col(p, :displaysize => T_SZ)
     )
     seed!(RNG, 1337)
     p = @hinf heatmap(randn(RNG, 200, 200), labels = false)
-    test_ref("heatmap/parameters_200x200_no_labels.txt", @show_col(p, :displaysize => T_SZ))
+    test_ref("heatmap/parameters_200x200_nolabels.txt", @show_col(p, :displaysize => T_SZ))
     seed!(RNG, 1337)
     p = heatmap(
         randn(RNG, 200, 200),

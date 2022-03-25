@@ -153,22 +153,8 @@ end
 
 @testset "x/y ticks" begin
     p = Plot([0, 1], [0, 1], xticks = false)
-    test_ref("plot/no_xticks.txt", @show_col(p))
+    test_ref("plot/noxticks.txt", @show_col(p))
 
     p = Plot([0, 1], [0, 1], yticks = false)
-    test_ref("plot/no_yticks.txt", @show_col(p))
-end
-
-@testset "save as png" begin
-    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title")
-
-    for tr in (true, false)
-        tmp = tempname() * ".png"
-
-        savefig(p, tmp; transparent = tr)
-        @test filesize(tmp) > 9000
-
-        img = FileIO.load(tmp)
-        @test all(size(img) .> (400, 600))
-    end
+    test_ref("plot/noyticks.txt", @show_col(p))
 end
