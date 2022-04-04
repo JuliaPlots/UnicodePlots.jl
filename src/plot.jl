@@ -683,6 +683,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     p_width = nc + 2  # left corner + border length (number of canvas cols) + right corner
 
     bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
+    bc = BORDER_COLOR[]
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
@@ -732,7 +733,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
-        color = io_color ? Crayon(bold = true) : :normal,
+        color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
     )
     print_labels(
         io,
@@ -760,8 +761,6 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
 
     callback = colormap_callback(p.colormap)
-
-    bc = BORDER_COLOR[]
 
     # plot all rows
     for row in 1:nr
@@ -924,7 +923,7 @@ function png_image(
         0
     end
     row_fact = something(row_fact, if canvas isa BarplotGraphics  # histogram
-        1.05
+        1.08
     else
         1.0
     end)
@@ -935,7 +934,7 @@ function png_image(
     RGB = ColorTypes.RGB
 
     fg_color = ansi_color(something(foreground, transparent ? 244 : 252))
-    bg_color = ansi_color(something(background, 234))
+    bg_color = ansi_color(something(background, 235))
 
     rgba(color::ColorType, alpha = 1.0) = begin
         color == INVALID_COLOR && (color = fg_color)
@@ -1032,12 +1031,12 @@ function png_image(
         ceil(Int, kc * pixelsize * nc),
     )
 
-    y0 = round(Int, (kr * pixelsize) / 2)
-    x0 = round(Int, (kc * pixelsize * nc) / 2)
+    y0 = ceil(Int, (kr * pixelsize) / 2)
+    x0 = ceil(Int, (kc * pixelsize * nc) / 2)
 
     for (r, (fchars, gchars, fcols, gcols)) in
         enumerate(zip(lfchars, lgchars, lfcols, lgcols))
-        y = round(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
+        y = ceil(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
         incy = FreeTypeAbstraction.renderstring!(
             img,
             fchars,

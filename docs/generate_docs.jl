@@ -454,9 +454,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
-      RNG = StableRNG(1337)
-
       main() = begin
+      rng = StableRNG(1337)
 
       bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
       bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
@@ -465,16 +464,16 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
-      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ", r"\brand\b\(" => "rand(RNG, ") for c in code]
+      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ") for c in code]
       println(io, """
         println("ex n°$i - $k")
-        _ex_$i() = begin
-          $(indent(join(code, '\n'), 1))
+        _ex_$i(rng) = begin
+        $(indent(join(code, '\n'), 1))
         end
-        plt = _ex_$i()
+        plt = _ex_$i(rng)
         display(plt)
         savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
-        # savefig(plt, "$ver/$k.txt"; color=false)
+        # savefig(plt, "$ver/$k.txt"; color=true)
         """
       )
     end
