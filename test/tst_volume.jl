@@ -149,6 +149,6 @@ end
 
         title = "zoom=$zoom"
         p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = title)
-        test_ref("volume/cube_$(zoom).txt", @show_col(p))
+        test_ref("volume/tetrahedron_$(zoom).txt", @show_col(p))
     end
 end

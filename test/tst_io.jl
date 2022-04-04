@@ -18,15 +18,26 @@
 end
 
 @testset "save as png" begin
-    p = lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title")
+    for p in (
+        lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title"),
+        barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
+    )
+        for bbox in (nothing, :red)
+            for tr in (true, false)
+                tmp = tempname() * ".png"
 
-    for tr in (true, false)
-        tmp = tempname() * ".png"
+                savefig(
+                    p,
+                    tmp;
+                    transparent = tr,
+                    bounding_box_glyph = bbox,
+                    bounding_box = bbox,
+                )
+                @test filesize(tmp) > 1_000
 
-        savefig(p, tmp; transparent = tr)
-        @test filesize(tmp) > 9000
-
-        img = FileIO.load(tmp)
-        @test all(size(img) .> (400, 600))
+                img = FileIO.load(tmp)
+                @test all(size(img) .> (100, 100))
+            end
+        end
     end
 end
