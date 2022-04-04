@@ -2,10 +2,10 @@ const dot_signs = [0b10 0b01]
 
 const n_dot = 4
 const dot_decode = Array{Char}(undef, typemax(UInt16))
-dot_decode[0b00 + 1] = ' '
-dot_decode[0b01 + 1] = '.'
-dot_decode[0b10 + 1] = '\''
-dot_decode[0b11 + 1] = ':'
+dot_decode[1] = ' '
+dot_decode[2] = '.'
+dot_decode[3] = '\''
+dot_decode[4] = ':'
 dot_decode[(n_dot + 1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16) - n_dot)]
 
 """
