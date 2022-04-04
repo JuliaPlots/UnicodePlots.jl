@@ -80,7 +80,7 @@ Using a `marker` is supported, choose a `Char`, a unit length `String` or a symb
 
 ```julia
 scatterplot([1, 2, 3], [3, 4, 1],
-            marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow])
+            marker=[:circle, '', "∫"], color=[:red, nothing, :yellow])
 ```
 ![Scatterplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot4.png)
 
@@ -268,17 +268,22 @@ All plots support the set (or a subset) of the following named parameters:
     
   - `border::Symbol = :solid`: plot bounding box style (`:corners`, `:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
     ```julia
-    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
-    ```
-    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_bold.png)
-    
-    ```julia
     lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)
     ```
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dashed.png)
     
     ```julia
-    lineplot([-1., 2, 3, 7], [1.,2, 9, 4])
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)
+    ```
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_ascii.png)
+    
+    ```julia
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)
+    ```
+    ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_bold.png)
+    
+    ```julia
+    lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)
     ```
     ![Border](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/border_dotted.png)
     
@@ -399,6 +404,10 @@ One can force a specific colormode using either `UnicodePlots.truecolors!()` or 
 Named colors such as `:red` or `:light_red` will use `256` color values (rendering will be terminal dependent). In order to force named colors to use true colors instead, use `UnicodePlots.USE_LUT[]=true`.
 
 The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
+
+## Saving figures
+
+Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and shall not be considered stable).
 
 ## Low-level Interface
 

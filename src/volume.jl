@@ -244,7 +244,7 @@ struct MVP{E,T}
 
         # avoid `NaN`s in `V` when `elevation` is close to ±90
         δ = 100eps(F)
-        elev = max(-90 + δ, min(elevation, 90 - δ))
+        elev = clamp(elevation, -90 + δ, 90 - δ)
 
         # Model Matrix
         M = SMatrix{4,4,F}(I)  # we don't scale, nor translate, nor rotate input data

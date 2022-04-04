@@ -1,5 +1,5 @@
 seed!(RNG, 1337)
-x = randn(RNG, 10000)
+x = randn(RNG, 10_000)
 
 struct Scale{T}
     r::T

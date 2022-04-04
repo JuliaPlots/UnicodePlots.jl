@@ -2,7 +2,7 @@ using UnicodePlots
 using Markdown
 import Markdown: MD, Paragraph, plain
 
-function main()
+main() = begin
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "2.10"
 
@@ -23,7 +23,7 @@ function main()
     scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, unicode_exponent=false)"),
     scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1],
-                  marker=[:circle, '😀', "∫"], color=[:red, nothing, :yellow])
+                  marker=[:circle, '', "∫"], color=[:red, nothing, :yellow])
       """),
     lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
@@ -78,9 +78,10 @@ function main()
     width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
     labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false)"),
-    border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
     border_dashed = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
-    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4])"),
+    border_ascii = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)"),
+    border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
+    border_dotted = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"),
     border_none = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
     decorate = ("Decorate", """
       x = y = collect(1:10)
@@ -131,8 +132,9 @@ function main()
     if k == :border
       join((
         d,
-        indent(examples.border_bold, n),
         indent(examples.border_dashed, n),
+        indent(examples.border_ascii, n),
+        indent(examples.border_bold, n),
         indent(examples.border_dotted, n),
         indent(examples.border_none, n),
       ), '\n')
@@ -377,6 +379,9 @@ Named colors such as `:red` or `:light_red` will use `256` color values (renderi
 
 The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
 
+## Saving figures
+Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and shall not be considered stable).
+
 ## Low-level Interface
 
 The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.
@@ -445,31 +450,34 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
       using UnicodePlots, StableRNGs, SparseArrays, Unitful
 
-      UnicodePlots.brightcolors!()
+      # UnicodePlots.brightcolors!()
 
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
-      RNG = StableRNG(1337)
+      main() = begin
+      rng = StableRNG(1337)
 
-      save(p, nm) = savefig(p, "$ver/\$(nm).png"; transparent = false)
+      bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
+      bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
       """
     )
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "# $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
-      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(RNG, ", r"\brandn\b\(" => "randn(RNG, ", r"\brand\b\(" => "rand(RNG, ") for c in code]
-      println(
-        io,
-        """
-        println("ex n°$i")
-        _ex_$i() = begin
-          $(indent(join(code, '\n'), 1))
+      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ") for c in code]
+      println(io, """
+        println("ex n°$i - $k")
+        _ex_$i(rng) = begin
+        $(indent(join(code, '\n'), 1))
         end
-        plt = _ex_$i()
-        save(plt, \"$k\")
+        plt = _ex_$i(rng)
+        display(plt)
+        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
+        # savefig(plt, "$ver/$k.txt"; color=true)
         """
       )
     end
+    println(io, "\nreturn\nend")
   end
 
   open("imgs/gen_imgs.sh", "w") do io

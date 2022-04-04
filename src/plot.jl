@@ -670,6 +670,7 @@ end
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 function _show(io::IO, print_nc, print_col, p::Plot)
+    io_color = get(io, :color, false)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
     🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
@@ -682,15 +683,16 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     p_width = nc + 2  # left corner + border length (number of canvas cols) + right corner
 
     bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
+    bc = BORDER_COLOR[]
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(nocolor_string(l)) for l in values(p.labels_left)])
+        maximum([length(no_ansi_escape(l)) for l in values(p.labels_left)])
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(nocolor_string(l)) for l in values(p.labels_right)])
+        maximum([length(no_ansi_escape(l)) for l in values(p.labels_right)])
     else
         0
     end
@@ -709,7 +711,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
         max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
         cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(nocolor_string(p.zlabel)))
+            max(length(min_z_str), length(max_z_str), length(no_ansi_escape(p.zlabel)))
         cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
     else
         cbar_pad = ""
@@ -719,7 +721,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     border_left_pad = repeat(🗷, plot_offset)
 
     # trailing
-    border_right_pad = repeat(🗷, max_len_r) * plot_padding * cbar_pad
+    border_right_pad = repeat(🗷, max_len_r) * (p.labels ? plot_padding : "") * cbar_pad
 
     # plot the title and the top border
     h_ttl, w_ttl = print_title(
@@ -731,7 +733,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
-        color = Crayon(bold = true),
+        color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
     )
     print_labels(
         io,
@@ -760,23 +762,23 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 
     callback = colormap_callback(p.colormap)
 
-    bc = BORDER_COLOR[]
-
     # plot all rows
     for row in 1:nr
         # print left annotations
         print_nc(io, repeat(🗷, p.margin))
         if p.labels
             # Current labels to left and right of the row and their length
-            left_str  = get(p.labels_left, row, "")
-            left_col  = get(p.colors_left, row, bc)
-            right_str = get(p.labels_right, row, "")
-            right_col = get(p.colors_right, row, bc)
-            left_len  = length(nocolor_string(left_str))
-            right_len = length(nocolor_string(right_str))
-            if !get(io, :color, false)
-                left_str  = nocolor_string(left_str)
-                right_str = nocolor_string(right_str)
+            left_str   = get(p.labels_left, row, "")
+            left_col   = get(p.colors_left, row, bc)
+            right_str  = get(p.labels_right, row, "")
+            right_col  = get(p.colors_right, row, bc)
+            left_str_  = no_ansi_escape(left_str)
+            right_str_ = no_ansi_escape(right_str)
+            left_len   = length(left_str_)
+            right_len  = length(right_str_)
+            if !io_color
+                left_str  = left_str_
+                right_str = right_str_
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
@@ -867,7 +869,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     end
     # approximate image size
     (
-        h_ttl + 1 + nr + 1 + h_lbl,  # +1: borders
+        h_ttl + 1 + nr + 1 + h_lbl,  # +1 for borders
         max(w_ttl, w_lbl, length(border_left_pad) + p_width + length(border_right_pad)),
     )
 end
@@ -887,7 +889,7 @@ fallback_font(mono::Bool = false) =
 # COV_EXCL_STOP
 
 """
-    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing)
+    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 
 Render `png` image.
 
@@ -896,8 +898,10 @@ Render `png` image.
 - `font::Union{Nothing,AbstractString} = nothing`: select a font by name, or fall-back to a system font.
 - `transparent::Bool = true`: use a transparent background.
 - `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
-- `background::UserColorType = nothing`, choose a background color for the rendered image.
-
+- `background::UserColorType = nothing`: choose a background color for the rendered image.
+- `bounding_box::UserColorType = nothing`: debugging bounding box color.
+- `bounding_box_glyph::UserColorType = nothing`: debugging glyph bounding box color.
+- `row_fact::Real = 1.0`: row spacing multiplier (e.g. for histogram).
 """
 function png_image(
     p::Plot;
@@ -906,50 +910,81 @@ function png_image(
     transparent::Bool = true,
     foreground::UserColorType = nothing,
     background::UserColorType = nothing,
+    bounding_box_glyph::UserColorType = nothing,
+    bounding_box::UserColorType = nothing,
+    row_fact::Union{Nothing,Real} = nothing,
 )
+    canvas = p.graphics
+    #####################################
+    # visual fixes
+    incx = if canvas isa HeatmapCanvas || canvas isa BarplotGraphics || p.colorbar
+        -1
+    else
+        0
+    end
+    row_fact = something(row_fact, if canvas isa BarplotGraphics  # histogram
+        1.08
+    else
+        1.0
+    end)
+    #####################################
+
     RGB24 = ColorTypes.RGB24
     RGBA = ColorTypes.RGBA
     RGB = ColorTypes.RGB
 
-    fg_color = ansi_color(something(foreground, transparent ? :dark_gray : :light_gray))
-    bg_color = ansi_color(something(background, :black))
+    fg_color = ansi_color(something(foreground, transparent ? 244 : 252))
+    bg_color = ansi_color(something(background, 235))
 
-    rgba(color::ColorType, alpha) = begin
+    rgba(color::ColorType, alpha = 1.0) = begin
         color == INVALID_COLOR && (color = fg_color)
         color < THRESHOLD || (color = LUT_8BIT[1 + (color - THRESHOLD)])
         RGBA{Float32}(convert(RGB{Float32}, reinterpret(RGB24, color)), alpha)
     end
 
-    default_fg_color = rgba(fg_color, 1.0)
+    default_fg_color = rgba(fg_color)
     default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
+    bbox = if bounding_box !== nothing
+        rgba(ansi_color(bounding_box))
+    else
+        bounding_box
+    end
+    bbox_glyph = if bounding_box_glyph !== nothing
+        rgba(ansi_color(bounding_box_glyph))
+    else
+        bounding_box_glyph
+    end
 
     # compute final image size
     noop = (args...; kw...) -> nothing
     nr, nc = _show(devnull, noop, noop, p)
 
     # hack printing to collect chars & colors
-    chars = sizehint!(Char[], nr * nc)
+    fchars = sizehint!(Char[], nr * nc)
+    gchars = sizehint!(Char[], nr * nc)
     fcolors = sizehint!(RGBA{Float32}[], nr * nc)
     gcolors = sizehint!(RGBA{Float32}[], nr * nc)
 
     print_nc(io, args...) = begin
         line = string(args...)
         len = length(line)
-        append!(chars, line)
+        append!(fchars, line)
+        append!(gchars, line)
         append!(fcolors, fill(default_fg_color, len))
         append!(gcolors, fill(default_bg_color, len))
     end
 
     print_col(io, color, args...; bgcol = missing) = begin
-        fcolor = rgba(ansi_color(color), 1.0)
+        fcolor = rgba(ansi_color(color))
         gcolor = if ismissing(bgcol)
             default_bg_color
         else
-            rgba(ansi_color(bgcol), 1.0)
+            rgba(ansi_color(bgcol))
         end
         line = string(args...)
         len = length(line)
-        append!(chars, line)
+        append!(fchars, line)
+        append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))  # for heatmap, colorbars - BORDER_SOLID[:l]
         append!(fcolors, fill(fcolor, len))
         append!(gcolors, fill(gcolor, len))
     end
@@ -958,19 +993,22 @@ function png_image(
     _show(IOContext(devnull, :color => true), print_nc, print_col, p)
 
     # compute 2D grid (image) of chars and colors
-    lchars = sizehint!([Char[]], nr)
+    lfchars = sizehint!([Char[]], nr)
+    lgchars = sizehint!([Char[]], nr)
     lfcols = sizehint!([RGBA{Float32}[]], nr)
     lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
-    for (char, fcol, gcol) in zip(chars, fcolors, gcolors)
-        if char === '\n'
+    for (fchar, gchar, fcol, gcol) in zip(fchars, gchars, fcolors, gcolors)
+        if fchar === '\n'
             r += 1
-            push!(lchars, Char[])
+            push!(lfchars, Char[])
+            push!(lgchars, Char[])
             push!(lfcols, RGBA{Float32}[])
             push!(lgcols, RGBA{Float32}[])
             continue
         end
-        push!(lchars[r], char)
+        push!(lfchars[r], fchar)
+        push!(lgchars[r], gchar)
         push!(lfcols[r], fcol)
         push!(lgcols[r], gcol)
     end
@@ -989,25 +1027,33 @@ function png_image(
 
     img = fill(
         default_bg_color,
-        ceil(Int, (kr * pixelsize) * nr),
-        ceil(Int, (kc * pixelsize) * nc),
+        ceil(Int, kr * pixelsize * nr * row_fact),
+        ceil(Int, kc * pixelsize * nc),
     )
 
-    y0 = round(Int, kr * pixelsize)
-    for (r, (chars, fcols, gcols)) in enumerate(zip(lchars, lfcols, lgcols))
-        y = round(Int, y0 + (kr * pixelsize) * (r - 1))
-        FreeTypeAbstraction.renderstring!(
+    y0 = ceil(Int, (kr * pixelsize) / 2)
+    x0 = ceil(Int, (kc * pixelsize * nc) / 2)
+
+    for (r, (fchars, gchars, fcols, gcols)) in
+        enumerate(zip(lfchars, lgchars, lfcols, lgcols))
+        y = ceil(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
+        incy = FreeTypeAbstraction.renderstring!(
             img,
-            String(chars),
+            fchars,
             face,
             pixelsize,
             y,
-            0;
+            x0;
             fcolor = fcols,
             gcolor = gcols,
-            bcolor = transparent ? nothing : default_bg_color,
-            valign = :vbottom,
-            halign = :hleft,
+            bcolor = nothing,  # not needed (initial fill, avoid overlaps)
+            valign = :vcenter,
+            halign = :hcenter,
+            bbox_glyph = bbox_glyph,
+            bbox = bbox,
+            gstr = gchars,
+            off_bg = 1,
+            incx = incx,
         )
     end
 
