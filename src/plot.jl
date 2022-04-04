@@ -84,9 +84,9 @@ function Plot(
     colorbar_border::Symbol = KEYWORDS.colorbar_border,
     colorbar_lim = KEYWORDS.colorbar_lim,
     colormap::Any = nothing,
-    projection::MVP{E,F} = MVP(),
+    projection::Union{Nothing,MVP} = nothing,
     ignored...,
-) where {T<:GraphicsArea,E,F}
+) where {T<:GraphicsArea}
     margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
@@ -96,6 +96,9 @@ function Plot(
     colors_right = Dict{Int,ColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,ColorType}()
+    projection === nothing && (projection = MVP())
+    E = Val{is_enabled(projection)}
+    F = typeof(projection.dist)
     p = Plot{T,E,F}(
         graphics,
         title,
