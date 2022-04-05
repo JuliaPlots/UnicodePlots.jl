@@ -904,7 +904,7 @@ Render `png` image.
 - `background::UserColorType = nothing`: choose a background color for the rendered image.
 - `bounding_box::UserColorType = nothing`: debugging bounding box color.
 - `bounding_box_glyph::UserColorType = nothing`: debugging glyph bounding box color.
-- `row_fact::Real = 1.0`: row spacing multiplier (e.g. for histogram).
+- `row_fact::Union{Nothing,Real} = nothing`: row spacing multiplier (e.g. for histogram).
 """
 function png_image(
     p::Plot;
