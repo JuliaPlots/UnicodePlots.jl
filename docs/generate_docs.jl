@@ -118,16 +118,15 @@ main() = begin
       """),
   )
 
-  examples = NamedTuple{keys(exs)}((
-      MD(Paragraph(
-        "```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/$ver/$k.png)"
-      )) for (k, e) in pairs(exs)
-    )
+  plain_md_par(x) = x |> Paragraph |> MD |> plain
+
+  examples = NamedTuple{keys(exs)}(
+    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/$ver/$k.png)") for (k, e) in pairs(exs))
   )
 
   tab = ' '^2
 
-  indent(x, n) = repeat(tab, n) * join(split(x isa MD ? plain(x) : x, '\n'), '\n' * repeat(tab, n))
+  indent(x, n) = repeat(tab, n) * join(split(x, '\n'), '\n' * repeat(tab, n))
   desc_ex(k, d, n=2) = (
     if k == :border
       join((
@@ -144,14 +143,105 @@ main() = begin
       d
     end
   )
-  description = join(
+
+  anchor(name) = replace(lowercase(name), ' ' => '-')
+  summary(name) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary>"  # named anchor + formatting
+
+  methods = plain_md_par("""
+    - `title!(plot::Plot, title::String)`
+
+      - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+
+    - `xlabel!(plot::Plot, xlabel::String)`
+
+      - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
+
+    - `ylabel!(plot::Plot, xlabel::String)`
+
+      - `ylabel` the string to display on the far left of the plot window.
+
+  The method `label!` is responsible for the setting all the textual decorations of a plot. It has two functions:
+
+    - `label!(plot::Plot, where::Symbol, value::String)`
+
+      - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
+
+    - `label!(plot::Plot, where::Symbol, row::Int, value::String)`
+
+      - `where` can be any of: `:l` (left), `:r` (right)
+
+      - `row` can be between 1 and the number of character rows of the canvas
+  $(plain_md_par(indent(examples.decorate, 2)))
+
+    - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
+      - `text` arbitrary annotation at position (x, y)
+  """)
+
+  low_level_interface = plain_md_par("""
+  The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically, it uses Unicode characters to represent pixel.
+
+  Here is a simple example:
+
+  $(examples.canvas)
+
+  You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
+
+  As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
+
+  $(examples.blending)
+
+  The following types of `Canvas` are implemented:
+    - **BrailleCanvas**:
+      This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
+
+    - **BlockCanvas**:
+      This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
+
+    - **HeatmapCanvas**:
+      This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
+
+    - **AsciiCanvas** and **DotCanvas**:
+      These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+
+    - **DensityCanvas**:
+      Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+
+    - **BarplotGraphics**:
+      This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
+  """)
+
+  kw_description = plain_md_par("""
+  All plots support the set (or a subset) of the following named parameters:
+
+  $(join(
     (
       "$tab- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
       for (k, d) in pairs(UnicodePlots.DESCRIPTION) if k in keys(UnicodePlots.KEYWORDS)
     ), '\n'
-  )
+  ))
 
-  readme = md"""
+  _Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
+  """)
+
+  installation = plain_md_par("""
+  To install UnicodePlots, start up `Julia` and type the following code snippet into the `REPL` (makes use of the native `Julia` package manager `Pkg`):
+  ```julia
+  julia> using Pkg
+  julia> Pkg.add("UnicodePlots")
+  ```
+  """)
+
+  doc_update = plain_md_par("""
+  The following snippet:
+  ```bash
+  \$ cd docs
+  \$ julia generate_docs.jl
+  \$ (cd imgs; julia gen_imgs.jl)
+  ```
+  will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
+  """)
+
+  readme = plain(md"""
 # UnicodePlots
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
@@ -163,7 +253,7 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/generated/unicodeplots/#unicodeplots-ref17).
+`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/latest/gallery/unicodeplots/generated/unicodeplots-ref17/#unicodeplots_demo_17).
 
 Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
@@ -186,254 +276,236 @@ Here is a list of the main high-level functions for common scenarios:
   - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
-Here is a quick hello world example of a typical use-case:
+<details open>
+  $(summary("Introduction"))
 
-$(examples.lineplot1)
+  Here is a quick hello world example of a typical use-case:
 
-There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
+  $(examples.lineplot1)
 
-In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
+  There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
 
-$(examples.lineplot2)
+  In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
 
-Some plot methods have a mutating variant that ends with a exclamation mark:
+  $(examples.lineplot2)
 
-$(examples.lineplot3)
+  Some plot methods have a mutating variant that ends with a exclamation mark:
 
-#### Scatterplot
+  $(examples.lineplot3)
+</details>
 
-$(examples.scatterplot1)
+<details open>
+  $(summary("Scatterplot"))
 
-Axis scaling (`xscale` and/or `yscale`) is supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function:
+  $(examples.scatterplot1)
 
-$(examples.scatterplot2)
+  Axis scaling (`xscale` and/or `yscale`) is supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function:
 
-For the axis scale exponent, one can revert to using `ASCII` characters instead of `Unicode` ones using the keyword `unicode_exponent=false`:
+  $(examples.scatterplot2)
 
-$(examples.scatterplot3)
+  For the axis scale exponent, one can revert to using `ASCII` characters instead of `Unicode` ones using the keyword `unicode_exponent=false`:
 
-Using a `marker` is supported, choose a `Char`, a unit length `String` or a symbol name such as `:circle` (more from `keys(UnicodePlots.MARKERS)`).
-One can also provide a vector of `marker`s and/or `color`s as in the following example:
+  $(examples.scatterplot3)
 
-$(examples.scatterplot4)
+  Using a `marker` is supported, choose a `Char`, a unit length `String` or a symbol name such as `:circle` (more from `keys(UnicodePlots.MARKERS)`).
+  One can also provide a vector of `marker`s and/or `color`s as in the following example:
 
-As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
+  $(examples.scatterplot4)
 
-#### Lineplot
+  As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
+</details>
 
-$(examples.lineplot4)
+<details open>
+  $(summary("Lineplot"))
 
-It's also possible to specify a function and a range:
+  $(examples.lineplot4)
 
-$(examples.lineplot5)
+  It's also possible to specify a function and a range:
 
-You can also plot lines by specifying an intercept and slope:
+  $(examples.lineplot5)
 
-$(examples.lineplot6)
+  You can also plot lines by specifying an intercept and slope:
 
-Physical units are supported through `Unitful`:
+  $(examples.lineplot6)
 
-$(examples.lineplot7)
+  Physical units are supported through `Unitful`:
 
-#### Staircase plot
+  $(examples.lineplot7)
+</details>
 
-$(examples.stairs1)
+<details open>
+  $(summary("Staircase plot"))
 
-#### Barplot
+  $(examples.stairs1)
+</details>
 
-$(examples.barplot1)
+<details open>
+  $(summary("Barplot"))
 
-_Note_: You can use the keyword argument `symbols` to specify the characters that should be used to plot the bars (e.g. `symbols=['#']`).
+  $(examples.barplot1)
 
-#### Histogram
+  _Note_: You can use the keyword argument `symbols` to specify the characters that should be used to plot the bars (e.g. `symbols=['#']`).
+</details>
 
-$(examples.histogram1)
+<details open>
+  $(summary("Histogram"))
 
-The `histogram` function also supports axis scaling using the parameter `xscale`:
+  $(examples.histogram1)
 
-$(examples.histogram2)
+  The `histogram` function also supports axis scaling using the parameter `xscale`:
 
-#### Boxplot
+  $(examples.histogram2)
+</details>
 
-$(examples.boxplot1)
+<details open>
+  $(summary("Boxplot"))
 
-$(examples.boxplot2)
+  $(examples.boxplot1)
 
-#### Sparsity Pattern
+  $(examples.boxplot2)
+</details>
 
-$(examples.spy1)
+<details open>
+  $(summary("Sparsity Pattern"))
 
-Plotting the zeros pattern is also possible using `show_zeros=true`:
+  $(examples.spy1)
 
-$(examples.spy2)
+  Plotting the zeros pattern is also possible using `show_zeros=true`:
 
-#### Density Plot
+  $(examples.spy2)
+</details>
 
-$(examples.densityplot1)
+<details open>
+  $(summary("Density Plot"))
 
-#### Contour Plot
+  $(examples.densityplot1)
+</details>
 
-$(examples.contourplot1)
+<details open>
+  $(summary("Contour Plot"))
 
-The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar=false`.
+  $(examples.contourplot1)
 
-#### Heatmap Plot
+  The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar=false`.
+</details>
 
-$(examples.heatmap1)
+<details open>
+  $(summary("Heatmap Plot"))
 
-The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
+  $(examples.heatmap1)
 
-The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
+  The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
 
-In addition, the `colorbar` and `colorbar_border` options may be used to toggle the colorbar and configure its border.
+  The `colormap` parameter may be used to specify a named or custom colormap. See the `heatmap` function documentation for more details.
 
-The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
+  In addition, the `colorbar` and `colorbar_border` options may be used to toggle the colorbar and configure its border.
 
-$(examples.heatmap2)
+  The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
-#### Surface Plot
+  $(examples.heatmap2)
+</details>
 
-Plot a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
+<details open>
+  $(summary("Surface Plot"))
 
-$(examples.surfaceplot1)
+  Plots a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
 
-Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
-To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
+  $(examples.surfaceplot1)
 
-$(examples.surfaceplot2)
+  Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
+  To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
-#### Isosurface Plot
+  $(examples.surfaceplot2)
+</details>
 
-Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
-Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
-Back face culling (hide not visible facets) can be activated using `cull=true`.
-One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
+<details open>
+  $(summary("Isosurface Plot"))
 
-$(examples.isosurface)
+  Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
+  Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
+  Back face culling (hide not visible facets) can be activated using `cull=true`.
+  One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
-### Options
+  $(examples.isosurface)
+</details>
 
-All plots support the set (or a subset) of the following named parameters:
+## Documentation
 
-  $description
+<details>
+  $(summary("Installation"))
 
-_Note_: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
+  $(installation)
+</details>
 
-### 3D plots
+<details>
+  $(summary("Saving figures"))
 
-3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
-Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
-The `projection` type for `MVP` can be set to either `:perspective` or `orthographic`.
-Displaying the `x-`, `y-`, and `z-` axes can be controlled using the `axes3d` keyword.
-For better resolution, use wider and taller `Plot` size, which can be also be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots.
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
+</details>
 
-### Methods
+<details>
+  $(summary("Color mode"))
 
-  - `title!(plot::Plot, title::String)`
+  When the `COLORTERM` environment variable is set to either `24bit` or `truecolor`, `UnicodePlots` will use [24bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) as opposed to [8bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) or even [4bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) for named colors.
 
-    - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+  One can force a specific colormode using either `UnicodePlots.truecolors!()` or `UnicodePlots.colors256!()`.
 
-  - `xlabel!(plot::Plot, xlabel::String)`
+  Named colors such as `:red` or `:light_red` will use `256` color values (rendering will be terminal dependent). In order to force named colors to use true colors instead, use `UnicodePlots.USE_LUT[]=true`.
 
-    - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
+  The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
+</details>
 
-  - `ylabel!(plot::Plot, xlabel::String)`
+<details>
+  $(summary("3D plots"))
 
-    - `ylabel` the string to display on the far left of the plot window.
+  3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen
 
-The method `label!` is responsible for the setting all the textual decorations of a plot. It has two functions:
+  Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
 
-  - `label!(plot::Plot, where::Symbol, value::String)`
+  The `projection` type for `MVP` can be set to either `:perspective` or `:orthographic`.
 
-    - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
+  Displaying the `x`, `y`, and `z` axes can be controlled using the `axes3d` keyword.
 
-  - `label!(plot::Plot, where::Symbol, row::Int, value::String)`
+  For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots).
+</details>
 
-    - `where` can be any of: `:l` (left), `:r` (right)
+<details>
+  $(summary("Know Issues"))
 
-    - `row` can be between 1 and the number of character rows of the canvas
-$(MD(Paragraph(indent(examples.decorate, 2))))
+  Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border versus canvas).
 
-  - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
-    - `text` arbitrary annotation at position (x, y)
+  Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or use `border=:dotted` keyword argument in the plots.
 
-## Know Issues
+  For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.netlify.app/faq/#can_i_use_this_font_in_a_jupyter_notebook_and_how_do_i_do_it).
 
-Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border versus canvas).
+  (Experimental) Terminals seem to respect a standard aspect ratio of `4:3`, hence a square matrix does not often look square in the terminal.
 
-Either change the font to e.g. [JuliaMono](https://juliamono.netlify.app/) or use `border=:dotted` keyword argument in the plots.
+  You can pass the experimental keyword `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio.
+</details>
 
-For a `Jupyter` notebook with the `IJulia` kernel see [here](https://juliamono.netlify.app/faq/#can_i_use_this_font_in_a_jupyter_notebook_and_how_do_i_do_it).
+<details>
+  $(summary("Methods (API)"))
 
-(Experimental) Terminals seem to respect a standard aspect ratio of `4:3`, hence a square matrix does not often look square in the terminal.
+  $(methods)
+</details>
 
-You can pass `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio (this keyword is experimental and might be unnecessary in future versions).
+<details>
+  $(summary("Keywords description (API)"))
 
-## Color mode
+  $(kw_description)
+</details>
 
-When the `COLORTERM` environment variable is set to either `24bit` or `truecolor`, `UnicodePlots` will use [24bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) as opposed to [8bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) or even [4bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) for named colors.
+<details>
+  $(summary("Low-level Interface"))
 
-One can force a specific colormode using either `UnicodePlots.truecolors!()` or `UnicodePlots.colors256!()`.
+  $(low_level_interface)
+</details>
 
-Named colors such as `:red` or `:light_red` will use `256` color values (rendering will be terminal dependent). In order to force named colors to use true colors instead, use `UnicodePlots.USE_LUT[]=true`.
+<details>
+  $(summary("Documentation update"))
 
-The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
-
-## Saving figures
-Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and shall not be considered stable).
-
-## Low-level Interface
-
-The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically it uses Unicode characters to represent pixel.
-
-Here is a simple example:
-
-$(examples.canvas)
-
-You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
-
-As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
-
-$(examples.blending)
-
-The following types of `Canvas` are implemented:
-
-  - **BrailleCanvas**:
-    This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
-
-  - **BlockCanvas**:
-    This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
-
-  - **HeatmapCanvas**:
-    This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
-
-  - **AsciiCanvas** and **DotCanvas**:
-    These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
-
-  - **DensityCanvas**:
-    Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
-
-  - **BarplotGraphics**:
-    This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
-
-## Installation
-
-To install UnicodePlots, start up `Julia` and type the following code snippet into the `REPL` (makes use of the native `Julia` package manager `Pkg`):
-
-```julia
-using Pkg
-Pkg.add("UnicodePlots")
-```
-
-## Documentation update
-
-The following snippet:
-```bash
-cd docs
-julia generate_docs.jl
-(cd imgs; julia gen_imgs.jl)
-```
-will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
+  $(doc_update)
+</details>
 
 ## License
 
@@ -441,8 +513,8 @@ This code is free to use under the terms of the MIT license.
 
 ## Acknowledgement
 
-Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille)
-"""
+Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille).
+""")
 
   mkpath("imgs/$ver")
   open("imgs/gen_imgs.jl", "w") do io
@@ -503,11 +575,10 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     )
   end
 
-  plain_readme = plain(readme)
-  write(stdout, plain_readme)
+  write(stdout, readme)
   open("../README.md", "w") do io
     write(io, "<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
-    write(io, plain_readme)
+    write(io, readme)
   end
   return
 end
