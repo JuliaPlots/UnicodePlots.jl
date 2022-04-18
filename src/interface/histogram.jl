@@ -14,7 +14,7 @@ Note internally that `histogram` is a simply wrapper for
 
     histogram(x; nbins, closed = :left, kw...)
 
-    histogram(hist; $(keywords((border = :barplot, color = :green,), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
+    histogram(hist; $(keywords((border = :barplot, color = :green, horizontal = true), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
 
 # Arguments
 
@@ -62,56 +62,100 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 """
 function histogram(
     hist::Histogram;
+    horizontal::Bool = true,
     symb = nothing,  # deprecated
-    symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
+    symbols = default_symbols(horizontal),
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale, "Frequency"),
+    stats::Bool = true,
     kw...,
 )
     edges, counts = hist.edges[1], hist.weights
-    labels = Vector{String}(undef, length(counts))
-    binwidths = diff(edges)
-    # compute label padding based on all labels.
-    # this is done to make all decimal points align.
-    pad_left, pad_right = 0, 0
-    for i in 1:length(counts)
-        binwidth = binwidths[i]
-        val1 = float_round_log10(edges[i], binwidth)
-        val2 = float_round_log10(val1 + binwidth, binwidth)
-        a1 = Base.alignment(IOBuffer(), val1)
-        a2 = Base.alignment(IOBuffer(), val2)
-        pad_left = max(pad_left, a1[1], a2[1])
-        pad_right = max(pad_right, a1[2], a2[2])
-    end
-    # compute the labels using the computed padding
-    l_str = hist.closed == :right ? "(" : "["
-    r_str = hist.closed == :right ? "]" : ")"
-    for i in 1:length(counts)
-        binwidth = binwidths[i]
-        val1 = float_round_log10(edges[i], binwidth)
-        val2 = float_round_log10(val1 + binwidth, binwidth)
-        a1 = Base.alignment(IOBuffer(), val1)
-        a2 = Base.alignment(IOBuffer(), val2)
-        labels[i] = string(
-            l_str,
-            repeat(" ", pad_left - a1[1]),
-            string(val1),
-            repeat(" ", pad_right - a1[2]),
-            ", ",
-            repeat(" ", pad_left - a2[1]),
-            string(val2),
-            repeat(" ", pad_right - a2[2]),
-            r_str,
+    if horizontal
+        labels = Vector{String}(undef, length(counts))
+        binwidths = diff(edges)
+        # compute label padding based on all labels.
+        # this is done to make all decimal points align.
+        pad_left, pad_right = 0, 0
+        for i in 1:length(counts)
+            binwidth = binwidths[i]
+            val1 = float_round_log10(edges[i], binwidth)
+            val2 = float_round_log10(val1 + binwidth, binwidth)
+            a1 = Base.alignment(IOBuffer(), val1)
+            a2 = Base.alignment(IOBuffer(), val2)
+            pad_left = max(pad_left, a1[1], a2[1])
+            pad_right = max(pad_right, a1[2], a2[2])
+        end
+        # compute the labels using the computed padding
+        l_str = hist.closed == :right ? "(" : "["
+        r_str = hist.closed == :right ? "]" : ")"
+        for i in 1:length(counts)
+            binwidth = binwidths[i]
+            val1 = float_round_log10(edges[i], binwidth)
+            val2 = float_round_log10(val1 + binwidth, binwidth)
+            a1 = Base.alignment(IOBuffer(), val1)
+            a2 = Base.alignment(IOBuffer(), val2)
+            labels[i] = string(
+                l_str,
+                repeat(" ", pad_left - a1[1]),
+                string(val1),
+                repeat(" ", pad_right - a1[2]),
+                ", ",
+                repeat(" ", pad_left - a2[1]),
+                string(val2),
+                repeat(" ", pad_right - a2[2]),
+                r_str,
+            )
+        end
+        plot = barplot(
+            labels,
+            counts;
+            symbols = _handle_deprecated_symb(symb, symbols),
+            xlabel = xlabel,
+            xscale = xscale,
+            kw...,
         )
+    else
+        centers = (edges[1:(end - 1)] + edges[2:end]) / 2
+        plot = Plot(
+            centers, float.(counts);
+            xlabel = xlabel,
+            xscale = xscale,
+            grid = false,
+            border = :none,
+            xlim = extrema(centers),
+            ylim = extrema(counts),
+            width = length(centers), 
+            kw...
+        )
+        symbols = _handle_deprecated_symb(symb, symbols)
+        max_val = maximum(counts)
+        nsyms = length(symbols)
+        nr = nrows(plot.graphics)
+        for (x, y) in zip(centers, counts)
+            frac = float(max_val > 0 ? max(y, zero(y)) / max_val : 0)
+            bar_head = round(Int, frac * nr, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
+            δ = max_val / nr
+            nf = floor(Int, frac * nr)
+            for r in 1:nf
+                annotate!(plot, x, r * δ, symbols[nsyms]; color = :green)
+            end
+            if nsyms > 1 && (rem = (frac * nr - bar_head) * (nsyms - 1)) > 0
+                annotate!(plot, x, (nf + 1) * δ, symbols[1 + round(Int, rem)]; color = :green)
+            end
+        end
+        if stats
+            # print statistics
+        end
     end
-    barplot(
-        labels,
-        counts;
-        symbols = _handle_deprecated_symb(symb, symbols),
-        xlabel = xlabel,
-        xscale = xscale,
-        kw...,
-    )
+
+    plot
+end
+
+default_symbols(horizontal::Bool) = if horizontal
+    ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█']
+else
+    ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█']
 end
 
 function histogram(x; bins = nothing, closed = :left, kw...)
