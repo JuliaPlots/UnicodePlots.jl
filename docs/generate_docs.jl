@@ -560,30 +560,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         """
       )
     end
-    println(io, "\nreturn\nend")
-  end
-
-  open("imgs/gen_imgs.sh", "w") do io
-    write(io, """
-      #!/usr/bin/env bash
-      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
-      echo '== julia =='
-      \${JULIA-julia} gen_imgs_old.jl
-      txt2png() {
-        html=\${1%.txt}.html
-        cat \$1 | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
-        sed -i "s,background-color: #000000,background-color: #1b1b1b," \$html
-        \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --crop-w 800 --quality 85 \$html \${html%.html}.png
-      }
-      echo '== txt2png =='
-      for f in $ver/*.txt; do
-        txt2png \$f & pids+=(\$!)
-      done
-      wait \${pids[@]}
-      rm $ver/*.txt
-      rm $ver/*.html
-      """
-    )
+    println(io, "\nreturn\nend\nmain()")
   end
 
   write(stdout, readme)
