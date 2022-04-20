@@ -50,6 +50,7 @@ mutable struct Plot{T<:GraphicsArea,E,F}
     xlabel::String
     ylabel::String
     zlabel::String
+    info::String
     margin::Int
     padding::Int
     border::Symbol
@@ -75,6 +76,7 @@ function Plot(
     xlabel::AbstractString = KEYWORDS.xlabel,
     ylabel::AbstractString = KEYWORDS.ylabel,
     zlabel::AbstractString = KEYWORDS.zlabel,
+    info::AbstractString = KEYWORDS.info,
     border::Symbol = KEYWORDS.border,
     compact::Bool = KEYWORDS.compact,
     margin::Int = KEYWORDS.margin,
@@ -105,6 +107,7 @@ function Plot(
         xlabel,
         ylabel,
         zlabel,
+        info,
         margin,
         padding,
         border,
@@ -171,6 +174,7 @@ function Plot(
     xlabel::AbstractString = KEYWORDS.xlabel,
     ylabel::AbstractString = KEYWORDS.ylabel,
     zlabel::AbstractString = KEYWORDS.zlabel,
+    info = KEYWORDS.info,
     xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = KEYWORDS.yscale,
     width::Union{Int,Nothing} = nothing,
@@ -267,6 +271,7 @@ function Plot(
         xlabel = xlabel,
         ylabel = ylabel,
         zlabel = zlabel,
+        info = info,
         colormap = colormap,
         colorbar = colorbar,
         colorbar_border = colorbar_border,
@@ -725,6 +730,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 
     # trailing
     border_right_pad = repeat(🗷, max_len_r) * (p.labels ? plot_padding : "") * cbar_pad
+
+    length(p.info) > 0 && print_nc(io, p.info * '\n')
 
     # plot the title and the top border
     h_ttl, w_ttl = print_title(

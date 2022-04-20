@@ -95,3 +95,12 @@ end
     p = histogram(x, title = "Green color", color = (0, 135, 95))
     test_ref("histogram/col2.txt", @print_col(p))
 end
+
+@testset "vertical"
+    x = Float64[]
+    for i ∈ 1:10
+        append!(x, repeat([i], i))
+    end
+    p = histogram(x; horizontal = false, nbins = 10)
+    test_ref("histogram/vert1.txt", @print_col(p))
+end
