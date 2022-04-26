@@ -360,6 +360,7 @@ Here is a list of the main high-level functions for common scenarios:
   $(examples.histogram2)
 
   Vertical histograms are supported:
+
   $(examples.histogram3)
 </details>
 

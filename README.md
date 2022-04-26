@@ -169,7 +169,9 @@ histogram(randn(1_000) .* .1, nbins=15, closed=:right, xscale=:log10)
 ![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram2.png)
 
 
-Vertical histograms are supported:   ```julia
+Vertical histograms are supported:
+
+```julia
 histogram(randn(1_000_000) .* .1, nbins=100, vertical=true)
 ```
 ![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram3.png)
