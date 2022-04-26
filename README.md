@@ -19,7 +19,7 @@ Here is a list of the main high-level functions for common scenarios:
   * [`lineplot`](https://github.com/JuliaPlots/UnicodePlots.jl#lineplot) (Line Plot)
   * [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
   * [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
-  * [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal)
+  * [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal / vertical)
   * [`boxplot`](https://github.com/JuliaPlots/UnicodePlots.jl#boxplot) (Box Plot - horizontal)
   * [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
   * [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
@@ -155,7 +155,7 @@ barplot(["Paris", "New York", "Moskau", "Madrid"],
 <details open>   <summary><a name=histogram></a><b>Histogram</b></summary>
 
 ```julia
-histogram(randn(1000) .* .1, nbins=15, closed=:left)
+histogram(randn(1_000) .* .1, nbins=15, closed=:left)
 ```
 ![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram1.png)
 
@@ -163,9 +163,15 @@ histogram(randn(1000) .* .1, nbins=15, closed=:left)
 The `histogram` function also supports axis scaling using the parameter `xscale`:
 
 ```julia
-histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)
+histogram(randn(1_000) .* .1, nbins=15, closed=:right, xscale=:log10)
 ```
 ![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram2.png)
+
+
+Vertical histograms are supported:   ```julia
+histogram(randn(1_000_000) .* .1, nbins=100, vertical=true)
+```
+![Histogram](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/histogram3.png)
  </details>
 
 <details open>   <summary><a name=boxplot></a><b>Boxplot</b></summary>
@@ -205,8 +211,8 @@ spy(sprandn(50, 120, .9), show_zeros=true)
 <details open>   <summary><a name=density-plot></a><b>Density Plot</b></summary>
 
 ```julia
-plt = densityplot(randn(1000), randn(1000))
-densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
+plt = densityplot(randn(1_000), randn(1_000))
+densityplot!(plt, randn(1_000) .+ 2, randn(1_000) .+ 2)
 ```
 ![Densityplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/densityplot1.png)
  </details>
