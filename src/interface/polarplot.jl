@@ -60,7 +60,7 @@ end
 function polarplot!(plot::Plot{<:Canvas}, θ::AbstractVector, 𝓇::AbstractVector; degrees = true, num_rad_lab = 3, ang_rad_lab = π / 4)
     mr, Mr = extrema(𝓇)
 
-    # drawing grid
+    # grid
     theta = range(0, 2π, length = 360)
     grid_color = BORDER_COLOR[]
     lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta), color = grid_color)
@@ -68,6 +68,9 @@ function polarplot!(plot::Plot{<:Canvas}, θ::AbstractVector, 𝓇::AbstractVect
     for theta in 0:(π / 4):(2π)
         lineplot!(plot, [mr, Mr] .* cos(theta), [mr, Mr] .* sin(theta); color = grid_color)
     end
+
+    # user data
+    lineplot!(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ))
 
     # labels
     row = round(Int, nrows(plot.graphics) / 2)
@@ -79,8 +82,5 @@ function polarplot!(plot::Plot{<:Canvas}, θ::AbstractVector, 𝓇::AbstractVect
     for r ∈ range(mr, Mr, length = num_rad_lab)
         annotate!(plot, r * cos(ang_rad_lab), r * sin(ang_rad_lab), isinteger(r) ? string(round(Int, r)) : @sprintf("%.1f", r); color = grid_color)
     end
-
-    # drawing user data
-    lineplot!(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ))
     plot
 end
