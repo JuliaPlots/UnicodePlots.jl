@@ -13,7 +13,7 @@ end
     p = histogram(x, closed = :left)
     test_ref("histogram/default.txt", @print_col(p))
     hist = fit(Histogram, x, closed = :left)
-    p = histogram(hist)
+    p = horizontal_histogram(hist)
     test_ref("histogram/default.txt", @print_col(p))
     p = histogram(x * 100)
     test_ref("histogram/default_1e2.txt", @print_col(p))
@@ -27,18 +27,18 @@ end
     test_ref("histogram/log10_label.txt", @print_col(p))
     p = histogram([0.1f0, 0.1f0, 0.0f0])
     test_ref("histogram/float32.txt", @print_col(p))
-    p = histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
+    p = horizontal_histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
     test_ref("histogram/nonuniformbins.txt", @print_col(p))
     x2 = copy(reshape(x, (1, length(x), 1, 1)))
     p = histogram(x2)
     test_ref("histogram/default.txt", @print_col(p))
-    p = histogram(Histogram(1:15.0, vcat(collect(1:13), 400)))
+    p = horizontal_histogram(Histogram(1:15.0, vcat(collect(1:13), 400)))
     test_ref("histogram/fraction.txt", @print_col(p))
 end
 
 @testset "hist params" begin
     hist = fit(Histogram, x, nbins = 5, closed = :right)
-    p = histogram(hist)
+    p = horizontal_histogram(hist)
     test_ref("histogram/hist_params.txt", @print_col(p))
     p = histogram(x, nbins = 5, closed = :right)
     test_ref("histogram/hist_params.txt", @print_col(p))
@@ -96,11 +96,17 @@ end
     test_ref("histogram/col2.txt", @print_col(p))
 end
 
-@testset "vertical"
-    x = Float64[]
-    for i ∈ 1:10
-        append!(x, repeat([i], i))
-    end
-    p = histogram(x; horizontal = false, nbins = 10)
+@testset "vertical - normal distribution" begin
+    p = histogram(x; vertical = true, nbins = 100)
     test_ref("histogram/vert1.txt", @print_col(p))
+end
+
+@testset "vertical" begin
+    n = 10
+    dat = Float64[]
+    for i ∈ 1:n
+        append!(dat, repeat([i], i))
+    end
+    p = histogram(dat; vertical = true, nbins = n)
+    test_ref("histogram/vert2.txt", @print_col(p))
 end

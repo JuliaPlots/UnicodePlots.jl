@@ -91,7 +91,7 @@ function addrow!(
 end
 
 function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
     max_val = c.maximum === nothing ? c.max_val : max(c.max_val, c.maximum)
     max_bar_width = max(c.char_width - 2 - c.max_len, 1)
@@ -106,7 +106,7 @@ function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
-    if bar >= 0
+    if bar ≥ 0
         print_col(io, :normal, " ", bar_lbl)
         len = length(bar_lbl)
     else

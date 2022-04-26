@@ -248,8 +248,8 @@ function annotate!(
     halign = :center,
     valign = :center,
 )
-    xs = c.xscale(x)
-    ys = c.yscale(y)
+    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
+    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 
@@ -263,8 +263,8 @@ function annotate!(
 end
 
 function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
-    xs = c.xscale(x)
-    ys = c.yscale(y)
+    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
+    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
     pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
     pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
 

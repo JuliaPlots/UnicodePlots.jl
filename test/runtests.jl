@@ -84,6 +84,7 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
     UnicodePlots.CRAYONS_FAST[] = false
     println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     for test in (
+        "tst_depwarn.jl",
         "tst_issues.jl",
         "tst_io.jl",
         "tst_common.jl",
@@ -102,7 +103,6 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
         "tst_volume.jl",
         "tst_surfaceplot.jl",
         "tst_isosurface.jl",
-        "tst_deprecated_warns.jl",
     )
         @testset "$test" begin
             include(test)

@@ -48,7 +48,7 @@ end
         data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2
     end
 
-    # NOTE: projection precision issues, force azimuth and elevation
+    # NOTE: projection precision issues, forcing `azimuth` and `elevation` instead of automatic computation
     kw = (; zscale = z -> zc, colormap = :jet, azimuth = -90, elevation = 90)
 
     z = data[:, :, zc]
