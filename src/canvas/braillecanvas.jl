@@ -75,8 +75,8 @@ function BrailleCanvas(
 end
 
 function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
-    pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
-    pixel_y = pixel_y < c.pixel_height ? pixel_y : pixel_y - 1
+    pixel_x < c.pixel_width || (pixel_x -= 1)
+    pixel_y < c.pixel_height || (pixel_y -= 1)
     cw, ch = size(c.grid)
     tmp = pixel_x / c.pixel_width * cw
     char_x = floor(Int, tmp) + 1
@@ -90,8 +90,8 @@ function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
 end
 
 function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
-    0 <= pixel_x <= c.pixel_width || return c
-    0 <= pixel_y <= c.pixel_height || return c
+    0 ≤ pixel_x ≤ c.pixel_width || return c
+    0 ≤ pixel_y ≤ c.pixel_height || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
     if BLANK_BRAILLE <= (val = UInt64(c.grid[char_x, char_y])) <= FULL_BRAILLE
         c.grid[char_x, char_y] = Char(val | UInt64(braille_signs[char_x_off, char_y_off]))

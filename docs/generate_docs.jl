@@ -44,8 +44,9 @@ main() = begin
               [2.244, 8.406, 11.92, 3.165],
               title="Population")
       """),
-    histogram1 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:left)"),
-    histogram2 = ("Histogram", "histogram(randn(1000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
+    histogram1 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:left)"),
+    histogram2 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
+    histogram3 = ("Histogram", "histogram(randn(1_000_000) .* .1, nbins=100, vertical=true)"),
     boxplot1 = ("Boxplot", "boxplot([1, 3, 3, 4, 6, 10])"),
     boxplot2 = ("Boxplot", """
       boxplot(["one", "two"],
@@ -55,8 +56,8 @@ main() = begin
     spy1 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .05))"),
     spy2 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true)"),
     densityplot1 = ("Densityplot", """
-      plt = densityplot(randn(1000), randn(1000))
-      densityplot!(plt, randn(1000) .+ 2, randn(1000) .+ 2)
+      plt = densityplot(randn(1_000), randn(1_000))
+      densityplot!(plt, randn(1_000) .+ 2, randn(1_000) .+ 2)
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
     polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))"),
@@ -268,7 +269,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`lineplot`](https://github.com/JuliaPlots/UnicodePlots.jl#lineplot) (Line Plot)
   - [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
   - [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
-  - [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal)
+  - [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal / vertical)
   - [`boxplot`](https://github.com/JuliaPlots/UnicodePlots.jl#boxplot) (Box Plot - horizontal)
   - [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
   - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
@@ -357,6 +358,9 @@ Here is a list of the main high-level functions for common scenarios:
   The `histogram` function also supports axis scaling using the parameter `xscale`:
 
   $(examples.histogram2)
+
+  Vertical histograms are supported:
+  $(examples.histogram3)
 </details>
 
 <details open>
