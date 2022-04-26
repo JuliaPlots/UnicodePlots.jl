@@ -93,7 +93,7 @@ function vertical_histogram(
     symbols = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
     info::AbstractString = "",
     color = :green,
-    kw...
+    kw...,
 )
     edges, counts = hist.edges[1], hist.weights
     centers = (edges[1:(end - 1)] + edges[2:end]) / 2
@@ -122,13 +122,7 @@ function vertical_histogram(
         end
         if nsyms > 1 && (rem = frac * nr - n_full) > 0
             if 1 ≤ (I = round(Int, rem * nsyms)) ≤ nsyms
-                annotate!(
-                    plot,
-                    x,
-                    (n_full + 0.5) * δ,
-                    symbols[I];
-                    color = color
-                )
+                annotate!(plot, x, (n_full + 0.5) * δ, symbols[I]; color = color)
             end
         end
     end
@@ -190,7 +184,14 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """
-function histogram(x::AbstractArray; bins = nothing, closed = :left, vertical = false, stats = true, kw...)
+function histogram(
+    x::AbstractArray;
+    bins = nothing,
+    closed = :left,
+    vertical = false,
+    stats = true,
+    kw...,
+)
     x_plot = dropdims(x, dims = Tuple(filter(d -> size(x, d) == 1, 1:ndims(x))))
     hist = if bins !== nothing
         Base.depwarn(
@@ -206,7 +207,10 @@ function histogram(x::AbstractArray; bins = nothing, closed = :left, vertical = 
         mx, Mx = extrema(x_plot)
         μ = sum(x_plot) / length(x_plot)
         σ = √(sum((x_plot .- μ) .^ 2) / length(x_plot))
-        "μ ± σ: " * lpad(round(μ; digits = digits), digits + 1) * " ± " * lpad(round(σ; digits = digits), digits + 1)
+        "μ ± σ: " *
+        lpad(round(μ; digits = digits), digits + 1) *
+        " ± " *
+        lpad(round(σ; digits = digits), digits + 1)
     else
         ""
     end

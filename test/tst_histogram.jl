@@ -104,7 +104,7 @@ end
 @testset "vertical" begin
     n = 10
     dat = Float64[]
-    for i ∈ 1:n
+    for i in 1:n
         append!(dat, repeat([i], i))
     end
     p = histogram(dat; vertical = true, nbins = n)

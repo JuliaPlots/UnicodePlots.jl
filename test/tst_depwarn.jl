@@ -6,7 +6,9 @@ seed!(RNG, 1337)
     @test_logs (:warn, r"`symb`.+deprecated") histogram(x, symb = "#", closed = :right)
     @test_logs (:warn, r"`bins`.+deprecated") histogram(x, bins = 5, closed = :right)
     @test_logs (:warn, r"nbins::Int.+deprecated") histogram(x, 5, closed = :right)
-    @test_logs (:warn, r"histogram\(hist::Histogram.+deprecated") histogram(fit(Histogram, x))
+    @test_logs (:warn, r"histogram\(hist::Histogram.+deprecated") histogram(
+        fit(Histogram, x),
+    )
 end
 
 @testset "barplot" begin
