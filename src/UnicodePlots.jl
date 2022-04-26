@@ -6,6 +6,7 @@ using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 using LinearAlgebra
 using StaticArrays
+using Printf
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
 import MarchingCubes
