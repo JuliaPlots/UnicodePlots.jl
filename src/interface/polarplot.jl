@@ -53,11 +53,28 @@ function polarplot(θ::AbstractVector, 𝓇::Union{Function,AbstractVector}; kw.
     mr, Mr = extrema(𝓇)
     x = y = [-Mr, +Mr]
     lims = -Mr, +Mr
-    plot = Plot(x, y; xlim = lims, ylim = lims, grid = false, border = :none, xticks = false, yticks = false, blend = false)
+    plot = Plot(
+        x,
+        y;
+        xlim = lims,
+        ylim = lims,
+        grid = false,
+        border = :none,
+        xticks = false,
+        yticks = false,
+        blend = false,
+    )
     polarplot!(plot, θ, 𝓇; kw...)
 end
 
-function polarplot!(plot::Plot{<:Canvas}, θ::AbstractVector, 𝓇::AbstractVector; degrees = true, num_rad_lab = 3, ang_rad_lab = π / 4)
+function polarplot!(
+    plot::Plot{<:Canvas},
+    θ::AbstractVector,
+    𝓇::AbstractVector;
+    degrees = true,
+    num_rad_lab = 3,
+    ang_rad_lab = π / 4,
+)
     mr, Mr = extrema(𝓇)
 
     # grid
@@ -79,8 +96,14 @@ function polarplot!(plot::Plot{<:Canvas}, θ::AbstractVector, 𝓇::AbstractVect
     label!(plot, :l, row, degrees ? "180°" : "π", color = grid_color)
     label!(plot, :b, degrees ? "270°" : "3π / 4", color = grid_color)
 
-    for r ∈ range(mr, Mr, length = num_rad_lab)
-        annotate!(plot, r * cos(ang_rad_lab), r * sin(ang_rad_lab), isinteger(r) ? string(round(Int, r)) : @sprintf("%.1f", r); color = grid_color)
+    for r in range(mr, Mr, length = num_rad_lab)
+        annotate!(
+            plot,
+            r * cos(ang_rad_lab),
+            r * sin(ang_rad_lab),
+            isinteger(r) ? string(round(Int, r)) : @sprintf("%.1f", r);
+            color = grid_color,
+        )
     end
     plot
 end
