@@ -101,7 +101,7 @@ function vertical_histogram(
         float.(centers),
         float.(counts);
         grid = false,
-        border = :barplot,
+        border = :corners,
         xlim = extrema(edges),
         ylim = (0, maximum(counts)),
         width = length(centers),
