@@ -60,6 +60,7 @@ main() = begin
       densityplot!(plt, randn(1_000) .+ 2, randn(1_000) .+ 2)
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
+    polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))"),
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot1 = ("Surfaceplot", """
@@ -273,6 +274,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
   - [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
+  - [`polarplot`](https://github.com/JuliaPlots/UnicodePlots.jl#polar-plot) (Polar Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
   - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
@@ -407,6 +409,15 @@ Here is a list of the main high-level functions for common scenarios:
   The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
   $(examples.heatmap2)
+</details>
+
+<details open>
+  $(summary("Polar Plot"))
+
+  Plots data in polar coordinates with `θ` the angles in radians.
+
+  $(examples.polarplot1)
+
 </details>
 
 <details open>
