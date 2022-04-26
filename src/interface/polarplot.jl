@@ -16,6 +16,7 @@ $(arguments(
         degrees = "label angles using degrees",
         num_rad_lab = "number of radius labels",
         ang_rad_lab = "angle where the radius labels are drawn",
+        scatter = "use scatter instead of lines",
     )
 ))
 
@@ -74,6 +75,8 @@ function polarplot!(
     degrees = true,
     num_rad_lab = 3,
     ang_rad_lab = π / 4,
+    scatter = false,
+    kw...,
 )
     mr, Mr = extrema(𝓇)
 
@@ -87,7 +90,7 @@ function polarplot!(
     end
 
     # user data
-    lineplot!(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ))
+    (scatter ? scatterplot! : lineplot!)(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ); kw...)
 
     # labels
     row = round(Int, nrows(plot.graphics) / 2)
