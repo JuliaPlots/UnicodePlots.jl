@@ -6,6 +6,7 @@ using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
 using LinearAlgebra
 using StaticArrays
+using Printf
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
 import MarchingCubes
@@ -73,6 +74,8 @@ export GraphicsArea,
     spy,
     boxplot,
     boxplot!,
+    polarplot,
+    polarplot!,
     MVP,
     savefig
 
@@ -109,5 +112,6 @@ include("interface/densityplot.jl")
 include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
+include("interface/polarplot.jl")
 
 end

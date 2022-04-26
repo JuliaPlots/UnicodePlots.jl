@@ -24,6 +24,7 @@ Here is a list of the main high-level functions for common scenarios:
   * [`spy`](https://github.com/JuliaPlots/UnicodePlots.jl#sparsity-pattern) (Sparsity Pattern)
   * [`densityplot`](https://github.com/JuliaPlots/UnicodePlots.jl#density-plot) (Density Plot)
   * [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
+  * [`polarplot`](https://github.com/JuliaPlots/UnicodePlots.jl#polar-plot) (Polar Plot)
   * [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
   * [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   * [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
@@ -242,6 +243,18 @@ heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colorm
 ```
 ![Heatmap](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/heatmap2.png)
  </details>
+
+<details open>   <summary><a name=polar-plot></a><b>Polar Plot</b></summary>
+
+Plots data in polar coordinates with `θ` the angles in radians.
+
+```julia
+polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))
+```
+![Polarplot](https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/polarplot1.png)
+
+
+</details>
 
 <details open>   <summary><a name=surface-plot></a><b>Surface Plot</b></summary>
 
