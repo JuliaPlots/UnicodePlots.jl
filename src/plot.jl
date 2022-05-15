@@ -1081,7 +1081,7 @@ julia> savefig(lineplot([0, 1]), "foo.txt")
 julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
 ```
 """
-function savefig(p::Plot, filename::String; color::Bool = false, kw...)
+function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
     ext = lowercase(splitext(filename)[2])
     if ext in ("", ".txt")
         open(filename, "w") do io
@@ -1093,4 +1093,10 @@ function savefig(p::Plot, filename::String; color::Bool = false, kw...)
         error("`savefig` only supports writing to `txt` or `png` files")
     end
     nothing
+end
+
+function Base.string(p::Plot; color = false)
+    io = PipeBuffer()
+    show(IOContext(io, :color => color), p)
+    read(io, String)
 end

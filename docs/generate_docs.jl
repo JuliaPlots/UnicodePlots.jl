@@ -255,7 +255,7 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/latest/gallery/unicodeplots/generated/unicodeplots-ref17/#unicodeplots_demo_17).
+`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
 Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
@@ -457,6 +457,8 @@ Here is a list of the main high-level functions for common scenarios:
   $(summary("Saving figures"))
 
   Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
+
+  To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>
 
 <details>
@@ -474,7 +476,7 @@ Here is a list of the main high-level functions for common scenarios:
 <details>
   $(summary("3D plots"))
 
-  3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen
+  3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
 
   Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
 
