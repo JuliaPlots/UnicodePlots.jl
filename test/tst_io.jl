@@ -41,3 +41,9 @@ end
         end
     end
 end
+
+@testset "stringify plot" begin
+    p = lineplot(1:2)
+    @test string(p; color = true) isa String
+    @test string(p; color = false) isa String
+end
