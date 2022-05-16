@@ -20,6 +20,7 @@ end
         -1:0.1:1,
         torus;
         elevation = 50,
+        azimuth = 35,
         cull = true,
         zoom = 2,
     )
