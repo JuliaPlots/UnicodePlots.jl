@@ -255,8 +255,6 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [layouts](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
-
 Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
 ## High-level Interface
@@ -485,6 +483,30 @@ Here is a list of the main high-level functions for common scenarios:
   Displaying the `x`, `y`, and `z` axes can be controlled using the `axes3d` keyword.
 
   For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots).
+</details>
+
+<details>
+  $(summary("Layout"))
+
+  `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layouts](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
+
+  For more complex layouts, use [Term.jl](https://github.com/FedeClaudi/Term.jl):
+
+```julia
+using UnicodePlots, Term
+
+panel(plot; kw...) = Panel(string(plot, color=true); fit=true, kw...)
+
+print(
+  panel(lineplot([cos, sin], -π/2, 2π); title="lineplot", style="yellow") *
+  panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red") * 
+  panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="blue") / (
+    panel(histogram(randn(1_000_000), nbins=100, vertical=true); title="histogram", style="green") * 
+    panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan")
+  )
+)
+```
+
 </details>
 
 <details>
