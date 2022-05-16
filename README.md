@@ -337,9 +337,9 @@ For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved 
 
 <details>   <summary><a name=layout></a><b>Layout</b></summary>
 
-`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layouts](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
+`UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
-For more complex layouts, use [Term.jl](https://github.com/FedeClaudi/Term.jl):
+For a more complex layout, use [`Term`](https://github.com/FedeClaudi/Term.jl):
 
 ```julia
 using UnicodePlots, Term
