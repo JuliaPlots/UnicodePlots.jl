@@ -170,7 +170,7 @@ function heatmap(
         kw...,
     )
 
-    for row in 1:length(Y)
+    for row in eachindex(Y)
         points!(
             plot,
             X,

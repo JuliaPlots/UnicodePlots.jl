@@ -31,7 +31,7 @@ function horizontal_histogram(
     # compute label padding based on all labels.
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
-    for i in 1:length(counts)
+    for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
@@ -43,7 +43,7 @@ function horizontal_histogram(
     # compute the labels using the computed padding
     l_str = hist.closed === :right ? "(" : "["
     r_str = hist.closed === :right ? "]" : ")"
-    for i in 1:length(counts)
+    for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
