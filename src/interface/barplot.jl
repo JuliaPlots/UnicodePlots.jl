@@ -101,7 +101,7 @@ function barplot(
         maximum = maximum,
     )
     plot = Plot(area; border = border, xlabel = xlabel, kw...)
-    for i in 1:length(text)
+    for i in eachindex(text)
         label!(plot, :l, i, text[i])
     end
     name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
@@ -138,7 +138,7 @@ function barplot!(
     isempty(text) && throw(ArgumentError("Can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
-    for i in 1:length(heights)
+    for i in eachindex(heights)
         label!(plot, :l, curidx + i, text[i])
     end
     name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))

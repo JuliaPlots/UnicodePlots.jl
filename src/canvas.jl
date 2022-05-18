@@ -34,7 +34,7 @@ function points!(
 ) where {T<:UserColorType}
     length(X) == length(Y) == length(color) ||
         throw(DimensionMismatch("X, Y, and color must be the same length"))
-    for i in 1:length(X)
+    for i in eachindex(X)
         points!(c, X[i], Y[i], color[i])
     end
     c
