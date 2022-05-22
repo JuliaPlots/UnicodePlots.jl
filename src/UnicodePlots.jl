@@ -1,5 +1,7 @@
 module UnicodePlots
 
+using LazyModules
+
 using Dates
 using Crayons
 using StatsBase: Histogram, fit, percentile
@@ -13,7 +15,7 @@ import MarchingCubes
 import NaNMath
 import Contour
 
-import FreeTypeAbstraction
+@lazy import FreeTypeAbstraction = "663a7486-cb36-511b-a19d-713bb74d65c9"
 import ColorTypes
 import FileIO
 
