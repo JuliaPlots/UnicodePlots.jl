@@ -17,7 +17,7 @@ import Contour
 
 @lazy import FreeTypeAbstraction = "663a7486-cb36-511b-a19d-713bb74d65c9"
 import ColorTypes
-import FileIO
+@lazy import FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 
 export GraphicsArea,
     Canvas,
