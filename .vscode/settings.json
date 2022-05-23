@@ -1,0 +1,5 @@
+{
+    "[julia]": {
+        "editor.formatOnSave": true
+    }
+}

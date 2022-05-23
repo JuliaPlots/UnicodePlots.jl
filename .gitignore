@@ -1,3 +1,5 @@
+.vscode/
+
 *.jl.cov
 *.jl.mem
 *.mem
