@@ -294,15 +294,19 @@ function Plot(
         end
     end
     if grid
-        if my < 0 < My
-            for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
-                points!(plot, i, 0.0, nothing)
+        if xscale === identity && yscale === identity
+            if my < 0 < My
+                for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
+                    points!(plot, i, 0.0, nothing)
+                end
             end
-        end
-        if mx < 0 < Mx
-            for i in range(my, stop = My, length = height * y_pixel_per_char(C))
-                points!(plot, 0.0, i, nothing)
+            if mx < 0 < Mx
+                for i in range(my, stop = My, length = height * y_pixel_per_char(C))
+                    points!(plot, 0.0, i, nothing)
+                end
             end
+        else
+            # TODO: maybe draw `log` scale grid lines 
         end
     end
 

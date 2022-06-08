@@ -147,6 +147,7 @@ const SUPERSCRIPT = Dict(
     '7' => '⁷',
     '8' => '⁸',
     '9' => '⁹',
+    'e' => 'ᵉ',
 )
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
 const COLOR_CYCLE_BRIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_FAINT)

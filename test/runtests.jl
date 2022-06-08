@@ -3,7 +3,7 @@ using UnicodePlots, Test
 # Incorrect usage of LazyModules could easily bring up world age issues. We need to test
 # this before loading all other test dependencies -- because otherwise potential world age
 # issues get automatically resolved.
-include("world_age_issues.jl")
+include("tst_world_age.jl")
 
 using ReferenceTests
 using ReferenceTests: BeforeAfterFull

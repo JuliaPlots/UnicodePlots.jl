@@ -32,4 +32,8 @@
         p = lineplot!(p, x, y)
         test_ref("issues/steps.txt", @show_col(p))
     end
+
+    @testset "grid log scale (#265)" begin
+        @test lineplot(0.01:10, 0.01:10, xscale = :log10, yscale = :log10) isa Plot
+    end
 end
