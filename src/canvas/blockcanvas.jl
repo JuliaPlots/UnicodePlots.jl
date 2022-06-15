@@ -1,27 +1,27 @@
-const block_signs = [
+const BLOCK_SIGNS = [
     0b1000 0b0010
     0b0100 0b0001
 ]
 
-const n_block = 16
-const block_decode = Vector{Char}(undef, typemax(UInt16))
-block_decode[1] = ' '
-block_decode[2] = '▗'
-block_decode[3] = '▖'
-block_decode[4] = '▄'
-block_decode[5] = '▝'
-block_decode[6] = '▐'
-block_decode[7] = '▞'
-block_decode[8] = '▟'
-block_decode[9] = '▘'
-block_decode[10] = '▚'
-block_decode[11] = '▌'
-block_decode[12] = '▙'
-block_decode[13] = '▀'
-block_decode[14] = '▜'
-block_decode[15] = '▛'
-block_decode[16] = '█'
-block_decode[(n_block + 1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16) - n_block)]
+const N_BLOCK = 16
+const BLOCK_DECODE = Vector{Char}(undef, typemax(UInt16))
+BLOCK_DECODE[1] = ' '
+BLOCK_DECODE[2] = '▗'
+BLOCK_DECODE[3] = '▖'
+BLOCK_DECODE[4] = '▄'
+BLOCK_DECODE[5] = '▝'
+BLOCK_DECODE[6] = '▐'
+BLOCK_DECODE[7] = '▞'
+BLOCK_DECODE[8] = '▟'
+BLOCK_DECODE[9] = '▘'
+BLOCK_DECODE[10] = '▚'
+BLOCK_DECODE[11] = '▌'
+BLOCK_DECODE[12] = '▙'
+BLOCK_DECODE[13] = '▀'
+BLOCK_DECODE[14] = '▜'
+BLOCK_DECODE[15] = '▛'
+BLOCK_DECODE[16] = '█'
+BLOCK_DECODE[(N_BLOCK + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) - N_BLOCK)]
 
 """
 The `BlockCanvas` is also Unicode-based.
@@ -51,8 +51,8 @@ end
 @inline x_pixel_per_char(::Type{C}) where {C<:BlockCanvas} = 2
 @inline y_pixel_per_char(::Type{C}) where {C<:BlockCanvas} = 2
 
-@inline lookup_encode(::BlockCanvas) = block_signs
-@inline lookup_decode(::BlockCanvas) = block_decode
+@inline lookup_encode(::BlockCanvas) = BLOCK_SIGNS
+@inline lookup_decode(::BlockCanvas) = BLOCK_DECODE
 
 BlockCanvas(args...; kw...) =
     CreateLookupCanvas(BlockCanvas, UInt16, (0b0000, 0b1111), args...; kw...)
@@ -65,7 +65,7 @@ function char_point!(
     color::UserColorType,
 )
     if checkbounds(Bool, c.grid, char_x, char_y)
-        c.grid[char_x, char_y] = n_block + char
+        c.grid[char_x, char_y] = N_BLOCK + char
         set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c

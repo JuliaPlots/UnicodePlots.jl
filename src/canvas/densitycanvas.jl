@@ -1,4 +1,4 @@
-const den_signs = Ref([' ', '░', '▒', '▓', '█'])
+const DEN_SIGNS = Ref((' ', '░', '▒', '▓', '█'))
 
 """
 Unlike the `BrailleCanvas`, the density canvas
@@ -95,7 +95,7 @@ end
 
 function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
-    signs = den_signs[]
+    signs = DEN_SIGNS[]
     y = row
     den_sign_count = length(signs)
     val_scale = (den_sign_count - 1) / c.max_density

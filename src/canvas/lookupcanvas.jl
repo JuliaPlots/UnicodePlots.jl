@@ -1,19 +1,19 @@
 # en.wikipedia.org/wiki/Plane_(Unicode)
-const plane0_start = 0x00000
-const plane0_stop = 0x0FFFF
-const plane1_start = 0x10000
-const plane1_stop = 0x1FFFF
-const plane2_start = 0x20000
-const plane2_stop = 0x2FFFF
+const PLANE0_START = 0x00000
+const PLANE0_STOP = 0x0FFFF
+const PLANE1_START = 0x10000
+const PLANE1_STOP = 0x1FFFF
+const PLANE2_START = 0x20000
+const PLANE2_STOP = 0x2FFFF
 
 # TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
-const unicode_table = Array{Char}(undef, (plane0_stop - plane0_start + 1) + length(MARKERS))
-for i in plane0_start:plane0_stop
-    unicode_table[i + 1] = Char(i)
+const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
+for i in PLANE0_START:PLANE0_STOP
+    UNICODE_TABLE[i + 1] = Char(i)
 end
 
-for (j, i) in enumerate(plane1_start:(plane1_start + (length(MARKERS) - 1)))
-    unicode_table[i + 1] = MARKERS[j]
+for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+    UNICODE_TABLE[i + 1] = MARKERS[j]
 end
 
 abstract type LookupCanvas <: Canvas end

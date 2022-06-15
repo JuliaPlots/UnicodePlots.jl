@@ -14,7 +14,7 @@
 # You should have received a copy of the CC0 legalcode along with this
 # work.  If not, see <creativecommons.org/publicdomain/zero/1.0/>.
 
-const _magma_data = [
+const MAGMA_DATA = [
     (0.001462, 0.000466, 0.013866),
     (0.002258, 0.001295, 0.018331),
     (0.003279, 0.002305, 0.023708),
@@ -273,7 +273,7 @@ const _magma_data = [
     (0.987053, 0.991438, 0.749504),
 ]
 
-const _inferno_data = [
+const INFERNO_DATA = [
     (0.001462, 0.000466, 0.013866),
     (0.002267, 0.001270, 0.018570),
     (0.003299, 0.002249, 0.024239),
@@ -532,7 +532,7 @@ const _inferno_data = [
     (0.988362, 0.998364, 0.644924),
 ]
 
-const _plasma_data = [
+const PLASMA_DATA = [
     (0.050383, 0.029803, 0.527975),
     (0.063536, 0.028426, 0.533124),
     (0.075353, 0.027206, 0.538007),
@@ -791,7 +791,7 @@ const _plasma_data = [
     (0.940015, 0.975158, 0.131326),
 ]
 
-const _viridis_data = [
+const VIRIDIS_DATA = [
     (0.267004, 0.004874, 0.329415),
     (0.268510, 0.009605, 0.335427),
     (0.269944, 0.014625, 0.341379),
@@ -1050,7 +1050,7 @@ const _viridis_data = [
     (0.993248, 0.906157, 0.143936),
 ]
 
-const _cividis_data = [
+const CIVIDIS_DATA = [
     (0.000000, 0.135112, 0.304751),
     (0.000000, 0.138068, 0.311105),
     (0.000000, 0.141013, 0.317579),
@@ -1310,7 +1310,7 @@ const _cividis_data = [
 ]
 
 # inspired from metacpan.org/pod/Term::Colormap
-const _jet_data = [
+const JET_DATA = [
     (0.0, 0.0, 1.0),
     (0.0, 0.372549, 1.0),
     (0.0, 0.529412, 1.0),
@@ -1338,7 +1338,7 @@ const _jet_data = [
     (0.803922, 0.0, 0.0),
 ]
 
-const _snow_data = [
+const SNOW_DATA = [
     (0.933333, 0.933333, 0.933333),
     (0.894118, 0.894118, 0.894118),
     (0.854902, 0.854902, 0.854902),
@@ -1353,7 +1353,7 @@ const _snow_data = [
     (0.501961, 0.501961, 0.501961),
 ]
 
-const _ash_data = [
+const ASH_DATA = [
     (0.462745, 0.462745, 0.462745),
     (0.423529, 0.423529, 0.423529),
     (0.384314, 0.384314, 0.384314),
@@ -1368,9 +1368,9 @@ const _ash_data = [
     (0.031373, 0.031373, 0.031373),
 ]
 
-const _gray_data = hcat(_snow_data, _ash_data)
+const GRAY_DATA = hcat(SNOW_DATA, ASH_DATA)
 
-const _green_cyan_blue_data = [
+const GREEN_CYAN_BLUE_DATA = [
     (0.0, 0.372549, 0.0),
     (0.0, 0.529412, 0.0),
     (0.0, 0.686275, 0.0),
@@ -1392,17 +1392,17 @@ const _green_cyan_blue_data = [
     (0.0, 0.0, 0.372549),
 ]
 
-const COLOR_MAP_DATA = Dict(
-    :viridis => _viridis_data,
-    :inferno => _inferno_data,
-    :magma => _magma_data,
-    :plasma => _plasma_data,
-    :cividis => _cividis_data,
-    :green_cyan_blue => _green_cyan_blue_data,
-    :gray => _gray_data,
-    :snow => _snow_data,
-    :ash => _ash_data,
-    :jet => _jet_data,
+const COLOR_MAP_DATA = (
+    viridis = VIRIDIS_DATA,
+    inferno = INFERNO_DATA,
+    magma = MAGMA_DATA,
+    plasma = PLASMA_DATA,
+    cividis = CIVIDIS_DATA,
+    green_cyan_blue = GREEN_CYAN_BLUE_DATA,
+    gray = GRAY_DATA,
+    snow = SNOW_DATA,
+    ash = ASH_DATA,
+    jet = JET_DATA,
 )
 
 c256(c::AbstractFloat) = round(Int, 255c)
