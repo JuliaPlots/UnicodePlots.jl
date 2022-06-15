@@ -177,25 +177,18 @@ end
     @test UnicodePlots.scale_callback(x -> x)(1) === 1
     @test UnicodePlots.scale_callback(Scale(π))(1) ≈ π
 
-    @test UnicodePlots.out_stream_width(nothing) == 40
-    @test UnicodePlots.out_stream_height(nothing) == 15
+    h, w = displaysize()
+    @test UnicodePlots.out_stream_height() == h
+    @test UnicodePlots.out_stream_width() == w
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"
 
     @test_throws AssertionError UnicodePlots.default_size!(width = 8, height = 8)
 
-    UnicodePlots.default_size!(height = 30)
-    @test UnicodePlots.DEFAULT_WIDTH[] == 80
-    @test UnicodePlots.DEFAULT_HEIGHT[] == 30
-
-    UnicodePlots.default_size!(width = 64)
-    @test UnicodePlots.DEFAULT_WIDTH[] == 64
-    @test UnicodePlots.DEFAULT_HEIGHT[] == 24
-
-    UnicodePlots.default_size!()
-    @test UnicodePlots.DEFAULT_WIDTH[] == 40
-    @test UnicodePlots.DEFAULT_HEIGHT[] == 15
+    @test UnicodePlots.default_size!(height = 30) == (30, 80)
+    @test UnicodePlots.default_size!(width = 64) == (24, 64)
+    @test UnicodePlots.default_size!() == (15, 40)
 end
 
 @testset "docs" begin

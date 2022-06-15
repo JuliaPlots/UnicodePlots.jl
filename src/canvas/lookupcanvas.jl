@@ -95,10 +95,10 @@ function pixel!(
     pixel_y::Int,
     color::UserColorType,
 ) where {T<:LookupCanvas}
-    0 <= pixel_x <= pixel_width(c) || return c
-    0 <= pixel_y <= pixel_height(c) || return c
+    0 ≤ pixel_x ≤ pixel_width(c) || return c
+    0 ≤ pixel_y ≤ pixel_height(c) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] <= val <= c.min_max[2]
+    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
@@ -107,7 +107,7 @@ function pixel!(
 end
 
 function printrow(io::IO, print_nc, print_col, c::LookupCanvas, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
         print_col(io, colors(c)[x, y], lookup_decode(c)[grid(c)[x, y] + 1])

@@ -84,7 +84,7 @@ function lines!(
     px, Px = min(px, Px), max(px, Px)
     py, Py = min(py, Py), max(py, Py)
 
-    if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb !== nothing
+    if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb ≢ nothing
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
         start_x, start_y = cur_x, cur_y
         iΔ = 1 / √(Δx^2 + Δy^2)
@@ -168,8 +168,7 @@ function get_canvas_dimensions_for_matrix(
     height_diff = extra_rows
     width_diff  = margin + padding + length(string(ncol)) + extra_cols
 
-    term_height, term_width =
-        out_stream === nothing ? displaysize() : displaysize(out_stream)
+    term_height, term_width = out_stream_size(out_stream)
     max_height = max_height > 0 ? max_height : term_height - height_diff
     max_width = max_width > 0 ? max_width : term_width - width_diff
 
@@ -203,11 +202,11 @@ function get_canvas_dimensions_for_matrix(
         height = min(width / canv_ar, max_height)
     end
 
+    height = round(Int, height / (fix_ar ? ASPECT_RATIO[] : 1))  # optional terminal aspect ratio (4:3) correction
     width  = round(Int, width)
-    height = round(Int, height / (fix_ar ? ASPECT_RATIO : 1))  # optional terminal aspect ratio (4:3) correction
 
     # the canvas will target a (height, width) grid to represent the input data
-    width, height, max_width, max_height
+    height, width, max_height, max_width
 end
 
 function align_char_point(

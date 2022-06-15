@@ -84,8 +84,8 @@ function pixel_to_char_point(c::DensityCanvas, pixel_x::Number, pixel_y::Number)
 end
 
 function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
-    0 <= pixel_x <= c.pixel_width || return c
-    0 <= pixel_y <= c.pixel_height || return c
+    0 ≤ pixel_x ≤ c.pixel_width || return c
+    0 ≤ pixel_y ≤ c.pixel_height || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     c.grid[char_x, char_y] += 1
     c.max_density = max(c.max_density, c.grid[char_x, char_y])
@@ -94,7 +94,7 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
 end
 
 function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     signs = den_signs[]
     y = row
     den_sign_count = length(signs)

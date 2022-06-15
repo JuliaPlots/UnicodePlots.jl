@@ -180,8 +180,8 @@ function arguments(
 )
     get_description(n, d) = begin
         str = d[n]
-        @assert str[1] === '`' || islowercase(str[1])  # description starts with a lowercase string, or `something`
-        @assert str[end] !== '.'  # trailing dot will be added later
+        @assert first(str) ≡ '`' || islowercase(first(str))  # description starts with a lowercase string, or `something`
+        @assert last(str) ≢ '.'  # trailing dot will be added later
         str
     end
     all_desc = (; DESCRIPTION..., desc...)  # desc preempts defaults !

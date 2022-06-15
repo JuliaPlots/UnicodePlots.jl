@@ -87,7 +87,7 @@ function Plot(
     projection::Union{Nothing,MVP} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
-    margin >= 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
+    margin ≥ 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
     rows = nrows(graphics)
     cols = ncols(graphics)
     labels_left = Dict{Int,String}()
@@ -96,7 +96,7 @@ function Plot(
     colors_right = Dict{Int,ColorType}()
     decorations = Dict{Symbol,String}()
     colors_deco = Dict{Symbol,ColorType}()
-    projection === nothing && (projection = MVP())
+    projection ≡ nothing && (projection = MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
     p = Plot{T,E,F}(
@@ -200,8 +200,8 @@ function Plot(
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
 
-    width === nothing && (width = DEFAULT_WIDTH[])
-    height === nothing && (height = DEFAULT_HEIGHT[])
+    height = something(height, DEFAULT_HEIGHT[])
+    width = something(width, DEFAULT_WIDTH[])
 
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
@@ -214,8 +214,8 @@ function Plot(
     xscale = scale_callback(xscale)
     yscale = scale_callback(yscale)
 
-    if projection !== nothing  # 3D
-        (xscale !== identity || yscale !== identity) &&
+    if projection ≢ nothing  # 3D
+        (xscale ≢ identity || yscale ≢ identity) &&
             throw(ArgumentError("xscale or yscale are unsupported in 3D"))
 
         projection isa Symbol && (projection = MVP(x, y, z; kw...))
@@ -279,22 +279,22 @@ function Plot(
             (mx, Mx, my, My),
         )
         if unicode_exponent
-            m_x, M_x = map(v -> base_x !== nothing ? superscript(v) : v, (m_x, M_x))
-            m_y, M_y = map(v -> base_y !== nothing ? superscript(v) : v, (m_y, M_y))
+            m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
+            m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
         end
         if xticks
-            base_x_str = base_x === nothing ? "" : base_x * (unicode_exponent ? "" : "^")
+            base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
             label!(plot, :bl, base_x_str * m_x, color = BORDER_COLOR[])
             label!(plot, :br, base_x_str * M_x, color = BORDER_COLOR[])
         end
         if yticks
-            base_y_str = base_y === nothing ? "" : base_y * (unicode_exponent ? "" : "^")
+            base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
             label!(plot, :l, nrows(canvas), base_y_str * m_y, color = BORDER_COLOR[])
             label!(plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
         end
     end
     if grid
-        if xscale === identity && yscale === identity
+        if xscale ≡ identity && yscale ≡ identity
             if my < 0 < My
                 for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
                     points!(plot, i, 0.0, nothing)
@@ -689,7 +689,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     nc = ncols(c)
     p_width = nc + 2  # left corner + border length (number of canvas cols) + right corner
 
-    bmap = BORDERMAP[p.border === :none && c isa BrailleCanvas ? :bnone : p.border]
+    bmap = BORDERMAP[p.border ≡ :none && c isa BrailleCanvas ? :bnone : p.border]
     bc = BORDER_COLOR[]
 
     # get length of largest strings to the left and right
@@ -951,12 +951,12 @@ function png_image(
 
     default_fg_color = rgba(fg_color)
     default_bg_color = rgba(bg_color, transparent ? 0.0 : 1.0)
-    bbox = if bounding_box !== nothing
+    bbox = if bounding_box ≢ nothing
         rgba(ansi_color(bounding_box))
     else
         bounding_box
     end
-    bbox_glyph = if bounding_box_glyph !== nothing
+    bbox_glyph = if bounding_box_glyph ≢ nothing
         rgba(ansi_color(bounding_box_glyph))
     else
         bounding_box_glyph
@@ -1006,7 +1006,7 @@ function png_image(
     lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
     for (fchar, gchar, fcol, gcol) in zip(fchars, gchars, fcolors, gcolors)
-        if fchar === '\n'
+        if fchar ≡ '\n'
             r += 1
             push!(lfchars, Char[])
             push!(lgchars, Char[])
@@ -1023,13 +1023,13 @@ function png_image(
     # render image
     face = nothing
     for font_name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
-        if (ft = FreeTypeAbstraction.findfont(font_name)) !== nothing
+        if (ft = FreeTypeAbstraction.findfont(font_name)) ≢ nothing
             face = ft
             break
         end
     end
 
-    kr = ASPECT_RATIO
+    kr = ASPECT_RATIO[]
     kc = kr / 2
 
     img = fill(

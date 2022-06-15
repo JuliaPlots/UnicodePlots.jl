@@ -93,7 +93,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     0 ≤ pixel_x ≤ c.pixel_width || return c
     0 ≤ pixel_y ≤ c.pixel_height || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if BLANK_BRAILLE <= (val = UInt64(c.grid[char_x, char_y])) <= FULL_BRAILLE
+    if BLANK_BRAILLE ≤ (val = UInt64(c.grid[char_x, char_y])) ≤ FULL_BRAILLE
         c.grid[char_x, char_y] = Char(val | UInt64(braille_signs[char_x_off, char_y_off]))
     end
     set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
@@ -115,7 +115,7 @@ function char_point!(
 end
 
 function printrow(io::IO, print_nc, print_col, c::BrailleCanvas, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
         print_col(io, c.colors[x, y], c.grid[x, y])

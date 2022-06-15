@@ -93,7 +93,7 @@ end
 function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
-    max_val = c.maximum === nothing ? c.max_val : max(c.max_val, c.maximum)
+    max_val = c.maximum ≡ nothing ? c.max_val : max(c.max_val, c.maximum)
     max_bar_width = max(c.char_width - 2 - c.max_len, 1)
     val = c.xscale(bar)
     nsyms = length(c.symbols)

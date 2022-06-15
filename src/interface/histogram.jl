@@ -41,8 +41,8 @@ function horizontal_histogram(
         pad_right = max(pad_right, a1[2], a2[2])
     end
     # compute the labels using the computed padding
-    l_str = hist.closed === :right ? "(" : "["
-    r_str = hist.closed === :right ? "]" : ")"
+    l_str = hist.closed ≡ :right ? "(" : "["
+    r_str = hist.closed ≡ :right ? "]" : ")"
     for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
@@ -193,7 +193,7 @@ function histogram(
     kw...,
 )
     x_plot = dropdims(x, dims = Tuple(filter(d -> size(x, d) == 1, 1:ndims(x))))
-    hist = if bins !== nothing
+    hist = if bins ≢ nothing
         Base.depwarn(
             "The keyword parameter `bins` is deprecated, use `nbins` instead",
             :histogram,
@@ -215,7 +215,7 @@ function histogram(
         ""
     end
     callable = vertical ? vertical_histogram : horizontal_histogram
-    callable(hist; info = info, filter(p -> p.first !== :nbins, kw)...)
+    callable(hist; info = info, filter(p -> p.first ≢ :nbins, kw)...)
 end
 
 @deprecate histogram(x::AbstractArray, nbins::Int; kw...) histogram(x; nbins = nbins, kw...)
