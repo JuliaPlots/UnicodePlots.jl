@@ -184,11 +184,11 @@ end
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"
 
-    @test_throws AssertionError UnicodePlots.default_size!(width = 8, height = 8)
+    @test_throws AssertionError default_size!(width = 8, height = 8)
 
-    @test UnicodePlots.default_size!(height = 30) == (30, 80)
-    @test UnicodePlots.default_size!(width = 64) == (24, 64)
-    @test UnicodePlots.default_size!() == (15, 40)
+    @test default_size!(height = 30) == (30, 80)
+    @test default_size!(width = 64) == (24, 64)
+    @test default_size!() == (15, 40)
 end
 
 @testset "docs" begin

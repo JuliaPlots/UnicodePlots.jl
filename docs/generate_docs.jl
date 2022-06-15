@@ -130,7 +130,7 @@ main() = begin
 
   indent(x, n) = repeat(tab, n) * join(split(x, '\n'), '\n' * repeat(tab, n))
   desc_ex(k, d, n=2) = (
-    if k == :border
+    if k ≡ :border
       join((
         d,
         indent(examples.border_dashed, n),
@@ -482,7 +482,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   Displaying the `x`, `y`, and `z` axes can be controlled using the `axes3d` keyword.
 
-  For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots).
+  For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using `default_size!(width=60)` for all future plots).
 </details>
 
 <details>
