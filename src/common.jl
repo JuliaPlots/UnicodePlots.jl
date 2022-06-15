@@ -228,6 +228,14 @@ function __init__()
     nothing
 end
 
+"""
+    default_size!(;
+        height::Union{Integer,Nothing} = nothing,
+        width::Union{Integer,Nothing} = nothing,
+    )
+
+# Change and return the default plot size (height, width).
+"""
 function default_size!(;
     height::Union{Integer,Nothing} = nothing,
     width::Union{Integer,Nothing} = nothing,
@@ -517,9 +525,9 @@ end
 out_stream_size(out_stream::Union{Nothing,IO} = nothing) =
     out_stream ≡ nothing ? displaysize() : displaysize(out_stream)
 out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
-    first(out_stream_size(out_stream))
+    out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
-    last(out_stream_size(out_stream))
+    out_stream |> out_stream_size |> last
 
 function _handle_deprecated_symb(symb, symbols)
     if symb ≡ nothing
