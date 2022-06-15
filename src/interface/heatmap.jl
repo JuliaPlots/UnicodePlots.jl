@@ -86,11 +86,11 @@ function heatmap(
     end
 
     # select a subset of A based on the supplied limits
-    firstx = findfirst(x -> x >= xlim[1], X)
-    lastx = findlast(x -> x <= xlim[2], X)
+    firstx = findfirst(x -> x ≥ xlim[1], X)
+    lastx = findlast(x -> x ≤ xlim[2], X)
     xrange = (firstx == nothing || lastx == nothing) ? (1:0) : (firstx:lastx)
-    firsty = findfirst(y -> y >= ylim[1], Y)
-    lasty = findlast(y -> y <= ylim[2], Y)
+    firsty = findfirst(y -> y ≥ ylim[1], Y)
+    lasty = findlast(y -> y ≤ ylim[2], Y)
     yrange = (firsty == nothing || lasty == nothing) ? (1:0) : (firsty:lasty)
     A = A[yrange, xrange]
     X = X[xrange]
@@ -126,7 +126,7 @@ function heatmap(
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
 
     # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
-    width, height, max_width, max_height = get_canvas_dimensions_for_matrix(
+    height, width, max_height, max_width = get_canvas_dimensions_for_matrix(
         HeatmapCanvas,
         2nrows,
         ncols,
@@ -149,8 +149,8 @@ function heatmap(
     end
     kw = (; kw..., colorbar = colorbar)
 
-    xs = length(X) > 0 ? [X[1], X[end]] : [0.0, 0.0]
-    ys = length(Y) > 0 ? [Y[1], Y[end]] : [0.0, 0.0]
+    xs = length(X) > 0 ? [first(X), last(X)] : zeros(2)
+    ys = length(Y) > 0 ? [first(Y), last(Y)] : zeros(2)
     plot = Plot(
         xs,
         ys,

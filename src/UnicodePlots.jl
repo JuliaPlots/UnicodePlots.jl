@@ -81,7 +81,8 @@ export GraphicsArea,
     polarplot,
     polarplot!,
     MVP,
-    savefig
+    savefig,
+    default_size!
 
 include("common.jl")
 include("lut.jl")

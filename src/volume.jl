@@ -166,11 +166,11 @@ cube_corners(mx, Mx, my, My, mz, Mz) = [
 
 function view_matrix(center, distance, elevation, azimuth, up)
     up_str = string(up)
-    shift = if (up_axis = Symbol(up_str[end])) === :x
+    shift = if (up_axis = Symbol(up_str[end])) ≡ :x
         0
-    elseif up_axis === :y
+    elseif up_axis ≡ :y
         1
-    elseif up_axis === :z
+    elseif up_axis ≡ :z
         2
     else
         throw(ArgumentError("up=$up not understood"))
@@ -235,7 +235,7 @@ struct MVP{E,T}
         @assert -90 ≤ elevation ≤ 90
 
         F = float(eltype(z))
-        is_ortho = projection === :orthographic
+        is_ortho = projection ≡ :orthographic
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
         # half the diagonal (cam distance to the center)
@@ -276,21 +276,21 @@ is_enabled(::MVP{Val{false}}) = false
 is_enabled(::MVP{Val{true}}) = true
 
 function transform_matrix(t::MVP{E,T}, n::Symbol)::SMatrix{4,4,T} where {E,T}
-    if n === :user
+    if n ≡ :user
         t.mvp_mat
-    elseif n === :orthographic
+    elseif n ≡ :orthographic
         t.mvp_ortho_mat
-    elseif n === :perspective
+    elseif n ≡ :perspective
         t.mvp_persp_mat
     end
 end
 
 function is_ortho(t::MVP, n::Symbol)::Bool
-    if n === :user
+    if n ≡ :user
         t.ortho
-    elseif n === :orthographic
+    elseif n ≡ :orthographic
         true
-    elseif n === :perspective
+    elseif n ≡ :perspective
         false
     end
 end

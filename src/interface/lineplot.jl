@@ -94,18 +94,18 @@ function lineplot!(
         length(x) == length(y) == length(color) ||
             throw(ArgumentError("Invalid color vector"))
         for i in eachindex(color)
-            lines!(plot, x[i], y[i], z === nothing ? z : z[i], color[i])
+            lines!(plot, x[i], y[i], z ≡ nothing ? z : z[i], color[i])
         end
     else
         lines!(plot, x, y, z, color)
     end
-    (head_tail === nothing || length(x) == 0 || length(y) == 0) && return plot
+    (head_tail ≡ nothing || length(x) == 0 || length(y) == 0) && return plot
     if head_tail in (:head, :both)
         points!(
             plot,
             last(x),
             last(y),
-            z === nothing ? z : last(z),
+            z ≡ nothing ? z : last(z),
             complement(col_vec ? last(color) : color),
         )
     end
@@ -114,7 +114,7 @@ function lineplot!(
             plot,
             first(x),
             first(y),
-            z === nothing ? z : first(z),
+            z ≡ nothing ? z : first(z),
             complement(col_vec ? first(color) : color),
         )
     end
@@ -202,7 +202,7 @@ function lineplot(
     ylabel = "f(x)",
     kw...,
 )
-    y = [float(f(i)) for i in x]
+    y = float.(f.(x))
     name = name == "" ? string(nameof(f), "(x)") : name
     plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
@@ -211,10 +211,10 @@ function lineplot(
     f::Function,
     startx::Number,
     endx::Number;
-    out_stream::Union{Nothing,IO} = nothing,
-    width::Int = out_stream_width(out_stream),
+    width::Union{Nothing,Integer} = nothing,
     kw...,
 )
+    width = something(width, DEFAULT_WIDTH[])
     diff = abs(endx - startx)
     x = startx:(diff / 3width):endx
     lineplot(f, x; width = width, kw...)
@@ -223,7 +223,7 @@ end
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
 
 function lineplot!(plot::Plot{<:Canvas}, f::Function, x::AbstractVector; name = "", kw...)
-    y = [float(f(i)) for i in x]
+    y = float.(f.(x))
     name = name == "" ? string(nameof(f), "(x)") : name
     lineplot!(plot, x, y; name = name, kw...)
 end

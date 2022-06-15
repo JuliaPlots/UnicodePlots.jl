@@ -111,7 +111,7 @@ function spy(
         )
         color = :auto
     end
-    width, height = get_canvas_dimensions_for_matrix(
+    height, width = get_canvas_dimensions_for_matrix(
         canvas,
         nrow,
         ncol,

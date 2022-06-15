@@ -43,7 +43,7 @@ function HeatmapCanvas(args...; kw...)
 end
 
 function printrow(io::IO, print_nc, print_col, c::HeatmapCanvas, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = 2row
 
     # extend the plot upwards by half a row

@@ -1,19 +1,19 @@
 # en.wikipedia.org/wiki/Plane_(Unicode)
-const plane0_start = 0x00000
-const plane0_stop = 0x0FFFF
-const plane1_start = 0x10000
-const plane1_stop = 0x1FFFF
-const plane2_start = 0x20000
-const plane2_stop = 0x2FFFF
+const PLANE0_START = 0x00000
+const PLANE0_STOP = 0x0FFFF
+const PLANE1_START = 0x10000
+const PLANE1_STOP = 0x1FFFF
+const PLANE2_START = 0x20000
+const PLANE2_STOP = 0x2FFFF
 
 # TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
-const unicode_table = Array{Char}(undef, (plane0_stop - plane0_start + 1) + length(MARKERS))
-for i in plane0_start:plane0_stop
-    unicode_table[i + 1] = Char(i)
+const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
+for i in PLANE0_START:PLANE0_STOP
+    UNICODE_TABLE[i + 1] = Char(i)
 end
 
-for (j, i) in enumerate(plane1_start:(plane1_start + (length(MARKERS) - 1)))
-    unicode_table[i + 1] = MARKERS[j]
+for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+    UNICODE_TABLE[i + 1] = MARKERS[j]
 end
 
 abstract type LookupCanvas <: Canvas end
@@ -95,10 +95,10 @@ function pixel!(
     pixel_y::Int,
     color::UserColorType,
 ) where {T<:LookupCanvas}
-    0 <= pixel_x <= pixel_width(c) || return c
-    0 <= pixel_y <= pixel_height(c) || return c
+    0 ≤ pixel_x ≤ pixel_width(c) || return c
+    0 ≤ pixel_y ≤ pixel_height(c) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] <= val <= c.min_max[2]
+    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
         grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
     end
     blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
@@ -107,7 +107,7 @@ function pixel!(
 end
 
 function printrow(io::IO, print_nc, print_col, c::LookupCanvas, row::Int)
-    0 < row <= nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
         print_col(io, colors(c)[x, y], lookup_decode(c)[grid(c)[x, y] + 1])

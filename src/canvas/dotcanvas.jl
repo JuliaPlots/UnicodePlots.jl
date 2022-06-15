@@ -1,12 +1,12 @@
-const dot_signs = [0b10 0b01]
+const DOT_SIGNS = [0b10 0b01]
 
-const n_dot = 4
-const dot_decode = Array{Char}(undef, typemax(UInt16))
-dot_decode[1] = ' '
-dot_decode[2] = '.'
-dot_decode[3] = '\''
-dot_decode[4] = ':'
-dot_decode[(n_dot + 1):typemax(UInt16)] = unicode_table[1:(typemax(UInt16) - n_dot)]
+const N_DOT = 4
+const DOT_DECODE = Array{Char}(undef, typemax(UInt16))
+DOT_DECODE[1] = ' '
+DOT_DECODE[2] = '.'
+DOT_DECODE[3] = '\''
+DOT_DECODE[4] = ':'
+DOT_DECODE[(N_DOT + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) - N_DOT)]
 
 """
 Similar to the `AsciiCanvas`, the `DotCanvas` only uses
@@ -40,8 +40,8 @@ end
 @inline x_pixel_per_char(::Type{C}) where {C<:DotCanvas} = 1
 @inline y_pixel_per_char(::Type{C}) where {C<:DotCanvas} = 2
 
-@inline lookup_encode(::DotCanvas) = dot_signs
-@inline lookup_decode(::DotCanvas) = dot_decode
+@inline lookup_encode(::DotCanvas) = DOT_SIGNS
+@inline lookup_decode(::DotCanvas) = DOT_DECODE
 
 DotCanvas(args...; kw...) =
     CreateLookupCanvas(DotCanvas, UInt16, (0b00, 0b11), args...; kw...)
@@ -54,7 +54,7 @@ function char_point!(
     color::UserColorType,
 )
     if checkbounds(Bool, c.grid, char_x, char_y)
-        c.grid[char_x, char_y] = n_dot + char
+        c.grid[char_x, char_y] = N_DOT + char
         set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c

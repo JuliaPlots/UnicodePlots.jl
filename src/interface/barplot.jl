@@ -58,8 +58,7 @@ function barplot(
     heights::AbstractVector{<:Number};
     border = :barplot,
     color::Union{UserColorType,AbstractVector} = :green,
-    out_stream::Union{Nothing,IO} = nothing,
-    width::Int = out_stream_width(out_stream),
+    width::Union{Nothing,Integer} = nothing,
     symb = nothing,  # deprecated
     symbols = KEYWORDS.symbols,
     xscale = KEYWORDS.xscale,
@@ -70,7 +69,7 @@ function barplot(
 )
     length(text) == length(heights) ||
         throw(DimensionMismatch("The given vectors must be of the same length"))
-    minimum(heights) >= 0 || throw(
+    minimum(heights) ≥ 0 || throw(
         ArgumentError("All values have to be positive. Negative bars are not supported."),
     )
 
@@ -81,7 +80,7 @@ function barplot(
             lines = split(t, '\n')
             if (n = length(lines)) > 1
                 append!(_text, lines)
-                for i in 1:n
+                for i in eachindex(lines)
                     push!(_heights, i == n ? h : -1)
                 end
             else
@@ -94,7 +93,7 @@ function barplot(
 
     area = BarplotGraphics(
         heights,
-        width,
+        something(width, DEFAULT_WIDTH[]),
         xscale;
         color = color,
         symbols = _handle_deprecated_symb(symb, symbols),

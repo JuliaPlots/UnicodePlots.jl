@@ -6,15 +6,13 @@
 Draws a box-and-whisker plot.
 
 The first argument specifies the data to plot. This is a vector
-of vectors, with each inner vector representing a data series. We
-use a vector of vectors over a matrix to allow series of
-different lengths. Optionally, a list of text may be provided,
-with length equal to the number of series.
+of vectors, with each inner vector representing a data series.
+We use a vector of vectors over a matrix to allow series of different lengths.
+Optionally, a list of text may be provided, with length equal to the number of series.
 
-Alternatively, one can specify a boxplot using a dictionary. In
-that case, the values, which have to be numeric, will be used as
-the data series, and the keys, which have to be strings, will be
-used as the labels.
+Alternatively, one can specify a boxplot using a dictionary.
+In that case, the values, which have to be numeric, will be used as the data series,
+and the keys, which have to be strings, will be used as the labels.
 
 # Usage
     
@@ -59,8 +57,7 @@ function boxplot(
     data::AbstractVector{<:AbstractArray{<:Number}};
     border = :corners,
     color::Union{UserColorType,AbstractVector} = :green,
-    out_stream::Union{Nothing,IO} = nothing,
-    width::Int = out_stream_width(out_stream),
+    width::Union{Nothing,Integer} = nothing,
     xlim = KEYWORDS.xlim,
     kw...,
 )
@@ -68,9 +65,9 @@ function boxplot(
         throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
-    width = max(width, 10)
+    width = max(something(width, DEFAULT_WIDTH[]), 10)
 
-    area = BoxplotGraphics(data[1], width, color = color, min_x = min_x, max_x = max_x)
+    area = BoxplotGraphics(first(data), width, color = color, min_x = min_x, max_x = max_x)
     for i in 2:length(data)
         addseries!(area, data[i])
     end

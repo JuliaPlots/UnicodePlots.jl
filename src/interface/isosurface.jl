@@ -113,7 +113,7 @@ function isosurface!(
     cs = UserColorType[]
 
     for (i1, i2, i3) in mc.triangles
-        (i1 <= 0 || i2 <= 0 || i3 <= 0) && continue  # invalid triangle
+        (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
         v1 = mc.vertices[i1]
         v2 = mc.vertices[i2]
         v3 = mc.vertices[i3]

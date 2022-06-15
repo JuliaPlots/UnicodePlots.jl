@@ -76,15 +76,15 @@ function surfaceplot(
     ey = extrema(y)
     eh = NaNMath.extrema(as_float(H))
 
-    if zscale === :identity
+    if zscale ≡ :identity
         ez = eh
         Z = H
     elseif zscale isa Function
         ez = zscale.(eh)
         Z = zscale.(H)
-    elseif zscale === :aspect || zscale isa NTuple{2}
+    elseif zscale ≡ :aspect || zscale isa NTuple{2}
         mh, Mh = eh
-        mz, Mz = ez = if zscale === :aspect
+        mz, Mz = ez = if zscale ≡ :aspect
             diff(ex |> collect) > diff(ey |> collect) ? ex : ey
         else
             zscale
@@ -125,7 +125,7 @@ function surfaceplot!(
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
-    cmapped = color === nothing
+    cmapped = color ≡ nothing
     color = (color == :auto) ? next_color!(plot) : color
 
     plot.colorbar_lim = mh, Mh = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim

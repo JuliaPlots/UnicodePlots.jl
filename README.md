@@ -333,7 +333,7 @@ The `projection` type for `MVP` can be set to either `:perspective` or `:orthogr
 
 Displaying the `x`, `y`, and `z` axes can be controlled using the `axes3d` keyword.
 
-For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using the unexported `UnicodePlots.default_size!(width=60)` for all future plots). </details>
+For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using `default_size!(width=60)` for all future plots). </details>
 
 <details>   <summary><a name=layout></a><b>Layout</b></summary>
 

@@ -158,11 +158,11 @@ const BORDER_COLOR = Ref(:dark_gray)
 # standard terminals seem to respect a 4:3 aspect ratio
 # unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
 # retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
-const ASPECT_RATIO = 4 / 3
+const ASPECT_RATIO = Ref(4 / 3)
 
 # default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
 const DEFAULT_HEIGHT = Ref(15)
-const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO))
+const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
 const MarkerType = Union{Symbol,Char,AbstractString}
 const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
@@ -228,21 +228,29 @@ function __init__()
     nothing
 end
 
+"""
+    default_size!(;
+        height::Union{Integer,Nothing} = nothing,
+        width::Union{Integer,Nothing} = nothing,
+    )
+
+# Change and return the default plot size (height, width).
+"""
 function default_size!(;
-    width::Union{Integer,Nothing} = nothing,
     height::Union{Integer,Nothing} = nothing,
+    width::Union{Integer,Nothing} = nothing,
 )
-    @assert width === nothing || height === nothing
-    if width !== nothing
-        DEFAULT_WIDTH[] = width
-        DEFAULT_HEIGHT[] = round(Int, width / 2ASPECT_RATIO)
-    elseif height !== nothing
+    @assert height ≡ nothing || width ≡ nothing
+    if height ≢ nothing
         DEFAULT_HEIGHT[] = height
-        DEFAULT_WIDTH[] = round(Int, height * 2ASPECT_RATIO)
+        DEFAULT_WIDTH[] = round(Int, height * 2ASPECT_RATIO[])
+    elseif width ≢ nothing
+        DEFAULT_WIDTH[] = width
+        DEFAULT_HEIGHT[] = round(Int, width / 2ASPECT_RATIO[])
     else
         default_size!(height = 15)
     end
-    nothing
+    DEFAULT_HEIGHT[], DEFAULT_WIDTH[]  # `displaysize` order convention
 end
 
 function char_marker(marker::MarkerType)::Char
@@ -251,7 +259,7 @@ function char_marker(marker::MarkerType)::Char
     else
         length(marker) == 1 ||
             throw(ArgumentError("`marker` keyword has a non unit length"))
-        marker[1]
+        first(marker)
     end
 end
 
@@ -267,7 +275,7 @@ end
 
 as_float(x) = eltype(x) <: AbstractFloat ? x : float.(x)
 
-roundable(num::Number) = isinteger(num) & (typemin(Int) <= num < typemax(Int))
+roundable(num::Number) = isinteger(num) & (typemin(Int) ≤ num < typemax(Int))
 compact_repr(num::Number) = repr(num, context = :compact => true)
 
 ceil_neg_log10(x) =
@@ -373,7 +381,7 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
     end
 end
 
-sort_by_keys(dict::Dict) = sort!(collect(dict), by = x -> x[1])
+sort_by_keys(dict::Dict) = sort!(collect(dict), by = x -> first(x))
 
 function sorted_keys_values(dict::Dict; k2s = true)
     if k2s  # check and force key type to be of AbstractString type if necessary
@@ -450,7 +458,7 @@ end
         INVALID_COLOR
     end
 
-ignored_color(color::Symbol) = color === :normal || color === :default || color === :nothing
+ignored_color(color::Symbol) = color ≡ :normal || color ≡ :default || color ≡ :nothing
 ignored_color(::Nothing) = true
 ignored_color(::Any) = false
 
@@ -514,13 +522,15 @@ complement(color::ColorType)::ColorType =
     nothing
 end
 
-out_stream_size(out_stream::Union{Nothing,IO}) =
-    out_stream === nothing ? (DEFAULT_WIDTH[], DEFAULT_HEIGHT[]) : displaysize(out_stream)
-out_stream_width(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[1]
-out_stream_height(out_stream::Union{Nothing,IO})::Int = out_stream_size(out_stream)[2]
+out_stream_size(out_stream::Union{Nothing,IO} = nothing) =
+    out_stream ≡ nothing ? displaysize() : displaysize(out_stream)
+out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
+    out_stream |> out_stream_size |> first
+out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
+    out_stream |> out_stream_size |> last
 
 function _handle_deprecated_symb(symb, symbols)
-    if symb === nothing
+    if symb ≡ nothing
         symbols
     else
         Base.depwarn(
