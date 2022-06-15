@@ -200,7 +200,7 @@ function histogram(
         )
         fit(Histogram, x_plot; nbins = bins, closed = closed)
     else
-        fit(Histogram, x_plot; closed = closed, filter(p -> p.first == :nbins, kw)...)
+        fit(Histogram, x_plot; closed = closed, filter(p -> p.first ≡ :nbins, kw)...)
     end
     info = if vertical && stats
         digits = 2

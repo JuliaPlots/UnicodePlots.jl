@@ -81,9 +81,6 @@ function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
     tmp = pixel_x / c.pixel_width * cw
     char_x = floor(Int, tmp) + 1
     char_x_off = (pixel_x % 2) + 1
-    if char_x < round(Int, tmp, RoundNearestTiesUp) + 1 && char_x_off == 1
-        char_x += 1
-    end
     char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
     char_y_off = (pixel_y % 4) + 1
     char_x, char_y, char_x_off, char_y_off

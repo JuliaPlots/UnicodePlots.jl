@@ -305,8 +305,6 @@ function Plot(
                     points!(plot, 0.0, i, nothing)
                 end
             end
-        else
-            # TODO: maybe draw `log` scale grid lines 
         end
     end
 
