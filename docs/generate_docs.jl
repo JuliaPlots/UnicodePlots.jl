@@ -1,8 +1,10 @@
 using UnicodePlots
 using Markdown
+using Term
 import Markdown: MD, Paragraph, plain
 
 main() = begin
+  warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead"
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "2.10"
 
@@ -243,7 +245,7 @@ main() = begin
   will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
   """)
 
-  readme = plain(md"""
+  readme = plain_md_par("""
 # UnicodePlots
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
@@ -255,7 +257,7 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+![Banner]($docs_url/$ver/banner.png)
 
 ## High-level Interface
 
@@ -293,6 +295,9 @@ Here is a list of the main high-level functions for common scenarios:
   Some plot methods have a mutating variant that ends with a exclamation mark:
 
   $(examples.lineplot3)
+
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+
 </details>
 
 <details open>
@@ -490,23 +495,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
-  For a more complex layout, use [`Term`](https://github.com/FedeClaudi/Term.jl):
-
-```julia
-using UnicodePlots, Term
-
-panel(plot; kw...) = Panel(string(plot, color=true); fit=true, kw...)
-
-print(
-  panel(lineplot([cos, sin], -π/2, 2π); title="lineplot", style="yellow") *
-  panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red") * 
-  panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="blue") / (
-    panel(histogram(randn(1_000_000), nbins=100, vertical=true); title="histogram", style="green") * 
-    panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan")
-  )
-)
-```
-
+  For a more complex layout, use the [`grid`](https://fedeclaudi.github.io/Term.jl/dev/layout/grid) function from [`Term`](https://github.com/FedeClaudi/Term.jl).
 </details>
 
 <details>
@@ -557,47 +546,123 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 """)
 
   mkpath("imgs/$ver")
+
   open("imgs/gen_imgs.jl", "w") do io
     println(io, """
-      # WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead
-      using UnicodePlots, StableRNGs, SparseArrays, Unitful
+      # $warn
+      using UnicodePlots, StableRNGs, SparseArrays, Unitful, Term
 
       # UnicodePlots.brightcolors!()
 
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
-      main() = begin
-      rng = StableRNG(1337)
+      cursor_hide(io::IO) = print(io, "\x1b[?25l")
+      cursor_show(io::IO) = print(io, "\x1b[?25h")
 
-      bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
-      bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
+      banner() = begin
+        default_size!(height=10)
+
+        panel(plt; kw...) = Panel(string(plt, color=true); fit=true, kw...)
+
+        panels = (
+          line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot", style="orange1"),
+          scat = panel(scatterplot(1:6, 1:6, xscale=:log10, yscale=:ln); title="scatterplot", style="yellow1"),
+          cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red1"),
+          surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="royal_blue1"),
+          iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface", style="cornsilk1"),
+          vhist = panel(histogram(randn(1_000_000), nbins=60, vertical=true); title="vertical histogram", style="green1"),
+          hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="horizontal histogram", style="dodger_blue2"),
+          dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan1"),
+          hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap", style="magenta1"),
+          bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot", style="gold1"),
+          polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot", style="chartreuse1"),
+          box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot", style="grey11"),
+          stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair", style="aquamarine1"),
+          spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy", style="salmon1"),
+        )
+        g = grid(panels, layout=:((line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * vhist * (bar / (box * spy)))))
+
+        if true
+          cursor_hide(stdout)
+          run(`clear`)
+          print(stdout, g)
+          win = if "WINDOWID" in keys(ENV)
+            ENV["WINDOWID"]
+          else
+            readchomp(`xdotool getactivewindow`)
+          end
+          run(`import -window \$win $ver/banner.png`)
+          cursor_show(stdout)
+        else
+          print(stdout, g)
+          open("$ver/banner.txt", "w") do io
+            print(io, g)
+          end
+        end
+      end
+
+      main() = begin
+        rng = StableRNG(1337)
+
+        bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
+        bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
+
+        banner()
       """
     )
     for (i, (k, e)) in enumerate(pairs(exs))
-      println(io, "# $k")
+      println(io, "  # $k")
       code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
       code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ") for c in code]
       println(io, """
-        println("ex n°$i - $k")
-        _ex_$i(rng) = begin
-        $(indent(join(code, '\n'), 1))
-        end
-        plt = _ex_$i(rng)
-        display(plt)
-        savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
-        # savefig(plt, "$ver/$k.txt"; color=true)
+          println("ex n°$i - $k")
+          default_size!()
+          _func_$i(rng) = begin
+          $(indent(join(code, '\n'), 1))
+          end
+          plt = _func_$i(rng)
+          display(plt)
+          savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
+          # savefig(plt, "$ver/$k.txt"; color=true)
         """
       )
     end
-    println(io, "\nreturn\nend\nmain()")
+    println(io, "  return\nend\nmain()")
   end
 
   write(stdout, readme)
   open("../README.md", "w") do io
-    write(io, "<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead, and run \$ julia generate_docs.jl to render README.md !! -->\n")
+    write(io, "<!-- $warn, and run \$ julia generate_docs.jl to render README.md !! -->\n")
     write(io, readme)
   end
   return
 end
 
 main()
+
+#=
+open("imgs/gen_all.sh", "w") do io
+  write(io, """
+    #!/usr/bin/env bash
+    # $warn
+
+    echo '== julia =='
+    \${JULIA-julia} gen_imgs.jl
+
+    txt2png() {
+      html=\${1%.txt}.html
+      cat \$1 | \${ANSI2HTML-ansi2html} --input-encoding=utf-8 --output-encoding=utf-8 >\$html
+      sed -i "s,background-color: #000000,background-color: #282828," \$html
+      \${WKHTMLTOIMAGE-wkhtmltoimage} --quiet --quality 85 \$html \${html%.html}.png
+    }
+    echo '== txt2png =='
+    for f in $ver/*.txt; do
+      txt2png \$f & pids+=(\$!)
+    done
+    wait \${pids[@]}
+    rm $ver/*.txt
+    rm $ver/*.html
+    """
+  )
+end
+=#

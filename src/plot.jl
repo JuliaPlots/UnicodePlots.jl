@@ -643,7 +643,7 @@ function print_labels(
     right_pad::AbstractString,
     blank::Char,
 )
-    p.labels || return
+    p.labels || return 0
     bc        = BORDER_COLOR[]
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
@@ -668,8 +668,9 @@ function print_labels(
         print_nc(io, pad)
         print_col(io, right_col, right_str)
         print_nc(io, right_pad)
+        return 1
     end
-    nothing
+    return 0
 end
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
@@ -740,7 +741,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         p_width = p_width,
         color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
     )
-    print_labels(
+    h_lbl = print_labels(
         io,
         print_nc,
         print_col,
@@ -763,7 +764,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     )
 
     # compute position of ylabel
-    y_lab_row = round(nrows(c) / 2, RoundNearestTiesUp)
+    y_lab_row = round(nr / 2, RoundNearestTiesUp)
 
     callback = colormap_callback(p.colormap)
 
@@ -832,7 +833,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         row < nrows(c) && print_nc(io, '\n')
     end
 
-    # draw bottom border and bottom labels  
+    # draw bottom border
     c.visible && print_border(
         io,
         print_nc,
@@ -843,9 +844,10 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         border_right_pad,
         bmap,
     )
-    h_lbl = w_lbl = 0
+    # print bottom labels
+    w_lbl = 0
     if p.labels
-        print_labels(
+        h_lbl += print_labels(
             io,
             print_nc,
             print_col,
@@ -856,7 +858,6 @@ function _show(io::IO, print_nc, print_col, p::Plot)
             🗹 * border_right_pad,
             🗹,
         )
-        h_lbl += 1
         if !p.compact
             h_w = print_title(
                 io,
@@ -892,6 +893,8 @@ fallback_font(mono::Bool = false) =
         mono ? "Courier" : "Helvetica"
     end
 # COV_EXCL_STOP
+
+const FT_FONTS = Dict{String,FreeTypeAbstraction.FTFont}()
 
 """
     png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
@@ -1020,9 +1023,12 @@ function png_image(
 
     # render image
     face = nothing
-    for font_name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
-        if (ft = FreeTypeAbstraction.findfont(font_name)) ≢ nothing
-            face = ft
+    for name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
+        if haskey(FT_FONTS, name)
+            face = FT_FONTS[name]
+            break
+        elseif (ft = FreeTypeAbstraction.findfont(name)) ≢ nothing
+            face = FT_FONTS[name] = ft
             break
         end
     end
