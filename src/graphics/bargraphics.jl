@@ -1,11 +1,11 @@
-mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
+struct BarplotGraphics{R<:Number} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}
     char_width::Int
     visible::Bool
     maximum::Float64
-    max_val::Float64
-    max_len::Int
+    max_val::RefValue{Float64}
+    max_len::RefValue{Int}
     symbols::AbstractVector{Char}
     xscale::Any  # Union{Symbol,Function} ==> no, we support functors which are <: Any
 
@@ -24,9 +24,7 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
             )
         end
         xscale = scale_callback(xscale)
-        char_width = max(char_width, 10)
-        _, i = findmax(xscale.(bars))
-        char_width = max(char_width, length(string(bars[i])) + 7)
+        char_width = max(10, char_width, length(string(bars[argmax(xscale.(bars))])) + 7)
         colors = if color isa AbstractVector
             ansi_color.(color)
         else
@@ -38,8 +36,8 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
             char_width,
             visible,
             float(something(maximum, -Inf)),
-            -Inf,
-            zero(R),
+            Ref(-Inf),
+            Ref(0),
             map(s -> first(s), symbols),
             xscale,
         )
@@ -86,9 +84,9 @@ end
 
 function preprocess!(c::BarplotGraphics)
     max_val, i = findmax(c.xscale.(c.bars))
-    c.max_val = max(max_val, c.maximum)
-    c.max_len = length(string(c.bars[i]))
-    c -> (c.max_val = -Inf; c.max_len = 0)
+    c.max_val[] = max(max_val, c.maximum)
+    c.max_len[] = length(string(c.bars[i]))
+    c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
 function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
@@ -96,8 +94,8 @@ function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     bar = c.bars[row]
     val = c.xscale(bar)
     nsyms = length(c.symbols)
-    frac = c.max_val > 0 ? max(val, zero(val)) / c.max_val : 0.0
-    max_bar_width = max(c.char_width - 2 - c.max_len, 1)
+    frac = c.max_val[] > 0 ? max(val, zero(val)) / c.max_val[] : 0.0
+    max_bar_width = max(c.char_width - 2 - c.max_len[], 1)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
     print_col(io, c.colors[row], c.symbols[nsyms]^bar_head)
     if nsyms > 1
@@ -112,7 +110,7 @@ function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     else
         len = -1
     end
-    pad_len = max(max_bar_width + 1 + c.max_len - bar_head - len, 0)
+    pad_len = max(max_bar_width + 1 + c.max_len[] - bar_head - len, 0)
     print_nc(io, ' '^round(Int, pad_len))
     nothing
 end
