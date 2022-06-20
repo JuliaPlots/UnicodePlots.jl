@@ -10,10 +10,12 @@
         @test @inferred(ncols(g)) === 30
         @test_throws ArgumentError printrow(stdout, g, 0)
         @test_throws ArgumentError printrow(stdout, g, 7)
+        callback! = preprocess!(g)
         test_ref(
             "graphics/bar_printrow.txt",
             @io2str(printrow(IOContext(::IO, :color => true), g, 3))
         )
+        callback!(g)
         test_ref("graphics/bar_print.txt", @print_col(g))
         test_ref("graphics/bar_show.txt", @show_col(g))
         test_ref("graphics/bar_print_nocolor.txt", @print_nocol(g))
@@ -75,10 +77,12 @@ end
         @test @inferred(ncols(g)) === 30
         @test_throws ArgumentError printrow(stdout, g, 0)
         @test_throws ArgumentError printrow(stdout, g, 4)
+        callback! = preprocess!(g)
         test_ref(
             "graphics/box_printrow.txt",
             @io2str(printrow(IOContext(::IO, :color => true), g, 3))
         )
+        callback!(g)
         test_ref("graphics/box_print.txt", @print_col(g))
         test_ref("graphics/box_show.txt", @show_col(g))
         test_ref("graphics/box_print_nocolor.txt", @print_nocol(g))

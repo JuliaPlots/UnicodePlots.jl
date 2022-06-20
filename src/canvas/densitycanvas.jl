@@ -79,16 +79,20 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     if checkbounds(Bool, c.grid, char_x, char_y)
         cnt = c.grid[char_x, char_y] += 1  # count occurrences
-        c.max_density = max(c.max_density, c.zscale(cnt))  # only valid for monotonically increasing `zscale`
         set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c
 end
 
+function preprocess!(c::DensityCanvas)
+    c.max_density = max(eps(), maximum(c.zscale.(c.grid)))
+    c -> c.max_density = -Inf  # cleanup callback
+end
+
 function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     signs = DEN_SIGNS[]
-    fact = (length(signs) - 1) / max(eps(), c.max_density)
+    fact = (length(signs) - 1) / c.max_density
     for x in 1:ncols(c)
         val = fact * c.zscale(c.grid[x, row])
         print_col(io, c.colors[x, row], signs[round(Int, val, RoundNearestTiesUp) + 1])

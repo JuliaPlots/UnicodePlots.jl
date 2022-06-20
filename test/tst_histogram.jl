@@ -65,28 +65,18 @@ end
     )
     test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
-    p = histogram(
-        x,
-        title = "My Histogram",
-        xlabel = "Absolute Frequency",
-        color = :yellow,
-        border = :solid,
-        symbols = ["="],
-        width = 50,
-    )
-    test_ref("histogram/parameters2.txt", @print_col(p))
-    # same but with Char as symbols
-
-    p = histogram(
-        x,
-        title = "My Histogram",
-        xlabel = "Absolute Frequency",
-        color = :yellow,
-        border = :solid,
-        symbols = ['='],
-        width = 50,
-    )
-    test_ref("histogram/parameters2.txt", @print_col(p))
+    for sym in ("=", '=')
+        p = histogram(
+            x,
+            title = "My Histogram",
+            xlabel = "Absolute Frequency",
+            color = :yellow,
+            border = :solid,
+            symbols = [sym],
+            width = 50,
+        )
+        test_ref("histogram/parameters2.txt", @print_col(p))
+    end
 
     # colors
     p = histogram(x, title = "Gray color", color = 240)

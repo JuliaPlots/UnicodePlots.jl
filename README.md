@@ -244,7 +244,7 @@ densityplot!(plt, randn(10_000) .+ 2, randn(10_000) .+ 2)
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/densityplot1.png" width="500"><br>
 
 
-  Using a monotonically increasing scale for damping peaks is supported using the `zscale` keyword:
+  Using a scale function (e.g. damping peaks) is supported using the `zscale` keyword:
 
   ```julia
 x = randn(10_000); x[1_000:6_000] .= 2

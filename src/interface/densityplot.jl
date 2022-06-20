@@ -8,7 +8,7 @@ Draws a density plot for the given points.
 The first vector `x` should contain the horizontal positions for all the points.
 The second vector `y` should contain the corresponding vertical positions respectively.
 The two vectors must thus be of the same length and ordering.
-One can pass a monotically increasing `zscale` `Function` or `Symbol` for transforming density counts (peak damping).
+One can pass an arbitrary `zscale` `Function` or `Symbol` for transforming density counts (e.g. peaks damping).
 
 # Usage
 

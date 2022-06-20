@@ -761,7 +761,9 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # compute position of ylabel
     y_lab_row = round(nr / 2, RoundNearestTiesUp)
 
-    callback = colormap_callback(p.colormap)
+    cmap_callback = colormap_callback(p.colormap)
+
+    cleanup_callback! = preprocess!(c)
 
     # plot all rows
     for row in 1:nr
@@ -815,7 +817,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 print_col,
                 c,
                 row,
-                callback,
+                cmap_callback,
                 p.colorbar_border,
                 p.colorbar_lim,
                 (min_z_str, max_z_str),
@@ -827,6 +829,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         end
         row < nrows(c) && print_nc(io, '\n')
     end
+
+    cleanup_callback!(c)
 
     # draw bottom border
     c.visible && print_border(

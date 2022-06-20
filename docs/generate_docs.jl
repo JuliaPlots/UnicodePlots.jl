@@ -394,7 +394,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   $(examples.densityplot1)
 
-  Using a monotonically increasing scale for damping peaks is supported using the `zscale` keyword:
+  Using a scale function (e.g. damping peaks) is supported using the `zscale` keyword:
 
   $(examples.densityplot2)
 </details>
