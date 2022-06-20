@@ -577,7 +577,7 @@ function print_title(
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nc(io, post_pad, right_pad)
     (
-        count('\n', title) + 1,
+        count("\n", title) + 1,
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
     )
 end
