@@ -38,7 +38,6 @@ function DensityCanvas(
     xscale::Union{Symbol,Function} = identity,
     dscale::Union{Symbol,Function} = identity,
 )
-    G = first(fieldtypes(DensityCanvas))
     height > 0 || throw(ArgumentError("height has to be positive"))
     width > 0 || throw(ArgumentError("width has to be positive"))
     char_height  = max(char_height, 5)

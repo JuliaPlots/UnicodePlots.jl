@@ -93,7 +93,7 @@ main() = begin
     border_none = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"),
     decorate = ("Decorate", """
       x = y = collect(1:10)
-      plt = lineplot(x, y, canvas=DotCanvas, width=30, height=10)
+      plt = lineplot(x, y, canvas=DotCanvas, height=10, width=30)
       lineplot!(plt, x, reverse(y))
       title!(plt, "Plot Title")
       for loc in (:tl, :t, :tr, :bl, :b, :br)
@@ -108,9 +108,9 @@ main() = begin
       plt
       """),
     canvas = ("Canvas", """
-      canvas = BrailleCanvas(40, 15,                    # number of columns and rows (characters)
-                             origin_x=0., origin_y=0.,  # position in virtual space
-                             width=1., height=1.)       # size of the virtual space
+      canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
+                             origin_y=0., origin_x=0.,  # position in virtual space
+                             height=1., width=1.)       # size of the virtual space
       lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
       points!(canvas, rand(50), rand(50), :red)         # virtual space
       lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
@@ -118,7 +118,7 @@ main() = begin
       Plot(canvas)
       """),
     blending = ("Blending", """
-      canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
+      canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
       lines!(canvas, 0., 0., 1., 1., :blue)
       lines!(canvas, .25, 1., .5, 0., :yellow)
       lines!(canvas, .2, .8, 1., 0., :red)
@@ -134,7 +134,9 @@ main() = begin
 
   tab = ' '^2
 
-  indent(x, n) = tab^n * join(split(x, '\n'), '\n' * tab^n)
+  indent(x::AbstractString, n) = tab^n * join(split(x, '\n'), '\n' * tab^n)
+  indent(x::AbstractVector, n) = tab^n * join(x, '\n' * tab^n)
+
   desc_ex(k, d, n=2) = (
     if k ≡ :border
       join((
@@ -632,7 +634,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
           println("ex n°$i - $k")
           default_size!()
           _func_$i(rng) = begin
-          $(indent(join(code, '\n'), 1))
+        """ * indent(code, 2) * '\n' * """
           end
           plt = _func_$i(rng)
           display(plt)

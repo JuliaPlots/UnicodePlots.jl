@@ -17,8 +17,8 @@ y = [2, 0, -5, 2, -5]
             p = scatterplot(
                 1:2,
                 reverse(1:2),
-                width = width,
                 height = height,
+                width = width,
                 canvas = canvas,
             )
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
@@ -92,7 +92,7 @@ end
     test_ref("scatterplot/parameters3.txt", @show_col(p))
     test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 
-    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
+    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("scatterplot/canvassize.txt", @show_col(p))
 end

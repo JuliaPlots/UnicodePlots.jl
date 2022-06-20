@@ -1,6 +1,7 @@
 abstract type Canvas <: GraphicsArea end
 
 grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
+grid_type(c::Canvas) = grid_type(typeof(c))
 
 # we store the grid as the transpose of an array of (w, h) => (height, width) = (nrows, ncols)
 @inline nrows(c::Canvas) = size(c.grid, 1)
@@ -12,7 +13,7 @@ grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
 @inline origin_x(c::Canvas) = c.origin_x
 @inline height(c::Canvas) = c.height
 @inline width(c::Canvas) = c.width
-@inline lookup_offset(::Canvas) = 0
+@inline lookup_offset(c::Canvas) = grid_type(c)(0)
 
 @inline y_to_pixel(c::Canvas, y::Number) =
     (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
@@ -29,7 +30,7 @@ grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
 
 function char_point!(c::Canvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
     if checkbounds(Bool, c.grid, char_y, char_x)
-        c.grid[char_y, char_x] = lookup_offset(c) + Int(char)
+        c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
         set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c

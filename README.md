@@ -244,11 +244,11 @@ densityplot!(plt, randn(10_000) .+ 2, randn(10_000) .+ 2)
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/densityplot1.png" width="500"><br>
 
 
-  Using a scale function (e.g. damping peaks) is supported using the `zscale` keyword:
+  Using a scale function (e.g. damping peaks) is supported using the `dscale` keyword:
 
   ```julia
 x = randn(10_000); x[1_000:6_000] .= 2
-densityplot(x, randn(10_000); zscale = x -> log(1 + x))
+densityplot(x, randn(10_000); dscale = x -> log(1 + x))
 ```
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/densityplot2.png" width="500"><br>
 
@@ -442,7 +442,7 @@ The method `label!` is responsible for the setting all the textual decorations o
     - `row` can be between 1 and the number of character rows of the canvas
     ```julia
     x = y = collect(1:10)
-    plt = lineplot(x, y, canvas=DotCanvas, width=30, height=10)
+    plt = lineplot(x, y, canvas=DotCanvas, height=10, width=30)
     lineplot!(plt, x, reverse(y))
     title!(plt, "Plot Title")
     for loc in (:tl, :t, :tr, :bl, :b, :br)
@@ -564,9 +564,9 @@ _Note_: If you want to print the plot into a file but have monospace issues with
 Here is a simple example:
 
 ```julia
-canvas = BrailleCanvas(40, 15,                    # number of columns and rows (characters)
-                       origin_x=0., origin_y=0.,  # position in virtual space
-                       width=1., height=1.)       # size of the virtual space
+canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
+                       origin_y=0., origin_x=0.,  # position in virtual space
+                       height=1., width=1.)       # size of the virtual space
 lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
 points!(canvas, rand(50), rand(50), :red)         # virtual space
 lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
@@ -576,12 +576,12 @@ Plot(canvas)
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/canvas.png" width="500"><br>
 
 
-You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
+You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `print_row` to embed the canvas anywhere you wish. For example, `print_row(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
 As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
 
 ```julia
-canvas = BrailleCanvas(40, 15, origin_x=0., origin_y=0., width=1., height=1.)
+canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
 lines!(canvas, 0., 0., 1., 1., :blue)
 lines!(canvas, .25, 1., .5, 0., :yellow)
 lines!(canvas, .2, .8, 1., 0., :red)

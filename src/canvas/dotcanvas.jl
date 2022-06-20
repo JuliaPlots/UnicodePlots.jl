@@ -1,13 +1,3 @@
-const DOT_SIGNS = [0b10; 0b01]
-
-const N_DOT = 4
-const DOT_DECODE = Array{Char}(undef, typemax(UInt16))
-DOT_DECODE[1] = ' '
-DOT_DECODE[2] = '.'
-DOT_DECODE[3] = '\''
-DOT_DECODE[4] = ':'
-DOT_DECODE[(N_DOT + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) - N_DOT)]
-
 """
 Similar to the `AsciiCanvas`, the `DotCanvas` only uses ASCII characters to draw it's content.
 Naturally, it doesn't look quite as nice as the Unicode-based ones.
@@ -20,7 +10,7 @@ For `lineplot` we suggest to use the `AsciiCanvas` instead.
 struct DotCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     grid::Transpose{UInt16,Matrix{UInt16}}
     colors::Transpose{ColorType,Matrix{ColorType}}
-    min_max::NTuple{2,UInt64}
+    min_max::NTuple{2,UInt32}
     blend::Bool
     visible::Bool
     pixel_height::Int
@@ -33,8 +23,17 @@ struct DotCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     yscale::YS
 end
 
-@inline x_pixel_per_char(::Type{<:DotCanvas}) = 1
+const N_DOT = grid_type(DotCanvas)(4)
+const DOT_SIGNS = [0b10; 0b01]
+const DOT_DECODE = Array{Char}(undef, typemax(N_DOT))
+DOT_DECODE[1] = ' '
+DOT_DECODE[2] = '.'
+DOT_DECODE[3] = '\''
+DOT_DECODE[4] = ':'
+DOT_DECODE[(N_DOT + 1):typemax(N_DOT)] = UNICODE_TABLE[1:(typemax(N_DOT) - N_DOT)]
+
 @inline y_pixel_per_char(::Type{<:DotCanvas}) = 2
+@inline x_pixel_per_char(::Type{<:DotCanvas}) = 1
 
 @inline lookup_encode(::DotCanvas) = DOT_SIGNS
 @inline lookup_decode(::DotCanvas) = DOT_DECODE

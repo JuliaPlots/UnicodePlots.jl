@@ -9,7 +9,7 @@ This canvas effectively turns every character into two pixels (top and bottom).
 struct HeatmapCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     grid::Transpose{UInt8,Matrix{UInt8}}
     colors::Transpose{ColorType,Matrix{ColorType}}
-    min_max::NTuple{2,UInt64}
+    min_max::NTuple{2,UInt32}
     blend::Bool
     visible::Bool
     pixel_height::Int
@@ -24,8 +24,8 @@ end
 
 @inline nrows(c::HeatmapCanvas) = div(size(c.grid, 1) + 1, 2)
 
-@inline x_pixel_per_char(::Type{<:HeatmapCanvas}) = 1
 @inline y_pixel_per_char(::Type{<:HeatmapCanvas}) = 2
+@inline x_pixel_per_char(::Type{<:HeatmapCanvas}) = 1
 
 @inline lookup_encode(::HeatmapCanvas) = HEATMAP_SIGNS
 @inline lookup_decode(::HeatmapCanvas) = HEATMAP_DECODE

@@ -28,8 +28,8 @@ end
 
 @inline blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
 
-@inline x_pixel_per_char(::Type{<:BrailleCanvas}) = 2
 @inline y_pixel_per_char(::Type{<:BrailleCanvas}) = 4
+@inline x_pixel_per_char(::Type{<:BrailleCanvas}) = 2
 
 function BrailleCanvas(
     char_height::Int,

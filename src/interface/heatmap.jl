@@ -163,10 +163,10 @@ function heatmap(
         ylim = ylim,
         xlim = xlim,
         labels = labels,
-        width = width,
         height = height,
-        min_width = 1,
+        width = width,
         min_height = 1,
+        min_width = 1,
         kw...,
     )
 

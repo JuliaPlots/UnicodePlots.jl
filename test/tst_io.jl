@@ -17,7 +17,7 @@
     @test length.(eachline(io)) |> unique |> length == 1
 end
 
-@testset "save as png" begin
+@testset "savefig" begin
     for p in (
         lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title"),
         barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
@@ -39,6 +39,8 @@ end
                 @test all(size(img) .> (100, 100))
             end
         end
+
+        @test_throws ErrorException savefig(p, tempname() * ".jpg")
     end
 end
 
@@ -48,8 +50,8 @@ end
 
     if Sys.islinux()
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 550  # ~ 500kB on 1.7
-        @test stats.time * 1e3 < 2  # ~ 1.5ms on 1.7
+        @test stats.bytes / 1e3 < 550  # ~ 400kB on 1.7
+        @test stats.time * 1e3 < 2  # ~ 1.17ms on 1.7
     end
 
     sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)

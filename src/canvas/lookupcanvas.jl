@@ -45,7 +45,7 @@ function CreateLookupCanvas(
     T(
         grid,
         colors,
-        NTuple{2,UInt64}(min_max),
+        NTuple{2,UInt32}(min_max),
         blend,
         visible,
         pixel_height,
@@ -69,7 +69,7 @@ function pixel!(
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
     if checkbounds(Bool, c.grid, char_y, char_x)
-        if (val = UInt64(c.grid[char_y, char_x])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
+        if (val = UInt32(c.grid[char_y, char_x])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
             c.grid[char_y, char_x] |= lookup_encode(c)[char_y_off, char_x_off]
         end
         blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified

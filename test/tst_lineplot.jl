@@ -52,7 +52,7 @@ end
     ty = [1.0, 2, 9, 4000000]
     p = @binf lineplot(tx, ty)
     test_ref("lineplot/scale3.txt", @show_col(p))
-    p = @binf lineplot(tx, ty, width = 5, height = 5)
+    p = @binf lineplot(tx, ty, height = 5, width = 5)
     test_ref("lineplot/scale3_small.txt", @show_col(p))
 end
 
@@ -171,7 +171,7 @@ end
     test_ref("lineplot/parameters3.txt", @show_col(p))
     test_ref("lineplot/nocolor.txt", @show_nocol(p))
 
-    p = lineplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
+    p = lineplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("lineplot/canvassize.txt", @show_col(p))
 end
