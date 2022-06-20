@@ -658,12 +658,12 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(no_ansi_escape(l)) for l in values(p.labels_left)])
+        maximum(map(length ∘ no_ansi_escape, values(p.labels_left)))
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(no_ansi_escape(l)) for l in values(p.labels_right)])
+        maximum(map(length ∘ no_ansi_escape, values(p.labels_right)))
     else
         0
     end
