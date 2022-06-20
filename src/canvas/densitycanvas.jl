@@ -5,7 +5,7 @@ Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as
 Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character.
 Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 """
-mutable struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
+struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
     grid::Matrix{UInt}
     colors::Matrix{ColorType}
     blend::Bool
@@ -19,7 +19,7 @@ mutable struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
     xscale::XS
     yscale::YS
     zscale::DS
-    max_density::Float64
+    max_density::RefValue{Float64}
 end
 
 @inline x_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 1
@@ -60,7 +60,7 @@ function DensityCanvas(
         scale_callback(xscale),
         scale_callback(yscale),
         scale_callback(zscale),
-        -Inf,
+        Ref(-Inf),
     )
 end
 
@@ -76,14 +76,14 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
 end
 
 function preprocess!(c::DensityCanvas)
-    c.max_density = max(eps(), maximum(c.zscale.(c.grid)))
-    c -> c.max_density = -Inf  # cleanup callback
+    c.max_density[] = max(eps(), maximum(c.zscale.(c.grid)))
+    c -> c.max_density[] = -Inf
 end
 
 function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     signs = DEN_SIGNS[]
-    fact = (length(signs) - 1) / c.max_density
+    fact = (length(signs) - 1) / c.max_density[]
     for x in 1:ncols(c)
         val = fact * c.zscale(c.grid[x, row])
         print_col(io, c.colors[x, row], signs[round(Int, val, RoundNearestTiesUp) + 1])

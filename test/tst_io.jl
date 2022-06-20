@@ -47,14 +47,14 @@ end
     @test string(p; color = true) isa String
 
     stats = @timed string(p; color = true)  # repeated !
-    @test stats.bytes / 1e3 < 550  # ~ 500kB (on 1.7)
-    @test stats.time * 1e3 < 2  # ~ 1.5ms (on 1.7)
+    @test stats.bytes / 1e3 < 550  # ~ 500kB on 1.7
+    @test stats.time * 1e3 < 2  # ~ 1.5ms on 1.7
 
     sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
     @test string(p; color = true) isa String
 
     stats = @timed string(p; color = true)  # repeated !
-    @test stats.bytes / 1e3 < 150  # ~ 124kB (on 1.7)
-    @test stats.time * 1e6 < 500  # ~ 420µs (on 1.7)
+    @test stats.bytes / 1e3 < 150  # ~ 124kB on 1.7
+    @test stats.time * 1e6 < 900  # ~ 420µs on 1.7
 end
