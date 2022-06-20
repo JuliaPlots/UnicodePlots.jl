@@ -409,15 +409,15 @@ and the number of character rows of the plots canvas.
 function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
     loc ∉ (:t, :b, :l, :r, :tl, :tr, :bl, :br) &&
         throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
-    if loc == :l || loc == :r
+    if loc ≡ :l || loc == :r
         for row in 1:nrows(plot.graphics)
-            if loc == :l
+            if loc ≡ :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
                     plot.colors_left[row] = ansi_color(color)
                     break
                 end
-            elseif loc == :r
+            elseif loc ≡ :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
                     plot.colors_right[row] = ansi_color(color)
@@ -457,10 +457,10 @@ function label!(
     value::AbstractString,
     color::UserColorType,
 )
-    if loc == :l
+    if loc ≡ :l
         plot.labels_left[row] = value
         plot.colors_left[row] = ansi_color(color)
-    elseif loc == :r
+    elseif loc ≡ :r
         plot.labels_right[row] = value
         plot.colors_right[row] = ansi_color(color)
     else
@@ -551,7 +551,7 @@ function annotate!(
     color = :normal,
     kw...,
 )
-    color = color == :auto ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
     annotate!(plot.graphics, x, y, text, color; kw...)
     plot
 end
@@ -664,9 +664,6 @@ function print_labels(
     end
     return 0
 end
-
-blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
-blank(c::GraphicsArea) = Char(BLANK)
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 

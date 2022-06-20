@@ -19,13 +19,13 @@ struct HeatmapCanvas{XS<:Function,YS<:Function} <: LookupCanvas
     yscale::YS
 end
 
+@inline nrows(c::HeatmapCanvas) = div(size(c.grid, 2) + 1, 2)
+
 @inline x_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 1
 @inline y_pixel_per_char(::Type{C}) where {C<:HeatmapCanvas} = 2
 
 @inline lookup_encode(::HeatmapCanvas) = [0 0; 1 1]
 @inline lookup_decode(::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
-
-@inline nrows(c::HeatmapCanvas) = div(size(c.grid, 2) + 1, 2)
 
 function HeatmapCanvas(args...; kw...)
     c = CreateLookupCanvas(

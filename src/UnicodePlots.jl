@@ -2,13 +2,13 @@ module UnicodePlots
 
 using LazyModules
 
-using Dates
-using Crayons
-using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
+using StatsBase: Histogram, fit, percentile
 using LinearAlgebra
 using StaticArrays
+using Crayons
 using Printf
+using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
 import MarchingCubes
@@ -102,10 +102,10 @@ include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
 
 include("description.jl")
+include("colormaps.jl")
 include("volume.jl")
 
 include("plot.jl")
-include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")

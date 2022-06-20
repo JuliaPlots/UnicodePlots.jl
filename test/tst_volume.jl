@@ -51,7 +51,7 @@
 
     corners = UnicodePlots.cube_corners(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
     @test size(corners) == (3, 8)
-    @test all(-1 .<= corners .<= 1)
+    @test all(-1 .≤ corners .≤ 1)
 end
 
 @testset "azimuth / elevation" begin
@@ -81,7 +81,7 @@ end
 
 @testset "cube" begin
     for proj in (:orthographic, :perspective)
-        ortho = proj === :orthographic
+        ortho = proj ≡ :orthographic
 
         T = MVP(
             [-1, 1],

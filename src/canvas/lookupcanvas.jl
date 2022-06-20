@@ -18,18 +18,6 @@ end
 
 abstract type LookupCanvas <: Canvas end
 
-function lookup_encode end
-function lookup_decode end
-
-@inline pixel_width(c::LookupCanvas) = c.pixel_width
-@inline pixel_height(c::LookupCanvas) = c.pixel_height
-@inline origin_x(c::LookupCanvas) = c.origin_x
-@inline origin_y(c::LookupCanvas) = c.origin_y
-@inline width(c::LookupCanvas) = c.width
-@inline height(c::LookupCanvas) = c.height
-@inline nrows(c::LookupCanvas) = size(c.grid, 2)
-@inline ncols(c::LookupCanvas) = size(c.grid, 1)
-
 function CreateLookupCanvas(
     ::Type{T},
     G,

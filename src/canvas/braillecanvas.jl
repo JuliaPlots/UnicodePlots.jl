@@ -23,14 +23,7 @@ struct BrailleCanvas{XS<:Function,YS<:Function} <: Canvas
     yscale::YS
 end
 
-@inline pixel_width(c::BrailleCanvas) = c.pixel_width
-@inline pixel_height(c::BrailleCanvas) = c.pixel_height
-@inline origin_x(c::BrailleCanvas) = c.origin_x
-@inline origin_y(c::BrailleCanvas) = c.origin_y
-@inline width(c::BrailleCanvas) = c.width
-@inline height(c::BrailleCanvas) = c.height
-@inline nrows(c::BrailleCanvas) = size(c.grid, 2)
-@inline ncols(c::BrailleCanvas) = size(c.grid, 1)
+@inline blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
 
 @inline x_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 2
 @inline y_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 4

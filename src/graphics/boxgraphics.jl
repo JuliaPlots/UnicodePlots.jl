@@ -43,8 +43,8 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     end
 end
 
-nrows(c::BoxplotGraphics) = 3length(c.data)
-ncols(c::BoxplotGraphics) = c.char_width
+@inline nrows(c::BoxplotGraphics) = 3length(c.data)
+@inline ncols(c::BoxplotGraphics) = c.char_width
 
 BoxplotGraphics(
     data::AbstractVector{R},

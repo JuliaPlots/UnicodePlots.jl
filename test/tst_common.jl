@@ -1,41 +1,41 @@
 @testset "plotting_range" begin
     @testset "types" begin
-        @test UnicodePlots.plotting_range(0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range(0, 1.0f0) === (0.0, 1.0f0)
-        @test UnicodePlots.plotting_range(0x0, 0x1) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0, 1) ≡ (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0.0, 1) ≡ (0.0, 1.0)
+        @test UnicodePlots.plotting_range(0, 1.0f0) ≡ (0.0, 1.0f0)
+        @test UnicodePlots.plotting_range(0x0, 0x1) ≡ (0.0, 1.0)
     end
 
-    @test UnicodePlots.plotting_range(0.0001, 0.002) === (0.0, 0.01)
-    @test UnicodePlots.plotting_range(0.001, 0.02) === (0.0, 0.1)
-    @test UnicodePlots.plotting_range(0.01, 0.2) === (0.0, 1.0)
-    @test UnicodePlots.plotting_range(0.1, 2.0) === (0.0, 10.0)
-    @test UnicodePlots.plotting_range(0, 2) === (0.0, 10.0)
-    @test UnicodePlots.plotting_range(0, 5) === (0.0, 10.0)
+    @test UnicodePlots.plotting_range(0.0001, 0.002) ≡ (0.0, 0.01)
+    @test UnicodePlots.plotting_range(0.001, 0.02) ≡ (0.0, 0.1)
+    @test UnicodePlots.plotting_range(0.01, 0.2) ≡ (0.0, 1.0)
+    @test UnicodePlots.plotting_range(0.1, 2.0) ≡ (0.0, 10.0)
+    @test UnicodePlots.plotting_range(0, 2) ≡ (0.0, 10.0)
+    @test UnicodePlots.plotting_range(0, 5) ≡ (0.0, 10.0)
 end
 
 @testset "plotting_range_narrow" begin
     @testset "types" begin
-        @test UnicodePlots.plotting_range_narrow(0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range_narrow(0.0, 1) === (0.0, 1.0)
-        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) === (0.0, 1.0f0)
-        @test UnicodePlots.plotting_range_narrow(0x0, 0x1) === (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0, 1) ≡ (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0.0, 1) ≡ (0.0, 1.0)
+        @test UnicodePlots.plotting_range_narrow(0, 1.0f0) ≡ (0.0, 1.0f0)
+        @test UnicodePlots.plotting_range_narrow(0x0, 0x1) ≡ (0.0, 1.0)
     end
 
-    @test UnicodePlots.plotting_range_narrow(0.0001, 0.002) === (0.0, 0.002)
-    @test UnicodePlots.plotting_range_narrow(0.001, 0.02) === (0.0, 0.02)
-    @test UnicodePlots.plotting_range_narrow(0.01, 0.2) === (0.0, 0.2)
-    @test UnicodePlots.plotting_range_narrow(0.1, 2.0) === (0.0, 2.0)
-    @test UnicodePlots.plotting_range_narrow(0, 2) === (0.0, 2.0)
-    @test UnicodePlots.plotting_range_narrow(0, 5) === (0.0, 5.0)
+    @test UnicodePlots.plotting_range_narrow(0.0001, 0.002) ≡ (0.0, 0.002)
+    @test UnicodePlots.plotting_range_narrow(0.001, 0.02) ≡ (0.0, 0.02)
+    @test UnicodePlots.plotting_range_narrow(0.01, 0.2) ≡ (0.0, 0.2)
+    @test UnicodePlots.plotting_range_narrow(0.1, 2.0) ≡ (0.0, 2.0)
+    @test UnicodePlots.plotting_range_narrow(0, 2) ≡ (0.0, 2.0)
+    @test UnicodePlots.plotting_range_narrow(0, 5) ≡ (0.0, 5.0)
 end
 
 @testset "extend_limits" begin
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) === (0.1, 2.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) === (0.0, 1.1)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) === (2.0, 3.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) === (1.0, 4.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) === (0.0, 2.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) ≡ (0.1, 2.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) ≡ (0.0, 1.1)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) ≡ (2.0, 3.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) ≡ (1.0, 4.0)
+    @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) ≡ (0.0, 2.0)
 end
 
 @testset "bordermap" begin
@@ -149,7 +149,7 @@ end
           Function
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
-    @test UnicodePlots.colormap_callback(nothing) === nothing
+    @test UnicodePlots.colormap_callback(nothing) ≡ nothing
 
     # clamp in range
     values = collect(1:10)
@@ -163,18 +163,18 @@ end
 (f::Scale)(x) = f.r * x
 
 @testset "miscellaneous" begin
-    @test UnicodePlots.char_marker('a') === 'a'
-    @test UnicodePlots.char_marker("a") === 'a'
-    @test UnicodePlots.char_marker(:+) === '+'
+    @test UnicodePlots.char_marker('a') ≡ 'a'
+    @test UnicodePlots.char_marker("a") ≡ 'a'
+    @test UnicodePlots.char_marker(:+) ≡ '+'
 
     @test UnicodePlots.iterable([1, 2]) == [1, 2]
     @test collect(Iterators.take(UnicodePlots.iterable(:abc), 2)) == [:abc, :abc]
 
-    @test UnicodePlots.scale_callback(:identity)(1) === 1
+    @test UnicodePlots.scale_callback(:identity)(1) ≡ 1
     @test UnicodePlots.scale_callback(:log10)(10) ≈ 1
     @test UnicodePlots.scale_callback(:log2)(2) ≈ 1
     @test UnicodePlots.scale_callback(:ln)(ℯ) ≈ 1
-    @test UnicodePlots.scale_callback(x -> x)(1) === 1
+    @test UnicodePlots.scale_callback(x -> x)(1) ≡ 1
     @test UnicodePlots.scale_callback(Scale(π))(1) ≈ π
 
     h, w = displaysize()

@@ -46,8 +46,8 @@ mutable struct BarplotGraphics{R<:Number} <: GraphicsArea
     end
 end
 
-nrows(c::BarplotGraphics) = length(c.bars)
-ncols(c::BarplotGraphics) = c.char_width
+@inline nrows(c::BarplotGraphics) = length(c.bars)
+@inline ncols(c::BarplotGraphics) = c.char_width
 
 BarplotGraphics(
     bars::AbstractVector{<:Number},

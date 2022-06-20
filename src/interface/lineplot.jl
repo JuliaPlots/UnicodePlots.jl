@@ -87,7 +87,7 @@ function lineplot!(
     name::AbstractString = KEYWORDS.name,
     head_tail::Union{Nothing,Symbol} = nothing,
 )
-    color = color == :auto ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
     col_vec = color isa AbstractVector
     name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if col_vec

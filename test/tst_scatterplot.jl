@@ -85,10 +85,10 @@ end
     @test p isa Plot
     test_ref("scatterplot/parameters1.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) === p
+    @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) ≡ p
     test_ref("scatterplot/parameters2.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
+    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) ≡ p
     test_ref("scatterplot/parameters3.txt", @show_col(p))
     test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 

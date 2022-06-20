@@ -3,14 +3,14 @@ x, y = randn(RNG, 10_000), randn(RNG, 10_000)
 
 @testset "densityplot" begin
     p = @dinf densityplot(x, y)
-    @test @dinf(densityplot!(p, x .+ 2, y .+ 2)) === p
+    @test @dinf(densityplot!(p, x .+ 2, y .+ 2)) ≡ p
     @test p isa Plot
     test_ref("densityplot/densityplot.txt", @show_col(p))
 end
 
 @testset "parameters" begin
     p = @dinf densityplot(x, y, name = "foo", color = :red, title = "Title", xlabel = "x")
-    @test @dinf(densityplot!(p, x .+ 2, y .+ 2, name = "bar")) === p
+    @test @dinf(densityplot!(p, x .+ 2, y .+ 2, name = "bar")) ≡ p
     @test p isa Plot
     test_ref("densityplot/densityplot_parameters.txt", @show_col(p))
 end

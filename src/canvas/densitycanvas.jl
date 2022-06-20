@@ -22,15 +22,6 @@ mutable struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
     max_density::Float64
 end
 
-@inline pixel_width(c::DensityCanvas) = c.pixel_width
-@inline pixel_height(c::DensityCanvas) = c.pixel_height
-@inline origin_x(c::DensityCanvas) = c.origin_x
-@inline origin_y(c::DensityCanvas) = c.origin_y
-@inline width(c::DensityCanvas) = c.width
-@inline height(c::DensityCanvas) = c.height
-@inline nrows(c::DensityCanvas) = size(c.grid, 2)
-@inline ncols(c::DensityCanvas) = size(c.grid, 1)
-
 @inline x_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 1
 @inline y_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 2
 

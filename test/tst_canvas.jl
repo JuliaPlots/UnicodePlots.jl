@@ -19,19 +19,19 @@ end
         @testset "$(nameof(T))" begin
             @test T <: Canvas
             c = @inferred T(30, 15, origin_x = -1, origin_y = -1.5, width = 2, height = 3)
-            @test @inferred(size(c)) === (2.0, 3.0)
-            @test @inferred(width(c)) === 2.0
-            @test @inferred(height(c)) === 3.0
-            @test @inferred(origin(c)) === (-1.0, -1.5)
-            @test @inferred(origin_x(c)) === -1.0
-            @test @inferred(origin_y(c)) === -1.5
-            @test @inferred(ncols(c)) === 30
-            @test @inferred(nrows(c)) === (T == HeatmapCanvas ? 8 : 15)
-            @test @inferred(UnicodePlots.x_pixel_per_char(T)) === xres
-            @test @inferred(UnicodePlots.y_pixel_per_char(T)) === yres
-            @test @inferred(pixel_width(c)) === 30 * xres
-            @test @inferred(pixel_height(c)) === 15 * yres
-            @test @inferred(pixel_size(c)) === (pixel_width(c), pixel_height(c))
+            @test @inferred(size(c)) ≡ (2.0, 3.0)
+            @test @inferred(width(c)) ≡ 2.0
+            @test @inferred(height(c)) ≡ 3.0
+            @test @inferred(origin(c)) ≡ (-1.0, -1.5)
+            @test @inferred(origin_x(c)) ≡ -1.0
+            @test @inferred(origin_y(c)) ≡ -1.5
+            @test @inferred(ncols(c)) ≡ 30
+            @test @inferred(nrows(c)) ≡ (T == HeatmapCanvas ? 8 : 15)
+            @test @inferred(UnicodePlots.x_pixel_per_char(T)) ≡ xres
+            @test @inferred(UnicodePlots.y_pixel_per_char(T)) ≡ yres
+            @test @inferred(pixel_width(c)) ≡ 30 * xres
+            @test @inferred(pixel_height(c)) ≡ 15 * yres
+            @test @inferred(pixel_size(c)) ≡ (pixel_width(c), pixel_height(c))
             if T <: UnicodePlots.LookupCanvas  # coverage
                 @test length(UnicodePlots.lookup_encode(c)) > 0
                 @test length(UnicodePlots.lookup_decode(c)) > 0
@@ -61,9 +61,9 @@ end
             else
                 test_ref("canvas/empty_show.txt", @show_col(c))
             end
-            @test @inferred(lines!(c, 0.0, 0.0, 1.0, 1.0, :blue)) === c
-            @test @inferred(points!(c, x1, y1, :white)) === c
-            @test @inferred(pixel!(c, 2, 4, color = :cyan)) === c
+            @test @inferred(lines!(c, 0.0, 0.0, 1.0, 1.0, :blue)) ≡ c
+            @test @inferred(points!(c, x1, y1, :white)) ≡ c
+            @test @inferred(pixel!(c, 2, 4, color = :cyan)) ≡ c
             points!(c, x2, y2, color = :red)
             lines!(c, 0.0, 1.0, 0.5, 0.0, :green)
             points!(c, 0.05, 0.3, color = :cyan)

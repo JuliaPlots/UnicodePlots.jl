@@ -22,25 +22,25 @@
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
     @test_throws MethodError barplot!(p, ["zoom"], [90.0])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
-    @test @inferred(barplot!(p, ["zoom"], [90])) === p
+    @test @inferred(barplot!(p, ["zoom"], [90])) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, :zoom, 90.0)) === p
+    @test @inferred(barplot!(p, :zoom, 90.0)) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
     @test_throws MethodError barplot!(p, Dict("zoom" => 90.0))
-    @test @inferred(barplot!(p, Dict("zoom" => 90))) === p
+    @test @inferred(barplot!(p, Dict("zoom" => 90))) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, Dict(:zoom => 90))) === p
+    @test @inferred(barplot!(p, Dict(:zoom => 90))) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
     p = @inferred barplot(2:6, 11:15)
     test_ref("barplot/ranges.txt", @print_col(p))
-    @test @inferred(barplot!(p, 9:10, 20:21)) === p
+    @test @inferred(barplot!(p, 9:10, 20:21)) ≡ p
     test_ref("barplot/ranges2.txt", @print_col(p))
 end
 

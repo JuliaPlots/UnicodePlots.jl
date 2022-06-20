@@ -102,7 +102,7 @@ function isosurface!(
     legacy::Bool = false,
     cull::Bool = false,
 )
-    color = color == :auto ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
 
     mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
     (legacy ? MarchingCubes.march_legacy : MarchingCubes.march)(mc, isovalue)

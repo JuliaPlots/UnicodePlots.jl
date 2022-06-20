@@ -1,14 +1,13 @@
 abstract type Canvas <: GraphicsArea end
 
-origin(c::Canvas) = (origin_x(c), origin_y(c))
-Base.size(c::Canvas) = (width(c), height(c))
-
-"""
-    pixel_size(c::Canvas)
-
-Canvas pixel resolution.
-"""
-pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
+@inline nrows(c::Canvas) = size(c.grid, 2)
+@inline ncols(c::Canvas) = size(c.grid, 1)
+@inline pixel_height(c::Canvas) = c.pixel_height
+@inline pixel_width(c::Canvas) = c.pixel_width
+@inline origin_x(c::Canvas) = c.origin_x
+@inline origin_y(c::Canvas) = c.origin_y
+@inline height(c::Canvas) = c.height
+@inline width(c::Canvas) = c.width
 
 @inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
 @inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
@@ -22,6 +21,15 @@ pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
 
 @inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)  # NOTE: relaxed upper bound for |=
 @inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)
+
+"""
+    pixel_size(c::Canvas)
+
+Canvas pixel resolution.
+"""
+pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
+origin(c::Canvas) = (origin_x(c), origin_y(c))
+Base.size(c::Canvas) = (width(c), height(c))
 
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, color)
@@ -220,18 +228,18 @@ function align_char_point(
     nchar = length(text)
     char_x = if halign in (:center, :hcenter)
         char_x - nchar ÷ 2
-    elseif halign == :left
+    elseif halign ≡ :left
         char_x
-    elseif halign == :right
+    elseif halign ≡ :right
         char_x - (nchar - 1)
     else
         error("Argument `halign=$halign` not supported.")
     end
     char_y = if valign in (:center, :vcenter)
         char_y
-    elseif valign == :top
+    elseif valign ≡ :top
         char_y + 1
-    elseif valign == :bottom
+    elseif valign ≡ :bottom
         char_y - 1
     else
         error("Argument `valign=$valign` not supported.")

@@ -1,8 +1,6 @@
 abstract type GraphicsArea end
 
-function nrows end
-function ncols end
-function printrow end
+@inline blank(c::GraphicsArea) = Char(BLANK)
 
 suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) = ansi_color(
     color ≡ nothing && length(c.colors) > 0 ? c.colors[end] :
