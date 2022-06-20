@@ -94,10 +94,10 @@ end
 function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
-    max_bar_width = max(c.char_width - 2 - c.max_len, 1)
     val = c.xscale(bar)
     nsyms = length(c.symbols)
     frac = c.max_val > 0 ? max(val, zero(val)) / c.max_val : 0.0
+    max_bar_width = max(c.char_width - 2 - c.max_len, 1)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
     print_col(io, c.colors[row], c.symbols[nsyms]^bar_head)
     if nsyms > 1

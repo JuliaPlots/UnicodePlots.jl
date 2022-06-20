@@ -1,16 +1,16 @@
 module UnicodePlots
 
-using LazyModules
-
 using SparseArrays: AbstractSparseMatrix, findnz
 using StatsBase: Histogram, fit, percentile
 using LinearAlgebra
 using StaticArrays
+using LazyModules
 using Crayons
 using Printf
 using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import Base: RefValue
 import MarchingCubes
 import NaNMath
 import Contour

@@ -99,15 +99,15 @@ function boxplot!(
     name = KEYWORDS.name,
     kw...,
 )
-    !isempty(data) || throw(ArgumentError("Can't append empty array to boxplot"))
+    isempty(data) && throw(ArgumentError("Can't append empty array to boxplot"))
 
     addseries!(plot.graphics, data)
 
     # Find end of last 3-line region, then add 2 for center of current
     label!(plot, :l, (length(plot.graphics.data) - 1) * 3 + 2, name)
 
-    min_x = plot.graphics.min_x
-    max_x = plot.graphics.max_x
+    min_x = plot.graphics.min_x[]
+    max_x = plot.graphics.max_x[]
     min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)

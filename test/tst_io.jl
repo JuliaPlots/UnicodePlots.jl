@@ -45,7 +45,6 @@ end
 @testset "stringify plot - performance regression" begin
     p = heatmap(collect(1:30) * collect(1:30)')
     @test string(p; color = true) isa String
-    @test string(p; color = false) isa String
 
     stats = @timed string(p; color = true)  # repeated !
     @test stats.bytes / 1e3 < 550  # ~ 500kB (on 1.7)

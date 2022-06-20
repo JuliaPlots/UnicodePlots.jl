@@ -6,13 +6,13 @@ struct FiveNumberSummary
     maximum::Float64
 end
 
-mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
+struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
     colors::Vector{ColorType}
     char_width::Int
     visible::Bool
-    min_x::R
-    max_x::R
+    min_x::RefValue{R}
+    max_x::RefValue{R}
 
     function BoxplotGraphics{R}(
         data::AbstractVector{R},
@@ -39,7 +39,7 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
             percentile(data, 75),
             maximum(data),
         )
-        new{R}([summary], colors, char_width, visible, min_x, max_x)
+        new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
     end
 end
 
@@ -73,13 +73,13 @@ function addseries!(
         ),
     )
     push!(c.colors, suitable_color(c, color))
-    c.min_x = min(mi, c.min_x)
-    c.max_x = max(ma, c.max_x)
+    c.min_x[] = min(mi, c.min_x[])
+    c.max_x[] = max(ma, c.max_x[])
     c
 end
 
 transform(c::BoxplotGraphics, value) = clamp(
-    round(Int, (value - c.min_x) / (c.max_x - c.min_x) * c.char_width),
+    round(Int, (value - c.min_x[]) / (c.max_x[] - c.min_x[]) * c.char_width),
     1,
     c.char_width,
 )
