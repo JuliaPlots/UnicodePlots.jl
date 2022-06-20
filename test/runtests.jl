@@ -86,7 +86,10 @@ macro hinf(ex)
 end
 
 macro dinf(ex)
-    :(@inferred(Plot{DensityCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
+    :(@inferred(
+        Plot{DensityCanvas{typeof(identity),typeof(identity),typeof(identity)}},
+        $ex
+    )) |> esc
 end
 
 macro timeit_include(path::AbstractString)

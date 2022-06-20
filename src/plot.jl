@@ -195,6 +195,7 @@ function Plot(
     min_height::Int = 2,
     projection::Union{Nothing,Symbol,MVP} = nothing,
     axes3d = KEYWORDS.axes3d,
+    canvas_kw = (;),
     kw...,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
@@ -246,7 +247,7 @@ function Plot(
 
     canvas = C(
         width,
-        height,
+        height;
         blend = blend,
         visible = visible,
         origin_x = mx,
@@ -255,9 +256,10 @@ function Plot(
         height = p_height,
         xscale = xscale,
         yscale = yscale,
+        canvas_kw...,
     )
     plot = Plot(
-        canvas,
+        canvas;
         title = title,
         margin = margin,
         padding = padding,
@@ -293,19 +295,9 @@ function Plot(
             label!(plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
         end
     end
-    if grid
-        if xscale ≡ identity && yscale ≡ identity
-            if my < 0 < My
-                for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
-                    points!(plot, i, 0.0, nothing)
-                end
-            end
-            if mx < 0 < Mx
-                for i in range(my, stop = My, length = height * y_pixel_per_char(C))
-                    points!(plot, 0.0, i, nothing)
-                end
-            end
-        end
+    if grid && (xscale ≡ identity && yscale ≡ identity)
+        my < 0 < My && lines!(plot, mx, 0.0, Mx, 0.0)
+        mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
     (is_enabled(projection) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
@@ -673,13 +665,16 @@ function print_labels(
     return 0
 end
 
+blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
+blank(c::GraphicsArea) = Char(BLANK)
+
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 function _show(io::IO, print_nc, print_col, p::Plot)
     io_color = get(io, :color, false)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
-    🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
+    🗹 = blank(c)  # blank inside canvas
     ############################################################
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
@@ -980,6 +975,7 @@ function png_image(
         append!(gchars, line)
         append!(fcolors, fill(default_fg_color, len))
         append!(gcolors, fill(default_bg_color, len))
+        nothing
     end
 
     print_col(io, color, args...; bgcol = missing) = begin
@@ -995,6 +991,7 @@ function png_image(
         append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))  # for heatmap, colorbars - BORDER_SOLID[:l]
         append!(fcolors, fill(fcolor, len))
         append!(gcolors, fill(gcolor, len))
+        nothing
     end
 
     # compute 1D stream of chars and colors

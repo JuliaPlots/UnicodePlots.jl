@@ -52,7 +52,7 @@ end
         (DotCanvas, "dot"),
         (HeatmapCanvas, "heatmap"),
     ]
-        @testset "$(nameof(T))" begin
+        @testset "$T" begin
             c = T(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
             if T == BrailleCanvas
                 test_ref("canvas/empty_braille_show.txt", @show_col(c))

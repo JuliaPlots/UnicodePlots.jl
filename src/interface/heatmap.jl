@@ -125,7 +125,7 @@ function heatmap(
     max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * data_ar)) : width
     max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
 
-    # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
+    # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(c.grid, 2) + 1, 2)
     height, width, max_height, max_width = get_canvas_dimensions_for_matrix(
         HeatmapCanvas,
         2nrows,

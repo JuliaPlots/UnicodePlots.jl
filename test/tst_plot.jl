@@ -9,13 +9,26 @@
     test_ref("plot/empty_small.txt", @show_col(p))
 end
 
+@testset "invisible" begin
+    p = Plot([0], [0], width = 0)
+    @test !p.graphics.visible
+end
+
+@testset "x/y ticks" begin
+    p = Plot([0, 1], [0, 1], xticks = false)
+    test_ref("plot/noxticks.txt", @show_col(p))
+
+    p = Plot([0, 1], [0, 1], yticks = false)
+    test_ref("plot/noyticks.txt", @show_col(p))
+end
+
 function _test_canvas()
     canvas =
         BrailleCanvas(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
     lines!(canvas, 0.0, 0.0, 1.0, 1.0, :blue)
     lines!(canvas, 0.2, 0.7, 1.0, 0.0, :red)
     lines!(canvas, 0.0, 2.0, 0.5, 0.0, :green)
-    points!(canvas, 0.5, 0.9)
+    points!(canvas, 0.5, 0.8)
     canvas
 end
 
@@ -147,17 +160,4 @@ end
     for h in (:right, :left, :center, :hcenter), v in (:top, :bottom, :center, :vcenter)
         annotate!(p, 0, 0, "Origin"; halign = h, valign = v)
     end
-end
-
-@testset "invisible" begin
-    p = Plot([0], [0], width = 0)
-    @test !p.graphics.visible
-end
-
-@testset "x/y ticks" begin
-    p = Plot([0, 1], [0, 1], xticks = false)
-    test_ref("plot/noxticks.txt", @show_col(p))
-
-    p = Plot([0, 1], [0, 1], yticks = false)
-    test_ref("plot/noyticks.txt", @show_col(p))
 end

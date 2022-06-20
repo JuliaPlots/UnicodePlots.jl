@@ -27,10 +27,8 @@ function lookup_decode end
 @inline origin_y(c::LookupCanvas) = c.origin_y
 @inline width(c::LookupCanvas) = c.width
 @inline height(c::LookupCanvas) = c.height
-@inline grid(c::LookupCanvas) = c.grid
-@inline colors(c::LookupCanvas) = c.colors
-@inline nrows(c::LookupCanvas) = size(grid(c), 2)
-@inline ncols(c::LookupCanvas) = size(grid(c), 1)
+@inline nrows(c::LookupCanvas) = size(c.grid, 2)
+@inline ncols(c::LookupCanvas) = size(c.grid, 1)
 
 function CreateLookupCanvas(
     ::Type{T},
@@ -74,35 +72,22 @@ function CreateLookupCanvas(
     )
 end
 
-function pixel_to_char_point(c::T, pixel_x::Number, pixel_y::Number) where {T<:LookupCanvas}
-    pixel_x = pixel_x < pixel_width(c) ? pixel_x : pixel_x - 1
-    pixel_y = pixel_y < pixel_height(c) ? pixel_y : pixel_y - 1
-    cw, ch = size(grid(c))
-    tmp = pixel_x / pixel_width(c) * cw
-    char_x = floor(Int, tmp) + 1
-    char_x_off = (pixel_x % x_pixel_per_char(T)) + 1
-    if char_x < round(Int, tmp, RoundNearestTiesUp) + 1 && char_x_off == 1
-        char_x += 1
-    end
-    char_y = floor(Int, pixel_y / pixel_height(c) * ch) + 1
-    char_y_off = (pixel_y % y_pixel_per_char(T)) + 1
-    char_x, char_y, char_x_off, char_y_off
-end
-
 function pixel!(
     c::T,
     pixel_x::Int,
     pixel_y::Int,
     color::UserColorType,
 ) where {T<:LookupCanvas}
-    0 ≤ pixel_x ≤ pixel_width(c) || return c
-    0 ≤ pixel_y ≤ pixel_height(c) || return c
-    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if (val = UInt64(grid(c)[char_x, char_y])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
-        grid(c)[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
+    valid_x_pixel(c, pixel_x) || return c
+    valid_y_pixel(c, pixel_y) || return c
+    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        if (val = UInt64(c.grid[char_x, char_y])) == 0 || c.min_max[1] ≤ val ≤ c.min_max[2]
+            c.grid[char_x, char_y] |= lookup_encode(c)[char_x_off, char_y_off]
+        end
+        blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
+        set_color!(c.colors, char_x, char_y, ansi_color(color), blend)
     end
-    blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-    set_color!(c.colors, char_x, char_y, ansi_color(color), blend)
     c
 end
 
@@ -110,7 +95,7 @@ function printrow(io::IO, print_nc, print_col, c::LookupCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     y = row
     for x in 1:ncols(c)
-        print_col(io, colors(c)[x, y], lookup_decode(c)[grid(c)[x, y] + 1])
+        print_col(io, c.colors[x, y], lookup_decode(c)[c.grid[x, y] + 1])
     end
     nothing
 end

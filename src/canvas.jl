@@ -2,21 +2,35 @@ abstract type Canvas <: GraphicsArea end
 
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 Base.size(c::Canvas) = (width(c), height(c))
+
+"""
+    pixel_size(c::Canvas)
+
+Canvas pixel resolution.
+"""
 pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
+
+@inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
+@inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
+
+@inline x_to_pixel(c::Canvas, x::Number) = (x - origin_x(c)) / width(c) * pixel_width(c)
+@inline y_to_pixel(c::Canvas, y::Number) =
+    (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+
+@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
+@inline valid_y(c::Canvas, y::Number) = origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c)
+
+@inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)  # NOTE: relaxed upper bound for |=
+@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)
 
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, color)
 
-function points!(c::Canvas, x::Number, y::Number, color::UserColorType)
-    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
-    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
-    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
-    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
-    pixel!(c, floor(Int, pixel_x), floor(Int, pixel_y), color)
-end
-
 points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal) =
     points!(c, x, y, color)
+
+points!(c::Canvas, x::Number, y::Number, color::UserColorType) =
+    pixel!(c, floor(Int, scale_x_to_pixel(c, x)), floor(Int, scale_y_to_pixel(c, y)), color)
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
@@ -54,24 +68,11 @@ function lines!(
     c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
     col_cb::Union{Nothing,Function} = nothing,  # color callback (map values to colors)
 )
-    x1s = c.xscale(x1)
-    x2s = c.xscale(x2)
-    y1s = c.yscale(y1)
-    y2s = c.yscale(y2)
+    (valid_x(c, x1) || valid_x(c, x2)) || return c
+    (valid_y(c, y1) || valid_y(c, y2)) || return c
 
-    mx = origin_x(c)
-    Mx = origin_x(c) + width(c)
-    (mx ≤ x1s ≤ Mx || mx ≤ x2s ≤ Mx) || return c
-
-    my = origin_y(c)
-    My = origin_y(c) + height(c)
-    (my ≤ y1s ≤ My || my ≤ y2s ≤ My) || return c
-
-    x2p(x) = (x - mx) / width(c) * pixel_width(c)
-    y2p(y) = pixel_height(c) - (y - my) / height(c) * pixel_height(c)
-
-    Δx = x2p(x2s) - (cur_x = x2p(x1s))
-    Δy = y2p(y2s) - (cur_y = y2p(y1s))
+    Δx = scale_x_to_pixel(c, x2) - (cur_x = scale_x_to_pixel(c, x1))
+    Δy = scale_y_to_pixel(c, y2) - (cur_y = scale_y_to_pixel(c, y1))
 
     nsteps = min(max(abs(Δx), abs(Δy)), typemax(Int32))  # hard limit
     len = min(floor(Int, nsteps), typemax(Int16))  # performance limit
@@ -79,8 +80,8 @@ function lines!(
     δx = Δx / nsteps
     δy = Δy / nsteps
 
-    px, Px = x2p(mx), x2p(Mx)
-    py, Py = y2p(my), y2p(My)
+    px, Px = x_to_pixel(c, origin_x(c)), x_to_pixel(c, origin_x(c) + width(c))
+    py, Py = y_to_pixel(c, origin_y(c)), y_to_pixel(c, origin_y(c) + height(c))
     px, Px = min(px, Px), max(px, Px)
     py, Py = min(py, Py), max(py, Py)
 
@@ -238,6 +239,27 @@ function align_char_point(
     char_x, char_y
 end
 
+function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
+    # when hitting right boundary with canvases capable of encoding more than 1 pixel per char
+    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
+    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    (
+        floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
+        floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
+    )
+end
+
+function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
+    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
+    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    (
+        floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
+        floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
+        floor(Int, pixel_x % x_pixel_per_char(C)) + 1,
+        floor(Int, pixel_y % y_pixel_per_char(C)) + 1,
+    )
+end
+
 function annotate!(
     c::Canvas,
     x::Number,
@@ -247,12 +269,10 @@ function annotate!(
     halign = :center,
     valign = :center,
 )
-    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
-    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
-    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
-    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
+    valid_x(c, x) || return c
+    valid_y(c, y) || return c
 
-    char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
+    char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
     for char in text
         char_point!(c, char_x, char_y, char, color)
@@ -262,12 +282,10 @@ function annotate!(
 end
 
 function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
-    origin_x(c) ≤ (xs = c.xscale(x)) ≤ origin_x(c) + width(c) || return c
-    origin_y(c) ≤ (ys = c.yscale(y)) ≤ origin_y(c) + height(c) || return c
-    pixel_x = (xs - origin_x(c)) / width(c) * pixel_width(c)
-    pixel_y = pixel_height(c) - (ys - origin_y(c)) / height(c) * pixel_height(c)
+    valid_x(c, x) || return c
+    valid_y(c, y) || return c
 
-    char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
+    char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_point!(c, char_x, char_y, text, color)
     c
 end

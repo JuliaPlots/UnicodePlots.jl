@@ -48,7 +48,7 @@ main() = begin
       """),
     histogram1 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:left)"),
     histogram2 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
-    histogram3 = ("Histogram", "histogram(randn(1_000_000) .* .1, nbins=100, vertical=true)"),
+    histogram3 = ("Histogram", "histogram(randn(100_000) .* .1, nbins=60, vertical=true)"),
     boxplot1 = ("Boxplot", "boxplot([1, 3, 3, 4, 6, 10])"),
     boxplot2 = ("Boxplot", """
       boxplot(["one", "two"],
@@ -58,8 +58,12 @@ main() = begin
     spy1 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .05))"),
     spy2 = ("Spy", "using SparseArrays\nspy(sprandn(50, 120, .9), show_zeros=true)"),
     densityplot1 = ("Densityplot", """
-      plt = densityplot(randn(1_000), randn(1_000))
-      densityplot!(plt, randn(1_000) .+ 2, randn(1_000) .+ 2)
+      plt = densityplot(randn(10_000), randn(10_000))
+      densityplot!(plt, randn(10_000) .+ 2, randn(10_000) .+ 2)
+      """),
+    densityplot2 = ("Densityplot", """
+      x = randn(10_000); x[1_000:6_000] .= 2
+      densityplot(x, randn(10_000); zscale = x -> log(1 + x))
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
     polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))"),
@@ -125,7 +129,7 @@ main() = begin
   plain_md_par(x) = x |> Paragraph |> MD |> plain
 
   examples = NamedTuple{keys(exs)}(
-    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n![$(e[1])]($docs_url/$ver/$k.png)") for (k, e) in pairs(exs))
+    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"500\"><br>") for (k, e) in pairs(exs))
   )
 
   tab = ' '^2
@@ -149,7 +153,7 @@ main() = begin
   )
 
   anchor(name) = replace(lowercase(name), ' ' => '-')
-  summary(name) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary>"  # named anchor + formatting
+  summary(name) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary><br>"  # named anchor + formatting
 
   methods = plain_md_par("""
     - `title!(plot::Plot, title::String)`
@@ -257,7 +261,7 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-![Banner]($docs_url/$ver/banner.png)
+<img src="$docs_url/$ver/banner.png" width="800">
 
 ## High-level Interface
 
@@ -389,6 +393,10 @@ Here is a list of the main high-level functions for common scenarios:
   $(summary("Density Plot"))
 
   $(examples.densityplot1)
+
+  Using a monotonically increasing scale for damping peaks is supported using the `zscale` keyword:
+
+  $(examples.densityplot2)
 </details>
 
 <details open>
@@ -547,7 +555,54 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
   mkpath("imgs/$ver")
 
+  fix_rand(c) = replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ")
+
   open("imgs/gen_imgs.jl", "w") do io
+    banner = """
+    banner() = begin
+      rng = StableRNG(1337)
+      default_size!(height=10)
+
+      panel(plt; kw...) = Panel(string(plt, color=true); fit=true, kw...)
+
+      panels = (
+        line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot", style="orange1"),
+        scat = panel(scatterplot(1:6, 1:6, xscale=:log10, yscale=:ln); title="scatterplot", style="yellow1"),
+        cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red1"),
+        surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="royal_blue1"),
+        iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface", style="cornsilk1"),
+        vhist = panel(histogram(randn(100_000), nbins=60, vertical=true); title="vertical histogram", style="green1"),
+        hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="horizontal histogram", style="dodger_blue2"),
+        dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan1"),
+        hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap", style="magenta1"),
+        bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot", style="gold1"),
+        polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot", style="chartreuse1"),
+        box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot", style="grey11"),
+        stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair", style="aquamarine1"),
+        spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy", style="salmon1"),
+      )
+      g = grid(panels, layout=:((line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * vhist * (bar / (box * spy)))))
+
+      if true
+        cursor_hide(stdout)
+        run(`clear`)
+        print(stdout, g)
+        win = if "WINDOWID" in keys(ENV)
+          ENV["WINDOWID"]
+        else
+          readchomp(`xdotool getactivewindow`)
+        end
+        run(`import -window \$win $ver/banner.png`)
+        cursor_show(stdout)
+      else
+        print(stdout, g)
+        open("$ver/banner.txt", "w") do io
+          print(io, g)
+        end
+      end
+    end
+    """
+
     println(io, """
       # $warn
       using UnicodePlots, StableRNGs, SparseArrays, Unitful, Term
@@ -556,50 +611,10 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
       include(joinpath(dirname(pathof(UnicodePlots)), "..", "test", "fixes.jl"))
 
-      cursor_hide(io::IO) = print(io, "\x1b[?25l")
-      cursor_show(io::IO) = print(io, "\x1b[?25h")
+      cursor_hide(io::IO) = print(io, "\e[?25l")
+      cursor_show(io::IO) = print(io, "\e[?25h")
 
-      banner() = begin
-        default_size!(height=10)
-
-        panel(plt; kw...) = Panel(string(plt, color=true); fit=true, kw...)
-
-        panels = (
-          line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot", style="orange1"),
-          scat = panel(scatterplot(1:6, 1:6, xscale=:log10, yscale=:ln); title="scatterplot", style="yellow1"),
-          cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red1"),
-          surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="royal_blue1"),
-          iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface", style="cornsilk1"),
-          vhist = panel(histogram(randn(1_000_000), nbins=60, vertical=true); title="vertical histogram", style="green1"),
-          hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="horizontal histogram", style="dodger_blue2"),
-          dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan1"),
-          hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap", style="magenta1"),
-          bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot", style="gold1"),
-          polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot", style="chartreuse1"),
-          box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot", style="grey11"),
-          stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair", style="aquamarine1"),
-          spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy", style="salmon1"),
-        )
-        g = grid(panels, layout=:((line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * vhist * (bar / (box * spy)))))
-
-        if true
-          cursor_hide(stdout)
-          run(`clear`)
-          print(stdout, g)
-          win = if "WINDOWID" in keys(ENV)
-            ENV["WINDOWID"]
-          else
-            readchomp(`xdotool getactivewindow`)
-          end
-          run(`import -window \$win $ver/banner.png`)
-          cursor_show(stdout)
-        else
-          print(stdout, g)
-          open("$ver/banner.txt", "w") do io
-            print(io, g)
-          end
-        end
-      end
+      $(fix_rand(banner))
 
       main() = begin
         rng = StableRNG(1337)
@@ -612,8 +627,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     )
     for (i, (k, e)) in enumerate(pairs(exs))
       println(io, "  # $k")
-      code = filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')])
-      code = [replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ") for c in code]
+      code = fix_rand.(filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')]))
       println(io, """
           println("ex n°$i - $k")
           default_size!()
@@ -622,7 +636,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
           end
           plt = _func_$i(rng)
           display(plt)
-          savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=16)
+          savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=32)
           # savefig(plt, "$ver/$k.txt"; color=true)
         """
       )

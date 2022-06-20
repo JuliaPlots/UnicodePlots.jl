@@ -1,8 +1,7 @@
 """
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
-This canvas effectively turns every character
-into two pixels (top and bottom).
+This canvas effectively turns every character into two pixels (top and bottom).
 """
 struct HeatmapCanvas{XS<:Function,YS<:Function} <: LookupCanvas
     grid::Matrix{UInt8}
@@ -26,7 +25,7 @@ end
 @inline lookup_encode(::HeatmapCanvas) = [0 0; 1 1]
 @inline lookup_decode(::HeatmapCanvas) = [HALF_BLOCK; HALF_BLOCK]
 
-@inline nrows(c::HeatmapCanvas) = div(size(grid(c), 2) + 1, 2)
+@inline nrows(c::HeatmapCanvas) = div(size(c.grid, 2) + 1, 2)
 
 function HeatmapCanvas(args...; kw...)
     c = CreateLookupCanvas(
@@ -47,7 +46,7 @@ function printrow(io::IO, print_nc, print_col, c::HeatmapCanvas, row::Int)
     y = 2row
 
     # extend the plot upwards by half a row
-    isodd(size(grid(c), 2)) && (y -= 1)
+    isodd(size(c.grid, 2)) && (y -= 1)
 
     for x in 1:ncols(c)
         # for odd numbers of rows, only print the foreground for the top row

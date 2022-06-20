@@ -26,11 +26,8 @@ BLOCK_DECODE[(N_BLOCK + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) -
 """
 The `BlockCanvas` is also Unicode-based.
 It has half the resolution of the `BrailleCanvas`.
-In contrast to BrailleCanvas, the pixels don't
-have visible spacing between them.
-This canvas effectively turns every character
-into 4 pixels that can individually be manipulated
-using binary operations.
+In contrast to BrailleCanvas, the pixels don't have visible spacing between them.
+This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
 """
 struct BlockCanvas{XS<:Function,YS<:Function} <: LookupCanvas
     grid::Matrix{UInt16}

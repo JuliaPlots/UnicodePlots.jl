@@ -1,15 +1,11 @@
 const DEN_SIGNS = Ref((' ', '░', '▒', '▓', '█'))
 
 """
-Unlike the `BrailleCanvas`, the density canvas
-does not simply mark a "pixel" as set.
-Instead it increments a counter per character
-that keeps track of the frequency of pixels
-drawn in that character. Together with a variable
-that keeps track of the maximum frequency,
-the canvas can thus draw the density of datapoints.
+Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set.
+Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character.
+Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 """
-mutable struct DensityCanvas{XS<:Function,YS<:Function} <: Canvas
+mutable struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
     grid::Matrix{UInt}
     colors::Matrix{ColorType}
     blend::Bool
@@ -22,6 +18,7 @@ mutable struct DensityCanvas{XS<:Function,YS<:Function} <: Canvas
     height::Float64
     xscale::XS
     yscale::YS
+    zscale::DS
     max_density::Float64
 end
 
@@ -46,8 +43,9 @@ function DensityCanvas(
     origin_y::Number = 0.0,
     width::Number = 1.0,
     height::Number = 1.0,
-    xscale::Function = identity,
-    yscale::Function = identity,
+    xscale::Union{Symbol,Function} = identity,
+    yscale::Union{Symbol,Function} = identity,
+    zscale::Union{Symbol,Function} = identity,
 )
     width > 0 || throw(ArgumentError("width has to be positive"))
     height > 0 || throw(ArgumentError("height has to be positive"))
@@ -64,44 +62,36 @@ function DensityCanvas(
         visible,
         pixel_width,
         pixel_height,
-        Float64(origin_x),
-        Float64(origin_y),
-        Float64(width),
-        Float64(height),
-        xscale,
-        yscale,
-        1.0,
+        float(origin_x),
+        float(origin_y),
+        float(width),
+        float(height),
+        scale_callback(xscale),
+        scale_callback(yscale),
+        scale_callback(zscale),
+        -Inf,
     )
 end
 
-function pixel_to_char_point(c::DensityCanvas, pixel_x::Number, pixel_y::Number)
-    pixel_x = pixel_x < c.pixel_width ? pixel_x : pixel_x - 1
-    pixel_y = pixel_y < c.pixel_height ? pixel_y : pixel_y - 1
-    cw, ch = size(c.grid)
-    char_x = floor(Int, pixel_x / c.pixel_width * cw) + 1
-    char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
-    char_x, char_y
-end
-
 function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
-    0 ≤ pixel_x ≤ c.pixel_width || return c
-    0 ≤ pixel_y ≤ c.pixel_height || return c
+    valid_x_pixel(c, pixel_x) || return c
+    valid_y_pixel(c, pixel_y) || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
-    c.grid[char_x, char_y] += 1
-    c.max_density = max(c.max_density, c.grid[char_x, char_y])
-    set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        cnt = c.grid[char_x, char_y] += 1  # count occurrences
+        c.max_density = max(c.max_density, c.zscale(cnt))  # only valid for monotonically increasing `zscale`
+        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+    end
     c
 end
 
 function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     signs = DEN_SIGNS[]
-    y = row
-    den_sign_count = length(signs)
-    val_scale = (den_sign_count - 1) / c.max_density
+    fact = (length(signs) - 1) / max(eps(), c.max_density)
     for x in 1:ncols(c)
-        den_index = round(Int, c.grid[x, y] * val_scale, RoundNearestTiesUp) + 1
-        print_col(io, c.colors[x, y], signs[den_index])
+        val = fact * c.zscale(c.grid[x, row])
+        print_col(io, c.colors[x, row], signs[round(Int, val, RoundNearestTiesUp) + 1])
     end
     nothing
 end

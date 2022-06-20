@@ -31,34 +31,35 @@ function horizontal_histogram(
     # compute label padding based on all labels.
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
+    io = PipeBuffer()
     for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
-        a1 = Base.alignment(IOBuffer(), val1)
-        a2 = Base.alignment(IOBuffer(), val2)
+        a1 = Base.alignment(io, val1)
+        a2 = Base.alignment(io, val2)
         pad_left = max(pad_left, a1[1], a2[1])
         pad_right = max(pad_right, a1[2], a2[2])
     end
     # compute the labels using the computed padding
-    l_str = hist.closed ≡ :right ? "(" : "["
-    r_str = hist.closed ≡ :right ? "]" : ")"
+    l_chr = hist.closed ≡ :right ? '(' : '['
+    r_chr = hist.closed ≡ :right ? ']' : ')'
     for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
-        a1 = Base.alignment(IOBuffer(), val1)
-        a2 = Base.alignment(IOBuffer(), val2)
+        a1 = Base.alignment(io, val1)
+        a2 = Base.alignment(io, val2)
         labels[i] = string(
-            l_str,
-            repeat(" ", pad_left - a1[1]),
-            string(val1),
-            repeat(" ", pad_right - a1[2]),
+            l_chr,
+            ' '^(pad_left - a1[1]),
+            compact_repr(val1),
+            ' '^(pad_right - a1[2]),
             ", ",
-            repeat(" ", pad_left - a2[1]),
-            string(val2),
-            repeat(" ", pad_right - a2[2]),
-            r_str,
+            ' '^(pad_left - a2[1]),
+            compact_repr(val2),
+            ' '^(pad_right - a2[2]),
+            r_chr,
         )
     end
     plot = barplot(
