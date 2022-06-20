@@ -1,35 +1,63 @@
 abstract type Canvas <: GraphicsArea end
 
-@inline nrows(c::Canvas) = size(c.grid, 2)
-@inline ncols(c::Canvas) = size(c.grid, 1)
+grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
+
+# we store the grid as the transpose of an array of (w, h) => (height, width) = (nrows, ncols)
+@inline nrows(c::Canvas) = size(c.grid, 1)
+@inline ncols(c::Canvas) = size(c.grid, 2)
+
 @inline pixel_height(c::Canvas) = c.pixel_height
 @inline pixel_width(c::Canvas) = c.pixel_width
-@inline origin_x(c::Canvas) = c.origin_x
 @inline origin_y(c::Canvas) = c.origin_y
+@inline origin_x(c::Canvas) = c.origin_x
 @inline height(c::Canvas) = c.height
 @inline width(c::Canvas) = c.width
+@inline lookup_offset(::Canvas) = 0
 
-@inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
-@inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
-
-@inline x_to_pixel(c::Canvas, x::Number) = (x - origin_x(c)) / width(c) * pixel_width(c)
 @inline y_to_pixel(c::Canvas, y::Number) =
     (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+@inline x_to_pixel(c::Canvas, x::Number) = (x - origin_x(c)) / width(c) * pixel_width(c)
 
-@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
+@inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
+@inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
+
 @inline valid_y(c::Canvas, y::Number) = origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c)
+@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
 
-@inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)  # NOTE: relaxed upper bound for |=
-@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)
+@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound for |=
+@inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)
+
+function char_point!(c::Canvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+    if checkbounds(Bool, c.grid, char_y, char_x)
+        c.grid[char_y, char_x] = lookup_offset(c) + Int(char)
+        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+    end
+    c
+end
+
+@inline function set_color!(
+    colors::Transpose{ColorType,Matrix{ColorType}},
+    x::Int,
+    y::Int,
+    color::ColorType,
+    blend::Bool,
+)
+    colors[y, x] = if (c = colors[y, x]) == INVALID_COLOR || !blend
+        color
+    else
+        blend_colors(c, color)
+    end
+    nothing
+end
 
 """
     pixel_size(c::Canvas)
 
-Canvas pixel resolution.
+Canvas pixel resolution (height, width).
 """
-pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
+pixel_size(c::Canvas) = (pixel_height(c), pixel_width(c))
+Base.size(c::Canvas) = (height(c), width(c))
 origin(c::Canvas) = (origin_x(c), origin_y(c))
-Base.size(c::Canvas) = (width(c), height(c))
 
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, color)
@@ -151,10 +179,10 @@ function get_canvas_dimensions_for_matrix(
     canvas::Type{T},
     nrow::Int,
     ncol::Int,
-    max_width::Int,
     max_height::Int,
-    width::Int,
+    max_width::Int,
     height::Int,
+    width::Int,
     margin::Int,
     padding::Int,
     out_stream::Union{Nothing,IO},
@@ -300,8 +328,8 @@ end
 
 function print_colorbar_row(
     io::IO,
-    print_nc,
-    print_col,
+    print_nocol,
+    print_color,
     c::Canvas,
     row::Int,
     cmap::ColorMap,
@@ -317,18 +345,18 @@ function print_colorbar_row(
     if row == 1
         label = lim_str[2]
         # print top border and maximum z value
-        print_col(io, bc, b[:tl], b[:t], b[:t], b[:tr])
-        print_nc(io, plot_padding)
-        print_col(io, bc, label)
+        print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
+        print_nocol(io, plot_padding)
+        print_color(io, bc, label)
     elseif row == nrows(c)
         label = lim_str[1]
         # print bottom border and minimum z value
-        print_col(io, bc, b[:bl], b[:b], b[:b], b[:br])
-        print_nc(io, plot_padding)
-        print_col(io, bc, label)
+        print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
+        print_nocol(io, plot_padding)
+        print_color(io, bc, label)
     else
         # print gradient
-        print_col(io, bc, b[:l])
+        print_color(io, bc, b[:l])
         if cmap.lim[1] == cmap.lim[2]  # if min and max are the same, single color
             fgcol = bgcol = cmap.callback(1, 1, 1)
         else  # otherwise, blend from min to max
@@ -337,15 +365,15 @@ function print_colorbar_row(
             fgcol = cmap.callback(n - 2r - 1, 1, n)
             bgcol = cmap.callback(n - 2r, 1, n)
         end
-        print_col(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
-        print_col(io, bc, b[:r])
-        print_nc(io, plot_padding)
+        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
+        print_color(io, bc, b[:r])
+        print_nocol(io, plot_padding)
         # print z label
         if row == div(nrows(c), 2) + 1
             label = zlabel
-            print_nc(io, label)
+            print_nocol(io, label)
         end
     end
-    print_nc(io, blank^(max_len - length(label)))
+    print_nocol(io, blank^(max_len - length(label)))
     nothing
 end

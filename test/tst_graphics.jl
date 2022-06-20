@@ -8,12 +8,12 @@
         g = @inferred BarplotGraphics(0:2:10, 30)
         @test @inferred(nrows(g)) ≡ 6
         @test @inferred(ncols(g)) ≡ 30
-        @test_throws ArgumentError printrow(stdout, g, 0)
-        @test_throws ArgumentError printrow(stdout, g, 7)
+        @test_throws ArgumentError print_row(stdout, g, 0)
+        @test_throws ArgumentError print_row(stdout, g, 7)
         postprocess! = preprocess!(g)
         test_ref(
-            "graphics/bar_printrow.txt",
-            @io2str(printrow(IOContext(::IO, :color => true), g, 3))
+            "graphics/bar_print_row.txt",
+            @io2str(print_row(IOContext(::IO, :color => true), g, 3))
         )
         postprocess!(g)
         test_ref("graphics/bar_print.txt", @print_col(g))
@@ -75,12 +75,12 @@ end
         g = @inferred BoxplotGraphics([1, 2, 2, 4, 5, 6], 30)
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 30
-        @test_throws ArgumentError printrow(stdout, g, 0)
-        @test_throws ArgumentError printrow(stdout, g, 4)
+        @test_throws ArgumentError print_row(stdout, g, 0)
+        @test_throws ArgumentError print_row(stdout, g, 4)
         postprocess! = preprocess!(g)
         test_ref(
-            "graphics/box_printrow.txt",
-            @io2str(printrow(IOContext(::IO, :color => true), g, 3))
+            "graphics/box_print_row.txt",
+            @io2str(print_row(IOContext(::IO, :color => true), g, 3))
         )
         postprocess!(g)
         test_ref("graphics/box_print.txt", @print_col(g))
@@ -120,6 +120,6 @@ end
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 30
         test_ref("graphics/box_minmax2.txt", @show_col(g))
-        # FIXME: boxplot break if max_x or min_x is doesn't conver the data
+        # FIXME: boxplot breaks if `max_x` or `min_x` doesn't cover the data
     end
 end

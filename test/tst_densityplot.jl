@@ -15,13 +15,13 @@ end
     test_ref("densityplot/densityplot_parameters.txt", @show_col(p))
 end
 
-@testset "zscale" begin
+@testset "dscale" begin
     # UnicodePlots.jl/issues/226
     # identity: only peaks appear (data is hidden)
     # sqrt: we start to see underlying data
     # x -> log(1 + x): start to see the 2D-normal law profile
     # x -> x / (x + 1): peak hidden
-    for (zscale, name) in (
+    for (dscale, name) in (
         (identity, "identity"),
         (sqrt, "sqrt"),
         (x -> log(1 + x), "log"),
@@ -29,7 +29,7 @@ end
     )
         x′ = copy(x)
         x′[round(Int, 0.1length(x)):round(Int, 0.6length(x))] .= 0.5maximum(x)
-        p = densityplot(x′, y; zscale = zscale)
-        test_ref("densityplot/densityplot_zscale_$name.txt", @show_col(p))
+        p = densityplot(x′, y; dscale = dscale)
+        test_ref("densityplot/densityplot_dscale_$name.txt", @show_col(p))
     end
 end

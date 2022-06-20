@@ -63,7 +63,7 @@ main() = begin
       """),
     densityplot2 = ("Densityplot", """
       x = randn(10_000); x[1_000:6_000] .= 2
-      densityplot(x, randn(10_000); zscale = x -> log(1 + x))
+      densityplot(x, randn(10_000); dscale = x -> log(1 + x))
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
     polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))"),
@@ -192,7 +192,7 @@ main() = begin
 
   $(examples.canvas)
 
-  You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `printrow` to embed the canvas anywhere you wish. For example, `printrow(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
+  You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `print_row` to embed the canvas anywhere you wish. For example, `print_row(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
   As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
 
@@ -394,7 +394,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   $(examples.densityplot1)
 
-  Using a scale function (e.g. damping peaks) is supported using the `zscale` keyword:
+  Using a scale function (e.g. damping peaks) is supported using the `dscale` keyword:
 
   $(examples.densityplot2)
 </details>

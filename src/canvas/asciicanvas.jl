@@ -1,7 +1,7 @@
 const ASCII_SIGNS = [
-    0b100_000_000 0b000_100_000 0b000_000_100
-    0b010_000_000 0b000_010_000 0b000_000_010
-    0b001_000_000 0b000_001_000 0b000_000_001
+    0b100_000_000 0b010_000_000 0b001_000_000
+    0b000_100_000 0b000_010_000 0b000_001_000
+    0b000_000_100 0b000_000_010 0b000_000_001
 ]
 
 const ASCII_LOOKUP = Dict{UInt16,Char}()
@@ -103,41 +103,28 @@ Printing plots to a file is one of those situations.
 The AsciiCanvas is best utilized in combination with `lineplot`.
 For `scatterplot` we suggest to use the `DotCanvas` instead.
 """
-struct AsciiCanvas{XS<:Function,YS<:Function} <: LookupCanvas
-    grid::Matrix{UInt16}
-    colors::Matrix{ColorType}
+struct AsciiCanvas{YS<:Function,XS<:Function} <: LookupCanvas
+    grid::Transpose{UInt16,Matrix{UInt16}}
+    colors::Transpose{ColorType,Matrix{ColorType}}
     min_max::NTuple{2,UInt64}
     blend::Bool
     visible::Bool
-    pixel_width::Int
     pixel_height::Int
-    origin_x::Float64
+    pixel_width::Int
     origin_y::Float64
-    width::Float64
+    origin_x::Float64
     height::Float64
-    xscale::XS
+    width::Float64
     yscale::YS
+    xscale::XS
 end
 
-@inline x_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
-@inline y_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
+@inline x_pixel_per_char(::Type{<:AsciiCanvas}) = 3
+@inline y_pixel_per_char(::Type{<:AsciiCanvas}) = 3
 
 @inline lookup_encode(::AsciiCanvas) = ASCII_SIGNS
 @inline lookup_decode(::AsciiCanvas) = ASCII_DECODE
+@inline lookup_offset(::AsciiCanvas) = N_ASCII
 
 AsciiCanvas(args...; kw...) =
-    CreateLookupCanvas(AsciiCanvas, UInt16, (0b000_000_000, 0b111_111_111), args...; kw...)
-
-function char_point!(
-    c::AsciiCanvas,
-    char_x::Int,
-    char_y::Int,
-    char::Char,
-    color::UserColorType,
-)
-    if checkbounds(Bool, c.grid, char_x, char_y)
-        c.grid[char_x, char_y] = N_ASCII + char
-        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
-    end
-    c
-end
+    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; kw...)

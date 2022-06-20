@@ -1,11 +1,12 @@
 @testset "empty" begin
     canvas =
-        BrailleCanvas(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
+        BrailleCanvas(10, 40, origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0)
     p = @inferred Plot(canvas)
     @test_throws ArgumentError Plot(canvas, margin = -1)
     test_ref("plot/empty.txt", @show_col(p))
-    canvas = BrailleCanvas(30, 5, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
-    p = @inferred Plot(canvas)
+    p = @inferred Plot(
+        BrailleCanvas(5, 30; origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0),
+    )
     test_ref("plot/empty_small.txt", @show_col(p))
 end
 
@@ -24,7 +25,7 @@ end
 
 function _test_canvas()
     canvas =
-        BrailleCanvas(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
+        BrailleCanvas(10, 40; origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0)
     lines!(canvas, 0.0, 0.0, 1.0, 1.0, :blue)
     lines!(canvas, 0.2, 0.7, 1.0, 0.0, :red)
     lines!(canvas, 0.0, 2.0, 0.5, 0.0, :green)

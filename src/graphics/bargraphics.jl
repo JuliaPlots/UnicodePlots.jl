@@ -89,7 +89,7 @@ function preprocess!(c::BarplotGraphics)
     c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
-function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
+function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
     bar = c.bars[row]
     val = c.xscale(bar)
@@ -97,20 +97,20 @@ function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     frac = c.max_val[] > 0 ? max(val, zero(val)) / c.max_val[] : 0.0
     max_bar_width = max(c.char_width - 2 - c.max_len[], 1)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
-    print_col(io, c.colors[row], c.symbols[nsyms]^bar_head)
+    print_color(io, c.colors[row], c.symbols[nsyms]^bar_head)
     if nsyms > 1
         rem = (frac * max_bar_width - bar_head) * (nsyms - 2)
-        print_col(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
+        print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
     if bar ≥ 0
-        print_col(io, nothing, ' ', bar_lbl)
+        print_color(io, nothing, ' ', bar_lbl)
         len = length(bar_lbl)
     else
         len = -1
     end
     pad_len = max(max_bar_width + 1 + c.max_len[] - bar_head - len, 0)
-    print_nc(io, ' '^round(Int, pad_len))
+    print_nocol(io, ' '^round(Int, pad_len))
     nothing
 end

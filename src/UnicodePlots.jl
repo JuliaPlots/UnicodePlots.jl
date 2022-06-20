@@ -10,6 +10,7 @@ using Printf
 using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import LinearAlgebra: Transpose
 import Base: RefValue
 import MarchingCubes
 import NaNMath
@@ -37,7 +38,7 @@ export GraphicsArea,
     origin_x,
     origin_y,
     origin,
-    printrow,
+    print_row,
     nrows,
     ncols,
     pixel!,

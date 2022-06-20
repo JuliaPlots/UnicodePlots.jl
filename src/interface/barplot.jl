@@ -59,7 +59,6 @@ function barplot(
     border = :barplot,
     color::Union{UserColorType,AbstractVector} = :green,
     width::Union{Nothing,Integer} = nothing,
-    symb = nothing,  # deprecated
     symbols = KEYWORDS.symbols,
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale),
@@ -96,7 +95,7 @@ function barplot(
         something(width, DEFAULT_WIDTH[]),
         xscale;
         color = color,
-        symbols = _handle_deprecated_symb(symb, symbols),
+        symbols = symbols,
         maximum = maximum,
     )
     plot = Plot(area; border = border, xlabel = xlabel, kw...)

@@ -514,36 +514,9 @@ complement(color::ColorType)::ColorType =
         THRESHOLD + ~UInt8(color - THRESHOLD)
     end
 
-@inline function set_color!(
-    colors::Matrix{ColorType},
-    x::Int,
-    y::Int,
-    color::ColorType,
-    blend::Bool,
-)
-    colors[x, y] = if (c = colors[x, y]) == INVALID_COLOR || !blend
-        color
-    else
-        blend_colors(c, color)
-    end
-    nothing
-end
-
 out_stream_size(out_stream::Union{Nothing,IO} = nothing) =
     out_stream ≡ nothing ? displaysize() : displaysize(out_stream)
 out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
-
-function _handle_deprecated_symb(symb, symbols)
-    if symb ≡ nothing
-        symbols
-    else
-        Base.depwarn(
-            "The keyword `symb` is deprecated in favor of `symbols`",
-            :BarplotGraphics,
-        )
-        [symb]
-    end
-end

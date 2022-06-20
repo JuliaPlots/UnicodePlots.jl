@@ -5,61 +5,62 @@ Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as
 Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character.
 Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
 """
-struct DensityCanvas{XS<:Function,YS<:Function,DS<:Function} <: Canvas
-    grid::Matrix{UInt}
-    colors::Matrix{ColorType}
+struct DensityCanvas{YS<:Function,XS<:Function,DS<:Function} <: Canvas
+    grid::Transpose{UInt64,Matrix{UInt64}}
+    colors::Transpose{ColorType,Matrix{ColorType}}
     blend::Bool
     visible::Bool
-    pixel_width::Int
     pixel_height::Int
-    origin_x::Float64
+    pixel_width::Int
     origin_y::Float64
-    width::Float64
+    origin_x::Float64
     height::Float64
-    xscale::XS
+    width::Float64
     yscale::YS
-    zscale::DS
+    xscale::XS
+    dscale::DS
     max_density::RefValue{Float64}
 end
 
-@inline x_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 1
-@inline y_pixel_per_char(::Type{C}) where {C<:DensityCanvas} = 2
+@inline y_pixel_per_char(::Type{<:DensityCanvas}) = 2
+@inline x_pixel_per_char(::Type{<:DensityCanvas}) = 1
 
 function DensityCanvas(
-    char_width::Int,
-    char_height::Int;
+    char_height::Int,
+    char_width::Int;
     blend::Bool = true,
     visible::Bool = true,
-    origin_x::Number = 0.0,
     origin_y::Number = 0.0,
-    width::Number = 1.0,
+    origin_x::Number = 0.0,
     height::Number = 1.0,
-    xscale::Union{Symbol,Function} = identity,
+    width::Number = 1.0,
     yscale::Union{Symbol,Function} = identity,
-    zscale::Union{Symbol,Function} = identity,
+    xscale::Union{Symbol,Function} = identity,
+    dscale::Union{Symbol,Function} = identity,
 )
-    width > 0 || throw(ArgumentError("width has to be positive"))
+    G = first(fieldtypes(DensityCanvas))
     height > 0 || throw(ArgumentError("height has to be positive"))
-    char_width   = max(char_width, 5)
+    width > 0 || throw(ArgumentError("width has to be positive"))
     char_height  = max(char_height, 5)
-    pixel_width  = char_width * x_pixel_per_char(DensityCanvas)
+    char_width   = max(char_width, 5)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
-    grid         = fill(UInt(0), char_width, char_height)
-    colors       = fill(INVALID_COLOR, char_width, char_height)
+    pixel_width  = char_width * x_pixel_per_char(DensityCanvas)
+    grid         = transpose(fill(grid_type(DensityCanvas)(0), char_width, char_height))
+    colors       = transpose(fill(INVALID_COLOR, char_width, char_height))
     DensityCanvas(
         grid,
         colors,
         blend,
         visible,
-        pixel_width,
         pixel_height,
-        float(origin_x),
+        pixel_width,
         float(origin_y),
-        float(width),
+        float(origin_x),
         float(height),
-        scale_callback(xscale),
-        scale_callback(yscale),
-        scale_callback(zscale),
+        float(width),
+        yscale,
+        xscale,
+        dscale,
         Ref(-Inf),
     )
 end
@@ -68,25 +69,25 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
-    if checkbounds(Bool, c.grid, char_x, char_y)
-        cnt = c.grid[char_x, char_y] += 1  # count occurrences
+    if checkbounds(Bool, c.grid, char_y, char_x)
+        cnt = c.grid[char_y, char_x] += 1  # count occurrences
         set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
     c
 end
 
 function preprocess!(c::DensityCanvas)
-    c.max_density[] = max(eps(), maximum(c.zscale.(c.grid)))
+    c.max_density[] = max(eps(), maximum(c.dscale.(c.grid)))
     c -> c.max_density[] = -Inf
 end
 
-function printrow(io::IO, print_nc, print_col, c::DensityCanvas, row::Int)
+function print_row(io::IO, _, print_color, c::DensityCanvas, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     signs = DEN_SIGNS[]
     fact = (length(signs) - 1) / c.max_density[]
-    for x in 1:ncols(c)
-        val = fact * c.zscale(c.grid[x, row])
-        print_col(io, c.colors[x, row], signs[round(Int, val, RoundNearestTiesUp) + 1])
+    for col in 1:ncols(c)
+        val = fact * c.dscale(c.grid[row, col])
+        print_color(io, c.colors[row, col], signs[round(Int, val, RoundNearestTiesUp) + 1])
     end
     nothing
 end

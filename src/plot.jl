@@ -232,16 +232,16 @@ function Plot(
     p_height = My - my
 
     canvas = C(
-        width,
-        height;
+        height,
+        width;
         blend = blend,
         visible = visible,
-        origin_x = mx,
         origin_y = my,
-        width = p_width,
+        origin_x = mx,
         height = p_height,
-        xscale = xscale,
+        width = p_width,
         yscale = yscale,
+        xscale = xscale,
         canvas_kw...,
     )
     plot = Plot(
@@ -413,23 +413,8 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
     plot
 end
 
-function annotate!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
-    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
-    label!(plot, loc, value, color)
-end
-
 label!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType = :normal) =
     label!(plot, loc, value, color)
-
-function annotate!(
-    plot::Plot,
-    loc::Symbol,
-    value::AbstractString;
-    color::UserColorType = :normal,
-)
-    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
-    label!(plot, loc, value, color)
-end
 
 function label!(
     plot::Plot,
@@ -450,17 +435,6 @@ function label!(
     plot
 end
 
-function annotate!(
-    plot::Plot,
-    loc::Symbol,
-    row::Int,
-    value::AbstractString,
-    color::UserColorType,
-)
-    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
-    label!(plot, loc, row, value, color)
-end
-
 label!(
     plot::Plot,
     loc::Symbol,
@@ -468,17 +442,6 @@ label!(
     value::AbstractString;
     color::UserColorType = :normal,
 ) = label!(plot, loc, row, value, color)
-
-function annotate!(
-    plot::Plot,
-    loc::Symbol,
-    row::Int,
-    value::AbstractString;
-    color::UserColorType = :normal,
-)
-    Base.depwarn("`annotate!` has been renamed to `label!`", :Plot)
-    label!(plot, loc, row, value, color)
-end
 
 """
     annotate!(plot, x, y, text; kw...)
@@ -560,8 +523,8 @@ end
 
 function print_title(
     io::IO,
-    print_nc,
-    print_col,
+    print_nocol,
+    print_color,
     left_pad::AbstractString,
     title::AbstractString,
     right_pad::AbstractString,
@@ -572,10 +535,10 @@ function print_title(
     title == "" && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = blank^(offset > 0 ? offset : 0)
-    print_nc(io, left_pad, pre_pad)
-    print_col(io, color, title)
+    print_nocol(io, left_pad, pre_pad)
+    print_color(io, color, title)
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
-    print_nc(io, post_pad, right_pad)
+    print_nocol(io, post_pad, right_pad)
     (
         count("\n", title) + 1,
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
@@ -584,8 +547,8 @@ end
 
 function print_border(
     io::IO,
-    print_nc,
-    print_col,
+    print_nocol,
+    print_color,
     loc::Symbol,
     length::Int,
     left_pad::Union{Char,AbstractString},
@@ -593,16 +556,16 @@ function print_border(
     bmap = BORDERMAP[:solid],
     color::UserColorType = BORDER_COLOR[],
 )
-    print_nc(io, left_pad)
-    print_col(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
-    print_nc(io, right_pad)
+    print_nocol(io, left_pad)
+    print_color(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
+    print_nocol(io, right_pad)
     nothing
 end
 
 function print_labels(
     io::IO,
-    print_nc,
-    print_col,
+    print_nocol,
+    print_color,
     mloc::Symbol,
     p::Plot,
     border_length,
@@ -624,15 +587,15 @@ function print_labels(
         left_len  = length(left_str)
         mid_len   = length(mid_str)
         right_len = length(right_str)
-        print_nc(io, left_pad)
-        print_col(io, left_col, left_str)
+        print_nocol(io, left_pad)
+        print_color(io, left_col, left_str)
         cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
-        print_nc(io, cnt > 0 ? blank^cnt : "")
-        print_col(io, mid_col, mid_str)
+        print_nocol(io, cnt > 0 ? blank^cnt : "")
+        print_color(io, mid_col, mid_str)
         cnt = border_length - right_len - left_len - mid_len + 2 - cnt
-        print_nc(io, cnt > 0 ? blank^cnt : "")
-        print_col(io, right_col, right_str)
-        print_nc(io, right_pad)
+        print_nocol(io, cnt > 0 ? blank^cnt : "")
+        print_color(io, right_col, right_str)
+        print_nocol(io, right_pad)
         return 1
     end
     return 0
@@ -640,7 +603,7 @@ end
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
-function _show(io::IO, print_nc, print_col, p::Plot)
+function _show(io::IO, print_nocol, print_color, p::Plot)
     io_color = get(io, :color, false)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
@@ -694,8 +657,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # plot the title and the top border
     h_ttl, w_ttl = print_title(
         io,
-        print_nc,
-        print_col,
+        print_nocol,
+        print_color,
         border_left_pad,
         title(p),
         border_right_pad * '\n',
@@ -705,8 +668,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     )
     h_lbl = print_labels(
         io,
-        print_nc,
-        print_col,
+        print_nocol,
+        print_color,
         :t,
         p,
         nc - 2,
@@ -716,8 +679,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     )
     c.visible && print_border(
         io,
-        print_nc,
-        print_col,
+        print_nocol,
+        print_color,
         :t,
         nc,
         border_left_pad,
@@ -733,7 +696,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # plot all rows
     for row in 1:nr
         # print left annotations
-        print_nc(io, 🗷^p.margin)
+        print_nocol(io, 🗷^p.margin)
         if p.labels
             # Current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")
@@ -750,36 +713,36 @@ function _show(io::IO, print_nc, print_col, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_col(io, :normal, ylabel(p))
-                print_nc(io, 🗷^(max_len_l - length(ylabel(p)) - left_len))
+                print_color(io, :normal, ylabel(p))
+                print_nocol(io, 🗷^(max_len_l - length(ylabel(p)) - left_len))
             else
                 # print padding to fill ylabel length
-                print_nc(io, 🗷^(max_len_l - left_len))
+                print_nocol(io, 🗷^(max_len_l - left_len))
             end
             # print the left annotation
-            print_col(io, left_col, left_str)
+            print_color(io, left_col, left_str)
         end
         if c.visible
             # print left border
-            print_nc(io, plot_padding)
-            print_col(io, bc, bmap[:l])
+            print_nocol(io, plot_padding)
+            print_color(io, bc, bmap[:l])
             # print canvas row
-            printrow(io, print_nc, print_col, c, row)
+            print_row(io, print_nocol, print_color, c, row)
             # print right label and padding
-            print_col(io, bc, bmap[:r])
+            print_color(io, bc, bmap[:r])
         end
         if p.labels
-            print_nc(io, plot_padding)
-            print_col(io, right_col, right_str)
-            print_nc(io, 🗷^(max_len_r - right_len))
+            print_nocol(io, plot_padding)
+            print_color(io, right_col, right_str)
+            print_nocol(io, 🗷^(max_len_r - right_len))
         end
         # print colorbar
         if p.cmap.bar
-            print_nc(io, plot_padding)
+            print_nocol(io, plot_padding)
             print_colorbar_row(
                 io,
-                print_nc,
-                print_col,
+                print_nocol,
+                print_color,
                 c,
                 row,
                 p.cmap,
@@ -790,7 +753,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 🗷,
             )
         end
-        row < nrows(c) && print_nc(io, '\n')
+        row < nrows(c) && print_nocol(io, '\n')
     end
 
     postprocess!(c)
@@ -798,8 +761,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # draw bottom border
     c.visible && print_border(
         io,
-        print_nc,
-        print_col,
+        print_nocol,
+        print_color,
         :b,
         nc,
         '\n' * border_left_pad,
@@ -811,8 +774,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     if p.labels
         h_lbl += print_labels(
             io,
-            print_nc,
-            print_col,
+            print_nocol,
+            print_color,
             :b,
             p,
             nc - 2,
@@ -823,8 +786,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         if !p.compact
             h_w = print_title(
                 io,
-                print_nc,
-                print_col,
+                print_nocol,
+                print_color,
                 '\n' * border_left_pad,
                 xlabel(p),
                 border_right_pad,
@@ -935,7 +898,7 @@ function png_image(
     fcolors = sizehint!(RGBA{Float32}[], nr * nc)
     gcolors = sizehint!(RGBA{Float32}[], nr * nc)
 
-    print_nc(io, args...) = begin
+    print_nocol(io, args...) = begin
         line = string(args...)
         len = length(line)
         append!(fchars, line)
@@ -945,7 +908,7 @@ function png_image(
         nothing
     end
 
-    print_col(io, color, args...; bgcol = missing) = begin
+    print_color(io, color, args...; bgcol = missing) = begin
         fcolor = rgba(ansi_color(color))
         gcolor = if ismissing(bgcol)
             default_bg_color
@@ -962,7 +925,7 @@ function png_image(
     end
 
     # compute 1D stream of chars and colors
-    _show(IOContext(devnull, :color => true), print_nc, print_col, p)
+    _show(IOContext(devnull, :color => true), print_nocol, print_color, p)
 
     # compute 2D grid (image) of chars and colors
     lfchars = sizehint!([Char[]], nr)

@@ -104,21 +104,14 @@ function spy(
     fix_ar::Bool = false,
     kw...,
 ) where {T<:Canvas}
-    if color ≡ :automatic
-        Base.depwarn(
-            "`color = :automatic` is deprecated, use `color = :auto` instead",
-            :spy,
-        )
-        color = :auto
-    end
     height, width = get_canvas_dimensions_for_matrix(
         canvas,
         nrow,
         ncol,
-        maxwidth,
         maxheight,
-        width,
+        maxwidth,
         height,
+        width,
         margin,
         padding,
         out_stream,
@@ -126,7 +119,7 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
-    can = T(width, height, width = 1.0 + ncol, height = 1.0 + nrow)
+    can = T(height, width, width = 1.0 + ncol, height = 1.0 + nrow)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto

@@ -84,7 +84,7 @@ transform(c::BoxplotGraphics, value) = clamp(
     c.char_width,
 )
 
-function printrow(io::IO, print_nc, print_col, c::BoxplotGraphics, row::Int)
+function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     idx = ceil(Int, row / 3)
     series = c.data[idx]
@@ -123,6 +123,6 @@ function printrow(io::IO, print_nc, print_col, c::BoxplotGraphics, row::Int)
         chars[i] = line_char
     end
 
-    print_col(io, c.colors[idx], String(chars))
+    print_color(io, c.colors[idx], String(chars))
     nothing
 end
