@@ -8,14 +8,15 @@ Draws a density plot for the given points.
 The first vector `x` should contain the horizontal positions for all the points.
 The second vector `y` should contain the corresponding vertical positions respectively.
 The two vectors must thus be of the same length and ordering.
+One can pass an arbitrary `zscale` `Function` or `Symbol` for transforming density counts (e.g. peaks damping).
 
 # Usage
 
-    densityplot(x, y; $(keywords(; remove = (:grid,))))
+    densityplot(x, y; $(keywords((; zscale = :identity); remove = (:grid,))))
 
 # Arguments
 
-$(arguments(; add = (:x, :y), remove = (:grid,)))
+$(arguments((; zscale = "density scale function"); add = (:x, :y), remove = (:grid,)))
 
 # Author(s)
 
@@ -24,7 +25,7 @@ $(arguments(; add = (:x, :y), remove = (:grid,)))
 # Examples
 
 ```julia-repl
-julia> densityplot(randn(1000), randn(1000), title = "Density Plot")
+julia> densityplot(randn(1_000), randn(1_000), title = "Density Plot")
                       Density Plot
         ┌────────────────────────────────────────┐
     2.9 │                    ░                   │
@@ -56,9 +57,18 @@ function densityplot(
     color::UserColorType = KEYWORDS.color,
     grid = false,
     name = KEYWORDS.name,
+    zscale::Union{Symbol,Function} = :identity,
     kw...,
 )
-    plot = Plot(x, y, nothing, DensityCanvas; grid = grid, kw...)
+    plot = Plot(
+        x,
+        y,
+        nothing,
+        DensityCanvas;
+        grid = grid,
+        canvas_kw = (; zscale = zscale),
+        kw...,
+    )
     scatterplot!(plot, x, y; color = color, name = name)
 end
 

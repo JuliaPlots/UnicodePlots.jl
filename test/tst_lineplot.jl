@@ -61,15 +61,15 @@ end
     v = range(0, stop = 3pi, length = 31)
     p = @binf lineplot(d, sin.(v), name = "sin", height = 5, xlabel = "date")
     test_ref("lineplot/dates1.txt", @show_col(p))
-    @test @binf(lineplot!(p, d, cos.(v), name = "cos")) === p
+    @test @binf(lineplot!(p, d, cos.(v), name = "cos")) ≡ p
     test_ref("lineplot/dates2.txt", @show_col(p))
 end
 
 @testset "line with intercept and slope" begin
     p = @binf lineplot(y)
-    @test @binf(lineplot!(p, -3, 1)) === p
+    @test @binf(lineplot!(p, -3, 1)) ≡ p
     test_ref("lineplot/slope1.txt", @show_col(p))
-    @test @binf(lineplot!(p, -4, 0.5, color = :cyan, name = "foo")) === p
+    @test @binf(lineplot!(p, -4, 0.5, color = :cyan, name = "foo")) ≡ p
     test_ref("lineplot/slope2.txt", @show_col(p))
 end
 
@@ -88,16 +88,16 @@ end
     )
     p = @binf lineplot(sin)
     test_ref("lineplot/sin.txt", @show_col(p))
-    @test @binf(lineplot!(p, cos)) === p
+    @test @binf(lineplot!(p, cos)) ≡ p
     test_ref("lineplot/sincos.txt", @show_col(p))
     p = @binf lineplot([sin, cos])
     test_ref("lineplot/sincos.txt", @show_col(p))
 
     p = @binf lineplot(sin, -0.5, 6)
     test_ref("lineplot/sin2.txt", @show_col(p))
-    @test @binf(lineplot!(p, cos)) === p
+    @test @binf(lineplot!(p, cos)) ≡ p
     test_ref("lineplot/sincos2.txt", @show_col(p))
-    @test @binf(lineplot!(p, tan, 2.5, 3.5)) === p
+    @test @binf(lineplot!(p, tan, 2.5, 3.5)) ≡ p
     test_ref("lineplot/sincostan2.txt", @show_col(p))
 
     p = @binf lineplot([sin, cos], -0.5, 3)
@@ -106,7 +106,7 @@ end
     tmp = [-0.5, 0.6, 1.4, 2.5]
     p = @binf lineplot(sin, tmp)
     test_ref("lineplot/sin4.txt", @show_col(p))
-    @test @binf(lineplot!(p, cos, tmp)) === p
+    @test @binf(lineplot!(p, cos, tmp)) ≡ p
     test_ref("lineplot/sincos4.txt", @show_col(p))
     p = @binf lineplot([sin, cos], tmp)
     test_ref("lineplot/sincos4.txt", @show_col(p))
@@ -164,10 +164,10 @@ end
     @test p isa Plot
     test_ref("lineplot/parameters1.txt", @show_col(p))
 
-    @test @binf(lineplot!(p, [0.5, 1, 1.5], name = "points2")) === p
+    @test @binf(lineplot!(p, [0.5, 1, 1.5], name = "points2")) ≡ p
     test_ref("lineplot/parameters2.txt", @show_col(p))
 
-    @test @binf(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
+    @test @binf(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) ≡ p
     test_ref("lineplot/parameters3.txt", @show_col(p))
     test_ref("lineplot/nocolor.txt", @show_nocol(p))
 
@@ -190,9 +190,9 @@ end
     test_ref("lineplot/stairs_post.txt", @show_col(p))
 
     p = @binf stairs(sx, sy, title = "Foo", color = :red, xlabel = "x", name = "1")
-    @test @binf(stairs!(p, sx .- 0.2, sy .+ 1.5, name = "2")) === p
+    @test @binf(stairs!(p, sx .- 0.2, sy .+ 1.5, name = "2")) ≡ p
     test_ref("lineplot/stairs_parameters.txt", @show_col(p))
-    @test @binf(stairs!(p, sx, sy, name = "3", style = :pre)) === p
+    @test @binf(stairs!(p, sx, sy, name = "3", style = :pre)) ≡ p
     test_ref("lineplot/stairs_parameters2.txt", @show_col(p))
     test_ref("lineplot/stairs_parameters2_nocolor.txt", @show_nocol(p))
 

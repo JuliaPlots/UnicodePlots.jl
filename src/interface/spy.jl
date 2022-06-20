@@ -104,7 +104,7 @@ function spy(
     fix_ar::Bool = false,
     kw...,
 ) where {T<:Canvas}
-    if color == :automatic
+    if color ≡ :automatic
         Base.depwarn(
             "`color = :automatic` is deprecated, use `color = :auto` instead",
             :spy,

@@ -95,17 +95,13 @@ end
 ASCII_DECODE[(N_ASCII + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) - N_ASCII)]
 
 """
-As the name suggests the `AsciiCanvas` only uses
-ASCII characters to draw it's content. Naturally,
-it doesn't look quite as nice as the Unicode-based
-ones. However, in some situations it might yield
-better results. Printing plots to a file is one
-of those situations.
+As the name suggests the `AsciiCanvas` only uses ASCII characters to draw it's content.
+Naturally, it doesn't look quite as nice as the Unicode-based ones.
+However, in some situations it might yield better results.
+Printing plots to a file is one of those situations.
 
-The AsciiCanvas is best utilized in combination
-with `lineplot`.
-For `scatterplot` we suggest to use the `DotCanvas`
-instead.
+The AsciiCanvas is best utilized in combination with `lineplot`.
+For `scatterplot` we suggest to use the `DotCanvas` instead.
 """
 struct AsciiCanvas{XS<:Function,YS<:Function} <: LookupCanvas
     grid::Matrix{UInt16}

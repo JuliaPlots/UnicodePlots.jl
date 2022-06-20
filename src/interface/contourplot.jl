@@ -88,7 +88,7 @@ function contourplot!(
 )
     name == "" || label!(plot, :r, string(name))
 
-    plot.colormap = callback = colormap_callback(colormap)
+    plot.cmap.callback = callback = colormap_callback(colormap)
     mA, MA = NaNMath.extrema(as_float(A))
 
     for cl in Contour.levels(Contour.contours(y, x, A, levels))

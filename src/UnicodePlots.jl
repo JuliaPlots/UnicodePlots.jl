@@ -1,16 +1,16 @@
 module UnicodePlots
 
-using LazyModules
-
-using Dates
-using Crayons
-using StatsBase: Histogram, fit, percentile
 using SparseArrays: AbstractSparseMatrix, findnz
+using StatsBase: Histogram, fit, percentile
 using LinearAlgebra
 using StaticArrays
+using LazyModules
+using Crayons
 using Printf
+using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import Base: RefValue
 import MarchingCubes
 import NaNMath
 import Contour
@@ -82,8 +82,10 @@ export GraphicsArea,
     polarplot!,
     MVP,
     savefig,
-    default_size!
+    default_size!,
+    preprocess!
 
+include("colormaps.jl")
 include("common.jl")
 include("lut.jl")
 
@@ -104,7 +106,6 @@ include("description.jl")
 include("volume.jl")
 
 include("plot.jl")
-include("colormaps.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")

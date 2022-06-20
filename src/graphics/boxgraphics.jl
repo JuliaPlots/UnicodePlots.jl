@@ -6,13 +6,13 @@ struct FiveNumberSummary
     maximum::Float64
 end
 
-mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
+struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
     colors::Vector{ColorType}
     char_width::Int
     visible::Bool
-    min_x::R
-    max_x::R
+    min_x::RefValue{R}
+    max_x::RefValue{R}
 
     function BoxplotGraphics{R}(
         data::AbstractVector{R},
@@ -24,35 +24,27 @@ mutable struct BoxplotGraphics{R<:Number} <: GraphicsArea
     ) where {R}
         char_width = max(char_width, 10)
         if min_x == max_x
-            min_x = min_x - 1
-            max_x = max_x + 1
+            min_x -= 1
+            max_x += 1
         end
         colors = if color isa AbstractVector
             ansi_color.(color)
         else
             [ansi_color(color)]
         end
-        new{R}(
-            [
-                FiveNumberSummary(
-                    minimum(data),
-                    percentile(data, 25),
-                    percentile(data, 50),
-                    percentile(data, 75),
-                    maximum(data),
-                ),
-            ],
-            colors,
-            char_width,
-            visible,
-            min_x,
-            max_x,
+        summary = FiveNumberSummary(
+            minimum(data),
+            percentile(data, 25),
+            percentile(data, 50),
+            percentile(data, 75),
+            maximum(data),
         )
+        new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
     end
 end
 
-nrows(c::BoxplotGraphics) = 3 * length(c.data)
-ncols(c::BoxplotGraphics) = c.char_width
+@inline nrows(c::BoxplotGraphics) = 3length(c.data)
+@inline ncols(c::BoxplotGraphics) = c.char_width
 
 BoxplotGraphics(
     data::AbstractVector{R},
@@ -81,21 +73,21 @@ function addseries!(
         ),
     )
     push!(c.colors, suitable_color(c, color))
-    c.min_x = min(mi, c.min_x)
-    c.max_x = max(ma, c.max_x)
+    c.min_x[] = min(mi, c.min_x[])
+    c.max_x[] = max(ma, c.max_x[])
     c
 end
+
+transform(c::BoxplotGraphics, value) = clamp(
+    round(Int, (value - c.min_x[]) / (c.max_x[] - c.min_x[]) * c.char_width),
+    1,
+    c.char_width,
+)
 
 function printrow(io::IO, print_nc, print_col, c::BoxplotGraphics, row::Int)
     0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
     idx = ceil(Int, row / 3)
     series = c.data[idx]
-
-    transform(value) = clamp(
-        round(Int, (value - c.min_x) / (c.max_x - c.min_x) * c.char_width),
-        1,
-        c.char_width,
-    )
 
     series_row = Int((row - 1) % 3) + 1
 
@@ -107,30 +99,30 @@ function printrow(io::IO, print_nc, print_col, c::BoxplotGraphics, row::Int)
     right_box_char = ('┐', '├', '┘')[series_row]
     max_char = ('╷', '┤', '╵')[series_row]
 
-    line = [' ' for _ in 1:(c.char_width)]
+    chars = fill(' ', c.char_width)
 
     # Draw shapes first - this is most important,
     # so they'll always be drawn even if there's not enough space
-    line[transform(series.minimum)] = min_char
-    line[transform(series.lower_quartile)] = left_box_char
-    line[transform(series.median)] = median_char
-    line[transform(series.upper_quartile)] = right_box_char
-    line[transform(series.maximum)] = max_char
+    chars[transform(c, series.minimum)] = min_char
+    chars[transform(c, series.lower_quartile)] = left_box_char
+    chars[transform(c, series.median)] = median_char
+    chars[transform(c, series.upper_quartile)] = right_box_char
+    chars[transform(c, series.maximum)] = max_char
 
     # Fill in gaps with lines
-    for i in (transform(series.minimum) + 1):(transform(series.lower_quartile) - 1)
-        line[i] = line_char
+    for i in (transform(c, series.minimum) + 1):(transform(c, series.lower_quartile) - 1)
+        chars[i] = line_char
     end
-    for i in (transform(series.lower_quartile) + 1):(transform(series.median) - 1)
-        line[i] = line_box_char
+    for i in (transform(c, series.lower_quartile) + 1):(transform(c, series.median) - 1)
+        chars[i] = line_box_char
     end
-    for i in (transform(series.median) + 1):(transform(series.upper_quartile) - 1)
-        line[i] = line_box_char
+    for i in (transform(c, series.median) + 1):(transform(c, series.upper_quartile) - 1)
+        chars[i] = line_box_char
     end
-    for i in (transform(series.upper_quartile) + 1):(transform(series.maximum) - 1)
-        line[i] = line_char
+    for i in (transform(c, series.upper_quartile) + 1):(transform(c, series.maximum) - 1)
+        chars[i] = line_char
     end
 
-    print_col(io, c.colors[idx], join(line))
+    print_col(io, c.colors[idx], String(chars))
     nothing
 end

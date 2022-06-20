@@ -10,6 +10,23 @@ y = [2, 0, -5, 2, -5]
 @test_throws DimensionMismatch scatterplot(1:3, [1, 2])
 @test_throws DimensionMismatch scatterplot(1:3, 1:2)
 
+@testset "boundaries" begin
+    # tests that the two points are drawn correctly on the canvas
+    for canvas in (BrailleCanvas, AsciiCanvas, DotCanvas)
+        for width in (20:10:60), height in (10:5:30)
+            p = scatterplot(
+                1:2,
+                reverse(1:2),
+                width = width,
+                height = height,
+                canvas = canvas,
+            )
+            @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
+            @test last(p.graphics.grid) != UnicodePlots.blank(p.graphics)
+        end
+    end
+end
+
 @testset "positional types" begin
     for p in (
         @binf(scatterplot(x, y)),
@@ -68,10 +85,10 @@ end
     @test p isa Plot
     test_ref("scatterplot/parameters1.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) === p
+    @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) ≡ p
     test_ref("scatterplot/parameters2.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) === p
+    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) ≡ p
     test_ref("scatterplot/parameters3.txt", @show_col(p))
     test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 

@@ -82,7 +82,7 @@ function scatterplot!(
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
 )
-    color = (color == :auto) ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
     name == "" ||
         label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
     if marker ∈ (:pixel, :auto)

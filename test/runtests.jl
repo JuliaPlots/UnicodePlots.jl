@@ -5,11 +5,11 @@ using UnicodePlots, Test
 # issues get automatically resolved.
 include("tst_world_age.jl")
 
-using ReferenceTests
-using ReferenceTests: BeforeAfterFull
 using Dates: Date, Day
+using ReferenceTests
 import Random: seed!
 using LinearAlgebra
+using TimerOutputs
 using ColorTypes
 using StableRNGs
 using StatsBase
@@ -19,6 +19,7 @@ import FileIO
 
 include("fixes.jl")
 
+const TO = TimerOutput()
 const RNG = StableRNG(1337)
 const T_SZ = (24, 80)  # terminal size
 
@@ -26,7 +27,7 @@ const T_SZ = (24, 80)  # terminal size
 test_ref(reference, actual) = @test_reference(
     joinpath("references_$(UnicodePlots.colormode())", reference),
     actual,
-    render = BeforeAfterFull(),
+    render = ReferenceTests.BeforeAfterFull(),
     format = "TXT"
 )
 
@@ -84,36 +85,42 @@ macro hinf(ex)
 end
 
 macro dinf(ex)
-    :(@inferred(Plot{DensityCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
+    :(@inferred(
+        Plot{DensityCanvas{typeof(identity),typeof(identity),typeof(identity)}},
+        $ex
+    )) |> esc
+end
+
+macro timeit_include(path::AbstractString)
+    :(@timeit TO $path @testset $path begin
+        include($path)
+    end) |> esc
 end
 
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
     println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
-    for test in (
-        "tst_depwarn.jl",
-        "tst_issues.jl",
-        "tst_io.jl",
-        "tst_common.jl",
-        "tst_graphics.jl",
-        "tst_canvas.jl",
-        "tst_plot.jl",
-        "tst_scatterplot.jl",
-        "tst_lineplot.jl",
-        "tst_densityplot.jl",
-        "tst_histogram.jl",
-        "tst_barplot.jl",
-        "tst_spy.jl",
-        "tst_boxplot.jl",
-        "tst_contourplot.jl",
-        "tst_polarplot.jl",
-        "tst_heatmap.jl",
-        "tst_volume.jl",
-        "tst_surfaceplot.jl",
-        "tst_isosurface.jl",
-    )
-        @testset "$test" begin
-            include(test)
-        end
-    end
+    @timeit_include "tst_depwarn.jl"
+    @timeit_include "tst_issues.jl"
+    @timeit_include "tst_io.jl"
+    @timeit_include "tst_common.jl"
+    @timeit_include "tst_graphics.jl"
+    @timeit_include "tst_canvas.jl"
+    @timeit_include "tst_plot.jl"
+    @timeit_include "tst_scatterplot.jl"
+    @timeit_include "tst_lineplot.jl"
+    @timeit_include "tst_densityplot.jl"
+    @timeit_include "tst_histogram.jl"
+    @timeit_include "tst_barplot.jl"
+    @timeit_include "tst_spy.jl"
+    @timeit_include "tst_boxplot.jl"
+    @timeit_include "tst_contourplot.jl"
+    @timeit_include "tst_polarplot.jl"
+    @timeit_include "tst_heatmap.jl"
+    @timeit_include "tst_volume.jl"
+    @timeit_include "tst_surfaceplot.jl"
+    @timeit_include "tst_isosurface.jl"
 end
+
+# ~ 166s & 15.0GiB on 1.7
+print_timer(TO; compact = true, sortby = :firstexec)

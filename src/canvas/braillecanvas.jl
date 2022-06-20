@@ -4,12 +4,9 @@ const BRAILLE_SIGNS = [
 ]
 
 """
-The type of canvas with the highest resolution
-for Unicode-based plotting.
-It uses the Unicode characters for
-the Braille symbols to represent individual pixel.
-This effectively turns every character into 8 pixels
-that can individually be manipulated using binary operations.
+The type of canvas with the highest resolution for Unicode-based plotting.
+It uses the Unicode characters for the Braille symbols to represent individual pixel.
+This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 """
 struct BrailleCanvas{XS<:Function,YS<:Function} <: Canvas
     grid::Matrix{Char}
@@ -26,14 +23,7 @@ struct BrailleCanvas{XS<:Function,YS<:Function} <: Canvas
     yscale::YS
 end
 
-@inline pixel_width(c::BrailleCanvas) = c.pixel_width
-@inline pixel_height(c::BrailleCanvas) = c.pixel_height
-@inline origin_x(c::BrailleCanvas) = c.origin_x
-@inline origin_y(c::BrailleCanvas) = c.origin_y
-@inline width(c::BrailleCanvas) = c.width
-@inline height(c::BrailleCanvas) = c.height
-@inline nrows(c::BrailleCanvas) = size(c.grid, 2)
-@inline ncols(c::BrailleCanvas) = size(c.grid, 1)
+@inline blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
 
 @inline x_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 2
 @inline y_pixel_per_char(::Type{C}) where {C<:BrailleCanvas} = 4
@@ -65,34 +55,26 @@ function BrailleCanvas(
         visible,
         pixel_width,
         pixel_height,
-        Float64(origin_x),
-        Float64(origin_y),
-        Float64(width),
-        Float64(height),
+        float(origin_x),
+        float(origin_y),
+        float(width),
+        float(height),
         xscale,
         yscale,
     )
 end
 
-function pixel_to_char_point(c::BrailleCanvas, pixel_x::Number, pixel_y::Number)
-    cw, ch = size(c.grid)
-    pixel_x < c.pixel_width || (pixel_x -= 1)
-    pixel_y < c.pixel_height || (pixel_y -= 1)
-    char_x = floor(Int, pixel_x / c.pixel_width * cw) + 1
-    char_x_off = (pixel_x % x_pixel_per_char(BrailleCanvas)) + 1
-    char_y = floor(Int, pixel_y / c.pixel_height * ch) + 1
-    char_y_off = (pixel_y % y_pixel_per_char(BrailleCanvas)) + 1
-    char_x, char_y, char_x_off, char_y_off
-end
-
 function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
-    0 ≤ pixel_x ≤ c.pixel_width || return c
-    0 ≤ pixel_y ≤ c.pixel_height || return c
-    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point(c, pixel_x, pixel_y)
-    if BLANK_BRAILLE ≤ (val = UInt64(c.grid[char_x, char_y])) ≤ FULL_BRAILLE
-        c.grid[char_x, char_y] = Char(val | UInt64(BRAILLE_SIGNS[char_x_off, char_y_off]))
+    valid_x_pixel(c, pixel_x) || return c
+    valid_y_pixel(c, pixel_y) || return c
+    char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
+    if checkbounds(Bool, c.grid, char_x, char_y)
+        if BLANK_BRAILLE ≤ (val = UInt64(c.grid[char_x, char_y])) ≤ FULL_BRAILLE
+            c.grid[char_x, char_y] =
+                Char(val | UInt64(BRAILLE_SIGNS[char_x_off, char_y_off]))
+        end
+        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     end
-    set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
     c
 end
 

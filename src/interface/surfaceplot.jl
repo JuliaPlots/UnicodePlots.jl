@@ -126,11 +126,11 @@ function surfaceplot!(
         throw(DimensionMismatch("X, Y, Z and H must have same length"))
 
     cmapped = color ≡ nothing
-    color = (color == :auto) ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
 
-    plot.colorbar_lim = mh, Mh = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
-    plot.colormap = callback = colormap_callback(colormap)
-    plot.colorbar = colorbar && cmapped
+    plot.cmap.lim = (mh, Mh) = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
+    plot.cmap.callback = callback = colormap_callback(colormap)
+    plot.cmap.bar = colorbar && cmapped
 
     F = float(eltype(Z))
     if (

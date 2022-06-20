@@ -44,29 +44,26 @@ Author(s)
 [`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
 [`BlockCanvas`](@ref), [`AsciiCanvas`](@ref)
 """
-mutable struct Plot{T<:GraphicsArea,E,F}
+struct Plot{T<:GraphicsArea,E,F}
     graphics::T
-    title::String
-    xlabel::String
-    ylabel::String
-    zlabel::String
+    projection::MVP{E,F}
+    autocolor::RefValue{Int}
+    title::RefValue{String}
+    xlabel::RefValue{String}
+    ylabel::RefValue{String}
+    zlabel::RefValue{String}
     margin::Int
     padding::Int
     border::Symbol
     compact::Bool
+    labels::Bool
     labels_left::Dict{Int,String}
-    colors_left::Dict{Int,ColorType}
     labels_right::Dict{Int,String}
+    colors_left::Dict{Int,ColorType}
     colors_right::Dict{Int,ColorType}
     decorations::Dict{Symbol,String}
     colors_deco::Dict{Symbol,ColorType}
-    labels::Bool
-    colormap::Any
-    colorbar::Bool
-    colorbar_border::Symbol
-    colorbar_lim::Tuple{Number,Number}
-    autocolor::Int
-    projection::MVP{E,F}
+    cmap::ColorMap
 end
 
 function Plot(
@@ -87,41 +84,30 @@ function Plot(
     projection::Union{Nothing,MVP} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
-    margin ≥ 0 || throw(ArgumentError("Margin must be greater than or equal to 0"))
-    rows = nrows(graphics)
-    cols = ncols(graphics)
-    labels_left = Dict{Int,String}()
-    colors_left = Dict{Int,ColorType}()
-    labels_right = Dict{Int,String}()
-    colors_right = Dict{Int,ColorType}()
-    decorations = Dict{Symbol,String}()
-    colors_deco = Dict{Symbol,ColorType}()
-    projection ≡ nothing && (projection = MVP())
+    margin < 0 && throw(ArgumentError("Margin must be greater than or equal to 0"))
+    projection = something(projection, MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
     p = Plot{T,E,F}(
         graphics,
-        title,
-        xlabel,
-        ylabel,
-        zlabel,
+        projection,
+        Ref(0),
+        Ref(string(title)),
+        Ref(string(xlabel)),
+        Ref(string(ylabel)),
+        Ref(string(zlabel)),
         margin,
         padding,
         border,
         compact,
-        labels_left,
-        colors_left,
-        labels_right,
-        colors_right,
-        decorations,
-        colors_deco,
         labels && graphics.visible,
-        colormap,
-        colorbar,
-        colorbar_border,
-        colorbar_lim,
-        0,
-        projection,
+        Dict{Int,String}(),
+        Dict{Int,String}(),
+        Dict{Int,ColorType}(),
+        Dict{Int,ColorType}(),
+        Dict{Symbol,String}(),
+        Dict{Symbol,ColorType}(),
+        ColorMap(colorbar_border, colorbar, colorbar_lim, colormap_callback(colormap)),
     )
     if compact
         xlabel != "" && label!(p, :b, xlabel)
@@ -195,6 +181,7 @@ function Plot(
     min_height::Int = 2,
     projection::Union{Nothing,Symbol,MVP} = nothing,
     axes3d = KEYWORDS.axes3d,
+    canvas_kw = (;),
     kw...,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
@@ -246,7 +233,7 @@ function Plot(
 
     canvas = C(
         width,
-        height,
+        height;
         blend = blend,
         visible = visible,
         origin_x = mx,
@@ -255,9 +242,10 @@ function Plot(
         height = p_height,
         xscale = xscale,
         yscale = yscale,
+        canvas_kw...,
     )
     plot = Plot(
-        canvas,
+        canvas;
         title = title,
         margin = margin,
         padding = padding,
@@ -274,10 +262,7 @@ function Plot(
         projection = projection,
     )
     if xticks || yticks
-        m_x, M_x, m_y, M_y = map(
-            v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
-            (mx, Mx, my, My),
-        )
+        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My))
         if unicode_exponent
             m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
             m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
@@ -293,19 +278,9 @@ function Plot(
             label!(plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
         end
     end
-    if grid
-        if xscale ≡ identity && yscale ≡ identity
-            if my < 0 < My
-                for i in range(mx, stop = Mx, length = width * x_pixel_per_char(C))
-                    points!(plot, i, 0.0, nothing)
-                end
-            end
-            if mx < 0 < Mx
-                for i in range(my, stop = My, length = height * y_pixel_per_char(C))
-                    points!(plot, 0.0, i, nothing)
-                end
-            end
-        end
+    if grid && (xscale ≡ identity && yscale ≡ identity)
+        my < 0 < My && lines!(plot, mx, 0.0, Mx, 0.0)
+        mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
     (is_enabled(projection) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
@@ -313,10 +288,11 @@ function Plot(
     plot
 end
 
-function next_color!(plot::Plot{<:GraphicsArea})
-    cur_color = COLOR_CYCLE[][plot.autocolor + 1]
-    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE[]))
-    cur_color
+function next_color!(plot::Plot)
+    next_idx = plot.autocolor[] + 1
+    next_color = COLOR_CYCLE[][next_idx]
+    plot.autocolor[] = next_idx % length(COLOR_CYCLE[])
+    next_color
 end
 
 """
@@ -325,17 +301,16 @@ end
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
 """
-title(plot::Plot) = plot.title
+@inline title(plot::Plot) = plot.title[]
 
 """
     title!(plot, newtitle)
 
 Sets a new title for the given plot.
-Alternatively, the current title can be
-queried using `title`.
+Alternatively, the current title can be queried using `title`.
 """
 function title!(plot::Plot, title::AbstractString)
-    plot.title = title
+    plot.title[] = title
     plot
 end
 
@@ -343,19 +318,18 @@ end
     xlabel(plot) -> String
 
 Returns the current label for the x-axis.
-Alternatively, the x-label can be changed with `xlabel!`
+Alternatively, the x-label can be changed with `xlabel!`.
 """
-xlabel(plot::Plot) = plot.xlabel
+@inline xlabel(plot::Plot) = plot.xlabel[]
 
 """
     xlabel!(plot, newlabel)
 
 Sets a new x-label for the given plot.
-Alternatively, the current label can be
-queried using `xlabel`
+Alternatively, the current label can be queried using `xlabel`.
 """
 function xlabel!(plot::Plot, xlabel::AbstractString)
-    plot.xlabel = xlabel
+    plot.xlabel[] = xlabel
     plot
 end
 
@@ -363,9 +337,9 @@ end
     ylabel(plot) -> String
 
 Returns the current label for the y-axis.
-Alternatively, the y-label can be changed with `ylabel!`
+Alternatively, the y-label can be changed with `ylabel!`.
 """
-ylabel(plot::Plot) = plot.ylabel
+@inline ylabel(plot::Plot) = plot.ylabel[]
 
 """
     ylabel!(plot, newlabel)
@@ -375,7 +349,7 @@ Alternatively, the current label can be
 queried using `ylabel`
 """
 function ylabel!(plot::Plot, ylabel::AbstractString)
-    plot.ylabel = ylabel
+    plot.ylabel[] = ylabel
     plot
 end
 
@@ -383,19 +357,18 @@ end
     zlabel(plot) -> String
 
 Returns the current label for the z-axis (colorbar).
-Alternatively, the z-label can be changed with `zlabel!`
+Alternatively, the z-label can be changed with `zlabel!`.
 """
-zlabel(plot::Plot) = plot.zlabel
+@inline zlabel(plot::Plot) = plot.zlabel[]
 
 """
     zlabel!(plot, newlabel)
 
 Sets a new z-label (colorbar label) for the given plot.
-Alternatively, the current label can be
-queried using `zlabel`
+Alternatively, the current label can be queried using `zlabel`.
 """
 function zlabel!(plot::Plot, zlabel::AbstractString)
-    plot.zlabel = zlabel
+    plot.zlabel[] = zlabel
     plot
 end
 
@@ -417,15 +390,15 @@ and the number of character rows of the plots canvas.
 function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
     loc ∉ (:t, :b, :l, :r, :tl, :tr, :bl, :br) &&
         throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
-    if loc == :l || loc == :r
+    if loc ≡ :l || loc == :r
         for row in 1:nrows(plot.graphics)
-            if loc == :l
+            if loc ≡ :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
                     plot.labels_left[row] = value
                     plot.colors_left[row] = ansi_color(color)
                     break
                 end
-            elseif loc == :r
+            elseif loc ≡ :r
                 if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
                     plot.labels_right[row] = value
                     plot.colors_right[row] = ansi_color(color)
@@ -465,10 +438,10 @@ function label!(
     value::AbstractString,
     color::UserColorType,
 )
-    if loc == :l
+    if loc ≡ :l
         plot.labels_left[row] = value
         plot.colors_left[row] = ansi_color(color)
-    elseif loc == :r
+    elseif loc ≡ :r
         plot.labels_right[row] = value
         plot.colors_right[row] = ansi_color(color)
     else
@@ -559,7 +532,7 @@ function annotate!(
     color = :normal,
     kw...,
 )
-    color = color == :auto ? next_color!(plot) : color
+    color = color ≡ :auto ? next_color!(plot) : color
     annotate!(plot.graphics, x, y, text, color; kw...)
     plot
 end
@@ -598,10 +571,10 @@ function print_title(
 )
     title == "" && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
-    pre_pad = repeat(blank, offset > 0 ? offset : 0)
+    pre_pad = blank^(offset > 0 ? offset : 0)
     print_nc(io, left_pad, pre_pad)
     print_col(io, color, title)
-    post_pad = repeat(blank, max(0, p_width - length(pre_pad) - length(title)))
+    post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nc(io, post_pad, right_pad)
     (
         count("\n", title) + 1,
@@ -621,13 +594,7 @@ function print_border(
     color::UserColorType = BORDER_COLOR[],
 )
     print_nc(io, left_pad)
-    print_col(
-        io,
-        color,
-        bmap[Symbol(loc, :l)],
-        repeat(bmap[loc], length),
-        bmap[Symbol(loc, :r)],
-    )
+    print_col(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
     print_nc(io, right_pad)
     nothing
 end
@@ -660,12 +627,10 @@ function print_labels(
         print_nc(io, left_pad)
         print_col(io, left_col, left_str)
         cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
-        pad = cnt > 0 ? repeat(blank, cnt) : ""
-        print_nc(io, pad)
+        print_nc(io, cnt > 0 ? blank^cnt : "")
         print_col(io, mid_col, mid_str)
         cnt = border_length - right_len - left_len - mid_len + 2 - cnt
-        pad = cnt > 0 ? repeat(blank, cnt) : ""
-        print_nc(io, pad)
+        print_nc(io, cnt > 0 ? blank^cnt : "")
         print_col(io, right_col, right_str)
         print_nc(io, right_pad)
         return 1
@@ -679,7 +644,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     io_color = get(io, :color, false)
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
-    🗹 = Char(c isa BrailleCanvas ? BLANK_BRAILLE : 🗷)  # blank inside canvas
+    🗹 = blank(c)  # blank inside canvas
     ############################################################
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
@@ -693,41 +658,38 @@ function _show(io::IO, print_nc, print_col, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum([length(no_ansi_escape(l)) for l in values(p.labels_left)])
+        maximum(map(length ∘ no_ansi_escape, values(p.labels_left)))
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum([length(no_ansi_escape(l)) for l in values(p.labels_right)])
+        maximum(map(length ∘ no_ansi_escape, values(p.labels_right)))
     else
         0
     end
-    if !p.compact && p.labels && p.ylabel != ""
-        max_len_l += length(p.ylabel) + 1
+    if !p.compact && p.labels && ylabel(p) != ""
+        max_len_l += length(ylabel(p)) + 1
     end
 
     # offset where the plot (incl border) begins
     plot_offset = max_len_l + p.margin + p.padding
 
     # padding-string from left to border
-    plot_padding = repeat(🗷, p.padding)
+    plot_padding = 🗷^p.padding
 
-    if p.colorbar
-        min_z, max_z = p.colorbar_lim
-        min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
-        max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
-        cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(no_ansi_escape(p.zlabel)))
-        cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
+    cbar_pad = if p.cmap.bar
+        min_max_z_str = lims_repr.(p.cmap.lim)
+        cbar_max_len = maximum(length.((min_max_z_str..., no_ansi_escape(zlabel(p)))))
+        plot_padding * 🗹^4 * plot_padding * 🗷^cbar_max_len
     else
-        cbar_pad = ""
+        ""
     end
 
     # padding-string between labels and border
-    border_left_pad = repeat(🗷, plot_offset)
+    border_left_pad = 🗷^plot_offset
 
     # trailing
-    border_right_pad = repeat(🗷, max_len_r) * (p.labels ? plot_padding : "") * cbar_pad
+    border_right_pad = 🗷^max_len_r * (p.labels ? plot_padding : "") * cbar_pad
 
     # plot the title and the top border
     h_ttl, w_ttl = print_title(
@@ -735,7 +697,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         print_nc,
         print_col,
         border_left_pad,
-        p.title,
+        title(p),
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
@@ -766,12 +728,12 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # compute position of ylabel
     y_lab_row = round(nr / 2, RoundNearestTiesUp)
 
-    callback = colormap_callback(p.colormap)
+    postprocess! = preprocess!(c)
 
     # plot all rows
     for row in 1:nr
         # print left annotations
-        print_nc(io, repeat(🗷, p.margin))
+        print_nc(io, 🗷^p.margin)
         if p.labels
             # Current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")
@@ -788,11 +750,11 @@ function _show(io::IO, print_nc, print_col, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_col(io, :normal, p.ylabel)
-                print_nc(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
+                print_col(io, :normal, ylabel(p))
+                print_nc(io, 🗷^(max_len_l - length(ylabel(p)) - left_len))
             else
                 # print padding to fill ylabel length
-                print_nc(io, repeat(🗷, max_len_l - left_len))
+                print_nc(io, 🗷^(max_len_l - left_len))
             end
             # print the left annotation
             print_col(io, left_col, left_str)
@@ -809,10 +771,10 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         if p.labels
             print_nc(io, plot_padding)
             print_col(io, right_col, right_str)
-            print_nc(io, repeat(🗷, max_len_r - right_len))
+            print_nc(io, 🗷^(max_len_r - right_len))
         end
         # print colorbar
-        if p.colorbar
+        if p.cmap.bar
             print_nc(io, plot_padding)
             print_colorbar_row(
                 io,
@@ -820,18 +782,18 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 print_col,
                 c,
                 row,
-                callback,
-                p.colorbar_border,
-                p.colorbar_lim,
-                (min_z_str, max_z_str),
+                p.cmap,
+                min_max_z_str,
                 plot_padding,
-                p.zlabel,
+                zlabel(p),
                 cbar_max_len,
                 🗷,
             )
         end
         row < nrows(c) && print_nc(io, '\n')
     end
+
+    postprocess!(c)
 
     # draw bottom border
     c.visible && print_border(
@@ -864,7 +826,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 print_nc,
                 print_col,
                 '\n' * border_left_pad,
-                p.xlabel,
+                xlabel(p),
                 border_right_pad,
                 🗹;
                 p_width = p_width,
@@ -889,7 +851,7 @@ fallback_font(mono::Bool = false) =
     elseif Sys.iswindows()
         mono ? "Courier New" : "Arial"
     else
-        @warn "unsupported $(Base.KERNEL)"
+        @warn "Unsupported $(Base.KERNEL)"
         mono ? "Courier" : "Helvetica"
     end
 # COV_EXCL_STOP
@@ -925,7 +887,7 @@ function png_image(
     canvas = p.graphics
     #####################################
     # visual fixes
-    incx = if canvas isa HeatmapCanvas || canvas isa BarplotGraphics || p.colorbar
+    incx = if canvas isa HeatmapCanvas || canvas isa BarplotGraphics || p.cmap.bar
         -1
     else
         0
@@ -980,6 +942,7 @@ function png_image(
         append!(gchars, line)
         append!(fcolors, fill(default_fg_color, len))
         append!(gcolors, fill(default_bg_color, len))
+        nothing
     end
 
     print_col(io, color, args...; bgcol = missing) = begin
@@ -995,6 +958,7 @@ function png_image(
         append!(gchars, ismissing(bgcol) ? line : fill(FULL_BLOCK, len))  # for heatmap, colorbars - BORDER_SOLID[:l]
         append!(fcolors, fill(fcolor, len))
         append!(gcolors, fill(gcolor, len))
+        nothing
     end
 
     # compute 1D stream of chars and colors
