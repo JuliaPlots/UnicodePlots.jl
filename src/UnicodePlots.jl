@@ -85,6 +85,7 @@ export GraphicsArea,
     default_size!,
     preprocess!
 
+include("colormaps.jl")
 include("common.jl")
 include("lut.jl")
 
@@ -102,7 +103,6 @@ include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
 
 include("description.jl")
-include("colormaps.jl")
 include("volume.jl")
 
 include("plot.jl")

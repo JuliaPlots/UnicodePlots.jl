@@ -5,9 +5,8 @@ using UnicodePlots, Test
 # issues get automatically resolved.
 include("tst_world_age.jl")
 
-using ReferenceTests
-using ReferenceTests: BeforeAfterFull
 using Dates: Date, Day
+using ReferenceTests
 import Random: seed!
 using LinearAlgebra
 using TimerOutputs
@@ -28,7 +27,7 @@ const T_SZ = (24, 80)  # terminal size
 test_ref(reference, actual) = @test_reference(
     joinpath("references_$(UnicodePlots.colormode())", reference),
     actual,
-    render = BeforeAfterFull(),
+    render = ReferenceTests.BeforeAfterFull(),
     format = "TXT"
 )
 
@@ -123,4 +122,5 @@ withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues
     @timeit_include "tst_isosurface.jl"
 end
 
+# ~ 166s & 15.0GiB on 1.7
 print_timer(TO; compact = true, sortby = :firstexec)

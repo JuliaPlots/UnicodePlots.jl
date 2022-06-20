@@ -134,7 +134,7 @@ main() = begin
 
   tab = ' '^2
 
-  indent(x, n) = repeat(tab, n) * join(split(x, '\n'), '\n' * repeat(tab, n))
+  indent(x, n) = tab^n * join(split(x, '\n'), '\n' * tab^n)
   desc_ex(k, d, n=2) = (
     if k ≡ :border
       join((

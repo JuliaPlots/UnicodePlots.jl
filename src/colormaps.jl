@@ -1430,3 +1430,10 @@ colormap_callback(cmap::Nothing) = nothing
 colormap_callback(cmap::Function) = cmap
 
 rgbimgcolor(z) = ansi_color((c256(z.r), c256(z.g), c256(z.b)))
+
+mutable struct ColorMap
+    border::Symbol
+    bar::Bool
+    lim::NTuple{2,Number}
+    callback::Any
+end

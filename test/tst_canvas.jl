@@ -71,12 +71,12 @@ end
             lines!(c, 0.0, 0.0, 0.9, 9999.0, :yellow)
             lines!(c, 0, 0, 1, 1, color = :blue)
             lines!(c, 0.1, 0.7, 0.9, 0.6, :red)
-            callback! = preprocess!(c)
+            postprocess! = preprocess!(c)
             test_ref(
                 "canvas/$(str)_printrow.txt",
                 @io2str(printrow(IOContext(::IO, :color => true), c, 3))
             )
-            callback!(c)
+            postprocess!(c)
             test_ref("canvas/$(str)_print.txt", @print_col(c))
             test_ref("canvas/$(str)_print_nocolor.txt", @print_nocol(c))
             test_ref("canvas/$(str)_show.txt", @show_col(c))

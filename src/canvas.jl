@@ -304,18 +304,15 @@ function print_colorbar_row(
     print_col,
     c::Canvas,
     row::Int,
-    colormap::Function,
-    border::Symbol,
-    lim,
+    cmap::ColorMap,
     lim_str,
     plot_padding,
     zlabel,
     max_len,
     blank::Char,
 )
-    b = BORDERMAP[border]
+    b = BORDERMAP[cmap.border]
     bc = BORDER_COLOR[]
-    min_z, max_z = lim
     label = ""
     if row == 1
         label = lim_str[2]
@@ -332,13 +329,13 @@ function print_colorbar_row(
     else
         # print gradient
         print_col(io, bc, b[:l])
-        if min_z == max_z  # if min and max are the same, single color
-            fgcol = bgcol = colormap(1, 1, 1)
+        if cmap.lim[1] == cmap.lim[2]  # if min and max are the same, single color
+            fgcol = bgcol = cmap.callback(1, 1, 1)
         else  # otherwise, blend from min to max
             n = 2(nrows(c) - 2)
             r = row - 2
-            fgcol = colormap(n - 2r - 1, 1, n)
-            bgcol = colormap(n - 2r, 1, n)
+            fgcol = cmap.callback(n - 2r - 1, 1, n)
+            bgcol = cmap.callback(n - 2r, 1, n)
         end
         print_col(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
         print_col(io, bc, b[:r])
@@ -349,6 +346,6 @@ function print_colorbar_row(
             print_nc(io, label)
         end
     end
-    print_nc(io, repeat(blank, max_len - length(label)))
+    print_nc(io, blank^(max_len - length(label)))
     nothing
 end
