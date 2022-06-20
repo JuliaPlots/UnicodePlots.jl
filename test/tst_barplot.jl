@@ -98,30 +98,19 @@ end
     )
     test_ref("barplot/parameters1_nolabels.txt", @print_col(p))
 
-    p = @inferred barplot(
-        ["Paris", "New York", "Moskau", "Madrid"],
-        [2.244, 8.406, 11.92, 3.165],
-        title = "Relative sizes of cities",
-        xlabel = "population [in mil]",
-        color = :yellow,
-        border = :solid,
-        symbols = ["="],
-        width = 60,
-    )
-    test_ref("barplot/parameters2.txt", @print_col(p))
-
-    # same but with Char as symbols
-    p = @inferred barplot(
-        ["Paris", "New York", "Moskau", "Madrid"],
-        [2.244, 8.406, 11.92, 3.165],
-        title = "Relative sizes of cities",
-        xlabel = "population [in mil]",
-        color = :yellow,
-        border = :solid,
-        symbols = ['='],
-        width = 60,
-    )
-    test_ref("barplot/parameters2.txt", @print_col(p))
+    for sym in ("=", '=')
+        p = @inferred barplot(
+            ["Paris", "New York", "Moskau", "Madrid"],
+            [2.244, 8.406, 11.92, 3.165],
+            title = "Relative sizes of cities",
+            xlabel = "population [in mil]",
+            color = :yellow,
+            border = :solid,
+            symbols = [sym],
+            width = 60,
+        )
+        test_ref("barplot/parameters2.txt", @print_col(p))
+    end
 end
 
 @testset "edge cases" begin

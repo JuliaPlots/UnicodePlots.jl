@@ -273,10 +273,17 @@ function transform_name(tr, basename = "")
     string(basename, " [", name, "]")
 end
 
-as_float(x) = eltype(x) <: AbstractFloat ? x : float.(x)
+as_float(x::AbstractVector{<:AbstractFloat}) = x
+as_float(x) = float.(x)
 
-roundable(num::Number) = isinteger(num) & (typemin(Int) ≤ num < typemax(Int))
-compact_repr(num::Number) = repr(num, context = :compact => true)
+roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
+compact_repr(x::Number) = repr(x, context = :compact => true)
+
+lims_repr(x::Number) = nice_repr(roundable(x) ? x : float_round_log10(x))
+
+nice_repr(x::AbstractFloat) =
+    compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+nice_repr(x::Integer) = string(x)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))

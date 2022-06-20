@@ -74,16 +74,7 @@ function boxplot(
 
     plot = Plot(area; border = border, kw...)
 
-    mean_x = (min_x + max_x) / 2
-    min_x_str = compact_repr(
-        roundable(min_x) ? round(Int, float(min_x), RoundNearestTiesUp) : min_x,
-    )
-    mean_x_str = compact_repr(
-        roundable(mean_x) ? round(Int, float(mean_x), RoundNearestTiesUp) : mean_x,
-    )
-    max_x_str = compact_repr(
-        roundable(max_x) ? round(Int, float(max_x), RoundNearestTiesUp) : max_x,
-    )
+    min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
     label!(plot, :bl, min_x_str, color = BORDER_COLOR[])
     label!(plot, :b, mean_x_str, color = BORDER_COLOR[])
     label!(plot, :br, max_x_str, color = BORDER_COLOR[])
@@ -110,10 +101,6 @@ function boxplot!(
 )
     !isempty(data) || throw(ArgumentError("Can't append empty array to boxplot"))
 
-    # min_x, max_x = extend_limits(data, xlim)
-    # plot.graphics.min_x = max(plot.graphics.min_x, min_x)
-    # plot.graphics.max_x = min(plot.graphics.max_x, max_x)
-
     addseries!(plot.graphics, data)
 
     # Find end of last 3-line region, then add 2 for center of current
@@ -121,16 +108,7 @@ function boxplot!(
 
     min_x = plot.graphics.min_x
     max_x = plot.graphics.max_x
-    mean_x = (min_x + max_x) / 2
-    min_x_str = compact_repr(
-        roundable(min_x) ? round(Int, float(min_x), RoundNearestTiesUp) : min_x,
-    )
-    mean_x_str = compact_repr(
-        roundable(mean_x) ? round(Int, float(mean_x), RoundNearestTiesUp) : mean_x,
-    )
-    max_x_str = compact_repr(
-        roundable(max_x) ? round(Int, float(max_x), RoundNearestTiesUp) : max_x,
-    )
+    min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)
     label!(plot, :br, max_x_str)

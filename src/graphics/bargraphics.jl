@@ -107,7 +107,7 @@ function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
     end
     bar_lbl = string(bar)
     if bar ≥ 0
-        print_col(io, :normal, ' ', bar_lbl)
+        print_col(io, nothing, ' ', bar_lbl)
         len = length(bar_lbl)
     else
         len = -1

@@ -276,10 +276,7 @@ function Plot(
         projection = projection,
     )
     if xticks || yticks
-        m_x, M_x, m_y, M_y = map(
-            v -> compact_repr(roundable(v) ? round(Int, v, RoundNearestTiesUp) : v),
-            (mx, Mx, my, My),
-        )
+        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My))
         if unicode_exponent
             m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
             m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
@@ -306,9 +303,10 @@ function Plot(
 end
 
 function next_color!(plot::Plot{<:GraphicsArea})
-    cur_color = COLOR_CYCLE[][plot.autocolor + 1]
-    plot.autocolor = ((plot.autocolor + 1) % length(COLOR_CYCLE[]))
-    cur_color
+    next_idx = plot.autocolor + 1
+    next_color = COLOR_CYCLE[][next_idx]
+    plot.autocolor = next_idx % length(COLOR_CYCLE[])
+    next_color
 end
 
 """
@@ -317,14 +315,13 @@ end
 Returns the current title of the given plot.
 Alternatively, the title can be changed with `title!`.
 """
-title(plot::Plot) = plot.title
+@inline title(plot::Plot) = plot.title
 
 """
     title!(plot, newtitle)
 
 Sets a new title for the given plot.
-Alternatively, the current title can be
-queried using `title`.
+Alternatively, the current title can be queried using `title`.
 """
 function title!(plot::Plot, title::AbstractString)
     plot.title = title
@@ -335,16 +332,15 @@ end
     xlabel(plot) -> String
 
 Returns the current label for the x-axis.
-Alternatively, the x-label can be changed with `xlabel!`
+Alternatively, the x-label can be changed with `xlabel!`.
 """
-xlabel(plot::Plot) = plot.xlabel
+@inline xlabel(plot::Plot) = plot.xlabel
 
 """
     xlabel!(plot, newlabel)
 
 Sets a new x-label for the given plot.
-Alternatively, the current label can be
-queried using `xlabel`
+Alternatively, the current label can be queried using `xlabel`.
 """
 function xlabel!(plot::Plot, xlabel::AbstractString)
     plot.xlabel = xlabel
@@ -355,9 +351,9 @@ end
     ylabel(plot) -> String
 
 Returns the current label for the y-axis.
-Alternatively, the y-label can be changed with `ylabel!`
+Alternatively, the y-label can be changed with `ylabel!`.
 """
-ylabel(plot::Plot) = plot.ylabel
+@inline ylabel(plot::Plot) = plot.ylabel
 
 """
     ylabel!(plot, newlabel)
@@ -375,16 +371,15 @@ end
     zlabel(plot) -> String
 
 Returns the current label for the z-axis (colorbar).
-Alternatively, the z-label can be changed with `zlabel!`
+Alternatively, the z-label can be changed with `zlabel!`.
 """
-zlabel(plot::Plot) = plot.zlabel
+@inline zlabel(plot::Plot) = plot.zlabel
 
 """
     zlabel!(plot, newlabel)
 
 Sets a new z-label (colorbar label) for the given plot.
-Alternatively, the current label can be
-queried using `zlabel`
+Alternatively, the current label can be queried using `zlabel`.
 """
 function zlabel!(plot::Plot, zlabel::AbstractString)
     plot.zlabel = zlabel
@@ -694,8 +689,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     else
         0
     end
-    if !p.compact && p.labels && p.ylabel != ""
-        max_len_l += length(p.ylabel) + 1
+    if !p.compact && p.labels && ylabel(p) != ""
+        max_len_l += length(ylabel(p)) + 1
     end
 
     # offset where the plot (incl border) begins
@@ -704,15 +699,12 @@ function _show(io::IO, print_nc, print_col, p::Plot)
     # padding-string from left to border
     plot_padding = repeat(🗷, p.padding)
 
-    if p.colorbar
-        min_z, max_z = p.colorbar_lim
-        min_z_str = string(isinteger(min_z) ? min_z : float_round_log10(min_z))
-        max_z_str = string(isinteger(max_z) ? max_z : float_round_log10(max_z))
-        cbar_max_len =
-            max(length(min_z_str), length(max_z_str), length(no_ansi_escape(p.zlabel)))
-        cbar_pad = plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
+    cbar_pad = if p.colorbar
+        min_max_z_str = lims_repr.(p.colorbar_lim)
+        cbar_max_len = maximum(length.((min_max_z_str..., no_ansi_escape(zlabel(p)))))
+        plot_padding * repeat(🗹, 4) * plot_padding * repeat(🗷, cbar_max_len)
     else
-        cbar_pad = ""
+        ""
     end
 
     # padding-string between labels and border
@@ -727,7 +719,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
         print_nc,
         print_col,
         border_left_pad,
-        p.title,
+        title(p),
         border_right_pad * '\n',
         🗹;
         p_width = p_width,
@@ -782,8 +774,8 @@ function _show(io::IO, print_nc, print_col, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_col(io, :normal, p.ylabel)
-                print_nc(io, repeat(🗷, max_len_l - length(p.ylabel) - left_len))
+                print_col(io, :normal, ylabel(p))
+                print_nc(io, repeat(🗷, max_len_l - length(ylabel(p)) - left_len))
             else
                 # print padding to fill ylabel length
                 print_nc(io, repeat(🗷, max_len_l - left_len))
@@ -817,9 +809,9 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 cmap_callback,
                 p.colorbar_border,
                 p.colorbar_lim,
-                (min_z_str, max_z_str),
+                min_max_z_str,
                 plot_padding,
-                p.zlabel,
+                zlabel(p),
                 cbar_max_len,
                 🗷,
             )
@@ -860,7 +852,7 @@ function _show(io::IO, print_nc, print_col, p::Plot)
                 print_nc,
                 print_col,
                 '\n' * border_left_pad,
-                p.xlabel,
+                xlabel(p),
                 border_right_pad,
                 🗹;
                 p_width = p_width,
@@ -885,7 +877,7 @@ fallback_font(mono::Bool = false) =
     elseif Sys.iswindows()
         mono ? "Courier New" : "Arial"
     else
-        @warn "unsupported $(Base.KERNEL)"
+        @warn "Unsupported $(Base.KERNEL)"
         mono ? "Courier" : "Helvetica"
     end
 # COV_EXCL_STOP

@@ -25,7 +25,7 @@ end
         (identity, "identity"),
         (sqrt, "sqrt"),
         (x -> log(1 + x), "log"),
-        (x -> x / (x + 1), "scale"),
+        (x -> x / (x + 1), "custom"),
     )
         x′ = copy(x)
         x′[round(Int, 0.1length(x)):round(Int, 0.6length(x))] .= 0.5maximum(x)

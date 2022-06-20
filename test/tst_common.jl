@@ -189,6 +189,11 @@ end
     @test default_size!(height = 30) == (30, 80)
     @test default_size!(width = 64) == (24, 64)
     @test default_size!() == (15, 40)
+
+    @test UnicodePlots.nice_repr(1e20) == "1.0e20"
+    @test UnicodePlots.nice_repr(1.0) == "1"
+    @test UnicodePlots.nice_repr(10) == "10"
+    @test UnicodePlots.nice_repr(1 + 0.1eps()) == "1"
 end
 
 @testset "docs" begin
