@@ -64,10 +64,12 @@ end
 end
 
 @testset "colors" begin
-    # coverage
+    @test first(UnicodePlots.COLOR_CYCLE_BRIGHT) ≡ :light_green
+    @test first(UnicodePlots.COLOR_CYCLE_FAINT) ≡ :green
+
     _cycle = UnicodePlots.COLOR_CYCLE[]
-    UnicodePlots.brightcolors!()
-    UnicodePlots.faintcolors!()
+    @test UnicodePlots.brightcolors!() == UnicodePlots.COLOR_CYCLE_BRIGHT
+    @test UnicodePlots.faintcolors!() == UnicodePlots.COLOR_CYCLE_FAINT
     UnicodePlots.COLOR_CYCLE[] = _cycle
 
     @test UnicodePlots.c256(0.0) == 0
@@ -172,9 +174,11 @@ end
     @test UnicodePlots.scale_callback(x -> x)(1) ≡ 1
     @test UnicodePlots.scale_callback(x -> sin(x))(0) ≈ 0
 
-    h, w = displaysize()
+    h, w = ds = displaysize()
     @test UnicodePlots.out_stream_height() == h
     @test UnicodePlots.out_stream_width() == w
+    @test UnicodePlots.out_stream_size(nothing) == ds
+    @test UnicodePlots.out_stream_size(stdout) == displaysize(stdout)
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"

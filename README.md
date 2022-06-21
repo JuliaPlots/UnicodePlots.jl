@@ -10,7 +10,7 @@
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-<img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/banner.jpg" width="800">
+<img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/banner.jpg" width="900">
 
 ## High-level Interface
 
@@ -514,17 +514,17 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `margin::Int = 3`: number of empty characters to the left of the whole plot.
   - `padding::Int = 1`: left and right space between the labels and the canvas.
   - `color::Symbol = :auto`: choose from (`:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, `:auto`), use an integer in `[0-255]`, or provide `3` integers as `RGB` components.
-  - `width::Int = 40`: number of characters per canvas row.
-    ```julia
-    lineplot(sin, 1:.5:20, width=60)
-    ```
-    <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/width.png" width="500"><br>
-    
   - `height::Int = 15`: number of canvas rows.
     ```julia
     lineplot(sin, 1:.5:20, height=18)
     ```
     <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/height.png" width="500"><br>
+    
+  - `width::Int = 40`: number of characters per canvas row.
+    ```julia
+    lineplot(sin, 1:.5:20, width=60)
+    ```
+    <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/width.png" width="500"><br>
     
   - `xlim::Tuple = (0, 0)`: plotting range for the `x` axis (`(0, 0)` stands for automatic).
   - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis.

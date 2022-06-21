@@ -262,7 +262,7 @@ main() = begin
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
-<img src="$docs_url/$ver/banner.png" width="800">
+<img src="$docs_url/$ver/banner.jpg" width="900">
 
 ## High-level Interface
 
@@ -564,23 +564,23 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       rng = StableRNG(1337)
       default_size!(height=10)
 
-      panel(plt; kw...) = Panel(string(plt, color=true); fit=true, kw...)
+      panel(plt; kw...) = Panel(string(plt, color=true); fit=true, style="(180, 180, 180)", kw...)
 
       panels = (
-        line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot", style="orange1"),
-        scat = panel(scatterplot(1:6, 1:6, xscale=:log10, yscale=:ln); title="scatterplot", style="yellow1"),
-        cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot", style="red1"),
-        surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot", style="royal_blue1"),
-        iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface", style="cornsilk1"),
-        vhist = panel(histogram(randn(100_000), nbins=60, vertical=true); title="vertical histogram", style="green1"),
-        hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="horizontal histogram", style="dodger_blue2"),
-        dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot", style="cyan1"),
-        hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap", style="magenta1"),
-        bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot", style="gold1"),
-        polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot", style="chartreuse1"),
-        box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot", style="grey11"),
-        stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair", style="aquamarine1"),
-        spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy", style="salmon1"),
+        line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot"),
+        scat = panel(scatterplot(1:6, 1:6, xscale=:log10, yscale=:ln); title="scatterplot"),
+        cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot"),
+        surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot"),
+        iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface"),
+        vhist = panel(histogram(randn(100_000), nbins=60, vertical=true); title="histogram (vertical)"),
+        hhist = panel(histogram(randn(1_000) .* 0.1, nbins=10); title="histogram (horizontal)"),
+        dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot"),
+        hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap"),
+        bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot"),
+        polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot"),
+        box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot"),
+        stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair"),
+        spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy"),
       )
       g = grid(panels, layout=:((line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * vhist * (bar / (box * spy)))))
 
@@ -593,7 +593,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         else
           readchomp(`xdotool getactivewindow`)
         end
-        run(`import -window \$win $ver/banner.png`)
+        run(`import -window \$win -quality 100 $ver/banner.jpg`)
         cursor_show(stdout)
       else
         print(stdout, g)

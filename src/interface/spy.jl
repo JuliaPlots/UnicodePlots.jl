@@ -14,7 +14,7 @@ plot withing the bounding box specified by `maxwidth` and `maxheight`.
 
 # Usage
 
-    spy(A; $(keywords((maxwidth = 0, maxheight = 0, title = "Sparsity Pattern", zeros = false); add=(:fix_ar, :canvas))))
+    spy(A; $(keywords((maxwidth = 0, maxheight = 0, zeros = false); add=(:fix_ar, :canvas))))
 
 # Arguments
 
@@ -40,7 +40,6 @@ $(arguments(
 ```julia-repl
 julia> using SparseArrays
 julia> spy(sprandn(50, 120, .05))
-                           Sparsity Pattern
       ┌────────────────────────────────────────────────────────────┐
     1 │⢀⠀⠒⠀⢄⠂⠀⡀⠀⠀⠀⠰⠀⠐⠀⠀⠀⠀⠂⠀⠀⠀⠠⠰⠀⠀⠀⡀⠄⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠐⠀⠐⠀⠀⡀⠀⠀⠀⠀⠀⠀⠂⡀⠀⡀⠠⠀⠀│ > 0
       │⠀⠀⠀⠀⠀⢀⢀⠀⠀⠀⠀⠐⠄⠀⢀⠂⠀⠠⠀⠉⠀⠀⠀⠀⢐⠀⠀⠀⠀⠀⠠⠐⠄⠄⠀⠀⠀⠐⠐⠈⢁⠀⠀⠀⠀⠀⠀⠀⠠⠀⠐⡐⠀⠄⠀⠀⠈⠀⠀⠠│ < 0
@@ -93,7 +92,7 @@ function spy(
     vals::AbstractArray;
     maxwidth::Int = 0,
     maxheight::Int = 0,
-    title = "Sparsity Pattern",
+    title = KEYWORDS.title,
     out_stream::Union{Nothing,IO} = nothing,
     height::Int = 0,
     width::Int = 0,

@@ -193,8 +193,8 @@ colormode() =
         error("Unsupported color mode=$cm.")
     end
 
-colors256!() = (COLORMODE[] = Crayons.COLORS_256; nothing)
-truecolors!() = (COLORMODE[] = Crayons.COLORS_24BIT; nothing)
+colors256!() = COLORMODE[] = Crayons.COLORS_256
+truecolors!() = COLORMODE[] = Crayons.COLORS_24BIT
 
 function colormode!(mode)
     if mode == 8
@@ -207,8 +207,8 @@ function colormode!(mode)
     nothing
 end
 
-brightcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT; nothing)
-faintcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_FAINT; nothing)
+brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
+faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
