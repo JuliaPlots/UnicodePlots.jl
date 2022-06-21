@@ -182,8 +182,8 @@ function get_canvas_dimensions_for_matrix(
     ncol::Int,
     max_height::Int,
     max_width::Int,
-    height::Int,
-    width::Int,
+    height::Union{Nothing,Int},
+    width::Union{Nothing,Int},
     margin::Int,
     padding::Int,
     out_stream::Union{Nothing,IO},
@@ -218,7 +218,7 @@ function get_canvas_dimensions_for_matrix(
     # Note: if both width and height are 0, it means that there are no
     #       constraints and the plot should resemble the structure of
     #       the matrix as close as possible
-    if width == 0 && height == 0
+    if width ≡ nothing && height ≡ nothing
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
         if min_canv_height > min_canv_width
@@ -234,9 +234,9 @@ function get_canvas_dimensions_for_matrix(
         end
     end
 
-    if width == 0 && height > 0
+    if width ≡ nothing && height > 0
         width = min(height * canv_ar, max_width)
-    elseif width > 0 && height == 0
+    elseif height ≡ nothing && width > 0
         height = min(width / canv_ar, max_height)
     end
 

@@ -421,6 +421,8 @@ Here is a list of the main high-level functions for common scenarios:
 
   The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
+  Use the `matrix=true` keyword in order to display the matrix in the array convention (as in the repl).
+
   $(examples.heatmap2)
 </details>
 
@@ -573,16 +575,16 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot"),
         iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface"),
         vhist = panel(histogram(randn(100_000), nbins=60, vertical=true); title="histogram (vertical)"),
-        hhist = panel(histogram(randn(1_000) .* 0.1, nbins=10); title="histogram (horizontal)"),
+        hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="histogram (horizontal)"),
         dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot"),
         hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap"),
         bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot"),
         polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot"),
-        box = panel(boxplot(["one", "two"], [collect(1:5), collect(4:9)]); title="boxplot"),
-        stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stair"),
+        box = panel(boxplot(["one", "two"], [collect(1:5), collect(3:6)]); title="boxplot"),
+        stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stairs"),
         spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy"),
       )
-      g = grid(panels, layout=:((line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * vhist * (bar / (box * spy)))))
+      g = grid(panels, layout=:((line * scat * polar * stair) / (hmap * cont * surf * iso) / (hhist * (vhist / (bar * spy)) * (dens / box))))
 
       if true
         cursor_hide(stdout)

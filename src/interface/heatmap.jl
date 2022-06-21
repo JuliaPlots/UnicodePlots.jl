@@ -4,12 +4,12 @@
 # Description
 
 Draws a heatmap for the given points.
-It uses the `Matrix` `A` as the values of the heatmap, with the column and row indices of the matrix
-as x and y coordinates respectively.
+It uses the `Matrix` `A` as the values of the heatmap, with the column and row indices
+of the matrix as x and y coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = 0, xfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
+    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = nothing, xfact = nothing, matrix = false); add = (Z_DESCRIPTION..., :fix_ar)))
 
 # Arguments
 
@@ -20,6 +20,7 @@ $(arguments(
         xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
         yoffset = "plotting offset for the `y` coordinate (after scaling)",
         xoffset = "plotting offset for the `x` coordinate (after scaling)",
+        matrix = "use matrix display convention (array origin at the North-West corner of the plot)"
     ); add = (Z_DESCRIPTION..., :fix_ar)
 ))
 
@@ -47,54 +48,69 @@ julia> heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 `Plot`, `HeatmapCanvas`
 """
 function heatmap(
-    A::AbstractMatrix;
+    A::AbstractMatrix{T};
     xlim = KEYWORDS.xlim,
     ylim = KEYWORDS.ylim,
     zlim = KEYWORDS.zlim,
-    yoffset = 0.0,
-    xoffset = 0.0,
+    yoffset::Number = 0.0,
+    xoffset::Number = 0.0,
     out_stream::Union{Nothing,IO} = nothing,
-    height::Int = 0,
-    width::Int = 0,
+    height::Union{Nothing,Int} = nothing,
+    width::Union{Nothing,Int} = nothing,
     margin::Int = KEYWORDS.margin,
     padding::Int = KEYWORDS.padding,
     colormap = KEYWORDS.colormap,
-    yfact = 0,
-    xfact = 0,
-    labels = true,
+    yfact::Union{Nothing,Number} = nothing,
+    xfact::Union{Nothing,Number} = nothing,
+    matrix::Bool = false,
     fix_ar::Bool = false,
+    labels::Bool = true,
     kw...,
-)
+) where {T}
     nrows = size(A, 1)
     ncols = size(A, 2)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    X = xfact == 0 ? collect(1:ncols) : collect(0:(ncols - 1)) .* xfact
-    X .+= xoffset
-    xfact == 0 && (xfact = 1)
-    Y = yfact == 0 ? collect(1:nrows) : collect(0:(nrows - 1)) .* yfact
-    Y .+= yoffset
-    yfact == 0 && (yfact = 1)
+    if matrix
+        Y = reverse(axes(A, 1))
+        X = axes(A, 2)
+    else
+        Y = if yfact ≡ nothing
+            collect(1:nrows)
+        else
+            collect(0:(nrows - 1)) .* yfact
+        end .+ yoffset
+        X = if xfact ≡ nothing
+            collect(1:ncols)
+        else
+            collect(0:(ncols - 1)) .* xfact
+        end .+ xoffset
+    end
 
     # set the axis limits automatically
-    if xlim == (0, 0) && length(X) > 0
-        xlim = extrema(X)
-    end
-    if ylim == (0, 0) && length(Y) > 0
-        ylim = extrema(Y)
-    end
+    autolims(lims, vec) = lims == (0, 0) && length(vec) > 0 ? extrema(vec) : lims
+
+    ylim = autolims(ylim, Y)
+    xlim = autolims(xlim, X)
 
     # select a subset of A based on the supplied limits
-    firstx = findfirst(x -> x ≥ xlim[1], X)
-    lastx = findlast(x -> x ≤ xlim[2], X)
-    xrange = (firstx ≡ nothing || lastx ≡ nothing) ? (1:0) : (firstx:lastx)
-    firsty = findfirst(y -> y ≥ ylim[1], Y)
-    lasty = findlast(y -> y ≤ ylim[2], Y)
-    yrange = (firsty ≡ nothing || lasty ≡ nothing) ? (1:0) : (firsty:lasty)
-    A = A[yrange, xrange]
-    X = X[xrange]
-    Y = Y[yrange]
+    subset(lims, vec) = begin
+        first = findfirst(x -> x ≥ lims[1], vec)
+        last = findlast(x -> x ≤ lims[2], vec)
+        (first ≡ nothing || last ≡ nothing) ? (1:0) : (first:last)
+    end
+
+    if !matrix
+        yrange = subset(ylim, Y)
+        xrange = subset(xlim, X)
+        Y = Y[yrange]
+        X = X[xrange]
+        A = A[yrange, xrange]
+
+        nrows = ceil(Int, (ylim[2] - ylim[1]) / something(yfact, 1)) + 1
+        ncols = ceil(Int, (xlim[2] - xlim[1]) / something(xfact, 1)) + 1
+    end
 
     # allow A to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
@@ -107,25 +123,32 @@ function heatmap(
     end
     if zlim != (0, 0)
         has_extrema ||
-            throw(ArgumentError("zlim cannot be set when the element type is $(eltype(A))"))
+            throw(ArgumentError("zlim cannot be set when the element type is $T"))
         minz, maxz = zlim
     end
 
     # if A is an rgb image, translate the colors directly to the terminal
-    callback = if length(A) > 0 && all(x -> x in fieldnames(eltype(A)), [:r, :g, :b])
-        (A, minz, maxz) -> ansi_color(c256.((A.r, A.g, A.b)))
-    else
-        colormap_callback(colormap)
-    end
+    callback =
+        if length(A) > 0 && isconcretetype(T) && all(x -> x in fieldnames(T), (:r, :g, :b))
+            (A, minz, maxz) -> ansi_color(c256.((A.r, A.g, A.b)))
+        else
+            colormap_callback(colormap)
+        end
 
-    nrows = ceil(Int, (ylim[2] - ylim[1]) / yfact) + 1
-    ncols = ceil(Int, (xlim[2] - xlim[1]) / xfact) + 1
     data_ar = ncols / nrows  # data aspect ratio
 
-    max_width = width == 0 ? (height == 0 ? 0 : ceil(Int, height * data_ar)) : width
-    max_height = height == 0 ? (width == 0 ? 0 : ceil(Int, width / data_ar)) : height
+    max_width = if width ≡ nothing
+        height ≡ nothing ? 0 : ceil(Int, height * data_ar)
+    else
+        width
+    end
+    max_height = if height ≡ nothing
+        width ≡ nothing ? 0 : ceil(Int, width / data_ar)
+    else
+        height
+    end
 
-    # 2nrows: compensate nrows(c::HeatmapCanvas) = div(size(c.grid, 2) + 1, 2)
+    # `2nrows`: compensate nrows(c::HeatmapCanvas) = div(size(c.grid, 1) + 1, 2)
     height, width, max_height, max_width = get_canvas_dimensions_for_matrix(
         HeatmapCanvas,
         2nrows,
@@ -150,6 +173,7 @@ function heatmap(
 
     xs = length(X) > 0 ? [first(X), last(X)] : zeros(2)
     ys = length(Y) > 0 ? [first(Y), last(Y)] : zeros(2)
+
     plot = Plot(
         xs,
         ys,
@@ -166,6 +190,7 @@ function heatmap(
         width = width,
         min_height = 1,
         min_width = 1,
+        yticks = !matrix,  # FIXME: we cannot change the ticks direction (increasing downwards)
         filter(x -> x.first ≢ :colorbar, kw)...,
     )
 

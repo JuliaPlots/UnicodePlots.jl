@@ -185,9 +185,9 @@ const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 #! format: on
 
 colormode() =
-    if (cm = COLORMODE[]) == Crayons.COLORS_256
+    if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
         8
-    elseif cm == Crayons.COLORS_24BIT
+    elseif cm ≡ Crayons.COLORS_24BIT
         24
     else
         error("Unsupported color mode=$cm.")
@@ -197,9 +197,9 @@ colors256!() = COLORMODE[] = Crayons.COLORS_256
 truecolors!() = COLORMODE[] = Crayons.COLORS_24BIT
 
 function colormode!(mode)
-    if mode == 8
+    if mode ≡ 8
         colors256!()
-    elseif mode == 24
+    elseif mode ≡ 24
         truecolors!()
     else
         error("Unsupported color mode=$mode, choose 8 or 24.")
@@ -257,8 +257,7 @@ function char_marker(marker::MarkerType)::Char
     if marker isa Symbol
         get(MARKERS, marker, MARKERS[:circle])
     else
-        length(marker) == 1 ||
-            throw(ArgumentError("`marker` keyword has a non unit length"))
+        length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
         first(marker)
     end
 end
@@ -368,7 +367,7 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))
     end
-    if ma - mi == 0
+    if mi == ma
         ma = mi + 1
         mi = mi - 1
     end
@@ -419,7 +418,7 @@ print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
 
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
-    if color == INVALID_COLOR || !get(io, :color, false)
+    if color ≡ INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
         print_crayons(
@@ -440,7 +439,7 @@ end
 @inline blu(c::UInt32)::UInt8 = c & 0xff
 
 @inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
-    if a == b
+    if a ≡ b
         a  # fastpath
     elseif a < THRESHOLD && b < THRESHOLD  # 24bit
         # physical average (UInt32 to prevent UInt8 overflow)
@@ -451,7 +450,7 @@ end
         # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
     elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
         THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
-    elseif a != INVALID_COLOR && b != INVALID_COLOR
+    elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
         max(a, b)
     else
         INVALID_COLOR
@@ -477,21 +476,21 @@ function ansi_color(color::CrayonColorType)::ColorType
 end
 
 function ansi_color(c::Crayons.ANSIColor)::ColorType
-    col = if COLORMODE[] == Crayons.COLORS_24BIT
-        if c.style == Crayons.COLORS_24BIT
+    col = if COLORMODE[] ≡ Crayons.COLORS_24BIT
+        if c.style ≡ Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)
-        elseif c.style == Crayons.COLORS_256
+        elseif c.style ≡ Crayons.COLORS_256
             USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
-        elseif c.style == Crayons.COLORS_16
+        elseif c.style ≡ Crayons.COLORS_16
             c8 = ansi_4bit_to_8bit(c.r)
             USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
         end
     else  # 0-255 ansi stored in a UInt32
-        if c.style == Crayons.COLORS_24BIT
+        if c.style ≡ Crayons.COLORS_24BIT
             THRESHOLD + Crayons.to_256_colors(c).r
-        elseif c.style == Crayons.COLORS_256
+        elseif c.style ≡ Crayons.COLORS_256
             THRESHOLD + c.r
-        elseif c.style == Crayons.COLORS_16
+        elseif c.style ≡ Crayons.COLORS_16
             THRESHOLD + ansi_4bit_to_8bit(c.r)
         end
     end
@@ -500,11 +499,11 @@ end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType =
-    if color == INVALID_COLOR
+    if color ≡ INVALID_COLOR
         INVALID_COLOR
     elseif color < THRESHOLD
         r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
-    elseif color != INVALID_COLOR
+    elseif color ≢ INVALID_COLOR
         THRESHOLD + ~UInt8(color - THRESHOLD)
     end
 

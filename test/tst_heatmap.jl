@@ -1,8 +1,8 @@
 @testset "aspect ratio" begin
+    seed!(RNG, 1337)
     for i in 1:minimum(T_SZ)
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
-    seed!(RNG, 1337)
     p = @hinf heatmap(collect(1:30) * collect(1:30)', fix_ar = true)
     test_ref("heatmap/fix_aspect_ratio_30x30.txt", @show_col(p, :displaysize => T_SZ))
 end
@@ -230,4 +230,9 @@ end
         s1, s2 = size(p.graphics.grid)
         @test s1 == s2
     end
+end
+
+@testset "matrix display convention" begin
+    p = @hinf heatmap(collect(1:20) * collect(1:20)', matrix = true, fix_ar = true)
+    test_ref("heatmap/matrix_convention.txt", @show_col(p, :displaysize => T_SZ))
 end

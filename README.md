@@ -283,6 +283,8 @@ heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 
   The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
+  Use the `matrix=true` keyword in order to display the matrix in the array convention (as in the repl).
+
   ```julia
 heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)
 ```

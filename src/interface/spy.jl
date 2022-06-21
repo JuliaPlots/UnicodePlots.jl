@@ -94,8 +94,8 @@ function spy(
     maxheight::Int = 0,
     title = KEYWORDS.title,
     out_stream::Union{Nothing,IO} = nothing,
-    height::Int = 0,
-    width::Int = 0,
+    height::Union{Nothing,Int} = nothing,
+    width::Union{Nothing,Int} = nothing,
     margin::Int = KEYWORDS.margin,
     padding::Int = KEYWORDS.padding,
     color::UserColorType = KEYWORDS.color,
@@ -122,7 +122,7 @@ function spy(
     can = T(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
-    if color != :auto
+    if color ≢ :auto
         points!(plot, cols, nrow + 1 .- rows, color)
         label!(plot, :r, 1, show_zeros ? "= 0" : "≠ 0", color)
     else
