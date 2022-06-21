@@ -18,7 +18,7 @@ $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); a
 """
 function horizontal_histogram(
     hist::Histogram;
-    symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
+    symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale, "Frequency"),
     info::AbstractString = "",  # unused
@@ -83,7 +83,7 @@ $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); a
 """
 function vertical_histogram(
     hist::Histogram;
-    symbols = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
+    symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
     info::AbstractString = "",
     color = :green,
     kw...,

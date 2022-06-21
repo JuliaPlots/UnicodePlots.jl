@@ -58,14 +58,14 @@ end
     )
     test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
-    for sym in ("=", '=')
+    for symbols in (["="], ['='], tuple("="), tuple('='))
         p = histogram(
             x,
             title = "My Histogram",
             xlabel = "Absolute Frequency",
             color = :yellow,
             border = :solid,
-            symbols = [sym],
+            symbols = symbols,
             width = 50,
         )
         test_ref("histogram/parameters2.txt", @print_col(p))

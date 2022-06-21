@@ -6,7 +6,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
     maximum::Float64
     max_val::RefValue{Float64}
     max_len::RefValue{Int}
-    symbols::AbstractVector{Char}
+    symbols::Vector{Char}
     xscale::XS
 
     function BarplotGraphics(
@@ -15,9 +15,9 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
         maximum::Union{Nothing,Number},
-        symbols::AbstractVector{<:Union{Char,String}},
+        symbols::Union{NTuple{N,S},AbstractVector{S}},
         xscale,
-    ) where {R<:Number}
+    ) where {R<:Number,N,S<:Union{Char,String}}
         for s in symbols
             length(s) == 1 || throw(
                 ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
@@ -38,7 +38,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
             float(something(maximum, -Inf)),
             Ref(-Inf),
             Ref(0),
-            map(s -> first(s), symbols),
+            collect(map(s -> first(s), symbols)),
             xscale,
         )
     end

@@ -471,7 +471,7 @@ The method `label!` is responsible for the setting all the textual decorations o
 
   All plots support the set (or a subset) of the following named parameters:
 
-  - `symbols::Array = ['■']`: characters used to render the bars.
+  - `symbols::Array = ['■']`: collection of characters used to render the bars.
   - `title::String = ""`: text displayed on top of the plot.
   - `name::String = ""`: current drawing annotation displayed on the right.
   - `xlabel::String = ""`: text displayed on the `x` axis of the plot.
@@ -541,7 +541,7 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:orthographic`, `:perspective`, or `Model-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`).
-  - `elevation::Float = 35.26439`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
+  - `elevation::Float = 35.26`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
   - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
   - `zoom::Float = 1.0`: zooming factor in 3D.
   - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
