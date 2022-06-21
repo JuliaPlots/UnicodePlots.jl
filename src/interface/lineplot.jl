@@ -124,8 +124,25 @@ end
 lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
     lineplot!(plot, axes(y, 1), y; kw...)
 
-# date time
+# multiple series
+function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
+    series = axes(y, 2)
+    start = first(series)
+    names = get(kw, :name, ["y$i" for i in 1:size(y, 2)])
+    plot = lineplot(
+        x,
+        y[:, start];
+        ylim = extrema(y),
+        name = first(names),
+        filter(x -> x.first ≢ :name, kw)...,
+    )
+    for (n, s) in zip(names[(begin + 1):end], (start + 1):last(series))
+        lineplot!(plot, x, y[:, s]; name = n)
+    end
+    plot
+end
 
+# date time
 function lineplot(
     x::AbstractVector{D},
     y::AbstractVector;
@@ -178,7 +195,6 @@ lineplot!(
 ) = lineplot!(plot, ustrip.(x), ustrip.(y); kw...)
 
 # slope and intercept
-
 function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...)
     xmin = origin_x(plot.graphics)
     xmax = origin_x(plot.graphics) + width(plot.graphics)
@@ -193,7 +209,6 @@ function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...
 end
 
 # plotting a function
-
 function lineplot(
     f::Function,
     x::AbstractVector;
@@ -222,7 +237,13 @@ end
 
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
 
-function lineplot!(plot::Plot{<:Canvas}, f::Function, x::AbstractVector; name = "", kw...)
+function lineplot!(
+    plot::Plot{<:Canvas},
+    f::Function,
+    x::AbstractVector;
+    name = KEYWORDS.name,
+    kw...,
+)
     y = float.(f.(x))
     name = name == "" ? string(nameof(f), "(x)") : name
     lineplot!(plot, x, y; name = name, kw...)
@@ -241,7 +262,6 @@ function lineplot!(
 end
 
 # plotting vector of functions
-
 lineplot(F::AbstractVector{<:Function}; kw...) = lineplot(F, -10, 10; kw...)
 
 lineplot(F::AbstractVector{<:Function}, startx::Number, endx::Number; kw...) =

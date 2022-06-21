@@ -276,3 +276,15 @@ end
     lineplot!(p, extrema(x) |> collect, [maximum(v), maximum(v)], color = :red)
     test_ref("lineplot/units_pos_vel.txt", @show_col(p))
 end
+
+@testset "multiple series (matrix columns)" begin
+    x, y = 0:10, [-2:8 2:12 6:16]
+
+    p = lineplot(x, y)
+    test_ref("lineplot/matrix_autolabels.txt", @show_col(p))
+
+    for name in (["1", "2", "3"], ["1" "2" "3"])
+        p = lineplot(x, y; name = name)
+        test_ref("lineplot/matrix_labels.txt", @show_col(p))
+    end
+end
