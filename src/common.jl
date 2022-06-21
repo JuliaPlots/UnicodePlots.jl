@@ -150,7 +150,7 @@ const SUPERSCRIPT = Dict(
     'e' => 'ᵉ',
 )
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_BRIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_FAINT)
+const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)
 const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
 const BORDER_COLOR = Ref(:dark_gray)
@@ -267,7 +267,7 @@ iterable(obj::AbstractVector) = obj
 iterable(obj) = Iterators.repeated(obj)
 
 function transform_name(tr, basename = "")
-    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
+    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))
     name == "identity" && return basename
     name = occursin("#", name) ? "custom" : name
     string(basename, " [", name, "]")
@@ -287,54 +287,44 @@ nice_repr(x::Integer) = string(x)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? ceil(x, digits = ceil_neg_log10(m)) :
-            -floor(-x, digits = ceil_neg_log10(m))
-        )
-    ) |> T
-round_down_tick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? floor(x, digits = ceil_neg_log10(m)) :
-            -ceil(-x, digits = ceil_neg_log10(m))
-        )
-    ) |> T
-round_up_subtick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
-            -floor(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
-round_down_subtick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
-            -ceil(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
-float_round_log10(x::T, m) where {T<:AbstractFloat} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? round(x, digits = ceil_neg_log10(m) + 1) :
-            -round(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
+
+round_up_tick(x::T, m) where {T} = T(
+    x == 0 ? 0 :
+    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m))),
+)
+
+round_down_tick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    floor(x, digits = ceil_neg_log10(m))
+else
+    -ceil(-x, digits = ceil_neg_log10(m))
+end)
+
+round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    ceil(x, digits = ceil_neg_log10(m) + 1)
+else
+    -floor(-x, digits = ceil_neg_log10(m) + 1)
+end)
+
+round_down_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    floor(x, digits = ceil_neg_log10(m) + 1)
+else
+    -ceil(-x, digits = ceil_neg_log10(m) + 1)
+end)
+
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
+float_round_log10(x::T, m) where {T<:AbstractFloat} = T(x == 0 ? 0 : if x > 0
+    round(x, digits = ceil_neg_log10(m) + 1)
+else
+    -round(-x, digits = ceil_neg_log10(m) + 1)
+end)
 
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
     show(io, unit(x))
     read(io, String)
 end
+
 number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
     ustrip.(x), unit_str(first(x), fancy)
 number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
@@ -367,7 +357,8 @@ function plotting_range_narrow(xmin, xmax)
     float(xmin), float(xmax)
 end
 
-scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale
+scale_callback(scale::Symbol) = FSCALES[scale]
+scale_callback(scale::Function) = scale
 
 extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
 
@@ -426,6 +417,7 @@ end
 print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
+
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if color == INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
@@ -478,10 +470,12 @@ end
 
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
+
 function ansi_color(color::CrayonColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
     ansi_color(Crayons._parse_color(color))
 end
+
 function ansi_color(c::Crayons.ANSIColor)::ColorType
     col = if COLORMODE[] == Crayons.COLORS_24BIT
         if c.style == Crayons.COLORS_24BIT
@@ -514,8 +508,9 @@ complement(color::ColorType)::ColorType =
         THRESHOLD + ~UInt8(color - THRESHOLD)
     end
 
-out_stream_size(out_stream::Union{Nothing,IO} = nothing) =
-    out_stream ≡ nothing ? displaysize() : displaysize(out_stream)
+out_stream_size(out_stream::Nothing) = displaysize()
+out_stream_size(out_stream::IO) = displaysize(out_stream)
+
 out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =

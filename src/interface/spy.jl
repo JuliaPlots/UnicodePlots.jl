@@ -21,10 +21,10 @@ plot withing the bounding box specified by `maxwidth` and `maxheight`.
 $(arguments(
     (
         A = "matrix of interest for which non-zero elements should be drawn",
-        maxwidth = "maximum number of characters per row that should be used for plotting",
         maxheight = "maximum number of character rows that should be used for plotting",
-        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
+        maxwidth = "maximum number of characters per row that should be used for plotting",
         height = "exact number of character rows that should be used for plotting (`0` stands for automatic)",
+        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
         show_zeros = "show zeros pattern instead of default nonzeros",
     ); add=(:fix_ar, :canvas),
 ))
@@ -38,6 +38,7 @@ $(arguments(
 # Examples
 
 ```julia-repl
+julia> using SparseArrays
 julia> spy(sprandn(50, 120, .05))
                            Sparsity Pattern
       ┌────────────────────────────────────────────────────────────┐
@@ -94,8 +95,8 @@ function spy(
     maxheight::Int = 0,
     title = "Sparsity Pattern",
     out_stream::Union{Nothing,IO} = nothing,
-    width::Int = 0,
     height::Int = 0,
+    width::Int = 0,
     margin::Int = KEYWORDS.margin,
     padding::Int = KEYWORDS.padding,
     color::UserColorType = KEYWORDS.color,
@@ -119,7 +120,7 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
-    can = T(height, width, width = 1.0 + ncol, height = 1.0 + nrow)
+    can = T(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
     if color != :auto

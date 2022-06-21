@@ -44,11 +44,6 @@
     test_ref("barplot/ranges2.txt", @print_col(p))
 end
 
-struct Scale{T}
-    r::T
-end
-(f::Scale)(x) = f.r * x  # functor
-
 @testset "keyword arguments" begin
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],
@@ -57,14 +52,6 @@ end
         xscale = :log10,
     )
     test_ref("barplot/log10.txt", @print_col(p))
-
-    p = @inferred barplot(
-        [:a, :b, :c, :d, :e],
-        [0, 1, 10, 100, 1000],
-        title = "Logscale Plot",
-        xscale = Scale(π),
-    )
-    test_ref("barplot/functor.txt", @print_col(p))
 
     p = @inferred barplot(
         [:a, :b, :c, :d, :e],

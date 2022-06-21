@@ -1,7 +1,7 @@
 @test Canvas <: GraphicsArea
 
 @testset "Nan / Inf" begin
-    c = BrailleCanvas(40, 15)
+    c = BrailleCanvas(15, 40)
     lines!(c, [0, NaN], [0, 0])
     lines!(c, [0, 0], [+Inf, 0])
     lines!(c, [0, 0], [0, -Inf])
@@ -18,7 +18,7 @@ end
     ]
         @testset "$(nameof(T))" begin
             @test T <: Canvas
-            c = @inferred T(15, 30; origin_y = -1.5, origin_x = -1, height = 3, width = 2)
+            c = T(15, 30; origin_y = -1.5, origin_x = -1, height = 3, width = 2)
             @test @inferred(size(c)) ≡ (3.0, 2.0)
             @test @inferred(height(c)) ≡ 3.0
             @test @inferred(width(c)) ≡ 2.0

@@ -29,8 +29,8 @@ function CreateLookupCanvas(
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
-    yscale::Function = identity,
-    xscale::Function = identity,
+    yscale::Union{Symbol,Function} = :identity,
+    xscale::Union{Symbol,Function} = :identity,
     min_char_height::Int = 5,
     min_char_width::Int = 2,
 ) where {T<:LookupCanvas}
@@ -45,7 +45,7 @@ function CreateLookupCanvas(
     T(
         grid,
         colors,
-        NTuple{2,UInt32}(min_max),
+        NTuple{2,UInt32}(min_max),  # `UInt32` is enough to hold all values of `UNICODE_TABLE`
         blend,
         visible,
         pixel_height,
@@ -54,8 +54,8 @@ function CreateLookupCanvas(
         float(origin_x),
         float(height),
         float(width),
-        yscale,
-        xscale,
+        scale_callback(yscale),
+        scale_callback(xscale),
     )
 end
 

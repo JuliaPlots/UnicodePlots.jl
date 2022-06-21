@@ -1370,7 +1370,7 @@ const ASH_DATA = [
 
 const GRAY_DATA = hcat(SNOW_DATA, ASH_DATA)
 
-const GREEN_CYAN_BLUE_DATA = [
+const GREEN_CYAN_BLUE_DATA = [  # FIXME: using `Tuple` instead of `Vector` kills performance
     (0.0, 0.372549, 0.0),
     (0.0, 0.529412, 0.0),
     (0.0, 0.686275, 0.0),
@@ -1426,14 +1426,12 @@ function colormap_callback(cmap::Symbol)
 end
 
 colormap_callback(cmap::AbstractVector) = (z, minz, maxz) -> cmapcolor(z, minz, maxz, cmap)
-colormap_callback(cmap::Nothing) = nothing
+colormap_callback(cmap::Nothing) = x -> nothing
 colormap_callback(cmap::Function) = cmap
-
-rgbimgcolor(z) = ansi_color((c256(z.r), c256(z.g), c256(z.b)))
 
 mutable struct ColorMap
     border::Symbol
     bar::Bool
     lim::NTuple{2,Number}
-    callback::Any
+    callback::Function
 end

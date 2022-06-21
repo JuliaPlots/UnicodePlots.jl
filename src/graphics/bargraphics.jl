@@ -7,7 +7,7 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
     max_val::RefValue{Float64}
     max_len::RefValue{Int}
     symbols::AbstractVector{Char}
-    xscale::Any  # Union{Symbol,Function} ==> no, we support functors which are <: Any
+    xscale::Union{Symbol,Function}
 
     function BarplotGraphics(
         bars::AbstractVector{R},
@@ -15,9 +15,9 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
         maximum::Union{Nothing,Number},
-        symbols::AbstractVector{S},
+        symbols::AbstractVector{<:Union{Char,String}},
         xscale,
-    ) where {R,S<:Union{Char,String}}
+    ) where {R<:Number}
         for s in symbols
             length(s) == 1 || throw(
                 ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),

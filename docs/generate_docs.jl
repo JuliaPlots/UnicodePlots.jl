@@ -134,8 +134,7 @@ main() = begin
 
   tab = ' '^2
 
-  indent(x::AbstractString, n) = tab^n * join(split(x, '\n'), '\n' * tab^n)
-  indent(x::AbstractVector, n) = tab^n * join(x, '\n' * tab^n)
+  indent(x, n) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
 
   desc_ex(k, d, n=2) = (
     if k ≡ :border

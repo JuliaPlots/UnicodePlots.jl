@@ -9,17 +9,17 @@ as x and y coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; $(keywords((width = 0, height = 0, xfact = 0, yfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
+    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = 0, xfact = 0); add = (Z_DESCRIPTION..., :fix_ar)))
 
 # Arguments
 
 $(arguments(
     (
         A = "input matrix (color values)",
-        xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
         yfact = "scale for the `y` coordinate labels (defaults to 0 - i.e. each row in `A` maps to one unit, `y` origin starting at 1). If set to anything else, the y origin will start at 0",
-        xoffset = "plotting offset for the `x` coordinate (after scaling)",
+        xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
         yoffset = "plotting offset for the `y` coordinate (after scaling)",
+        xoffset = "plotting offset for the `x` coordinate (after scaling)",
     ); add = (Z_DESCRIPTION..., :fix_ar)
 ))
 
@@ -51,16 +51,16 @@ function heatmap(
     xlim = KEYWORDS.xlim,
     ylim = KEYWORDS.ylim,
     zlim = KEYWORDS.zlim,
-    xoffset = 0.0,
     yoffset = 0.0,
+    xoffset = 0.0,
     out_stream::Union{Nothing,IO} = nothing,
-    width::Int = 0,
     height::Int = 0,
+    width::Int = 0,
     margin::Int = KEYWORDS.margin,
     padding::Int = KEYWORDS.padding,
     colormap = KEYWORDS.colormap,
-    xfact = 0,
     yfact = 0,
+    xfact = 0,
     labels = true,
     fix_ar::Bool = false,
     kw...,
@@ -88,10 +88,10 @@ function heatmap(
     # select a subset of A based on the supplied limits
     firstx = findfirst(x -> x ≥ xlim[1], X)
     lastx = findlast(x -> x ≤ xlim[2], X)
-    xrange = (firstx == nothing || lastx == nothing) ? (1:0) : (firstx:lastx)
+    xrange = (firstx ≡ nothing || lastx ≡ nothing) ? (1:0) : (firstx:lastx)
     firsty = findfirst(y -> y ≥ ylim[1], Y)
     lasty = findlast(y -> y ≤ ylim[2], Y)
-    yrange = (firsty == nothing || lasty == nothing) ? (1:0) : (firsty:lasty)
+    yrange = (firsty ≡ nothing || lasty ≡ nothing) ? (1:0) : (firsty:lasty)
     A = A[yrange, xrange]
     X = X[xrange]
     Y = Y[yrange]
@@ -99,21 +99,21 @@ function heatmap(
     # allow A to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
     minz, maxz = (0, 0)
-    noextrema = true
+    has_extrema = false
     try
         minz, maxz = extrema(A)
-        noextrema = false
+        has_extrema = true
     catch
     end
     if zlim != (0, 0)
-        noextrema &&
+        has_extrema ||
             throw(ArgumentError("zlim cannot be set when the element type is $(eltype(A))"))
         minz, maxz = zlim
     end
 
     # if A is an rgb image, translate the colors directly to the terminal
     callback = if length(A) > 0 && all(x -> x in fieldnames(eltype(A)), [:r, :g, :b])
-        (A, minz, maxz) -> rgbimgcolor(A)
+        (A, minz, maxz) -> ansi_color(c256.((A.r, A.g, A.b)))
     else
         colormap_callback(colormap)
     end
@@ -140,14 +140,13 @@ function heatmap(
         fix_ar,
     )
 
-    colorbar = if height < 7
+    colorbar = has_extrema && if height < 7
         # for small plots, don't show colorbar by default
-        !noextrema && get(kw, :colorbar, false)
+        get(kw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        !noextrema && get(kw, :colorbar, labels)
+        get(kw, :colorbar, labels)
     end
-    kw = (; kw..., colorbar = colorbar)
 
     xs = length(X) > 0 ? [first(X), last(X)] : zeros(2)
     ys = length(Y) > 0 ? [first(Y), last(Y)] : zeros(2)
@@ -167,7 +166,7 @@ function heatmap(
         width = width,
         min_height = 1,
         min_width = 1,
-        kw...,
+        filter(x -> x.first ≢ :colorbar, kw)...,
     )
 
     for row in eachindex(Y)

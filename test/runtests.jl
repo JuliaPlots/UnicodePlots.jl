@@ -21,7 +21,7 @@ include("fixes.jl")
 
 const TO = TimerOutput()
 const RNG = StableRNG(1337)
-const T_SZ = (24, 80)  # terminal size
+const T_SZ = (24, 80)  # default terminal size on unix
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(
@@ -76,7 +76,7 @@ end
 # return type Plot{BrailleCanvas{typeof(identity), typeof(identity)}} does not match
 # inferred return type Plot{var"#s129"} where var"#s129"<:Canvas
 
-ID = typeof(identity)
+const ID = typeof(identity)
 
 macro binf(ex)
     :(@inferred(Plot{BrailleCanvas{ID,ID}}, $ex)) |> esc

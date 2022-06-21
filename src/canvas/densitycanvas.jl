@@ -34,9 +34,9 @@ function DensityCanvas(
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
-    yscale::Union{Symbol,Function} = identity,
-    xscale::Union{Symbol,Function} = identity,
-    dscale::Union{Symbol,Function} = identity,
+    yscale::Union{Symbol,Function} = :identity,
+    xscale::Union{Symbol,Function} = :identity,
+    dscale::Union{Symbol,Function} = :identity,
 )
     height > 0 || throw(ArgumentError("height has to be positive"))
     width > 0 || throw(ArgumentError("width has to be positive"))
@@ -57,9 +57,9 @@ function DensityCanvas(
         float(origin_x),
         float(height),
         float(width),
-        yscale,
-        xscale,
-        dscale,
+        scale_callback(yscale),
+        scale_callback(xscale),
+        scale_callback(dscale),
         Ref(-Inf),
     )
 end

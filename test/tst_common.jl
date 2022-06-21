@@ -149,18 +149,13 @@ end
           Function
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
-    @test UnicodePlots.colormap_callback(nothing) ≡ nothing
+    @test UnicodePlots.colormap_callback(nothing) isa Function
 
     # clamp in range
     values = collect(1:10)
     callback = UnicodePlots.colormap_callback(:viridis)
     colors = [callback(v, values[2], values[end - 1]) for v in values]
 end
-
-struct Scale{T}
-    r::T
-end
-(f::Scale)(x) = f.r * x
 
 @testset "miscellaneous" begin
     @test UnicodePlots.char_marker('a') ≡ 'a'
@@ -175,7 +170,7 @@ end
     @test UnicodePlots.scale_callback(:log2)(2) ≈ 1
     @test UnicodePlots.scale_callback(:ln)(ℯ) ≈ 1
     @test UnicodePlots.scale_callback(x -> x)(1) ≡ 1
-    @test UnicodePlots.scale_callback(Scale(π))(1) ≈ π
+    @test UnicodePlots.scale_callback(x -> sin(x))(0) ≈ 0
 
     h, w = displaysize()
     @test UnicodePlots.out_stream_height() == h

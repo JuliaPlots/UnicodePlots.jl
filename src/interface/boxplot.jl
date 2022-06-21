@@ -5,8 +5,8 @@
 
 Draws a box-and-whisker plot.
 
-The first argument specifies the data to plot. This is a vector
-of vectors, with each inner vector representing a data series.
+The first argument specifies the data to plot.
+This is a vector of vectors, with each inner vector representing a data series.
 We use a vector of vectors over a matrix to allow series of different lengths.
 Optionally, a list of text may be provided, with length equal to the number of series.
 
