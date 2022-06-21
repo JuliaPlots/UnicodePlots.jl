@@ -383,7 +383,7 @@ julia> Pkg.add("UnicodePlots")
 
   3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
 
-  Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a., camera.
+  Use keywords`elevation`, `azimuth`, `up` or `zoom` to control the "View" matrix, a.k.a. camera.
 
   The `projection` type for `MVP` can be set to either `:perspective` or `:orthographic`.
 
