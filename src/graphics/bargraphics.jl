@@ -1,4 +1,4 @@
-struct BarplotGraphics{R<:Number} <: GraphicsArea
+struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}
     char_width::Int
@@ -7,7 +7,7 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
     max_val::RefValue{Float64}
     max_len::RefValue{Int}
     symbols::AbstractVector{Char}
-    xscale::Union{Symbol,Function}
+    xscale::XS
 
     function BarplotGraphics(
         bars::AbstractVector{R},
@@ -30,7 +30,7 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
         else
             fill(ansi_color(color), length(bars))
         end
-        new{R}(
+        new{R,typeof(xscale)}(
             bars,
             colors,
             char_width,

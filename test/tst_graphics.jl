@@ -5,7 +5,7 @@
     @test !(BarplotGraphics <: Canvas)
 
     @testset "basic API and display" begin
-        g = @inferred BarplotGraphics(0:2:10, 30)
+        g = BarplotGraphics(0:2:10, 30)
         @test @inferred(nrows(g)) ≡ 6
         @test @inferred(ncols(g)) ≡ 30
         @test_throws ArgumentError print_row(stdout, g, 0)
@@ -40,27 +40,27 @@
         @test_throws MethodError BarplotGraphics(0:2:10)
         @test_throws Union{ArgumentError,MethodError} BarplotGraphics(Int[], 20)
         @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symbols = ["--"])
-        g = @inferred BarplotGraphics([0, 0], 20)
+        g = BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) ≡ 2
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_empty.txt", @show_col(g))
-        g = @inferred BarplotGraphics([1, 1], 20, color = :blue)
+        g = BarplotGraphics([1, 1], 20, color = :blue)
         @test @inferred(nrows(g)) ≡ 2
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_blue.txt", @show_col(g))
-        g = @inferred BarplotGraphics([0, 1, 10, 100, 1000], 20, log10)
+        g = BarplotGraphics([0, 1, 10, 100, 1000], 20, log10)
         @test @inferred(nrows(g)) ≡ 5
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_log10.txt", @show_col(g))
-        g = @inferred BarplotGraphics([0, 1, 10], 20, symbols = ["#"])
+        g = BarplotGraphics([0, 1, 10], 20, symbols = ["#"])
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_symb.txt", @show_col(g))
-        g = @inferred BarplotGraphics([0, 1, 9], 1)
+        g = BarplotGraphics([0, 1, 9], 1)
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 10
         test_ref("graphics/bar_short.txt", @show_col(g))
-        g = @inferred BarplotGraphics([0, 1, 10000000], 1)
+        g = BarplotGraphics([0, 1, 10000000], 1)
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 15
         test_ref("graphics/bar_short2.txt", @show_col(g))

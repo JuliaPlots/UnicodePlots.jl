@@ -14,7 +14,7 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
     min_x::RefValue{R}
     max_x::RefValue{R}
 
-    function BoxplotGraphics{R}(
+    function BoxplotGraphics(
         data::AbstractVector{R},
         char_width::Int,
         visible::Bool,
@@ -53,8 +53,7 @@ BoxplotGraphics(
     color::Union{UserColorType,AbstractVector} = :green,
     min_x::Number = minimum(data),
     max_x::Number = maximum(data),
-) where {R<:Number} =
-    BoxplotGraphics{R}(data, char_width, visible, color, R(min_x), R(max_x))
+) where {R<:Number} = BoxplotGraphics(data, char_width, visible, color, R(min_x), R(max_x))
 
 function addseries!(
     c::BoxplotGraphics,
@@ -89,7 +88,7 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Int)
     idx = ceil(Int, row / 3)
     series = c.data[idx]
 
-    series_row = Int((row - 1) % 3) + 1
+    series_row = (row - 1) % 3 + 1
 
     min_char = ('╷', '├', '╵')[series_row]
     line_char = (' ', '─', ' ')[series_row]

@@ -13,39 +13,39 @@
     p = @inferred Plot barplot(dct)
     test_ref("barplot/default.txt", @print_col(p))
 
-    p = @inferred barplot([:bar, :foo], Int16[23, 37])
+    p = @inferred Plot barplot([:bar, :foo], Int16[23, 37])
     test_ref("barplot/default.txt", @print_col(p))
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
+    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
     test_ref("barplot/default.txt", @print_col(p))
     @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
     @test_throws MethodError barplot!(p, ["zoom"], [90.0])
     @test_throws InexactError barplot!(p, "zoom", 90.1)
-    @test @inferred(barplot!(p, ["zoom"], [90])) ≡ p
+    @test barplot!(p, ["zoom"], [90]) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, :zoom, 90.0)) ≡ p
+    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    @test barplot!(p, :zoom, 90.0) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
+    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
     @test_throws MethodError barplot!(p, Dict("zoom" => 90.0))
-    @test @inferred(barplot!(p, Dict("zoom" => 90))) ≡ p
+    @test barplot!(p, Dict("zoom" => 90)) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred barplot(["bar", "foo"], [23, 37])
-    @test @inferred(barplot!(p, Dict(:zoom => 90))) ≡ p
+    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    @test barplot!(p, Dict(:zoom => 90)) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred barplot(2:6, 11:15)
+    p = @inferred Plot barplot(2:6, 11:15)
     test_ref("barplot/ranges.txt", @print_col(p))
-    @test @inferred(barplot!(p, 9:10, 20:21)) ≡ p
+    @test barplot!(p, 9:10, 20:21) ≡ p
     test_ref("barplot/ranges2.txt", @print_col(p))
 end
 
 @testset "keyword arguments" begin
-    p = @inferred barplot(
+    p = barplot(
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
@@ -53,7 +53,7 @@ end
     )
     test_ref("barplot/log10.txt", @print_col(p))
 
-    p = @inferred barplot(
+    p = barplot(
         [:a, :b, :c, :d, :e],
         [0, 1, 10, 100, 1000],
         title = "Logscale Plot",
@@ -62,7 +62,7 @@ end
     )
     test_ref("barplot/log10_label.txt", @print_col(p))
 
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
@@ -73,7 +73,7 @@ end
     )
     test_ref("barplot/parameters1.txt", @print_col(p))
 
-    p = @inferred barplot(
+    p = barplot(
         ["Paris", "New York", "Moskau", "Madrid"],
         [2.244, 8.406, 11.92, 3.165],
         title = "Relative sizes of cities",
@@ -86,7 +86,7 @@ end
     test_ref("barplot/parameters1_nolabels.txt", @print_col(p))
 
     for sym in ("=", '=')
-        p = @inferred barplot(
+        p = barplot(
             ["Paris", "New York", "Moskau", "Madrid"],
             [2.244, 8.406, 11.92, 3.165],
             title = "Relative sizes of cities",
@@ -117,7 +117,7 @@ end
 end
 
 @testset "different colors" begin
-    p = @inferred barplot(
+    p = barplot(
         [:a, :b, :c, :d, :e],
         [20, 30, 60, 50, 40],
         color = [:red, :green, :blue, :yellow, :normal],

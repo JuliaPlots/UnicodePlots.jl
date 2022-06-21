@@ -75,7 +75,6 @@ end
 
 # return type Plot{BrailleCanvas{typeof(identity), typeof(identity)}} does not match
 # inferred return type Plot{var"#s129"} where var"#s129"<:Canvas
-
 const ID = typeof(identity)
 
 macro binf(ex)
@@ -84,10 +83,6 @@ end
 
 macro hinf(ex)
     :(@inferred(Plot{HeatmapCanvas{ID,ID}}, $ex)) |> esc
-end
-
-macro dinf(ex)
-    :(@inferred(Plot{DensityCanvas{ID,ID,ID}}, $ex)) |> esc
 end
 
 macro timeit_include(path::AbstractString)
