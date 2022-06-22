@@ -603,8 +603,11 @@ end
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
-function _show(io::IO, print_nocol, print_color, p::Plot)
-    io_color = get(io, :color, false)
+function _show(end_io::IO, print_nocol, print_color, p::Plot)
+    buf = PipeBuffer()  # buffering, for performance
+    io_color = get(end_io, :color, false)
+    io = IOContext(buf, :color => io_color)
+
     c = p.graphics
     🗷 = Char(BLANK)  # blank outside canvas
     🗹 = blank(c)  # blank inside canvas
@@ -798,7 +801,11 @@ function _show(io::IO, print_nocol, print_color, p::Plot)
             w_lbl += h_w[2]
         end
     end
-    # approximate image size
+
+    # delayed print (buffering)
+    print_nocol(end_io, read(buf, String))
+
+    # return the approximate image size
     (
         h_ttl + 1 + nr + 1 + h_lbl,  # +1 for borders
         max(w_ttl, w_lbl, length(border_left_pad) + p_width + length(border_right_pad)),
@@ -898,7 +905,7 @@ function png_image(
     fcolors = sizehint!(RGBA{Float32}[], nr * nc)
     gcolors = sizehint!(RGBA{Float32}[], nr * nc)
 
-    print_nocol(io, args...) = begin
+    print_nocol(io::IO, args...) = begin
         line = string(args...)
         len = length(line)
         append!(fchars, line)
@@ -908,7 +915,7 @@ function png_image(
         nothing
     end
 
-    print_color(io, color, args...; bgcol = missing) = begin
+    print_color(io::IO, color, args...; bgcol = missing) = begin
         fcolor = rgba(ansi_color(color))
         gcolor = if ismissing(bgcol)
             default_bg_color

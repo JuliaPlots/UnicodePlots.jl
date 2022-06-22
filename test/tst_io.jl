@@ -50,7 +50,7 @@ end
 
     if Sys.islinux()
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 550  # ~ 450kB on 1.7
+        @test stats.bytes / 1e3 < 600  # ~ 550kB on 1.7
         @test stats.time * 1e3 < 2  # ~ 1.17ms on 1.7
     end
 
@@ -60,7 +60,7 @@ end
 
     if Sys.islinux()
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 150  # ~ 124kB on 1.7
-        @test stats.time * 1e3 < 1  # ~ 0.420ms on 1.7
+        @test stats.bytes / 1e3 < 250  # ~ 155kB on 1.7
+        @test stats.time * 1e3 < 1  # ~ 0.42ms on 1.7
     end
 end

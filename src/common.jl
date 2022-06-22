@@ -178,7 +178,7 @@ const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # f
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
-const CRAYONS_FAST = Ref(true)
+const CRAYONS_FAST = Ref(false)
 const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
@@ -368,8 +368,8 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
         mi, ma = as_float(extrema(vec))
     end
     if mi == ma
-        ma = mi + 1
-        mi = mi - 1
+        mi -= 1
+        ma += 1
     end
     if scale != identity
         scale(mi), scale(ma)
