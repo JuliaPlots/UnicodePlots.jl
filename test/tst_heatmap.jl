@@ -28,7 +28,7 @@ end
 @testset "color maps" begin
     x = collect(0:30) * collect(0:30)'
 
-    for cmap in keys(UnicodePlots.COLOR_MAP_DATA)
+    for cmap in (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
         p = @hinf heatmap(x, colormap = cmap)
         test_ref(
             "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$cmap.txt",
@@ -36,7 +36,7 @@ end
         )
     end
 
-    p = @hinf heatmap(x, colormap = reverse(UnicodePlots.COLOR_MAP_DATA[:jet]))
+    p = @hinf heatmap(x, colormap = reverse(UnicodePlots.ColorSchemes.jet1.colors))
     test_ref(
         "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_reverse_jet.txt",
         @show_col(p, :displaysize => T_SZ)
@@ -62,9 +62,9 @@ end
     end
 end
 
-@testset "matrix display convention" begin
-    p = @hinf heatmap(collect(1:20) * collect(1:20)', matrix = true, fix_ar = true)
-    test_ref("heatmap/matrix_convention.txt", @show_col(p, :displaysize => T_SZ))
+@testset "array display convention" begin
+    p = @hinf heatmap(collect(1:20) * collect(1:20)', array = true, fix_ar = true)
+    test_ref("heatmap/array_convention.txt", @show_col(p, :displaysize => T_SZ))
 end
 
 @testset "sizing" begin
@@ -169,7 +169,7 @@ end
     for sz in ((10, 10), (10, 11))
         seed!(RNG, 1337)
         x = randn(RNG, sz...)
-        for kw in ((; xfact = 0.1, colormap = :cividis), (; yfact = 1, colormap = :cividis))
+        for kw in ((; xfact = 0.1), (; yfact = 1))
             p = @hinf heatmap(x; kw...)
             test_ref(
                 "heatmap/parameters_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",

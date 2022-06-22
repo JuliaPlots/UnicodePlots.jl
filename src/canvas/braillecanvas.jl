@@ -1,5 +1,5 @@
 # braille dots composing ⣿
-const BRAILLE_SIGNS = UInt32.([
+const BRAILLE_SIGNS = UnicodeType.([
     '⠁' '⠈'
     '⠂' '⠐'
     '⠄' '⠠'
@@ -12,10 +12,12 @@ It uses the Unicode characters for the Braille symbols to represent individual p
 This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
 """
 struct BrailleCanvas{YS<:Function,XS<:Function} <: Canvas
-    grid::Transpose{UInt32,Matrix{UInt32}}
+    grid::Transpose{UnicodeType,Matrix{UnicodeType}}
     colors::Transpose{ColorType,Matrix{ColorType}}
-    blend::Bool
     visible::Bool
+    blend::Bool
+    yflip::Bool
+    xflip::Bool
     pixel_height::Int
     pixel_width::Int
     origin_y::Float64
@@ -40,6 +42,8 @@ function BrailleCanvas(
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
+    yflip::Bool = false,
+    xflip::Bool = false,
     yscale::Union{Symbol,Function} = :identity,
     xscale::Union{Symbol,Function} = :identity,
 )
@@ -54,8 +58,10 @@ function BrailleCanvas(
     BrailleCanvas(
         grid,
         colors,
-        blend,
         visible,
+        blend,
+        yflip,
+        xflip,
         pixel_height,
         pixel_width,
         float(origin_y),

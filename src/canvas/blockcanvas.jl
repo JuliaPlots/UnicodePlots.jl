@@ -7,15 +7,17 @@ This canvas effectively turns every character into 4 pixels that can individuall
 struct BlockCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     grid::Transpose{UInt16,Matrix{UInt16}}
     colors::Transpose{ColorType,Matrix{ColorType}}
-    min_max::NTuple{2,UInt32}
-    blend::Bool
     visible::Bool
+    blend::Bool
+    yflip::Bool
+    xflip::Bool
     pixel_height::Int
     pixel_width::Int
     origin_y::Float64
     origin_x::Float64
     height::Float64
     width::Float64
+    min_max::NTuple{2,UnicodeType}
     yscale::YS
     xscale::XS
 end

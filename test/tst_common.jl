@@ -86,6 +86,8 @@ end
     UnicodePlots.colors256!()
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
+    @test UnicodePlots.ansi_color((0.0, 0.0, 0.0)) == UnicodePlots.THRESHOLD + 0x0  # float 0 - 1 range
+    @test UnicodePlots.ansi_color((1.0, 1.0, 1.0)) == UnicodePlots.THRESHOLD + 0xe7  # float 0 - 1 range
     @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
@@ -100,6 +102,8 @@ end
     UnicodePlots.USE_LUT[] = true
     @test UnicodePlots.ansi_color(0x80) == 0xaf00d7
     @test UnicodePlots.ansi_color(128) == 0xaf00d7
+    @test UnicodePlots.ansi_color((0.0, 0.0, 0.0)) == 0x0
+    @test UnicodePlots.ansi_color((1.0, 1.0, 1.0)) == 0xffffff
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     @test UnicodePlots.ansi_color(:red) == 0x800000
@@ -147,8 +151,7 @@ end
     end
     UnicodePlots.CRAYONS_FAST[] = _cfast
 
-    @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
-          Function
+    @test UnicodePlots.colormap_callback(:inferno) isa Function
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
     @test UnicodePlots.colormap_callback(nothing) isa Function
@@ -157,6 +160,7 @@ end
     values = collect(1:10)
     callback = UnicodePlots.colormap_callback(:viridis)
     colors = [callback(v, values[2], values[end - 1]) for v in values]
+    @test length(colors) == length(values)
 end
 
 @testset "miscellaneous" begin

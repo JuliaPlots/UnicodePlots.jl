@@ -8,18 +8,20 @@ Together with a variable that keeps track of the maximum frequency, the canvas c
 struct DensityCanvas{YS<:Function,XS<:Function,DS<:Function} <: Canvas
     grid::Transpose{UInt64,Matrix{UInt64}}
     colors::Transpose{ColorType,Matrix{ColorType}}
-    blend::Bool
     visible::Bool
+    blend::Bool
+    yflip::Bool
+    xflip::Bool
     pixel_height::Int
     pixel_width::Int
     origin_y::Float64
     origin_x::Float64
     height::Float64
     width::Float64
+    max_density::RefValue{Float64}
     yscale::YS
     xscale::XS
     dscale::DS
-    max_density::RefValue{Float64}
 end
 
 @inline y_pixel_per_char(::Type{<:DensityCanvas}) = 2
@@ -34,6 +36,8 @@ function DensityCanvas(
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
+    yflip::Bool = false,
+    xflip::Bool = false,
     yscale::Union{Symbol,Function} = :identity,
     xscale::Union{Symbol,Function} = :identity,
     dscale::Union{Symbol,Function} = :identity,
@@ -49,18 +53,20 @@ function DensityCanvas(
     DensityCanvas(
         grid,
         colors,
-        blend,
         visible,
+        blend,
+        yflip,
+        xflip,
         pixel_height,
         pixel_width,
         float(origin_y),
         float(origin_x),
         float(height),
         float(width),
+        Ref(-Inf),
         scale_callback(yscale),
         scale_callback(xscale),
         scale_callback(dscale),
-        Ref(-Inf),
     )
 end
 

@@ -3,8 +3,10 @@ module UnicodePlots
 using SparseArrays: AbstractSparseMatrix, findnz
 using StatsBase: Histogram, fit, percentile
 using LinearAlgebra
+using ColorSchemes
 using StaticArrays
 using LazyModules
+using ColorTypes
 using Crayons
 using Printf
 using Dates
@@ -17,7 +19,6 @@ import NaNMath
 import Contour
 
 @lazy import FreeTypeAbstraction = "663a7486-cb36-511b-a19d-713bb74d65c9"
-import ColorTypes
 import FileIO
 
 export GraphicsArea,
@@ -86,7 +87,6 @@ export GraphicsArea,
     default_size!,
     preprocess!
 
-include("colormaps.jl")
 include("common.jl")
 include("lut.jl")
 
@@ -102,6 +102,11 @@ include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
+@assert typemax(UnicodeType) ≥ maximum(
+    (
+        typemax ∘ grid_type
+    ).((HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)),
+)
 
 include("description.jl")
 include("volume.jl")

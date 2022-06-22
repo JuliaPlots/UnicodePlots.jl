@@ -179,6 +179,8 @@ function Plot(
     yticks::Bool = KEYWORDS.yticks,
     min_height::Int = 2,
     min_width::Int = 5,
+    yflip::Bool = KEYWORDS.yflip,
+    xflip::Bool = KEYWORDS.xflip,
     projection::Union{Nothing,Symbol,MVP} = nothing,
     axes3d = KEYWORDS.axes3d,
     canvas_kw = (;),
@@ -235,6 +237,8 @@ function Plot(
         width = p_width,
         yscale = yscale,
         xscale = xscale,
+        yflip = yflip,
+        xflip = xflip,
         canvas_kw...,
     )
     plot = Plot(
@@ -263,13 +267,13 @@ function Plot(
         bc = BORDER_COLOR[]
         if xticks
             base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * m_x, color = bc)
-            label!(plot, :br, base_x_str * M_x, color = bc)
+            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x), color = bc)
+            label!(plot, :br, base_x_str * (xflip ? m_x : M_x), color = bc)
         end
         if yticks
             base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = bc)
-            label!(plot, :l, 1, base_y_str * M_y, color = bc)
+            label!(plot, :l, nrows(canvas), base_y_str * (yflip ? M_y : m_y), color = bc)
+            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y), color = bc)
         end
     end
     if grid && (xscale ≡ identity && yscale ≡ identity)
@@ -385,7 +389,7 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
     loc ∈ (:t, :b, :l, :r, :tl, :tr, :bl, :br) || throw(
         ArgumentError("unknown location $loc: try one of these :tl :t :tr :bl :b :br"),
     )
-    if loc ≡ :l || loc == :r
+    if loc ≡ :l || loc ≡ :r
         for row in 1:nrows(plot.graphics)
             if loc ≡ :l
                 if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
@@ -864,10 +868,6 @@ function png_image(
         1.0
     end)
     #####################################
-
-    RGB24 = ColorTypes.RGB24
-    RGBA = ColorTypes.RGBA
-    RGB = ColorTypes.RGB
 
     fg_color = ansi_color(something(foreground, transparent ? 244 : 252))
     bg_color = ansi_color(something(background, 235))

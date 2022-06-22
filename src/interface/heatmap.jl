@@ -9,7 +9,7 @@ of the matrix as x and y coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = nothing, xfact = nothing, matrix = false); add = (Z_DESCRIPTION..., :fix_ar)))
+    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = nothing, xfact = nothing, array = false); add = (Z_DESCRIPTION..., :fix_ar)))
 
 # Arguments
 
@@ -20,7 +20,7 @@ $(arguments(
         xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
         yoffset = "plotting offset for the `y` coordinate (after scaling)",
         xoffset = "plotting offset for the `x` coordinate (after scaling)",
-        matrix = "use matrix display convention (array origin at the North-West corner of the plot)"
+        array = "use array display convention (origin at the North-West corner of the plot, hence flipping `y` versus regular plots)"
     ); add = (Z_DESCRIPTION..., :fix_ar)
 ))
 
@@ -62,8 +62,8 @@ function heatmap(
     colormap = KEYWORDS.colormap,
     yfact::Union{Nothing,Number} = nothing,
     xfact::Union{Nothing,Number} = nothing,
-    matrix::Bool = false,
     fix_ar::Bool = false,
+    array::Bool = false,
     labels::Bool = true,
     kw...,
 ) where {T}
@@ -72,21 +72,16 @@ function heatmap(
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
-    if matrix
-        Y = reverse(axes(A, 1))
-        X = axes(A, 2)
+    Y = if yfact ≡ nothing
+        collect(1:nrows)
     else
-        Y = if yfact ≡ nothing
-            collect(1:nrows)
-        else
-            collect(0:(nrows - 1)) .* yfact
-        end .+ yoffset
-        X = if xfact ≡ nothing
-            collect(1:ncols)
-        else
-            collect(0:(ncols - 1)) .* xfact
-        end .+ xoffset
-    end
+        collect(0:(nrows - 1)) .* yfact
+    end .+ yoffset
+    X = if xfact ≡ nothing
+        collect(1:ncols)
+    else
+        collect(0:(ncols - 1)) .* xfact
+    end .+ xoffset
 
     # set the axis limits automatically
     autolims(lims, vec) = lims == (0, 0) && length(vec) > 0 ? extrema(vec) : lims
@@ -101,16 +96,14 @@ function heatmap(
         (first ≡ nothing || last ≡ nothing) ? (1:0) : (first:last)
     end
 
-    if !matrix
-        yrange = subset(ylim, Y)
-        xrange = subset(xlim, X)
-        Y = Y[yrange]
-        X = X[xrange]
-        A = A[yrange, xrange]
+    yrange = subset(ylim, Y)
+    xrange = subset(xlim, X)
+    Y = Y[yrange]
+    X = X[xrange]
+    A = A[yrange, xrange]
 
-        nrows = ceil(Int, (ylim[2] - ylim[1]) / something(yfact, 1)) + 1
-        ncols = ceil(Int, (xlim[2] - xlim[1]) / something(xfact, 1)) + 1
-    end
+    nrows = ceil(Int, (ylim[2] - ylim[1]) / something(yfact, 1)) + 1
+    ncols = ceil(Int, (xlim[2] - xlim[1]) / something(xfact, 1)) + 1
 
     # allow A to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
@@ -190,7 +183,7 @@ function heatmap(
         width = width,
         min_height = 1,
         min_width = 1,
-        yticks = !matrix,  # FIXME: we cannot change the ticks direction (increasing downwards)
+        yflip = array,
         filter(x -> x.first ≢ :colorbar, kw)...,
     )
 

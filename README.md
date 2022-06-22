@@ -533,8 +533,10 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `zlim::Tuple = (0, 0)`: colormap scaled data range.
   - `xticks::Bool = true`: set `false` to disable ticks on `x`-axis.
   - `yticks::Bool = true`: set `false` to disable ticks on `y`-axis.
+  - `xflip::Bool = false`: flip the `x` axis.
+  - `yflip::Bool = false`: flip the `y` axis.
   - `colorbar::Bool = false`: toggle the colorbar.
-  - `colormap::Symbol = :viridis`: choose from (`:viridis`, `:cividis`, `:plasma`, `:jet`, `:gray`, `keys(UnicodePlots.COLOR_MAP_DATA)`...), or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
+  - `colormap::Symbol = :viridis`: choose a symbol from `ColorSchemes.jl` e.g. `:viridis`, or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
   - `colorbar_lim::Tuple = (0, 1)`: colorbar limit.
   - `colorbar_border::Symbol = :solid`: color bar bounding box style (`:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
   - `canvas::UnionAll = BrailleCanvas`: type of canvas used for drawing.

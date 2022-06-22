@@ -169,6 +169,27 @@ const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
 const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
 
+# en.wikipedia.org/wiki/Plane_(Unicode)
+const PLANE0_START = 0x00000
+const PLANE0_STOP = 0x0ffff
+const PLANE1_START = 0x10000
+const PLANE1_STOP = 0x1ffff
+const PLANE2_START = 0x20000
+const PLANE2_STOP = 0x2ffff
+
+# TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
+const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
+for i in PLANE0_START:PLANE0_STOP
+    UNICODE_TABLE[i + 1] = Char(i)
+end
+
+for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+    UNICODE_TABLE[i + 1] = MARKERS[j]
+end
+
+# `UInt32` is enough to hold all values of `UNICODE_TABLE`: common supertype for `DotCanvas`, `AsciiCanvas`, `BlockCanvas` `HeatmapCanvas` and `BrailleCanvas`.
+const UnicodeType = UInt32
+
 const THRESHOLD = UInt32(256^3)
 const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
@@ -465,6 +486,13 @@ function ansi_4bit_to_8bit(c::UInt8)::UInt8
     r + (q > 0x0 ? 0x8 : 0x0)
 end
 
+c256(c::AbstractFloat) = round(Int, 255c)
+c256(c::Integer) = c
+
+# `ColorType` conversion - colormaps
+ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
+ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
+
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
 
@@ -512,3 +540,38 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
+
+function colormap_callback(cmap::Symbol)
+    cdata = getfield(ColorSchemes, cmap)
+    (z, minz, maxz) -> begin
+        isfinite(z) || return nothing
+        get(
+            cdata,
+            minz == maxz ? zero(z) : (max(minz, min(z, maxz)) - minz) / (maxz - minz),
+        ) |> ansi_color
+    end
+end
+
+function colormap_callback(cmap::AbstractVector)
+    (z, minz, maxz) -> begin
+        isfinite(z) || return nothing
+        i = if minz == maxz || z < minz
+            1
+        elseif z > maxz
+            length(cmap)
+        else
+            1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+        end
+        ansi_color(cmap[i])
+    end
+end
+
+colormap_callback(cmap::Nothing) = x -> nothing
+colormap_callback(cmap::Function) = cmap
+
+mutable struct ColorMap
+    border::Symbol
+    bar::Bool
+    lim::NTuple{2,Number}
+    callback::Function
+end

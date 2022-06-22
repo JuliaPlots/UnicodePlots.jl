@@ -7,17 +7,26 @@ grid_type(c::Canvas) = grid_type(typeof(c))
 @inline nrows(c::Canvas) = size(c.grid, 1)
 @inline ncols(c::Canvas) = size(c.grid, 2)
 
+@inline lookup_offset(c::Canvas) = grid_type(c)(0)
 @inline pixel_height(c::Canvas) = c.pixel_height
 @inline pixel_width(c::Canvas) = c.pixel_width
 @inline origin_y(c::Canvas) = c.origin_y
 @inline origin_x(c::Canvas) = c.origin_x
 @inline height(c::Canvas) = c.height
 @inline width(c::Canvas) = c.width
-@inline lookup_offset(c::Canvas) = grid_type(c)(0)
 
 @inline y_to_pixel(c::Canvas, y::Number) =
-    (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
-@inline x_to_pixel(c::Canvas, x::Number) = (x - origin_x(c)) / width(c) * pixel_width(c)
+    if c.yflip
+        (y - origin_y(c)) / height(c) * pixel_height(c)
+    else
+        (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+    end
+@inline x_to_pixel(c::Canvas, x::Number) =
+    if c.xflip
+        (1 - (x - origin_x(c)) / width(c)) * pixel_width(c)
+    else
+        (x - origin_x(c)) / width(c) * pixel_width(c)
+    end
 
 @inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
 @inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
@@ -286,8 +295,8 @@ end
 
 function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
     # when hitting boundaries with canvases capable of encoding more than 1 pixel per char (see ref(1))
-    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
-    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
+    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
     (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
@@ -295,8 +304,8 @@ function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:C
 end
 
 function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
-    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
-    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
+    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
     (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
