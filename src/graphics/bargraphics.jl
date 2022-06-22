@@ -17,11 +17,10 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
         maximum::Union{Nothing,Number},
         symbols::Union{NTuple{N,S},AbstractVector{S}},
         xscale,
-    ) where {R<:Number,N,S<:Union{Char,String}}
+    ) where {R<:Number,N,S<:Union{AbstractChar,AbstractString}}
         for s in symbols
-            length(s) == 1 || throw(
-                ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
-            )
+            length(s) == 1 ||
+                throw(ArgumentError("symbol has to be a single character, got \"$s\""))
         end
         xscale = scale_callback(xscale)
         char_width = max(10, char_width, length(string(bars[argmax(xscale.(bars))])) + 7)
@@ -90,7 +89,7 @@ function preprocess!(c::BarplotGraphics)
 end
 
 function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Int)
-    0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     bar = c.bars[row]
     val = c.xscale(bar)
     nsyms = length(c.symbols)

@@ -34,8 +34,8 @@ function CreateLookupCanvas(
     min_char_height::Int = 5,
     min_char_width::Int = 2,
 ) where {T<:LookupCanvas}
-    height > 0 || throw(ArgumentError("height has to be positive"))
-    width > 0 || throw(ArgumentError("width has to be positive"))
+    height > 0 || throw(ArgumentError("`height` has to be positive"))
+    width > 0 || throw(ArgumentError("`width` has to be positive"))
     char_height  = max(char_height, min_char_height)
     char_width   = max(char_width, min_char_width)
     pixel_height = char_height * y_pixel_per_char(T)
@@ -73,13 +73,13 @@ function pixel!(
             c.grid[char_y, char_x] |= lookup_encode(c)[char_y_off, char_x_off]
         end
         blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-        set_color!(c.colors, char_x, char_y, ansi_color(color), blend)
+        set_color!(c, char_x, char_y, ansi_color(color), blend)
     end
     c
 end
 
 function print_row(io::IO, _, print_color, c::LookupCanvas, row::Int)
-    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     for col in 1:ncols(c)
         print_color(io, c.colors[row, col], lookup_decode(c)[c.grid[row, col] + 1])
     end

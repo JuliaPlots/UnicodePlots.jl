@@ -25,7 +25,7 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
     b = BORDER_SOLID
     bc = BORDER_COLOR[]
     border_length = ncols(c)
-    print_border(io, print_nocol, print_color, :t, border_length, "", "\n", b, bc)
+    print_border(io, print_nocol, print_color, :t, border_length, nothing, '\n', b, bc)
     postprocess! = preprocess!(c)
     for row in 1:nrows(c)
         print_color(io, bc, b[:l])
@@ -34,7 +34,7 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
         row < nrows(c) && print_nocol(io, '\n')
     end
     postprocess!(c)
-    print_border(io, print_nocol, print_color, :b, border_length, "\n", "", b, bc)
+    print_border(io, print_nocol, print_color, :b, border_length, '\n', nothing, b, bc)
     nothing
 end
 

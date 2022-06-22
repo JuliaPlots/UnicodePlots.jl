@@ -84,7 +84,7 @@ function Plot(
     projection::Union{Nothing,MVP} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
-    margin < 0 && throw(ArgumentError("Margin must be greater than or equal to 0"))
+    margin < 0 && throw(ArgumentError("`margin` must be ≥ 0"))
     projection = something(projection, MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
@@ -129,7 +129,7 @@ function validate_input(
     z::AbstractVector{<:Number},
 )
     length(x) == length(y) == length(z) ||
-        throw(DimensionMismatch("x, y and z must have same length"))
+        throw(DimensionMismatch("`x`, `y` and `z` must have same length"))
     idx = BitVector(map(x, y, z) do i, j, k
         isfinite(i) && isfinite(j) && isfinite(k)
     end)
@@ -141,7 +141,7 @@ function validate_input(
     y::AbstractVector{<:Number},
     z::Nothing,
 )
-    length(x) == length(y) || throw(DimensionMismatch("x and y must have same length"))
+    length(x) == length(y) || throw(DimensionMismatch("`x` and `y` must have same length"))
     idx = BitVector(map(x, y) do i, j
         isfinite(i) && isfinite(j)
     end)
@@ -185,10 +185,10 @@ function Plot(
     kw...,
 ) where {C<:Canvas}
     length(xlim) == length(ylim) == 2 ||
-        throw(ArgumentError("xlim and ylim must be tuples or vectors of length 2"))
+        throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
     height = something(height, DEFAULT_HEIGHT[])
-    width = something(width, DEFAULT_WIDTH[])
+    width  = something(width, DEFAULT_WIDTH[])
 
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
@@ -203,23 +203,16 @@ function Plot(
 
     if projection ≢ nothing  # 3D
         (xscale ≢ identity || yscale ≢ identity) &&
-            throw(ArgumentError("xscale or yscale are unsupported in 3D"))
+            throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
 
         projection isa Symbol && (projection = MVP(x, y, z; kw...))
 
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
         # should be close to using `zoom = 2`
-        mx, Mx = if xlim == (0, 0)
-            -1.0, 1.0
-        else
-            as_float(xlim)
-        end
-        my, My = if ylim == (0, 0)
-            -1.0, 1.0
-        else
-            as_float(ylim)
-        end
+        autolims(lims) = lims == (0, 0) ? (-1.0, 1.0) : as_float(lims)
+        mx, Mx = autolims(xlim)
+        my, My = autolims(ylim)
 
         grid = blend = false
     else  # 2D
@@ -267,15 +260,16 @@ function Plot(
             m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
             m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
         end
+        bc = BORDER_COLOR[]
         if xticks
             base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * m_x, color = BORDER_COLOR[])
-            label!(plot, :br, base_x_str * M_x, color = BORDER_COLOR[])
+            label!(plot, :bl, base_x_str * m_x, color = bc)
+            label!(plot, :br, base_x_str * M_x, color = bc)
         end
         if yticks
             base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = BORDER_COLOR[])
-            label!(plot, :l, 1, base_y_str * M_y, color = BORDER_COLOR[])
+            label!(plot, :l, nrows(canvas), base_y_str * m_y, color = bc)
+            label!(plot, :l, 1, base_y_str * M_y, color = bc)
         end
     end
     if grid && (xscale ≡ identity && yscale ≡ identity)
@@ -388,8 +382,9 @@ If `where` is either `:l`, or `:r`, then `row` can be between 1
 and the number of character rows of the plots canvas.
 """
 function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColorType)
-    loc ∉ (:t, :b, :l, :r, :tl, :tr, :bl, :br) &&
-        throw(ArgumentError("Unknown location: try one of these :tl :t :tr :bl :b :br"))
+    loc ∈ (:t, :b, :l, :r, :tl, :tr, :bl, :br) || throw(
+        ArgumentError("unknown location $loc: try one of these :tl :t :tr :bl :b :br"),
+    )
     if loc ≡ :l || loc == :r
         for row in 1:nrows(plot.graphics)
             if loc ≡ :l
@@ -430,7 +425,7 @@ function label!(
         plot.labels_right[row] = value
         plot.colors_right[row] = ansi_color(color)
     else
-        throw(ArgumentError("Unknown location \"$loc\", try `:l` or `:r` instead"))
+        throw(ArgumentError("unknown location $loc, try `:l` or `:r` instead"))
     end
     plot
 end
@@ -491,7 +486,7 @@ function annotate!(
     plot::Plot{<:Canvas},
     x::Number,
     y::Number,
-    text::Union{Char,AbstractString};
+    text::Union{AbstractChar,AbstractString};
     color = :normal,
     kw...,
 )
@@ -528,7 +523,7 @@ function print_title(
     left_pad::AbstractString,
     title::AbstractString,
     right_pad::AbstractString,
-    blank::Char;
+    blank::AbstractChar;
     p_width::Int = 0,
     color::UserColorType = :normal,
 )
@@ -540,7 +535,7 @@ function print_title(
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nocol(io, post_pad, right_pad)
     (
-        count("\n", title) + 1,
+        count(string('\n'), title) + 1,  # NOTE: string(...) for compat with 1.6
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
     )
 end
@@ -551,14 +546,14 @@ function print_border(
     print_color,
     loc::Symbol,
     length::Int,
-    left_pad::Union{Char,AbstractString},
-    right_pad::Union{Char,AbstractString},
+    left_pad::Union{Nothing,AbstractChar,AbstractString},
+    right_pad::Union{Nothing,AbstractChar,AbstractString},
     bmap = BORDERMAP[:solid],
     color::UserColorType = BORDER_COLOR[],
 )
-    print_nocol(io, left_pad)
+    left_pad ≡ nothing || print_nocol(io, string(left_pad))
     print_color(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
-    print_nocol(io, right_pad)
+    right_pad ≡ nothing || print_nocol(io, string(right_pad))
     nothing
 end
 
@@ -571,7 +566,7 @@ function print_labels(
     border_length,
     left_pad::AbstractString,
     right_pad::AbstractString,
-    blank::Char,
+    blank::AbstractChar,
 )
     p.labels || return 0
     bc        = BORDER_COLOR[]
@@ -644,8 +639,9 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     plot_padding = 🗷^p.padding
 
     cbar_pad = if p.cmap.bar
-        min_max_z_str = lims_repr.(p.cmap.lim)
-        cbar_max_len = maximum(length.((min_max_z_str..., no_ansi_escape(zlabel(p)))))
+        min_max_z_str =
+            map(x -> nice_repr(roundable(x) ? x : float_round_log10(x)), p.cmap.lim)
+        cbar_max_len = maximum(length, (min_max_z_str..., no_ansi_escape(zlabel(p))))
         plot_padding * 🗹^4 * plot_padding * 🗷^cbar_max_len
     else
         ""
@@ -1032,7 +1028,11 @@ function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
     elseif ext == ".png"
         FileIO.save(filename, png_image(p; kw...))
     else
-        error("`savefig` only supports writing to `txt` or `png` files")
+        throw(
+            ArgumentError(
+                "extension \"$ext\" is unsupported: `savefig` only supports writing to `txt` or `png` files",
+            ),
+        )
     end
     nothing
 end

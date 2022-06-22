@@ -40,7 +40,7 @@ end
             end
         end
 
-        @test_throws ErrorException savefig(p, tempname() * ".jpg")
+        @test_throws ArgumentError savefig(p, tempname() * ".jpg")
     end
 end
 

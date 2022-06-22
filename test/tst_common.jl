@@ -77,11 +77,11 @@ end
     @test UnicodePlots.c256(0) == 0
     @test UnicodePlots.c256(255) == 255
 
-    @test_throws ErrorException UnicodePlots.colormode!(123456789)
+    @test_throws ArgumentError UnicodePlots.colormode!(123456789)
 
     _color_mode = UnicodePlots.colormode()
-    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit
-    @test_throws ErrorException UnicodePlots.colormode()
+    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit (terminal dependent)
+    @test_throws ArgumentError UnicodePlots.colormode()
 
     UnicodePlots.colors256!()
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
@@ -195,11 +195,10 @@ end
     @test UnicodePlots.nice_repr(1 + 0.1eps()) == "1"
 end
 
-@testset "docs" begin
-    # coverage
+@testset "docs coverage" begin
+    @test UnicodePlots.default_with_type(:foo_bar) isa String
     @test UnicodePlots.arguments() isa String
     @test UnicodePlots.keywords() isa String
-    @test UnicodePlots.default_with_type(:foo_bar) isa String
 end
 
 @testset "units" begin

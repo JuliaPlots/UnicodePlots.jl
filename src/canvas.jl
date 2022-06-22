@@ -25,28 +25,34 @@ grid_type(c::Canvas) = grid_type(typeof(c))
 @inline valid_y(c::Canvas, y::Number) = origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c)
 @inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
 
-@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound for |=
+@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound [ref(1)]
 @inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)
 
-function char_point!(c::Canvas, char_x::Int, char_y::Int, char::Char, color::UserColorType)
+function char_point!(
+    c::Canvas,
+    char_x::Int,
+    char_y::Int,
+    char::AbstractChar,
+    color::UserColorType,
+)
     if checkbounds(Bool, c.grid, char_y, char_x)
         c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
-        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+        set_color!(c, char_x, char_y, ansi_color(color))
     end
     c
 end
 
 @inline function set_color!(
-    colors::Transpose{ColorType,Matrix{ColorType}},
+    c::Canvas,
     x::Int,
     y::Int,
     color::ColorType,
-    blend::Bool,
+    blend::Bool = c.blend,
 )
-    colors[y, x] = if (c = colors[y, x]) == INVALID_COLOR || !blend
+    c.colors[y, x] = if (col = c.colors[y, x]) == INVALID_COLOR || !blend
         color
     else
-        blend_colors(c, color)
+        blend_colors(col, color)
     end
     nothing
 end
@@ -70,7 +76,8 @@ points!(c::Canvas, x::Number, y::Number, color::UserColorType) =
     pixel!(c, floor(Int, scale_x_to_pixel(c, x)), floor(Int, scale_y_to_pixel(c, y)), color)
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+    length(X) == length(Y) ||
+        throw(DimensionMismatch("`X` and `Y` must be the same length"))
     for I in eachindex(X, Y)
         points!(c, X[I], Y[I], color)
     end
@@ -84,7 +91,7 @@ function points!(
     color::AbstractVector{T},
 ) where {T<:UserColorType}
     length(X) == length(Y) == length(color) ||
-        throw(DimensionMismatch("X, Y, and color must be the same length"))
+        throw(DimensionMismatch("`X`, `Y` and `color` must be the same length"))
     for i in eachindex(X)
         points!(c, X[i], Y[i], color[i])
     end
@@ -162,7 +169,8 @@ lines!(
 ) = lines!(c, x1, y1, x2, y2, color)
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+    length(X) == length(Y) ||
+        throw(DimensionMismatch("`X` and `Y` must be the same length"))
     for i in 2:length(X)
         isfinite(X[i - 1]) || continue
         isfinite(Y[i - 1]) || continue
@@ -262,7 +270,7 @@ function align_char_point(
     elseif halign ≡ :right
         char_x - (nchar - 1)
     else
-        error("Argument `halign=$halign` not supported.")
+        throw(ArgumentError("`halign=$halign` not supported"))
     end
     char_y = if valign in (:center, :vcenter)
         char_y
@@ -271,13 +279,13 @@ function align_char_point(
     elseif valign ≡ :bottom
         char_y - 1
     else
-        error("Argument `valign=$valign` not supported.")
+        throw(ArgumentError("`valign=$valign` not supported"))
     end
     char_x, char_y
 end
 
 function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
-    # when hitting right boundary with canvases capable of encoding more than 1 pixel per char
+    # when hitting boundaries with canvases capable of encoding more than 1 pixel per char (see ref(1))
     pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
     pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
     (
@@ -318,7 +326,13 @@ function annotate!(
     c
 end
 
-function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
+function annotate!(
+    c::Canvas,
+    x::Number,
+    y::Number,
+    text::AbstractChar,
+    color::UserColorType,
+)
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
@@ -338,7 +352,7 @@ function print_colorbar_row(
     plot_padding,
     zlabel,
     max_len,
-    blank::Char,
+    blank::AbstractChar,
 )
     b = BORDERMAP[cmap.border]
     bc = BORDER_COLOR[]

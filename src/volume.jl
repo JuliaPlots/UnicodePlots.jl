@@ -173,7 +173,7 @@ function view_matrix(center, distance, elevation, azimuth, up)
     elseif up_axis ≡ :z
         2
     else
-        throw(ArgumentError("up=$up not understood"))
+        throw(ArgumentError("up vector $up_str not understood"))
     end
     # we support :x -> +x, :px -> +x or :mx -> -x
     up_vector = circshift(

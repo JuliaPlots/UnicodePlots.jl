@@ -67,10 +67,8 @@ function barplot(
     kw...,
 )
     length(text) == length(heights) ||
-        throw(DimensionMismatch("The given vectors must be of the same length"))
-    minimum(heights) ≥ 0 || throw(
-        ArgumentError("All values have to be positive. Negative bars are not supported."),
-    )
+        throw(DimensionMismatch("the given vectors must be of the same length"))
+    minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))
 
     if any('\n' in t for t in text)
         _text = eltype(text)[]
@@ -132,8 +130,8 @@ function barplot!(
     name::AbstractString = KEYWORDS.name,
 )
     length(text) == length(heights) ||
-        throw(DimensionMismatch("The given vectors must be of the same length"))
-    isempty(text) && throw(ArgumentError("Can't append empty array to barplot"))
+        throw(DimensionMismatch("the given vectors must be of the same length"))
+    isempty(text) && throw(ArgumentError("can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
     for i in eachindex(heights)

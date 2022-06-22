@@ -3,37 +3,28 @@
     test_ref("boxplot/default.txt", @show_col(p))
     p = @inferred boxplot("series1", [1, 2, 3, 4, 5])
     test_ref("boxplot/default_name.txt", @show_col(p))
-    p = @inferred boxplot(
-        "series1",
-        [1, 2, 3, 4, 5],
-        title = "Test",
-        xlim = (-1, 8),
-        color = :blue,
-        width = 50,
-        border = :solid,
-        xlabel = "foo",
-    )
-    test_ref("boxplot/default_parameters.txt", @show_col(p))
-    p = @inferred boxplot(
-        "series1",
-        [1, 2, 3, 4, 5],
-        title = "Test",
-        xlim = [-1, 8],
-        color = :blue,
-        width = 50,
-        border = :solid,
-        xlabel = "foo",
-    )
-    test_ref("boxplot/default_parameters.txt", @show_col(p))
-    test_ref("boxplot/default_parameters_nocolor.txt", @show_nocol(p))
+    for xlim in ([-1, 8], (-1, 8))
+        p = @inferred boxplot(
+            "series1",
+            [1, 2, 3, 4, 5],
+            title = "Test",
+            xlim = xlim,
+            color = :blue,
+            width = 50,
+            border = :solid,
+            xlabel = "foo",
+        )
+        test_ref("boxplot/default_parameters.txt", @show_col(p))
+        test_ref("boxplot/default_parameters_nocolor.txt", @show_nocol(p))
+    end
 end
 
 @testset "scaling" begin
     for (i, max_x) in enumerate([5, 6, 10, 20, 40])
-        p = @inferred boxplot([1, 2, 3, 4, 5], xlim = (0, max_x))
-        test_ref("boxplot/scale$i.txt", @show_col(p))
-        p = @inferred boxplot([1, 2, 3, 4, 5], xlim = [0, max_x])
-        test_ref("boxplot/scale$i.txt", @show_col(p))
+        for xlim in ((0, max_x), [0, max_x])
+            p = @inferred boxplot([1, 2, 3, 4, 5], xlim = xlim)
+            test_ref("boxplot/scale$i.txt", @show_col(p))
+        end
     end
 end
 

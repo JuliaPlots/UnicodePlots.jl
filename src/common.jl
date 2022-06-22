@@ -164,7 +164,7 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
-const MarkerType = Union{Symbol,Char,AbstractString}
+const MarkerType = Union{Symbol,AbstractChar,AbstractString}
 const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
 const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
@@ -190,7 +190,7 @@ colormode() =
     elseif cm ≡ Crayons.COLORS_24BIT
         24
     else
-        error("Unsupported color mode=$cm.")
+        throw(ArgumentError("color mode $cm is unsupported"))
     end
 
 colors256!() = COLORMODE[] = Crayons.COLORS_256
@@ -202,7 +202,7 @@ function colormode!(mode)
     elseif mode ≡ 24
         truecolors!()
     else
-        error("Unsupported color mode=$mode, choose 8 or 24.")
+        throw(ArgumentError("color mode $mode is unsupported, choose 8 or 24"))
     end
     nothing
 end
@@ -278,11 +278,9 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-lims_repr(x::Number) = nice_repr(roundable(x) ? x : float_round_log10(x))
-
+nice_repr(x::Integer) = string(x)
 nice_repr(x::AbstractFloat) =
     compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
-nice_repr(x::Integer) = string(x)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))

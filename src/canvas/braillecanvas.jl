@@ -43,8 +43,8 @@ function BrailleCanvas(
     yscale::Union{Symbol,Function} = :identity,
     xscale::Union{Symbol,Function} = :identity,
 )
-    width > 0 || throw(ArgumentError("`width` has to be positive"))
     height > 0 || throw(ArgumentError("`height` has to be positive"))
+    width > 0 || throw(ArgumentError("`width` has to be positive"))
     char_height  = max(char_height, 2)
     char_width   = max(char_width, 5)
     pixel_height = char_height * y_pixel_per_char(BrailleCanvas)
@@ -75,13 +75,13 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
         if BLANK_BRAILLE ≤ (val = c.grid[char_y, char_x]) ≤ FULL_BRAILLE
             c.grid[char_y, char_x] = val | BRAILLE_SIGNS[char_y_off, char_x_off]
         end
-        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+        set_color!(c, char_x, char_y, ansi_color(color))
     end
     c
 end
 
 function print_row(io::IO, _, print_color, c::BrailleCanvas, row::Int)
-    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     for col in 1:ncols(c)
         print_color(io, c.colors[row, col], Char(c.grid[row, col]))
     end

@@ -38,8 +38,8 @@ function DensityCanvas(
     xscale::Union{Symbol,Function} = :identity,
     dscale::Union{Symbol,Function} = :identity,
 )
-    height > 0 || throw(ArgumentError("height has to be positive"))
-    width > 0 || throw(ArgumentError("width has to be positive"))
+    height > 0 || throw(ArgumentError("`height` has to be positive"))
+    width > 0 || throw(ArgumentError("`width` has to be positive"))
     char_height  = max(char_height, 5)
     char_width   = max(char_width, 5)
     pixel_height = char_height * y_pixel_per_char(DensityCanvas)
@@ -70,18 +70,18 @@ function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
     if checkbounds(Bool, c.grid, char_y, char_x)
         cnt = c.grid[char_y, char_x] += 1  # count occurrences
-        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
+        set_color!(c, char_x, char_y, ansi_color(color))
     end
     c
 end
 
 function preprocess!(c::DensityCanvas)
-    c.max_density[] = max(eps(), maximum(c.dscale.(c.grid)))
+    c.max_density[] = max(eps(), maximum(c.dscale, c.grid))
     c -> c.max_density[] = -Inf
 end
 
 function print_row(io::IO, _, print_color, c::DensityCanvas, row::Int)
-    0 < row ≤ nrows(c) || throw(ArgumentError("Argument row out of bounds: $row"))
+    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     signs = DEN_SIGNS[]
     fact = (length(signs) - 1) / c.max_density[]
     for col in 1:ncols(c)

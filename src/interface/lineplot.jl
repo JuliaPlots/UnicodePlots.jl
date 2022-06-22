@@ -92,7 +92,7 @@ function lineplot!(
     name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if col_vec
         length(x) == length(y) == length(color) ||
-            throw(ArgumentError("Invalid color vector"))
+            throw(ArgumentError("`x`, `y` and `color` must be the same length"))
         for i in eachindex(color)
             lines!(plot, x[i], y[i], z ≡ nothing ? z : z[i], color[i])
         end
@@ -124,6 +124,7 @@ end
 lineplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
     lineplot!(plot, axes(y, 1), y; kw...)
 
+# ---------------------------------------------------------------------------- #
 # multiple series
 function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
     series = axes(y, 2)
@@ -142,6 +143,7 @@ function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
     plot
 end
 
+# ---------------------------------------------------------------------------- #
 # date time
 function lineplot(
     x::AbstractVector{D},
@@ -166,6 +168,7 @@ function lineplot!(
     lineplot!(plot, d, y; kw...)
 end
 
+# ---------------------------------------------------------------------------- #
 # Unitful
 function lineplot(
     x::AbstractVector{<:RealOrRealQuantity},
@@ -194,6 +197,7 @@ lineplot!(
     kw...,
 ) = lineplot!(plot, ustrip.(x), ustrip.(y); kw...)
 
+# ---------------------------------------------------------------------------- #
 # slope and intercept
 function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...)
     xmin = origin_x(plot.graphics)
@@ -208,7 +212,8 @@ function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...
     )
 end
 
-# plotting a function
+# ---------------------------------------------------------------------------- #
+# functions
 function lineplot(
     f::Function,
     x::AbstractVector;
@@ -261,7 +266,8 @@ function lineplot!(
     lineplot!(plot, f, x; kw...)
 end
 
-# plotting vector of functions
+# ---------------------------------------------------------------------------- #
+# vector of functions
 lineplot(F::AbstractVector{<:Function}; kw...) = lineplot(F, -10, 10; kw...)
 
 lineplot(F::AbstractVector{<:Function}, startx::Number, endx::Number; kw...) =
@@ -271,20 +277,20 @@ lineplot(F::AbstractVector{<:Function}, x::AbstractVector; kw...) = _lineplot(F,
 
 function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name = "", kw...)
     n = length(F)
-    n > 0 || throw(ArgumentError("Can not plot empty array of functions"))
+    n > 0 || throw(ArgumentError("cannot plot empty array of functions"))
     color_is_vec = color isa AbstractVector
     name_is_vec  = name isa AbstractVector
     color_is_vec && (
         length(color) == n || throw(
             DimensionMismatch(
-                "\"color\" must be a symbol or same length as the function vector",
+                "`color` must be a symbol or same length as the function vector",
             ),
         )
     )
     name_is_vec && (
         length(name) == n || throw(
             DimensionMismatch(
-                "\"name\" must be a string or same length as the function vector",
+                "`name` must be a string or same length as the function vector",
             ),
         )
     )

@@ -26,7 +26,7 @@ end
     # UnicodePlots.jl/issues/226
     # identity: only peaks appear (data is hidden)
     # sqrt: we start to see underlying data
-    # x -> log(1 + x): start to see the 2D-normal law profile
+    # x -> log(1 + x): start to see the 2D normal law profile
     # x -> x / (x + 1): peak hidden
     for (dscale, name) in (
         (identity, "identity"),

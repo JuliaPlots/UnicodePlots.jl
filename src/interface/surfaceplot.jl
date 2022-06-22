@@ -123,7 +123,7 @@ function surfaceplot!(
     zlim = KEYWORDS.zlim,
 )
     length(X) == length(Y) == length(Z) == length(H) ||
-        throw(DimensionMismatch("X, Y, Z and H must have same length"))
+        throw(DimensionMismatch("`X`, `Y`, `Z` and `H` must have same length"))
 
     cmapped = color ≡ nothing
     color = color ≡ :auto ? next_color!(plot) : color

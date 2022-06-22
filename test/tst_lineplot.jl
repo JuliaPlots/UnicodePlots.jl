@@ -113,39 +113,28 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, color = [:red])
-    p = @binf lineplot(
-        [sin, cos],
-        -0.5,
-        3,
-        name = ["s", "c"],
-        color = [:red, :yellow],
-        title = "Funs",
-        ylabel = "f",
-        xlabel = "num",
-        xlim = (-0.5, 2.5),
-        ylim = (-0.9, 1.2),
-    )
-    test_ref("lineplot/sincos_parameters.txt", @show_col(p))
-    p = @binf lineplot(
-        [sin, cos],
-        -0.5,
-        3,
-        name = ["s", "c"],
-        color = [:red, :yellow],
-        title = "Funs",
-        ylabel = "f",
-        xlabel = "num",
-        xlim = [-0.5, 2.5],
-        ylim = [-0.9, 1.2],
-    )
-    test_ref("lineplot/sincos_parameters.txt", @show_col(p))
+    for (xlim, ylim) in zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
+        p = @binf lineplot(
+            [sin, cos],
+            -0.5,
+            3,
+            name = ["s", "c"],
+            color = [:red, :yellow],
+            title = "Funs",
+            ylabel = "f",
+            xlabel = "num",
+            xlim = (-0.5, 2.5),
+            ylim = (-0.9, 1.2),
+        )
+        test_ref("lineplot/sincos_parameters.txt", @show_col(p))
+    end
 end
 
 @testset "keyword arguments" begin
-    p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
-    test_ref("lineplot/limits.txt", @show_col(p))
-    p = @binf lineplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
-    test_ref("lineplot/limits.txt", @show_col(p))
+    for (xlim, ylim) in zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
+        p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+        test_ref("lineplot/limits.txt", @show_col(p))
+    end
 
     p = @binf lineplot(x, y, grid = false)
     test_ref("lineplot/nogrid.txt", @show_col(p))
@@ -181,9 +170,7 @@ end
     sy = [1, 3, 4, 2, 7]
 
     p = @binf stairs(sx, sy, style = :pre)
-    @test p isa Plot
     test_ref("lineplot/stairs_pre.txt", @show_col(p))
-
     p = @binf stairs(sx, sy)
     test_ref("lineplot/stairs_post.txt", @show_col(p))
     p = @binf stairs(sx, sy, style = :post)
@@ -232,7 +219,7 @@ end
         savefig(lineplot(x, ys, ylim = extrema(ys), labels = false), tmp; color = true)
         test_ref(tmp, @show_col(lineplot(x, y, yscale = s, labels = false)))
 
-        # xscale and yscale
+        # xscale & yscale
         savefig(
             lineplot(xs, ys, xlim = extrema(xs), ylim = extrema(xs), labels = false),
             tmp;
@@ -240,7 +227,7 @@ end
         )
         test_ref(tmp, @show_col(lineplot(x, y, xscale = s, yscale = s, labels = false)))
 
-        # scale labels
+        # xscale & yscale & labels
         test_ref(
             "lineplot/$(s)_scale.txt",
             @show_col(lineplot(x, y, xscale = s, yscale = s))

@@ -123,7 +123,7 @@ function heatmap(
     end
     if zlim != (0, 0)
         has_extrema ||
-            throw(ArgumentError("zlim cannot be set when the element type is $T"))
+            throw(ArgumentError("`zlim` cannot be set when the element type is $T"))
         minz, maxz = zlim
     end
 
