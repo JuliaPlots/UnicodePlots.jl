@@ -135,7 +135,13 @@ end
     test_ref("scatterplot/matrix_auto.txt", @show_col(p))
 
     for name in (["1", "2"], ["1" "2"])
-        p = scatterplot(x, y1; name = name)
+        p = scatterplot(
+            x,
+            y1;
+            name = name,
+            color = [:red :green],
+            marker = [:utriangle :rect],
+        )
         scatterplot!(
             p,
             x,

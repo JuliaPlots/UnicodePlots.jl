@@ -148,7 +148,8 @@ function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
         y[:, begin];
         ylim = extrema(y),
         name = first(names),
-        filter(a -> a.first ≢ :name, kw)...,
+        color = first(colors),
+        filter(a -> a.first ∉ (:name, :color), kw)...,
     )
     for (i, (name, color, ys)) in enumerate(zip(names, colors, eachcol(y)))
         i == 1 && continue
@@ -324,5 +325,70 @@ function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name =
         tname  = name_is_vec ? name[i] : name
         lineplot!(plot, F[i], args...; color = tcolor, name = tname)
     end
+    plot
+end
+
+# ---------------------------------------------------------------------------- #
+# helpers
+
+"""
+    vline!(plot::Plot{<:Canvas}, x::Number, y::Union{AbstractVector{<:Number},Nothing} = nothing; kw...)
+
+Draws a vertical line at position `x` (and optional `y` values).
+"""
+function vline!(
+    plot::Plot{<:Canvas},
+    x::Number,
+    y::Union{AbstractVector{<:Number},Nothing} = nothing;
+    kw...,
+)
+    o = origin_y(plot.graphics)
+    ys = something(y, range(o, o + height(plot.graphics); length = nrows(plot.graphics)))
+    lineplot!(plot, fill(x, length(ys)), ys; kw...)
+end
+
+"""
+    vline!(plot::Plot{<:Canvas}, x::AbstractVector{<:Number}, y::Union{AbstractVector{<:Number},Nothing} = nothing; kw...)
+
+Draws vertical lines at positions given in `x` (and optional `y` values).
+"""
+function vline!(
+    plot::Plot{<:Canvas},
+    x::AbstractVector{<:Number},
+    y::Union{AbstractVector{<:Number},Nothing} = nothing;
+    kw...,
+)
+    map(v -> vline!(plot, v, y; kw...), x)
+    plot
+end
+
+"""
+    hline!(plot::Plot{<:Canvas}, y::Number, x::Union{AbstractVector{<:Number},Nothing} = nothing; kw...)
+
+Draws an horizontal line at position `y` (and optional `x` values).
+"""
+function hline!(
+    plot::Plot{<:Canvas},
+    y::Number,
+    x::Union{AbstractVector{<:Number},Nothing} = nothing;
+    kw...,
+)
+    o = origin_x(plot.graphics)
+    xs = something(x, range(o, o + width(plot.graphics); length = ncols(plot.graphics)))
+    lineplot!(plot, xs, fill(y, length(xs)); kw...)
+end
+
+"""
+    hline!(plot::Plot{<:Canvas}, y::AbstractVector{<:Number}, x::Union{AbstractVector{<:Number},Nothing} = nothing; kw...)
+
+Draws horizontal lines at positions given in `y` (and optional `x` values).
+"""
+function hline!(
+    plot::Plot{<:Canvas},
+    y::AbstractVector{<:Number},
+    x::Union{AbstractVector{<:Number},Nothing} = nothing;
+    kw...,
+)
+    map(v -> hline!(plot, v, x; kw...), y)
     plot
 end

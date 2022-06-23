@@ -114,7 +114,9 @@ function scatterplot(x::AbstractVector, y::AbstractMatrix; kw...)
         y[:, begin];
         ylim = extrema(y),
         name = first(names),
-        filter(a -> a.first ≢ :name, kw)...,
+        color = first(colors),
+        marker = first(markers),
+        filter(a -> a.first ∉ (:name, :color, :marker), kw)...,
     )
     for (i, (name, color, marker, ys)) in enumerate(zip(names, colors, markers, eachcol(y)))
         i == 1 && continue

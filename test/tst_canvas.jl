@@ -20,18 +20,19 @@ end
             @test T <: Canvas
             c = T(15, 30; origin_y = -1.5, origin_x = -1, height = 3, width = 2)
             @test @inferred(size(c)) ≡ (3.0, 2.0)
-            @test @inferred(height(c)) ≡ 3.0
-            @test @inferred(width(c)) ≡ 2.0
-            @test @inferred(origin_y(c)) ≡ -1.5
-            @test @inferred(origin_x(c)) ≡ -1.0
-            @test @inferred(origin(c)) ≡ (-1.0, -1.5)
             @test @inferred(nrows(c)) ≡ (T == HeatmapCanvas ? 8 : 15)
             @test @inferred(ncols(c)) ≡ 30
+            @test @inferred(UnicodePlots.height(c)) ≡ 3.0
+            @test @inferred(UnicodePlots.width(c)) ≡ 2.0
+            @test @inferred(UnicodePlots.origin_y(c)) ≡ -1.5
+            @test @inferred(UnicodePlots.origin_x(c)) ≡ -1.0
+            @test @inferred(UnicodePlots.origin(c)) ≡ (-1.0, -1.5)
             @test @inferred(UnicodePlots.y_pixel_per_char(T)) ≡ yres
             @test @inferred(UnicodePlots.x_pixel_per_char(T)) ≡ xres
-            @test @inferred(pixel_height(c)) ≡ 15yres
-            @test @inferred(pixel_width(c)) ≡ 30xres
-            @test @inferred(pixel_size(c)) ≡ (pixel_height(c), pixel_width(c))
+            @test @inferred(UnicodePlots.pixel_height(c)) ≡ 15yres
+            @test @inferred(UnicodePlots.pixel_width(c)) ≡ 30xres
+            @test @inferred(UnicodePlots.pixel_size(c)) ≡
+                  (UnicodePlots.pixel_height(c), UnicodePlots.pixel_width(c))
             if T <: UnicodePlots.LookupCanvas  # coverage
                 @test length(UnicodePlots.lookup_encode(c)) > 0
                 @test length(UnicodePlots.lookup_decode(c)) > 0
@@ -71,12 +72,14 @@ end
             lines!(c, 0.0, 0.0, 0.9, 9999.0, :yellow)
             lines!(c, 0, 0, 1, 1, color = :blue)
             lines!(c, 0.1, 0.7, 0.9, 0.6, :red)
+
             postprocess! = preprocess!(c)
             test_ref(
                 "canvas/$(str)_print_row.txt",
                 @io2str(print_row(IOContext(::IO, :color => true), c, 3))
             )
             postprocess!(c)
+
             test_ref("canvas/$(str)_print.txt", @print_col(c))
             test_ref("canvas/$(str)_print_nocolor.txt", @print_nocol(c))
             test_ref("canvas/$(str)_show.txt", @show_col(c))
@@ -85,14 +88,14 @@ end
     end
 end
 
-vline!(c, m, M, x, col) = lines!(c, x, m, x, M, col)
-hline!(c, m, M, y, col) = lines!(c, m, y, M, y, col)
+vert_line!(c, m, M, x, col) = lines!(c, x, m, x, M, col)
+horz_line!(c, m, M, y, col) = lines!(c, m, y, M, y, col)
 
 @testset "color mixing (4bit)" begin
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vline!, hline!)
+    for line in (vert_line!, horz_line!)
         line(c, m, M, 0.0, :dark_gray)
         line(c, m, M, 0.2, :light_red)
         line(c, m, M, 0.4, :light_green)
@@ -110,7 +113,7 @@ end
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vline!, hline!)
+    for line in (vert_line!, horz_line!)
         line(c, m, M, 0.0, 8)
         line(c, m, M, 0.2, 9)
         line(c, m, M, 0.4, 10)
@@ -128,7 +131,7 @@ end
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vline!, hline!)
+    for line in (vert_line!, horz_line!)
         line(c, m, M, 0.0, (0, 0, 0))
         line(c, m, M, 0.2, (255, 0, 0))
         line(c, m, M, 0.4, (0, 255, 0))

@@ -1,13 +1,18 @@
 using UnicodePlots, Test
 
+import UnicodePlots: lines!, points!, pixel!, nrows, ncols
+import UnicodePlots: print_row, preprocess!, addrow!
+
 # Incorrect usage of LazyModules could easily bring up world age issues. We need to test
 # this before loading all other test dependencies -- because otherwise potential world age
 # issues get automatically resolved.
 include("tst_world_age.jl")
 
-using Dates: Date, Day
-using ReferenceTests
+import Dates: Date, Day
 import Random: seed!
+import FileIO
+
+using ReferenceTests
 using LinearAlgebra
 using TimerOutputs
 using ColorTypes
@@ -15,7 +20,6 @@ using StableRNGs
 using StatsBase
 using Crayons
 using Unitful
-import FileIO
 
 include("fixes.jl")
 
@@ -91,9 +95,9 @@ macro timeit_include(path::AbstractString)
     end) |> esc
 end
 
-println("\n== START: TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
+println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
 
-withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
     @timeit_include "tst_depwarn.jl"
     @timeit_include "tst_issues.jl"
@@ -120,4 +124,4 @@ end
 # ~ 166s & 15.0GiB on 1.7
 print_timer(TO; compact = true, sortby = :firstexec)
 
-println("== END: TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==")
+println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

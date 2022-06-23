@@ -288,8 +288,18 @@ end
     test_ref("lineplot/matrix_auto.txt", @show_col(p))
 
     for name in (["1", "2", "3"], ["1" "2" "3"])
-        p = lineplot(x, y1; name = name)
+        p = lineplot(x, y1; name = name, color = [:red :green :blue])
         lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
         test_ref("lineplot/matrix_parameters.txt", @show_col(p))
     end
+end
+
+@testset "hline - vline" begin
+    p = Plot([NaN], [NaN]; xlim = (0, 8), ylim = (0, 8))
+    vline!(p, [2, 6], [2, 6], color = :red)
+    hline!(p, [2, 6], [2, 6], color = :white)
+
+    hline!(p, 7)
+    vline!(p, 1)
+    test_ref("lineplot/hvline.txt", @show_col(p))
 end

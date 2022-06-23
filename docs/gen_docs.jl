@@ -4,51 +4,54 @@ using Term
 import Markdown: MD, Paragraph, plain
 
 main() = begin
-  warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/generate_docs.jl instead"
+  warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/gen_docs.jl instead"
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "2.10"
 
   exs = (
     lineplot1 = ("Basic Canvas", """
       using UnicodePlots
-      plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
-                     title="Example Plot", name="my line", xlabel="x", ylabel="y")
+      lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example", name="my line", xlabel="x", ylabel="y")
       """),
     lineplot2 = ("Basic Canvas", """
-      lineplot([-1, 2, 3, 7], [-1, 2, 9, 4],
-               title="Example Plot", name="my line",
-               xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
+      plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example", name="my line",
+                     xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
-    lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name=\"other line\")"),
+    lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:cyan, name=\"other line\")"),
     scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\")"),
-    scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln)"),
-    scatterplot3 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:ln, unicode_exponent=false)"),
+    scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10)"),
+    scatterplot3 = ("Scatterplot", "scatterplot(1:4, 1:4, xscale=:log10, yscale=:ln, unicode_exponent=false, height=6)"),
     scatterplot4 = ("Scatterplot", """
-      scatterplot([1, 2, 3], [3, 4, 1],
-                  marker=[:circle, '', "∫"], color=[:red, nothing, :yellow])
+      scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '', "∫"],
+                  color=[:cyan, nothing, :yellow], height=2)
       """),
     lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
     lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
-    lineplot7 = ("Lineplot", """
+    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color = [:green :red :yellow :cyan])"),
+    lineplot8 = ("Lineplot", """
       using Unitful
-      a = 1u"m/s^2"
-      t = (0:100) * u"s"
-      lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed")
+      a, t = 1u"m/s^2", (0:100) * u"s"
+      lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
       """),
+    lineplot9 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
+    lineplot10 = ("Lineplot", """
+      p = Plot([NaN], [NaN]; xlim = (0, 8), ylim = (0, 8))
+      vline!(p, [2, 6], [2, 6], color=:red)
+      hline!(p, [2, 6], [2, 6], color=:white)
+      hline!(p, 7, color=:cyan)
+      vline!(p, 1, color=:yellow)
+    """),
     stairs1 = ("Staircase", """
-      # supported style are :pre and :post
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
-             color=:red, style=:post, title="My Staircase Plot")
-      """),
+             color=:yellow, style=:post, height=6, title="Staircase")
+    """),
     barplot1 = ("Barplot", """
-      barplot(["Paris", "New York", "Moskau", "Madrid"],
-              [2.244, 8.406, 11.92, 3.165],
-              title="Population")
+      barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165], title="Population")
       """),
     histogram1 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:left)"),
     histogram2 = ("Histogram", "histogram(randn(1_000) .* .1, nbins=15, closed=:right, xscale=:log10)"),
-    histogram3 = ("Histogram", "histogram(randn(100_000) .* .1, nbins=60, vertical=true)"),
+    histogram3 = ("Histogram", "histogram(randn(100_000) .* .1, nbins=60, vertical=true, height=10)"),
     boxplot1 = ("Boxplot", "boxplot([1, 3, 3, 4, 6, 10])"),
     boxplot2 = ("Boxplot", """
       boxplot(["one", "two"],
@@ -108,40 +111,51 @@ main() = begin
       plt
       """),
     canvas = ("Canvas", """
+      import UnicodePlots: lines!, points!, pixel!
       canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
                              origin_y=0., origin_x=0.,  # position in virtual space
                              height=1., width=1.)       # size of the virtual space
-      lines!(canvas, 0., 0., 1., 1., :blue)             # virtual space
+      lines!(canvas, 0., 0., 1., 1., :cyan)             # virtual space
       points!(canvas, rand(50), rand(50), :red)         # virtual space
       lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
       pixel!(canvas, 5, 8, :red)                        # pixel space
       Plot(canvas)
       """),
     blending = ("Blending", """
+      import UnicodePlots: lines!, points!, pixel!
       canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
-      lines!(canvas, 0., 0., 1., 1., :blue)
+      lines!(canvas, 0., 0., 1., 1., :cyan)
       lines!(canvas, .25, 1., .5, 0., :yellow)
       lines!(canvas, .2, .8, 1., 0., :red)
       Plot(canvas)
       """),
-    axes_buffer_convention = ("Axes", """
-      kw = (; xlim=(1, 10), ylim=(1, 10), title="internal buffer conventions", width=80, height=30)
-      p = lineplot(range(1, 10; length=20), fill(1, 20), head_tail=:head, color=:red, name="x-axis"; kw...)
-      lineplot!(p, fill(1, 20), range(1, 10; length=20), head_tail=:head, color=:green, name="y-axis")
+    buffer_convention = ("Axes", """
+      p = Plot([NaN], [NaN]; xlim=(1, 10), ylim=(1, 10), title="internal buffer conventions")
 
-      lineplot!(p, range(3, 8; length=20), [fill(3, 20) fill(8, 20)], color=:blue, name=["internal buffer" ""])
-      lineplot!(p, fill(3, 20), range(3, 8; length=20), color=:blue)
-      lineplot!(p, fill(8, 20), range(3, 8; length=20), color=:blue)
+      # plot axes
+      hline!(p, 1, head_tail=:head, color=:red, name="x-axis (rows)")
+      vline!(p, 1, head_tail=:head, color=:green, name="y-axis (cols)")
 
-      lineplot!(p, fill(4, 20), range(4, 7; length=20), head_tail=:tail, color=:light_green, name="y-buffer")
-      lineplot!(p, range(4, 7; length=20), fill(7, 20), head_tail=:head, color=:light_red, name="x-buffer")
+      # square
+      vline!(p, 2, [2, 9], color=:cyan, name="buf[y, x] - buf[row, col]")
+      vline!(p, [2, 9], [2, 9], color=:cyan)
+      hline!(p, [2, 9], [2, 9], color=:cyan)
+
+      # internal axes
+      vline!(p, 3, range(3, 8; length=20), head_tail=:tail, color=:light_green, name="y-buffer (rows)")
+      hline!(p, 8, range(3, 8; length=20), head_tail=:head, color=:light_red, name="x-buffer (cols)")
+
+      vline!(p, 4, [4, 7], color=:yellow, name="memory layout")
+      vline!(p, 7, [4, 7], color=:yellow)
+      hline!(p, [4, 7], [4, 7], color=:yellow)
+      hline!(p, [4.5, 5, 5.5, 6], [4.5, 6.5], color=:yellow)
       """),
   )
 
   plain_md_par(x) = x |> Paragraph |> MD |> plain
 
   examples = NamedTuple{keys(exs)}(
-    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"500\"><br>") for (k, e) in pairs(exs))
+    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"450\"><br>") for (k, e) in pairs(exs))
   )
 
   tab = ' '^2
@@ -256,7 +270,7 @@ main() = begin
   The following snippet:
   ```bash
   \$ cd docs
-  \$ julia generate_docs.jl
+  \$ julia gen_docs.jl
   \$ (cd imgs; julia gen_imgs.jl)
   ```
   will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
@@ -307,7 +321,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   $(examples.lineplot2)
 
-  Some plot methods have a mutating variant that ends with a exclamation mark:
+  Some plot methods have a mutating variant that ends with an exclamation mark:
 
   $(examples.lineplot3)
 
@@ -315,7 +329,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
 
-  You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on `Plot` creation.
+  You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 </details>
 
 <details open>
@@ -352,13 +366,22 @@ Here is a list of the main high-level functions for common scenarios:
 
   $(examples.lineplot6)
 
-  Physical units are supported through `Unitful`:
+  Plotting multiple series is supported by providing an `AbstractMatrix` for the `y` argument, with the individual series corresponding to the columns of the `Matrix`. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
 
   $(examples.lineplot7)
 
-  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length.
+  Physical units are supported through `Unitful`:
 
-  Plotting multiple series is supported by providing an `AbstractMatrix` for the `y` argument, with the individual series corresponding to the columns of the `Matrix`. You can label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" series2", ...]`
+  $(examples.lineplot8)
+
+  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
+
+  $(examples.lineplot9)
+
+  `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
+
+  $(examples.lineplot10)
+
 </details>
 
 <details open>
@@ -561,10 +584,10 @@ Here is a list of the main high-level functions for common scenarios:
 <details>
   $(summary("Developer notes"))
 
-  Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]`.
+  Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]` or `buf[y, x]`.
   Common users of UnicodePlots don't need to be aware of this axis difference if sticking to public interface.
 
-  $(examples.axes_buffer_convention)
+  $(examples.buffer_convention)
 
 <details>
   $(summary("Documentation update"))
@@ -591,7 +614,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       rng = StableRNG(1337)
       default_size!(height=10)
 
-      panel(plt; kw...) = Panel(string(plt, color=true); fit=true, style="(180, 180, 180)", kw...)
+      panel(x; kw...) = Panel(x isa Plot ? string(x, color=true) : x; fit=true, style="(180, 180, 180)", kw...)
 
       panels = (
         line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot"),
@@ -620,7 +643,11 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         else
           readchomp(`xdotool getactivewindow`)
         end
-        run(`import -window \$win -quality 100 $ver/banner.jpg`)
+        tmp = tempname()
+        # 95%x100% => remove the right scrollbar (run in a big terminal window)
+        run(`import -window \$win -gravity West -crop 95%x100%+0+0 -trim -quality 100 \$tmp.miff`)
+        # FIXME: export to `jpg` format, since we have an issue with rendering this `png` on github
+        run(`convert -bordercolor '#2e3336' -border 4 -quality 100 \$tmp.miff $ver/banner.jpg`)
         cursor_show(stdout)
       else
         print(stdout, g)
@@ -634,6 +661,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
     println(io, """
       # $warn
       using UnicodePlots, StableRNGs, SparseArrays, Unitful, Term
+      import UnicodePlots: lines!, points!, pixel!
 
       # UnicodePlots.brightcolors!()
 
@@ -674,7 +702,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
   write(stdout, readme)
   open("../README.md", "w") do io
-    write(io, "<!-- $warn, and run \$ julia generate_docs.jl to render README.md !! -->\n")
+    write(io, "<!-- $warn, and run \$ julia gen_docs.jl to render README.md !! -->\n")
     write(io, readme)
   end
   return
