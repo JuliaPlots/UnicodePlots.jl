@@ -91,9 +91,10 @@ macro timeit_include(path::AbstractString)
     end) |> esc
 end
 
+println("\n== START: TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
+
 withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
-    println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     @timeit_include "tst_depwarn.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
@@ -118,3 +119,5 @@ end
 
 # ~ 166s & 15.0GiB on 1.7
 print_timer(TO; compact = true, sortby = :firstexec)
+
+println("== END: TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==")

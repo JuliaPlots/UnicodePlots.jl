@@ -199,7 +199,7 @@ const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # f
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
-const CRAYONS_FAST = Ref(false)
+const CRAYONS_FAST = Ref(true)
 const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
@@ -283,7 +283,7 @@ function char_marker(marker::MarkerType)::Char
     end
 end
 
-iterable(obj::AbstractVector) = obj
+iterable(obj::AbstractVecOrMat) = obj
 iterable(obj) = Iterators.repeated(obj)
 
 function transform_name(tr, basename = "")
@@ -539,6 +539,12 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
+
+multiple_series_defaults(y::AbstractMatrix, kw, start) = (
+    iterable(get(kw, :name, map(i -> "y$i", start:(start + size(y, 2))))),
+    iterable(get(kw, :color, :auto)),
+    iterable(get(kw, :marker, :pixel)),
+)
 
 function colormap_callback(cmap::Symbol)
     cdata = getfield(ColorSchemes, cmap)

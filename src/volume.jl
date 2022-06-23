@@ -272,10 +272,10 @@ struct MVP{E,T}
     end
 end
 
-is_enabled(::MVP{Val{false}}) = false
-is_enabled(::MVP{Val{true}}) = true
+@inline is_enabled(::MVP{Val{false}}) = false
+@inline is_enabled(::MVP{Val{true}}) = true
 
-function transform_matrix(t::MVP{E,T}, n::Symbol)::SMatrix{4,4,T} where {E,T}
+@inline transform_matrix(t::MVP, n::Symbol) =
     if n ≡ :user
         t.mvp_mat
     elseif n ≡ :orthographic
@@ -283,9 +283,8 @@ function transform_matrix(t::MVP{E,T}, n::Symbol)::SMatrix{4,4,T} where {E,T}
     elseif n ≡ :perspective
         t.mvp_persp_mat
     end
-end
 
-function is_ortho(t::MVP, n::Symbol)::Bool
+@inline is_ortho(t::MVP, n::Symbol) =
     if n ≡ :user
         t.ortho
     elseif n ≡ :orthographic
@@ -293,7 +292,6 @@ function is_ortho(t::MVP, n::Symbol)::Bool
     elseif n ≡ :perspective
         false
     end
-end
 
 "transform a matrix of points, with allocation"
 function (tr::MVP{E,T})(p::AbstractMatrix, n::Symbol = :user) where {E,T}

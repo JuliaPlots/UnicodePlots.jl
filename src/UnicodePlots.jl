@@ -112,6 +112,7 @@ include("description.jl")
 include("volume.jl")
 
 include("plot.jl")
+include("show.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")

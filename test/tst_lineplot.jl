@@ -244,6 +244,22 @@ end
     lineplot!(p, [0.0, 1.0], [1.0, 0.0], head_tail = :tail, name = "tail", color = :green)
     lineplot!(p, [0.0, 1.0], [0.5, 0.5], head_tail = :both, name = "both", color = :blue)
     test_ref("lineplot/arrows.txt", @show_col(p))
+
+    n = 20
+    x = range(1, 2; length = n)
+    p = lineplot(
+        x,
+        fill(0, n),
+        ylim = (-1, 5),
+        head_tail = :head,
+        head_tail_frac = 0.05,
+        name = "5%",
+    )
+    for (i, (frac, name)) in
+        enumerate(zip((0.1, 0.15, 0.2, 0.25), ("10%", "15%", "20%", "25%")))
+        lineplot!(p, x, fill(i, n), head_tail = :head, head_tail_frac = frac, name = name)
+    end
+    test_ref("lineplot/arrows_fractions.txt", @show_col(p))
 end
 
 @testset "color vector" begin
@@ -265,13 +281,15 @@ end
 end
 
 @testset "multiple series (matrix columns)" begin
-    x, y = 0:10, [-2:8 2:12 6:16]
+    x, y1, y2 = 0:10, [-2:8 2:12 6:16], [reverse(-4:6) reverse(8:18)]
 
-    p = lineplot(x, y)
-    test_ref("lineplot/matrix_autolabels.txt", @show_col(p))
+    p = lineplot(x, y1)
+    lineplot!(p, x, y2)
+    test_ref("lineplot/matrix_auto.txt", @show_col(p))
 
     for name in (["1", "2", "3"], ["1" "2" "3"])
-        p = lineplot(x, y; name = name)
-        test_ref("lineplot/matrix_labels.txt", @show_col(p))
+        p = lineplot(x, y1; name = name)
+        lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
+        test_ref("lineplot/matrix_parameters.txt", @show_col(p))
     end
 end

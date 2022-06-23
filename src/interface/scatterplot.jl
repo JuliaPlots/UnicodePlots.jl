@@ -57,7 +57,7 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function scatterplot(
+scatterplot(
     x::AbstractVector,
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
@@ -66,10 +66,15 @@ function scatterplot(
     marker::Union{MarkerType,AbstractVector} = :pixel,
     name = "",
     kw...,
+) = scatterplot!(
+    Plot(x, y, z, canvas; kw...),
+    x,
+    y,
+    z;
+    color = color,
+    name = name,
+    marker = marker,
 )
-    plot = Plot(x, y, z, canvas; kw...)
-    scatterplot!(plot, x, y, z; color = color, name = name, marker = marker)
-end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
@@ -93,12 +98,40 @@ function scatterplot!(
             annotate!(plot, xi, yi, char_marker(mi); color = ci)
         end
     end
+    plot.series[] += 1
     plot
 end
 
 scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
     scatterplot!(plot, axes(y, 1), y; kw...)
 
+# ---------------------------------------------------------------------------- #
+# multiple series
+function scatterplot(x::AbstractVector, y::AbstractMatrix; kw...)
+    names, colors, markers = multiple_series_defaults(y, kw, 1)
+    plot = scatterplot(
+        x,
+        y[:, begin];
+        ylim = extrema(y),
+        name = first(names),
+        filter(a -> a.first ≢ :name, kw)...,
+    )
+    for (i, (name, color, marker, ys)) in enumerate(zip(names, colors, markers, eachcol(y)))
+        i == 1 && continue
+        scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
+    end
+    plot
+end
+
+function scatterplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
+    names, colors, markers = multiple_series_defaults(y, kw, plot.series[] + 1)
+    for (name, color, marker, ys) in zip(names, colors, markers, eachcol(y))
+        scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
+    end
+    plot
+end
+
+# ---------------------------------------------------------------------------- #
 # Unitful
 function scatterplot(
     x::AbstractVector{<:RealOrRealQuantity},

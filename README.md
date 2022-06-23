@@ -67,6 +67,7 @@ lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
 
+  You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on `Plot` creation.
 </details>
 
 <details open>
@@ -104,7 +105,7 @@ scatterplot([1, 2, 3], [3, 4, 1],
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/scatterplot4.png" width="500"><br>
 
 
-  As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities.
+  As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities, or plotting multiple series (`Matrix` argument).
 </details>
 
 <details open>
@@ -142,6 +143,10 @@ lineplot(a / 2 * t .^ 2, a * t, xlabel = "position", ylabel = "speed")
 ```
 <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot7.png" width="500"><br>
 
+
+  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length.
+
+  Plotting multiple series is supported by providing an `AbstractMatrix` for the `y` argument, with the individual series corresponding to the columns of the `Matrix`. You can label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" series2", ...]`
 </details>
 
 <details open>
@@ -283,7 +288,7 @@ heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 
   The `zlabel` option and `zlabel!` method may be used to set the `z` axis (colorbar) label.
 
-  Use the `matrix=true` keyword in order to display the matrix in the array convention (as in the repl).
+  Use the `array` keyword in order to display the matrix in the array convention (as in the repl).
 
   ```julia
 heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)
@@ -615,6 +620,27 @@ The following types of `Canvas` are implemented:
 
 
 </details>
+
+<details>
+  <summary><a name=developer-notes></a><b>Developer notes</b></summary><br>
+
+  Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]`.
+  Common users of UnicodePlots don't need to be aware of this axis difference if sticking to public interface.
+
+  ```julia
+kw = (; xlim=(1, 10), ylim=(1, 10), title="internal buffer conventions", width=80, height=30)
+p = lineplot(range(1, 10; length=20), fill(1, 20), head_tail=:head, color=:red, name="x-axis"; kw...)
+lineplot!(p, fill(1, 20), range(1, 10; length=20), head_tail=:head, color=:green, name="y-axis")
+
+lineplot!(p, range(3, 8; length=20), [fill(3, 20) fill(8, 20)], color=:blue, name=["internal buffer" ""])
+lineplot!(p, fill(3, 20), range(3, 8; length=20), color=:blue)
+lineplot!(p, fill(8, 20), range(3, 8; length=20), color=:blue)
+
+lineplot!(p, fill(4, 20), range(4, 7; length=20), head_tail=:tail, color=:light_green, name="y-buffer")
+lineplot!(p, range(4, 7; length=20), fill(7, 20), head_tail=:head, color=:light_red, name="x-buffer")
+```
+<img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/axes_buffer_convention.png" width="500"><br>
+
 
 <details>
   <summary><a name=documentation-update></a><b>Documentation update</b></summary><br>

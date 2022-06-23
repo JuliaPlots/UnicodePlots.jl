@@ -49,7 +49,7 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 
 # See also
 
-[`Plot`](@ref), [`scatterplot`](@ref)
+`Plot`, `MVP`, `lineplot`, `BrailleCanvas`
 """
 function surfaceplot(
     x::AbstractVecOrMat,

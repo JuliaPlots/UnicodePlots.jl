@@ -124,3 +124,27 @@ end
     p = scatterplot!(p, y2, marker = :cross, color = :red)
     test_ref("scatterplot/units_temp.txt", @show_col(p))
 end
+
+@testset "multiple series (matrix columns)" begin
+    n = 3
+    x = 1:n
+    y1, y2 = [0:2:4 4:2:8], [fill(3, n) fill(5, n)]
+
+    p = scatterplot(x, y1)
+    scatterplot!(p, x, y2, marker = :pentagon)
+    test_ref("scatterplot/matrix_auto.txt", @show_col(p))
+
+    for name in (["1", "2"], ["1" "2"])
+        p = scatterplot(x, y1; name = name)
+        scatterplot!(
+            p,
+            x,
+            y2;
+            name = ["3", "4"],
+            color = [:yellow :cyan],
+            marker = [:circle :cross],
+        )
+
+        test_ref("scatterplot/matrix_parameters.txt", @show_col(p))
+    end
+end
