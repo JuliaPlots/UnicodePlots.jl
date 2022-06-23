@@ -266,8 +266,6 @@ Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library des
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without much verbosity.
-
 Here is a list of the main high-level functions for common scenarios:
 
   - [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
@@ -302,6 +300,8 @@ Here is a list of the main high-level functions for common scenarios:
   $(examples.lineplot3)
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+
+  One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
 
 </details>
 

@@ -159,8 +159,8 @@ function Plot(
     zlabel::AbstractString = KEYWORDS.zlabel,
     xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = KEYWORDS.yscale,
-    height::Union{Int,Nothing} = nothing,
-    width::Union{Int,Nothing} = nothing,
+    height::Union{Int,Nothing,Symbol} = nothing,
+    width::Union{Int,Nothing,Symbol} = nothing,
     border::Symbol = KEYWORDS.border,
     compact::Bool = KEYWORDS.compact,
     blend::Bool = KEYWORDS.blend,
@@ -189,8 +189,8 @@ function Plot(
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
-    height = something(height, DEFAULT_HEIGHT[])
-    width  = something(width, DEFAULT_WIDTH[])
+    height = something(height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height, DEFAULT_HEIGHT[])
+    width  = something(width ≡ :auto ? displaysize(stdout)[2] - 10 : width, DEFAULT_WIDTH[])
 
     (visible = width > 0) && (width = max(width, min_width))
     height = max(height, min_height)
@@ -212,7 +212,7 @@ function Plot(
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
         # should be close to using `zoom = 2`
-        autolims(lims) = lims == (0, 0) ? (-1.0, 1.0) : as_float(lims)
+        autolims(lims) = is_auto(lims) ? (-1.0, 1.0) : as_float(lims)
         mx, Mx = autolims(xlim)
         my, My = autolims(ylim)
 
@@ -392,13 +392,13 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
     if loc ≡ :l || loc ≡ :r
         for row in 1:nrows(plot.graphics)
             if loc ≡ :l
-                if !haskey(plot.labels_left, row) || plot.labels_left[row] == ""
+                if !haskey(plot.labels_left, row) || isempty(plot.labels_left[row])
                     plot.labels_left[row] = value
                     plot.colors_left[row] = ansi_color(color)
                     break
                 end
             elseif loc ≡ :r
-                if !haskey(plot.labels_right, row) || plot.labels_right[row] == ""
+                if !haskey(plot.labels_right, row) || isempty(plot.labels_right[row])
                     plot.labels_right[row] = value
                     plot.colors_right[row] = ansi_color(color)
                     break
@@ -531,7 +531,7 @@ function print_title(
     p_width::Int = 0,
     color::UserColorType = :normal,
 )
-    title == "" && return (0, 0)
+    isempty(title) && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = blank^(offset > 0 ? offset : 0)
     print_nocol(io, left_pad, pre_pad)

@@ -83,7 +83,7 @@ function scatterplot!(
     name = "",
 )
     color = color ≡ :auto ? next_color!(plot) : color
-    name == "" ||
+    isempty(name) ||
         label!(plot, :r, string(name), color isa AbstractVector ? color[1] : color)
     if marker ∈ (:pixel, :auto)
         points!(plot, x, y, z, color)

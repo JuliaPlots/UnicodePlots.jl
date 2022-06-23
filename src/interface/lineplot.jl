@@ -89,7 +89,7 @@ function lineplot!(
 )
     color = color ≡ :auto ? next_color!(plot) : color
     col_vec = color isa AbstractVector
-    name == "" || label!(plot, :r, string(name), col_vec ? first(color) : color)
+    isempty(name) || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if col_vec
         length(x) == length(y) == length(color) ||
             throw(ArgumentError("`x`, `y` and `color` must be the same length"))
@@ -223,7 +223,7 @@ function lineplot(
     kw...,
 )
     y = float.(f.(x))
-    name = name == "" ? string(nameof(f), "(x)") : name
+    name = isempty(name) ? string(nameof(f), "(x)") : name
     plot = lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
 end
 
@@ -250,7 +250,7 @@ function lineplot!(
     kw...,
 )
     y = float.(f.(x))
-    name = name == "" ? string(nameof(f), "(x)") : name
+    name = isempty(name) ? string(nameof(f), "(x)") : name
     lineplot!(plot, x, y; name = name, kw...)
 end
 

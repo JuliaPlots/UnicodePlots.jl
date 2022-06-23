@@ -86,7 +86,7 @@ function contourplot!(
     levels::Integer = 3,
     colormap = KEYWORDS.colormap,
 )
-    name == "" || label!(plot, :r, string(name))
+    isempty(name) || label!(plot, :r, string(name))
 
     plot.cmap.callback = callback = colormap_callback(colormap)
     mA, MA = NaNMath.extrema(as_float(A))

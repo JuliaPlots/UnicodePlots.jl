@@ -128,7 +128,7 @@ function surfaceplot!(
     cmapped = color ≡ nothing
     color = color ≡ :auto ? next_color!(plot) : color
 
-    plot.cmap.lim = (mh, Mh) = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
+    plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? NaNMath.extrema(as_float(H)) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
     plot.cmap.bar = colorbar && cmapped
 

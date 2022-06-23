@@ -15,6 +15,11 @@ end
     @test !p.graphics.visible
 end
 
+@testset "width - height, :auto" begin
+    p = Plot([0], [0], height = :auto, width = :auto)
+    @test p isa Plot
+end
+
 @testset "x/y ticks" begin
     p = Plot([0, 1], [0, 1], xticks = false)
     test_ref("plot/noxticks.txt", @show_col(p))

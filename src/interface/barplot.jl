@@ -100,7 +100,7 @@ function barplot(
     for i in eachindex(text)
         label!(plot, :l, i, text[i])
     end
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
 
     plot
 end
@@ -137,7 +137,7 @@ function barplot!(
     for i in eachindex(heights)
         label!(plot, :l, curidx + i, text[i])
     end
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
     plot
 end
 
@@ -164,6 +164,6 @@ function barplot!(
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
     label!(plot, :l, curidx + 1, string(label))
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics))
     plot
 end

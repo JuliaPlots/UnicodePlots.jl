@@ -84,7 +84,7 @@ function heatmap(
     end .+ xoffset
 
     # set the axis limits automatically
-    autolims(lims, vec) = lims == (0, 0) && length(vec) > 0 ? extrema(vec) : lims
+    autolims(lims, vec) = is_auto(lims) && length(vec) > 0 ? extrema(vec) : lims
 
     ylim = autolims(ylim, Y)
     xlim = autolims(xlim, X)
@@ -114,7 +114,7 @@ function heatmap(
         has_extrema = true
     catch
     end
-    if zlim != (0, 0)
+    if !is_auto(zlim)
         has_extrema ||
             throw(ArgumentError("`zlim` cannot be set when the element type is $T"))
         minz, maxz = zlim

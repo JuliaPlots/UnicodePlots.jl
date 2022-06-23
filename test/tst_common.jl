@@ -30,12 +30,17 @@ end
     @test UnicodePlots.plotting_range_narrow(0, 5) ≡ (0.0, 5.0)
 end
 
-@testset "extend_limits" begin
+@testset "limits" begin
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) ≡ (0.1, 2.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) ≡ (0.0, 1.1)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) ≡ (2.0, 3.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) ≡ (1.0, 4.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) ≡ (0.0, 2.0)
+
+    @test UnicodePlots.is_auto((0, 0))
+    @test UnicodePlots.is_auto([0, 0])
+    @test !UnicodePlots.is_auto((-1, 1))
+    @test !UnicodePlots.is_auto([-1, 1])
 end
 
 @testset "bordermap" begin
@@ -156,11 +161,17 @@ end
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
     @test UnicodePlots.colormap_callback(nothing) isa Function
 
-    # clamp in range
-    values = collect(1:10)
-    callback = UnicodePlots.colormap_callback(:viridis)
-    colors = [callback(v, values[2], values[end - 1]) for v in values]
-    @test length(colors) == length(values)
+    values = collect(-10:0.5:10)
+    left, right = 15, length(values) - 10
+    mini, maxi = values[left], values[right]  # clamp values within smaller range
+
+    cmap = collect(1:10)
+    callback = UnicodePlots.colormap_callback(cmap)
+    colors = map(v -> callback(v, mini, maxi), values)
+
+    # smaller interval, must not hit colormap extrema
+    @test all(x -> x == first(colors), colors[1:left])
+    @test all(x -> x == last(colors), colors[right:end])
 end
 
 @testset "miscellaneous" begin

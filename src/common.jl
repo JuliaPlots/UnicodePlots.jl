@@ -350,7 +350,7 @@ number_unit(x::AbstractVector, args...) = x, nothing
 number_unit(x::Number, args...) = x, nothing
 
 unit_label(label::AbstractString, unit::AbstractString) =
-    (lab_strip = rstrip(label)) == "" ? unit : "$lab_strip ($unit)"
+    (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 function superscript(s::AbstractString)
@@ -362,27 +362,26 @@ function superscript(s::AbstractString)
 end
 
 function plotting_range(xmin, xmax)
-    diff = xmax - xmin
-    xmax = round_up_tick(xmax, diff)
-    xmin = round_down_tick(xmin, diff)
-    float(xmin), float(xmax)
+    Δ = xmax - xmin
+    float(round_down_tick(xmin, Δ)), float(round_up_tick(xmax, Δ))
 end
 
 function plotting_range_narrow(xmin, xmax)
-    diff = xmax - xmin
-    xmax = round_up_subtick(xmax, diff)
-    xmin = round_down_subtick(xmin, diff)
-    float(xmin), float(xmax)
+    Δ = xmax - xmin
+    float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
-extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
+is_auto(lims::AbstractVector) = lims == [0, 0]
+is_auto(lims::Tuple) = lims == (0, 0)
 
-function extend_limits(vec, limits, scale::Union{Symbol,Function})
+extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
+
+function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
-    mi, ma = as_float(extrema(limits))
+    mi, ma = as_float(extrema(lims))
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))
     end
@@ -393,7 +392,7 @@ function extend_limits(vec, limits, scale::Union{Symbol,Function})
     if scale != identity
         scale(mi), scale(ma)
     else
-        all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+        all(iszero.(lims)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
 end
 

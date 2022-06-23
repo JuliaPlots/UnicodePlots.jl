@@ -14,8 +14,6 @@ Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library des
 
 ## High-level Interface
 
-There are a couple of ways to generate typical plots without much verbosity.
-
 Here is a list of the main high-level functions for common scenarios:
 
   - [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
@@ -66,6 +64,8 @@ lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:blue, name="other line")
 
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+
+  One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
 
 </details>
 
@@ -516,13 +516,13 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `margin::Int = 3`: number of empty characters to the left of the whole plot.
   - `padding::Int = 1`: left and right space between the labels and the canvas.
   - `color::Symbol = :auto`: choose from (`:green`, `:blue`, `:red`, `:yellow`, `:cyan`, `:magenta`, `:white`, `:normal`, `:auto`), use an integer in `[0-255]`, or provide `3` integers as `RGB` components.
-  - `height::Int = 15`: number of canvas rows.
+  - `height::Int = 15`: number of canvas rows, or `:auto`.
     ```julia
     lineplot(sin, 1:.5:20, height=18)
     ```
     <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/height.png" width="500"><br>
     
-  - `width::Int = 40`: number of characters per canvas row.
+  - `width::Int = 40`: number of characters per canvas row, or `:auto`.
     ```julia
     lineplot(sin, 1:.5:20, width=60)
     ```
@@ -533,8 +533,8 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `zlim::Tuple = (0, 0)`: colormap scaled data range.
   - `xticks::Bool = true`: set `false` to disable ticks on `x`-axis.
   - `yticks::Bool = true`: set `false` to disable ticks on `y`-axis.
-  - `xflip::Bool = false`: flip the `x` axis.
-  - `yflip::Bool = false`: flip the `y` axis.
+  - `xflip::Bool = false`: set `true` to flip the `x` axis.
+  - `yflip::Bool = false`: set `true` to flip the `y` axis.
   - `colorbar::Bool = false`: toggle the colorbar.
   - `colormap::Symbol = :viridis`: choose a symbol from `ColorSchemes.jl` e.g. `:viridis`, or supply a function `f: (z, zmin, zmax) -> Int(0-255)`, or a vector of RGB tuples.
   - `colorbar_lim::Tuple = (0, 1)`: colorbar limit.
