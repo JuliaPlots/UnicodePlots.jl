@@ -49,7 +49,7 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 
 # See also
 
-[`Plot`](@ref), [`scatterplot`](@ref)
+`Plot`, `MVP`, `lineplot`, `BrailleCanvas`
 """
 function surfaceplot(
     x::AbstractVecOrMat,
@@ -123,12 +123,12 @@ function surfaceplot!(
     zlim = KEYWORDS.zlim,
 )
     length(X) == length(Y) == length(Z) == length(H) ||
-        throw(DimensionMismatch("X, Y, Z and H must have same length"))
+        throw(DimensionMismatch("`X`, `Y`, `Z` and `H` must have same length"))
 
     cmapped = color ≡ nothing
     color = color ≡ :auto ? next_color!(plot) : color
 
-    plot.cmap.lim = (mh, Mh) = zlim == (0, 0) ? NaNMath.extrema(as_float(H)) : zlim
+    plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? NaNMath.extrema(as_float(H)) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
     plot.cmap.bar = colorbar && cmapped
 

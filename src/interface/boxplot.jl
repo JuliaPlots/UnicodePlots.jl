@@ -5,8 +5,8 @@
 
 Draws a box-and-whisker plot.
 
-The first argument specifies the data to plot. This is a vector
-of vectors, with each inner vector representing a data series.
+The first argument specifies the data to plot.
+This is a vector of vectors, with each inner vector representing a data series.
 We use a vector of vectors over a matrix to allow series of different lengths.
 Optionally, a list of text may be provided, with length equal to the number of series.
 
@@ -62,8 +62,8 @@ function boxplot(
     kw...,
 )
     length(xlim) == 2 ||
-        throw(ArgumentError("xlim must be a tuple or a vector of length 2"))
-    length(text) == length(data) || throw(DimensionMismatch("Wrong number of text"))
+        throw(ArgumentError("`xlim` must be a tuple or a vector of length 2"))
+    length(text) == length(data) || throw(DimensionMismatch("wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(something(width, DEFAULT_WIDTH[]), 10)
 
@@ -99,12 +99,12 @@ function boxplot!(
     name = KEYWORDS.name,
     kw...,
 )
-    isempty(data) && throw(ArgumentError("Can't append empty array to boxplot"))
+    isempty(data) && throw(ArgumentError("can't append empty array to boxplot"))
 
     addseries!(plot.graphics, data)
 
     # Find end of last 3-line region, then add 2 for center of current
-    label!(plot, :l, (length(plot.graphics.data) - 1) * 3 + 2, name)
+    label!(plot, :l, 3(length(plot.graphics.data) - 1) + 2, name)
 
     min_x = plot.graphics.min_x[]
     max_x = plot.graphics.max_x[]

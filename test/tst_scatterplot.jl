@@ -17,8 +17,8 @@ y = [2, 0, -5, 2, -5]
             p = scatterplot(
                 1:2,
                 reverse(1:2),
-                width = width,
                 height = height,
+                width = width,
                 canvas = canvas,
             )
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
@@ -92,7 +92,7 @@ end
     test_ref("scatterplot/parameters3.txt", @show_col(p))
     test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 
-    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
+    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("scatterplot/canvassize.txt", @show_col(p))
 end
@@ -123,4 +123,34 @@ end
     y2 = [23.5, 22.5, 23.0] * u"°C"
     p = scatterplot!(p, y2, marker = :cross, color = :red)
     test_ref("scatterplot/units_temp.txt", @show_col(p))
+end
+
+@testset "multiple series (matrix columns)" begin
+    n = 3
+    x = 1:n
+    y1, y2 = [0:2:4 4:2:8], [fill(3, n) fill(5, n)]
+
+    p = scatterplot(x, y1)
+    scatterplot!(p, x, y2, marker = :pentagon)
+    test_ref("scatterplot/matrix_auto.txt", @show_col(p))
+
+    for name in (["1", "2"], ["1" "2"])
+        p = scatterplot(
+            x,
+            y1;
+            name = name,
+            color = [:red :green],
+            marker = [:utriangle :rect],
+        )
+        scatterplot!(
+            p,
+            x,
+            y2;
+            name = ["3", "4"],
+            color = [:yellow :cyan],
+            marker = [:circle :cross],
+        )
+
+        test_ref("scatterplot/matrix_parameters.txt", @show_col(p))
+    end
 end

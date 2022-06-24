@@ -1,7 +1,35 @@
+"""
+As the name suggests the `AsciiCanvas` only uses ASCII characters to draw it's content.
+Naturally, it doesn't look quite as nice as the Unicode-based ones.
+However, in some situations it might yield better results.
+Printing plots to a file is one of those situations.
+
+The AsciiCanvas is best utilized in combination with `lineplot`.
+For `scatterplot` we suggest to use the `DotCanvas` instead.
+"""
+struct AsciiCanvas{YS<:Function,XS<:Function} <: LookupCanvas
+    grid::Transpose{UInt16,Matrix{UInt16}}
+    colors::Transpose{ColorType,Matrix{ColorType}}
+    visible::Bool
+    blend::Bool
+    yflip::Bool
+    xflip::Bool
+    pixel_height::Int
+    pixel_width::Int
+    origin_y::Float64
+    origin_x::Float64
+    height::Float64
+    width::Float64
+    min_max::NTuple{2,UnicodeType}
+    yscale::YS
+    xscale::XS
+end
+
+const N_ASCII = grid_type(AsciiCanvas)(512)
 const ASCII_SIGNS = [
-    0b100_000_000 0b000_100_000 0b000_000_100
-    0b010_000_000 0b000_010_000 0b000_000_010
-    0b001_000_000 0b000_001_000 0b000_000_001
+    0b100_000_000 0b010_000_000 0b001_000_000
+    0b000_100_000 0b000_010_000 0b000_001_000
+    0b000_000_100 0b000_000_010 0b000_000_001
 ]
 
 const ASCII_LOOKUP = Dict{UInt16,Char}()
@@ -76,15 +104,13 @@ ASCII_LOOKUP[0b100_100_100] = '|'
 ASCII_LOOKUP[0b001_001_001] = '|'
 ASCII_LOOKUP[0b110_011_110] = '}'
 
-const N_ASCII = 512
-const ASCII_DECODE = Vector{Char}(undef, typemax(UInt16))
+const ASCII_DECODE = Vector{Char}(undef, typemax(N_ASCII))
 ASCII_DECODE[1] = ' '
 for i in 2:N_ASCII
     min_dist = typemax(Int)
     min_char = ' '
     for (k, v) in sort_by_keys(ASCII_LOOKUP)
-        cur_dist = count_ones(xor(UInt16(i - 1), k))
-        if cur_dist < min_dist
+        if (cur_dist = count_ones(xor(typeof(N_ASCII)(i - 1), k))) < min_dist
             min_dist = cur_dist
             min_char = v
         end
@@ -92,52 +118,14 @@ for i in 2:N_ASCII
     ASCII_DECODE[i] = min_char
 end
 
-ASCII_DECODE[(N_ASCII + 1):typemax(UInt16)] = UNICODE_TABLE[1:(typemax(UInt16) - N_ASCII)]
+ASCII_DECODE[(N_ASCII + 1):typemax(N_ASCII)] = UNICODE_TABLE[1:(typemax(N_ASCII) - N_ASCII)]
 
-"""
-As the name suggests the `AsciiCanvas` only uses ASCII characters to draw it's content.
-Naturally, it doesn't look quite as nice as the Unicode-based ones.
-However, in some situations it might yield better results.
-Printing plots to a file is one of those situations.
-
-The AsciiCanvas is best utilized in combination with `lineplot`.
-For `scatterplot` we suggest to use the `DotCanvas` instead.
-"""
-struct AsciiCanvas{XS<:Function,YS<:Function} <: LookupCanvas
-    grid::Matrix{UInt16}
-    colors::Matrix{ColorType}
-    min_max::NTuple{2,UInt64}
-    blend::Bool
-    visible::Bool
-    pixel_width::Int
-    pixel_height::Int
-    origin_x::Float64
-    origin_y::Float64
-    width::Float64
-    height::Float64
-    xscale::XS
-    yscale::YS
-end
-
-@inline x_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
-@inline y_pixel_per_char(::Type{C}) where {C<:AsciiCanvas} = 3
+@inline y_pixel_per_char(::Type{<:AsciiCanvas}) = 3
+@inline x_pixel_per_char(::Type{<:AsciiCanvas}) = 3
 
 @inline lookup_encode(::AsciiCanvas) = ASCII_SIGNS
 @inline lookup_decode(::AsciiCanvas) = ASCII_DECODE
+@inline lookup_offset(::AsciiCanvas) = N_ASCII
 
 AsciiCanvas(args...; kw...) =
-    CreateLookupCanvas(AsciiCanvas, UInt16, (0b000_000_000, 0b111_111_111), args...; kw...)
-
-function char_point!(
-    c::AsciiCanvas,
-    char_x::Int,
-    char_y::Int,
-    char::Char,
-    color::UserColorType,
-)
-    if checkbounds(Bool, c.grid, char_x, char_y)
-        c.grid[char_x, char_y] = N_ASCII + char
-        set_color!(c.colors, char_x, char_y, ansi_color(color), c.blend)
-    end
-    c
-end
+    CreateLookupCanvas(AsciiCanvas, (0b000_000_000, 0b111_111_111), args...; kw...)

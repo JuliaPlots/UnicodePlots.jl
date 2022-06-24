@@ -50,7 +50,7 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, elevation = 50, zoom = 2, cu
 
 # See also
 
-[`Plot`](@ref), [`scatterplot`](@ref)
+`Plot`, `MVP`, `lineplot`, `BrailleCanvas`
 """
 function isosurface(
     x::AbstractVector,

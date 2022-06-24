@@ -14,17 +14,17 @@ plot withing the bounding box specified by `maxwidth` and `maxheight`.
 
 # Usage
 
-    spy(A; $(keywords((maxwidth = 0, maxheight = 0, title = "Sparsity Pattern", zeros = false); add=(:fix_ar, :canvas))))
+    spy(A; $(keywords((maxwidth = 0, maxheight = 0, zeros = false); add=(:fix_ar, :canvas))))
 
 # Arguments
 
 $(arguments(
     (
         A = "matrix of interest for which non-zero elements should be drawn",
-        maxwidth = "maximum number of characters per row that should be used for plotting",
         maxheight = "maximum number of character rows that should be used for plotting",
-        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
+        maxwidth = "maximum number of characters per row that should be used for plotting",
         height = "exact number of character rows that should be used for plotting (`0` stands for automatic)",
+        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
         show_zeros = "show zeros pattern instead of default nonzeros",
     ); add=(:fix_ar, :canvas),
 ))
@@ -38,8 +38,8 @@ $(arguments(
 # Examples
 
 ```julia-repl
+julia> using SparseArrays
 julia> spy(sprandn(50, 120, .05))
-                           Sparsity Pattern
       ┌────────────────────────────────────────────────────────────┐
     1 │⢀⠀⠒⠀⢄⠂⠀⡀⠀⠀⠀⠰⠀⠐⠀⠀⠀⠀⠂⠀⠀⠀⠠⠰⠀⠀⠀⡀⠄⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠐⠀⠐⠀⠀⡀⠀⠀⠀⠀⠀⠀⠂⡀⠀⡀⠠⠀⠀│ > 0
       │⠀⠀⠀⠀⠀⢀⢀⠀⠀⠀⠀⠐⠄⠀⢀⠂⠀⠠⠀⠉⠀⠀⠀⠀⢐⠀⠀⠀⠀⠀⠠⠐⠄⠄⠀⠀⠀⠐⠐⠈⢁⠀⠀⠀⠀⠀⠀⠀⠠⠀⠐⡐⠀⠄⠀⠀⠈⠀⠀⠠│ < 0
@@ -92,10 +92,10 @@ function spy(
     vals::AbstractArray;
     maxwidth::Int = 0,
     maxheight::Int = 0,
-    title = "Sparsity Pattern",
+    title = KEYWORDS.title,
     out_stream::Union{Nothing,IO} = nothing,
-    width::Int = 0,
-    height::Int = 0,
+    height::Union{Nothing,Int} = nothing,
+    width::Union{Nothing,Int} = nothing,
     margin::Int = KEYWORDS.margin,
     padding::Int = KEYWORDS.padding,
     color::UserColorType = KEYWORDS.color,
@@ -104,21 +104,14 @@ function spy(
     fix_ar::Bool = false,
     kw...,
 ) where {T<:Canvas}
-    if color ≡ :automatic
-        Base.depwarn(
-            "`color = :automatic` is deprecated, use `color = :auto` instead",
-            :spy,
-        )
-        color = :auto
-    end
     height, width = get_canvas_dimensions_for_matrix(
         canvas,
         nrow,
         ncol,
-        maxwidth,
         maxheight,
-        width,
+        maxwidth,
         height,
+        width,
         margin,
         padding,
         out_stream,
@@ -126,10 +119,10 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
-    can = T(width, height, width = 1.0 + ncol, height = 1.0 + nrow)
+    can = T(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
     plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
 
-    if color != :auto
+    if color ≢ :auto
         points!(plot, cols, nrow + 1 .- rows, color)
         label!(plot, :r, 1, show_zeros ? "= 0" : "≠ 0", color)
     else

@@ -46,7 +46,7 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> √(x^2 + y^2))
 
 # See also
 
-[`Plot`](@ref), [`scatterplot`](@ref)
+`Plot`, `lineplot`, `BrailleCanvas`
 """
 function contourplot(
     x::AbstractVector,
@@ -86,7 +86,7 @@ function contourplot!(
     levels::Integer = 3,
     colormap = KEYWORDS.colormap,
 )
-    name == "" || label!(plot, :r, string(name))
+    isempty(name) || label!(plot, :r, string(name))
 
     plot.cmap.callback = callback = colormap_callback(colormap)
     mA, MA = NaNMath.extrema(as_float(A))

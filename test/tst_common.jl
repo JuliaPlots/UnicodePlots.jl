@@ -30,12 +30,17 @@ end
     @test UnicodePlots.plotting_range_narrow(0, 5) ≡ (0.0, 5.0)
 end
 
-@testset "extend_limits" begin
+@testset "limits" begin
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) ≡ (0.1, 2.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) ≡ (0.0, 1.1)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) ≡ (2.0, 3.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) ≡ (1.0, 4.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) ≡ (0.0, 2.0)
+
+    @test UnicodePlots.is_auto((0, 0))
+    @test UnicodePlots.is_auto([0, 0])
+    @test !UnicodePlots.is_auto((-1, 1))
+    @test !UnicodePlots.is_auto([-1, 1])
 end
 
 @testset "bordermap" begin
@@ -64,10 +69,12 @@ end
 end
 
 @testset "colors" begin
-    # coverage
+    @test first(UnicodePlots.COLOR_CYCLE_BRIGHT) ≡ :light_green
+    @test first(UnicodePlots.COLOR_CYCLE_FAINT) ≡ :green
+
     _cycle = UnicodePlots.COLOR_CYCLE[]
-    UnicodePlots.brightcolors!()
-    UnicodePlots.faintcolors!()
+    @test UnicodePlots.brightcolors!() == UnicodePlots.COLOR_CYCLE_BRIGHT
+    @test UnicodePlots.faintcolors!() == UnicodePlots.COLOR_CYCLE_FAINT
     UnicodePlots.COLOR_CYCLE[] = _cycle
 
     @test UnicodePlots.c256(0.0) == 0
@@ -75,15 +82,17 @@ end
     @test UnicodePlots.c256(0) == 0
     @test UnicodePlots.c256(255) == 255
 
-    @test_throws ErrorException UnicodePlots.colormode!(123456789)
+    @test_throws ArgumentError UnicodePlots.colormode!(123456789)
 
     _color_mode = UnicodePlots.colormode()
-    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit
-    @test_throws ErrorException UnicodePlots.colormode()
+    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit (terminal dependent)
+    @test_throws ArgumentError UnicodePlots.colormode()
 
     UnicodePlots.colors256!()
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test UnicodePlots.ansi_color(128) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
+    @test UnicodePlots.ansi_color((0.0, 0.0, 0.0)) == UnicodePlots.THRESHOLD + 0x0  # float 0 - 1 range
+    @test UnicodePlots.ansi_color((1.0, 1.0, 1.0)) == UnicodePlots.THRESHOLD + 0xe7  # float 0 - 1 range
     @test UnicodePlots.ansi_color((0, 0, 0)) == UnicodePlots.THRESHOLD + 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == UnicodePlots.THRESHOLD + 0xe7  # ansi 231
     @test UnicodePlots.ansi_color(:red) == UnicodePlots.THRESHOLD + 0x01
@@ -98,6 +107,8 @@ end
     UnicodePlots.USE_LUT[] = true
     @test UnicodePlots.ansi_color(0x80) == 0xaf00d7
     @test UnicodePlots.ansi_color(128) == 0xaf00d7
+    @test UnicodePlots.ansi_color((0.0, 0.0, 0.0)) == 0x0
+    @test UnicodePlots.ansi_color((1.0, 1.0, 1.0)) == 0xffffff
     @test UnicodePlots.ansi_color((0, 0, 0)) == 0x0
     @test UnicodePlots.ansi_color((255, 255, 255)) == 0xffffff
     @test UnicodePlots.ansi_color(:red) == 0x800000
@@ -145,22 +156,23 @@ end
     end
     UnicodePlots.CRAYONS_FAST[] = _cfast
 
-    @test UnicodePlots.colormap_callback(UnicodePlots.COLOR_MAP_DATA |> keys |> first) isa
-          Function
+    @test UnicodePlots.colormap_callback(:inferno) isa Function
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
-    @test UnicodePlots.colormap_callback(nothing) ≡ nothing
+    @test UnicodePlots.colormap_callback(nothing) isa Function
 
-    # clamp in range
-    values = collect(1:10)
-    callback = UnicodePlots.colormap_callback(:viridis)
-    colors = [callback(v, values[2], values[end - 1]) for v in values]
-end
+    values = collect(-10:0.5:10)
+    left, right = 15, length(values) - 10
+    mini, maxi = values[left], values[right]  # clamp values within smaller range
 
-struct Scale{T}
-    r::T
+    cmap = collect(1:10)
+    callback = UnicodePlots.colormap_callback(cmap)
+    colors = map(v -> callback(v, mini, maxi), values)
+
+    # smaller interval, must not hit colormap extrema
+    @test all(x -> x == first(colors), colors[1:left])
+    @test all(x -> x == last(colors), colors[right:end])
 end
-(f::Scale)(x) = f.r * x
 
 @testset "miscellaneous" begin
     @test UnicodePlots.char_marker('a') ≡ 'a'
@@ -175,11 +187,13 @@ end
     @test UnicodePlots.scale_callback(:log2)(2) ≈ 1
     @test UnicodePlots.scale_callback(:ln)(ℯ) ≈ 1
     @test UnicodePlots.scale_callback(x -> x)(1) ≡ 1
-    @test UnicodePlots.scale_callback(Scale(π))(1) ≈ π
+    @test UnicodePlots.scale_callback(x -> sin(x))(0) ≈ 0
 
-    h, w = displaysize()
+    h, w = ds = displaysize()
     @test UnicodePlots.out_stream_height() == h
     @test UnicodePlots.out_stream_width() == w
+    @test UnicodePlots.out_stream_size(nothing) == ds
+    @test UnicodePlots.out_stream_size(stdout) == displaysize(stdout)
 
     @test UnicodePlots.superscript("-10") == "⁻¹⁰"
     @test UnicodePlots.superscript("+2") == "⁺²"
@@ -196,11 +210,10 @@ end
     @test UnicodePlots.nice_repr(1 + 0.1eps()) == "1"
 end
 
-@testset "docs" begin
-    # coverage
+@testset "docs coverage" begin
+    @test UnicodePlots.default_with_type(:foo_bar) isa String
     @test UnicodePlots.arguments() isa String
     @test UnicodePlots.keywords() isa String
-    @test UnicodePlots.default_with_type(:foo_bar) isa String
 end
 
 @testset "units" begin

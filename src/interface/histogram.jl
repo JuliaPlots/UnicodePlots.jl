@@ -18,8 +18,7 @@ $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); a
 """
 function horizontal_histogram(
     hist::Histogram;
-    symb = nothing,  # deprecated
-    symbols = ['▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'],
+    symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale, "Frequency"),
     info::AbstractString = "",  # unused
@@ -62,14 +61,8 @@ function horizontal_histogram(
             r_chr,
         )
     end
-    plot = barplot(
-        labels,
-        counts;
-        symbols = _handle_deprecated_symb(symb, symbols),
-        xlabel = xlabel,
-        xscale = xscale,
-        kw...,
-    )
+    plot =
+        barplot(labels, counts; symbols = symbols, xlabel = xlabel, xscale = xscale, kw...)
     plot
 end
 
@@ -90,8 +83,7 @@ $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); a
 """
 function vertical_histogram(
     hist::Histogram;
-    symb = nothing,  # deprecated
-    symbols = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
+    symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
     info::AbstractString = "",
     color = :green,
     kw...,
@@ -109,7 +101,6 @@ function vertical_histogram(
         xlabel = info,
         kw...,
     )
-    symbols = _handle_deprecated_symb(symb, symbols)
     max_val = maximum(counts)
     nsyms = length(symbols)
     canvas = plot.graphics
@@ -185,24 +176,9 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 
 [`Plot`](@ref), [`barplot`](@ref), [`BarplotGraphics`](@ref)
 """
-function histogram(
-    x::AbstractArray;
-    bins = nothing,
-    closed = :left,
-    vertical = false,
-    stats = true,
-    kw...,
-)
+function histogram(x::AbstractArray; closed = :left, vertical = false, stats = true, kw...)
     x_plot = dropdims(x, dims = Tuple(filter(d -> size(x, d) == 1, 1:ndims(x))))
-    hist = if bins ≢ nothing
-        Base.depwarn(
-            "The keyword parameter `bins` is deprecated, use `nbins` instead",
-            :histogram,
-        )
-        fit(Histogram, x_plot; nbins = bins, closed = closed)
-    else
-        fit(Histogram, x_plot; closed = closed, filter(p -> p.first ≡ :nbins, kw)...)
-    end
+    hist = fit(Histogram, x_plot; closed = closed, filter(p -> p.first ≡ :nbins, kw)...)
     info = if vertical && stats
         digits = 2
         mx, Mx = extrema(x_plot)
@@ -218,6 +194,3 @@ function histogram(
     callable = vertical ? vertical_histogram : horizontal_histogram
     callable(hist; info = info, filter(p -> p.first ≢ :nbins, kw)...)
 end
-
-@deprecate histogram(x::AbstractArray, nbins::Int; kw...) histogram(x; nbins = nbins, kw...)
-@deprecate histogram(hist::Histogram; kw...) horizontal_histogram(hist; kw...)

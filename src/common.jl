@@ -150,7 +150,7 @@ const SUPERSCRIPT = Dict(
     'e' => 'ᵉ',
 )
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_BRIGHT = Tuple(Symbol("light_", s) for s in COLOR_CYCLE_FAINT)
+const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)
 const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
 const BORDER_COLOR = Ref(:dark_gray)
@@ -164,10 +164,31 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
-const MarkerType = Union{Symbol,Char,AbstractString}
+const MarkerType = Union{Symbol,AbstractChar,AbstractString}
 const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
 const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
+
+# en.wikipedia.org/wiki/Plane_(Unicode)
+const PLANE0_START = 0x00000
+const PLANE0_STOP = 0x0ffff
+const PLANE1_START = 0x10000
+const PLANE1_STOP = 0x1ffff
+const PLANE2_START = 0x20000
+const PLANE2_STOP = 0x2ffff
+
+# TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
+const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
+for i in PLANE0_START:PLANE0_STOP
+    UNICODE_TABLE[i + 1] = Char(i)
+end
+
+for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+    UNICODE_TABLE[i + 1] = MARKERS[j]
+end
+
+# `UInt32` is enough to hold all values of `UNICODE_TABLE`: common supertype for `DotCanvas`, `AsciiCanvas`, `BlockCanvas` `HeatmapCanvas` and `BrailleCanvas`.
+const UnicodeType = UInt32
 
 const THRESHOLD = UInt32(256^3)
 const COLORMODE = Ref(Crayons.COLORS_256)
@@ -185,30 +206,30 @@ const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 #! format: on
 
 colormode() =
-    if (cm = COLORMODE[]) == Crayons.COLORS_256
+    if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
         8
-    elseif cm == Crayons.COLORS_24BIT
+    elseif cm ≡ Crayons.COLORS_24BIT
         24
     else
-        error("Unsupported color mode=$cm.")
+        throw(ArgumentError("color mode $cm is unsupported"))
     end
 
-colors256!() = (COLORMODE[] = Crayons.COLORS_256; nothing)
-truecolors!() = (COLORMODE[] = Crayons.COLORS_24BIT; nothing)
+colors256!() = COLORMODE[] = Crayons.COLORS_256
+truecolors!() = COLORMODE[] = Crayons.COLORS_24BIT
 
 function colormode!(mode)
-    if mode == 8
+    if mode ≡ 8
         colors256!()
-    elseif mode == 24
+    elseif mode ≡ 24
         truecolors!()
     else
-        error("Unsupported color mode=$mode, choose 8 or 24.")
+        throw(ArgumentError("color mode $mode is unsupported, choose 8 or 24"))
     end
     nothing
 end
 
-brightcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT; nothing)
-faintcolors!() = (COLOR_CYCLE[] = COLOR_CYCLE_FAINT; nothing)
+brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
+faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
 terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
@@ -257,17 +278,16 @@ function char_marker(marker::MarkerType)::Char
     if marker isa Symbol
         get(MARKERS, marker, MARKERS[:circle])
     else
-        length(marker) == 1 ||
-            throw(ArgumentError("`marker` keyword has a non unit length"))
+        length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
         first(marker)
     end
 end
 
-iterable(obj::AbstractVector) = obj
+iterable(obj::AbstractVecOrMat) = obj
 iterable(obj) = Iterators.repeated(obj)
 
 function transform_name(tr, basename = "")
-    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))  # typeof(...) for functors
+    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))
     name == "identity" && return basename
     name = occursin("#", name) ? "custom" : name
     string(basename, " [", name, "]")
@@ -279,62 +299,50 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-lims_repr(x::Number) = nice_repr(roundable(x) ? x : float_round_log10(x))
-
+nice_repr(x::Integer) = string(x)
 nice_repr(x::AbstractFloat) =
     compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
-nice_repr(x::Integer) = string(x)
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
-round_up_tick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? ceil(x, digits = ceil_neg_log10(m)) :
-            -floor(-x, digits = ceil_neg_log10(m))
-        )
-    ) |> T
-round_down_tick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? floor(x, digits = ceil_neg_log10(m)) :
-            -ceil(-x, digits = ceil_neg_log10(m))
-        )
-    ) |> T
-round_up_subtick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? ceil(x, digits = ceil_neg_log10(m) + 1) :
-            -floor(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
-round_down_subtick(x::T, m) where {T} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? floor(x, digits = ceil_neg_log10(m) + 1) :
-            -ceil(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
-float_round_log10(x::T, m) where {T<:AbstractFloat} =
-    (
-        x == 0 ? 0 :
-        (
-            x > 0 ? round(x, digits = ceil_neg_log10(m) + 1) :
-            -round(-x, digits = ceil_neg_log10(m) + 1)
-        )
-    ) |> T
+
+round_up_tick(x::T, m) where {T} = T(
+    x == 0 ? 0 :
+    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m))),
+)
+
+round_down_tick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    floor(x, digits = ceil_neg_log10(m))
+else
+    -ceil(-x, digits = ceil_neg_log10(m))
+end)
+
+round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    ceil(x, digits = ceil_neg_log10(m) + 1)
+else
+    -floor(-x, digits = ceil_neg_log10(m) + 1)
+end)
+
+round_down_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
+    floor(x, digits = ceil_neg_log10(m) + 1)
+else
+    -ceil(-x, digits = ceil_neg_log10(m) + 1)
+end)
+
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
+float_round_log10(x::T, m) where {T<:AbstractFloat} = T(x == 0 ? 0 : if x > 0
+    round(x, digits = ceil_neg_log10(m) + 1)
+else
+    -round(-x, digits = ceil_neg_log10(m) + 1)
+end)
 
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
     show(io, unit(x))
     read(io, String)
 end
+
 number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
     ustrip.(x), unit_str(first(x), fancy)
 number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
@@ -342,7 +350,7 @@ number_unit(x::AbstractVector, args...) = x, nothing
 number_unit(x::Number, args...) = x, nothing
 
 unit_label(label::AbstractString, unit::AbstractString) =
-    (lab_strip = rstrip(label)) == "" ? unit : "$lab_strip ($unit)"
+    (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 function superscript(s::AbstractString)
@@ -354,37 +362,37 @@ function superscript(s::AbstractString)
 end
 
 function plotting_range(xmin, xmax)
-    diff = xmax - xmin
-    xmax = round_up_tick(xmax, diff)
-    xmin = round_down_tick(xmin, diff)
-    float(xmin), float(xmax)
+    Δ = xmax - xmin
+    float(round_down_tick(xmin, Δ)), float(round_up_tick(xmax, Δ))
 end
 
 function plotting_range_narrow(xmin, xmax)
-    diff = xmax - xmin
-    xmax = round_up_subtick(xmax, diff)
-    xmin = round_down_subtick(xmin, diff)
-    float(xmin), float(xmax)
+    Δ = xmax - xmin
+    float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
-scale_callback(scale) = scale isa Symbol ? FSCALES[scale] : scale
+scale_callback(scale::Symbol) = FSCALES[scale]
+scale_callback(scale::Function) = scale
 
-extend_limits(vec, limits) = extend_limits(vec, limits, :identity)
+is_auto(lims::AbstractVector) = lims == [0, 0]
+is_auto(lims::Tuple) = lims == (0, 0)
 
-function extend_limits(vec, limits, scale::Union{Symbol,Function})
+extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
+
+function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
-    mi, ma = as_float(extrema(limits))
+    mi, ma = as_float(extrema(lims))
     if mi == 0 && ma == 0
         mi, ma = as_float(extrema(vec))
     end
-    if ma - mi == 0
-        ma = mi + 1
-        mi = mi - 1
+    if mi == ma
+        mi -= 1
+        ma += 1
     end
     if scale != identity
         scale(mi), scale(ma)
     else
-        all(iszero.(limits)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+        all(iszero.(lims)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     end
 end
 
@@ -426,8 +434,9 @@ end
 print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
+
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
-    if color == INVALID_COLOR || !get(io, :color, false)
+    if color ≡ INVALID_COLOR || !get(io, :color, false)
         print(io, args...)
     else
         print_crayons(
@@ -448,7 +457,7 @@ end
 @inline blu(c::UInt32)::UInt8 = c & 0xff
 
 @inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
-    if a == b
+    if a ≡ b
         a  # fastpath
     elseif a < THRESHOLD && b < THRESHOLD  # 24bit
         # physical average (UInt32 to prevent UInt8 overflow)
@@ -459,7 +468,7 @@ end
         # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
     elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
         THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
-    elseif a != INVALID_COLOR && b != INVALID_COLOR
+    elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
         max(a, b)
     else
         INVALID_COLOR
@@ -476,28 +485,37 @@ function ansi_4bit_to_8bit(c::UInt8)::UInt8
     r + (q > 0x0 ? 0x8 : 0x0)
 end
 
+c256(c::AbstractFloat) = round(Int, 255c)
+c256(c::Integer) = c
+
+# `ColorType` conversion - colormaps
+ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
+ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
+
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
+
 function ansi_color(color::CrayonColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
     ansi_color(Crayons._parse_color(color))
 end
+
 function ansi_color(c::Crayons.ANSIColor)::ColorType
-    col = if COLORMODE[] == Crayons.COLORS_24BIT
-        if c.style == Crayons.COLORS_24BIT
+    col = if COLORMODE[] ≡ Crayons.COLORS_24BIT
+        if c.style ≡ Crayons.COLORS_24BIT
             r32(c.r) + g32(c.g) + b32(c.b)
-        elseif c.style == Crayons.COLORS_256
+        elseif c.style ≡ Crayons.COLORS_256
             USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
-        elseif c.style == Crayons.COLORS_16
+        elseif c.style ≡ Crayons.COLORS_16
             c8 = ansi_4bit_to_8bit(c.r)
             USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
         end
     else  # 0-255 ansi stored in a UInt32
-        if c.style == Crayons.COLORS_24BIT
+        if c.style ≡ Crayons.COLORS_24BIT
             THRESHOLD + Crayons.to_256_colors(c).r
-        elseif c.style == Crayons.COLORS_256
+        elseif c.style ≡ Crayons.COLORS_256
             THRESHOLD + c.r
-        elseif c.style == Crayons.COLORS_16
+        elseif c.style ≡ Crayons.COLORS_16
             THRESHOLD + ansi_4bit_to_8bit(c.r)
         end
     end
@@ -506,44 +524,59 @@ end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType =
-    if color == INVALID_COLOR
+    if color ≡ INVALID_COLOR
         INVALID_COLOR
     elseif color < THRESHOLD
         r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
-    elseif color != INVALID_COLOR
+    elseif color ≢ INVALID_COLOR
         THRESHOLD + ~UInt8(color - THRESHOLD)
     end
 
-@inline function set_color!(
-    colors::Matrix{ColorType},
-    x::Int,
-    y::Int,
-    color::ColorType,
-    blend::Bool,
-)
-    colors[x, y] = if (c = colors[x, y]) == INVALID_COLOR || !blend
-        color
-    else
-        blend_colors(c, color)
-    end
-    nothing
-end
+out_stream_size(out_stream::Nothing) = displaysize()
+out_stream_size(out_stream::IO) = displaysize(out_stream)
 
-out_stream_size(out_stream::Union{Nothing,IO} = nothing) =
-    out_stream ≡ nothing ? displaysize() : displaysize(out_stream)
 out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> first
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
 
-function _handle_deprecated_symb(symb, symbols)
-    if symb ≡ nothing
-        symbols
-    else
-        Base.depwarn(
-            "The keyword `symb` is deprecated in favor of `symbols`",
-            :BarplotGraphics,
-        )
-        [symb]
+multiple_series_defaults(y::AbstractMatrix, kw, start) = (
+    iterable(get(kw, :name, map(i -> "y$i", start:(start + size(y, 2))))),
+    iterable(get(kw, :color, :auto)),
+    iterable(get(kw, :marker, :pixel)),
+)
+
+function colormap_callback(cmap::Symbol)
+    cdata = getfield(ColorSchemes, cmap)
+    (z, minz, maxz) -> begin
+        isfinite(z) || return nothing
+        get(
+            cdata,
+            minz == maxz ? zero(z) : (max(minz, min(z, maxz)) - minz) / (maxz - minz),
+        ) |> ansi_color
     end
+end
+
+function colormap_callback(cmap::AbstractVector)
+    (z, minz, maxz) -> begin
+        isfinite(z) || return nothing
+        i = if minz == maxz || z < minz
+            1
+        elseif z > maxz
+            length(cmap)
+        else
+            1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
+        end
+        ansi_color(cmap[i])
+    end
+end
+
+colormap_callback(cmap::Nothing) = x -> nothing
+colormap_callback(cmap::Function) = cmap
+
+mutable struct ColorMap
+    border::Symbol
+    bar::Bool
+    lim::NTuple{2,Number}
+    callback::Function
 end

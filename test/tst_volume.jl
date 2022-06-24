@@ -113,7 +113,12 @@ end
 
         segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
 
-        p = lineplot(segment2xyz(cube[1])..., projection = T, title = "proj=$proj")
+        p = lineplot(
+            segment2xyz(cube[1])...,
+            projection = T,
+            title = "proj=$proj",
+            axes3d = false,
+        )
         for s in cube[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
@@ -147,8 +152,12 @@ end
             [p[3] for s in segments for p in s],
         )
 
-        title = "zoom=$zoom"
-        p = lineplot(segments2xyz(tetrahedron)..., projection = T, title = title)
+        p = lineplot(
+            segments2xyz(tetrahedron)...,
+            projection = T,
+            title = "zoom=$zoom",
+            axes3d = false,
+        )
         test_ref("volume/tetrahedron_$(zoom).txt", @show_col(p))
     end
 end

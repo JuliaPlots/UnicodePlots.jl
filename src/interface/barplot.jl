@@ -59,7 +59,6 @@ function barplot(
     border = :barplot,
     color::Union{UserColorType,AbstractVector} = :green,
     width::Union{Nothing,Integer} = nothing,
-    symb = nothing,  # deprecated
     symbols = KEYWORDS.symbols,
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale),
@@ -68,10 +67,8 @@ function barplot(
     kw...,
 )
     length(text) == length(heights) ||
-        throw(DimensionMismatch("The given vectors must be of the same length"))
-    minimum(heights) ≥ 0 || throw(
-        ArgumentError("All values have to be positive. Negative bars are not supported."),
-    )
+        throw(DimensionMismatch("the given vectors must be of the same length"))
+    minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))
 
     if any('\n' in t for t in text)
         _text = eltype(text)[]
@@ -96,14 +93,14 @@ function barplot(
         something(width, DEFAULT_WIDTH[]),
         xscale;
         color = color,
-        symbols = _handle_deprecated_symb(symb, symbols),
+        symbols = symbols,
         maximum = maximum,
     )
     plot = Plot(area; border = border, xlabel = xlabel, kw...)
     for i in eachindex(text)
         label!(plot, :l, i, text[i])
     end
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
 
     plot
 end
@@ -133,14 +130,14 @@ function barplot!(
     name::AbstractString = KEYWORDS.name,
 )
     length(text) == length(heights) ||
-        throw(DimensionMismatch("The given vectors must be of the same length"))
-    isempty(text) && throw(ArgumentError("Can't append empty array to barplot"))
+        throw(DimensionMismatch("the given vectors must be of the same length"))
+    isempty(text) && throw(ArgumentError("can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
     for i in eachindex(heights)
         label!(plot, :l, curidx + i, text[i])
     end
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
     plot
 end
 
@@ -167,6 +164,6 @@ function barplot!(
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
     label!(plot, :l, curidx + 1, string(label))
-    name == "" || label!(plot, :r, string(name), suitable_color(plot.graphics))
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics))
     plot
 end

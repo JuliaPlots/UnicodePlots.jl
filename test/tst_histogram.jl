@@ -1,11 +1,6 @@
 seed!(RNG, 1337)
 x = randn(RNG, 10_000)
 
-struct Scale{T}
-    r::T
-end
-(f::Scale)(x) = f.r * x  # functor
-
 @testset "default params" begin
     p = histogram(x)
     test_ref("histogram/default.txt", @print_col(p))
@@ -21,15 +16,13 @@ end
     test_ref("histogram/default_1e-2.txt", @print_col(p))
     p = histogram(x, xscale = :log10)
     test_ref("histogram/log10.txt", @print_col(p))
-    p = histogram(x, xscale = Scale(π))
-    test_ref("histogram/functor.txt", @print_col(p))
     p = histogram(x, xlabel = "custom label", xscale = :log10)
     test_ref("histogram/log10_label.txt", @print_col(p))
     p = histogram([0.1f0, 0.1f0, 0.0f0])
     test_ref("histogram/float32.txt", @print_col(p))
     p = horizontal_histogram(Histogram([0.0, 0.1, 1.0, 10.0, 100.0], [1, 2, 3, 4]))
     test_ref("histogram/nonuniformbins.txt", @print_col(p))
-    x2 = copy(reshape(x, (1, length(x), 1, 1)))
+    x2 = copy(reshape(x, 1, length(x), 1, 1))
     p = histogram(x2)
     test_ref("histogram/default.txt", @print_col(p))
     p = horizontal_histogram(Histogram(1:15.0, vcat(collect(1:13), 400)))
@@ -65,14 +58,14 @@ end
     )
     test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
-    for sym in ("=", '=')
+    for symbols in (["="], ['='], tuple("="), tuple('='))
         p = histogram(
             x,
             title = "My Histogram",
             xlabel = "Absolute Frequency",
             color = :yellow,
             border = :solid,
-            symbols = [sym],
+            symbols = symbols,
             width = 50,
         )
         test_ref("histogram/parameters2.txt", @print_col(p))

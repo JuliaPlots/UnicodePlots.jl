@@ -52,7 +52,7 @@ end
     ty = [1.0, 2, 9, 4000000]
     p = @binf lineplot(tx, ty)
     test_ref("lineplot/scale3.txt", @show_col(p))
-    p = @binf lineplot(tx, ty, width = 5, height = 5)
+    p = @binf lineplot(tx, ty, height = 5, width = 5)
     test_ref("lineplot/scale3_small.txt", @show_col(p))
 end
 
@@ -113,39 +113,28 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, color = [:red])
-    p = @binf lineplot(
-        [sin, cos],
-        -0.5,
-        3,
-        name = ["s", "c"],
-        color = [:red, :yellow],
-        title = "Funs",
-        ylabel = "f",
-        xlabel = "num",
-        xlim = (-0.5, 2.5),
-        ylim = (-0.9, 1.2),
-    )
-    test_ref("lineplot/sincos_parameters.txt", @show_col(p))
-    p = @binf lineplot(
-        [sin, cos],
-        -0.5,
-        3,
-        name = ["s", "c"],
-        color = [:red, :yellow],
-        title = "Funs",
-        ylabel = "f",
-        xlabel = "num",
-        xlim = [-0.5, 2.5],
-        ylim = [-0.9, 1.2],
-    )
-    test_ref("lineplot/sincos_parameters.txt", @show_col(p))
+    for (xlim, ylim) in zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
+        p = @binf lineplot(
+            [sin, cos],
+            -0.5,
+            3,
+            name = ["s", "c"],
+            color = [:red, :yellow],
+            title = "Funs",
+            ylabel = "f",
+            xlabel = "num",
+            xlim = (-0.5, 2.5),
+            ylim = (-0.9, 1.2),
+        )
+        test_ref("lineplot/sincos_parameters.txt", @show_col(p))
+    end
 end
 
 @testset "keyword arguments" begin
-    p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
-    test_ref("lineplot/limits.txt", @show_col(p))
-    p = @binf lineplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
-    test_ref("lineplot/limits.txt", @show_col(p))
+    for (xlim, ylim) in zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
+        p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+        test_ref("lineplot/limits.txt", @show_col(p))
+    end
 
     p = @binf lineplot(x, y, grid = false)
     test_ref("lineplot/nogrid.txt", @show_col(p))
@@ -171,7 +160,7 @@ end
     test_ref("lineplot/parameters3.txt", @show_col(p))
     test_ref("lineplot/nocolor.txt", @show_nocol(p))
 
-    p = lineplot(x, y, title = "Scatter", canvas = DotCanvas, width = 10, height = 5)
+    p = lineplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("lineplot/canvassize.txt", @show_col(p))
 end
@@ -181,9 +170,7 @@ end
     sy = [1, 3, 4, 2, 7]
 
     p = @binf stairs(sx, sy, style = :pre)
-    @test p isa Plot
     test_ref("lineplot/stairs_pre.txt", @show_col(p))
-
     p = @binf stairs(sx, sy)
     test_ref("lineplot/stairs_post.txt", @show_col(p))
     p = @binf stairs(sx, sy, style = :post)
@@ -232,7 +219,7 @@ end
         savefig(lineplot(x, ys, ylim = extrema(ys), labels = false), tmp; color = true)
         test_ref(tmp, @show_col(lineplot(x, y, yscale = s, labels = false)))
 
-        # xscale and yscale
+        # xscale & yscale
         savefig(
             lineplot(xs, ys, xlim = extrema(xs), ylim = extrema(xs), labels = false),
             tmp;
@@ -240,7 +227,7 @@ end
         )
         test_ref(tmp, @show_col(lineplot(x, y, xscale = s, yscale = s, labels = false)))
 
-        # scale labels
+        # xscale & yscale & labels
         test_ref(
             "lineplot/$(s)_scale.txt",
             @show_col(lineplot(x, y, xscale = s, yscale = s))
@@ -257,6 +244,22 @@ end
     lineplot!(p, [0.0, 1.0], [1.0, 0.0], head_tail = :tail, name = "tail", color = :green)
     lineplot!(p, [0.0, 1.0], [0.5, 0.5], head_tail = :both, name = "both", color = :blue)
     test_ref("lineplot/arrows.txt", @show_col(p))
+
+    n = 20
+    x = range(1, 2; length = n)
+    p = lineplot(
+        x,
+        fill(0, n),
+        ylim = (-1, 5),
+        head_tail = :head,
+        head_tail_frac = 0.05,
+        name = "5%",
+    )
+    for (i, (frac, name)) in
+        enumerate(zip((0.1, 0.15, 0.2, 0.25), ("10%", "15%", "20%", "25%")))
+        lineplot!(p, x, fill(i, n), head_tail = :head, head_tail_frac = frac, name = name)
+    end
+    test_ref("lineplot/arrows_fractions.txt", @show_col(p))
 end
 
 @testset "color vector" begin
@@ -275,4 +278,28 @@ end
     p = lineplot(x, v, xlabel = "position", ylabel = "speed")
     lineplot!(p, extrema(x) |> collect, [maximum(v), maximum(v)], color = :red)
     test_ref("lineplot/units_pos_vel.txt", @show_col(p))
+end
+
+@testset "multiple series (matrix columns)" begin
+    x, y1, y2 = 0:10, [-2:8 2:12 6:16], [reverse(-4:6) reverse(8:18)]
+
+    p = lineplot(x, y1)
+    lineplot!(p, x, y2)
+    test_ref("lineplot/matrix_auto.txt", @show_col(p))
+
+    for name in (["1", "2", "3"], ["1" "2" "3"])
+        p = lineplot(x, y1; name = name, color = [:red :green :blue])
+        lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
+        test_ref("lineplot/matrix_parameters.txt", @show_col(p))
+    end
+end
+
+@testset "hline - vline" begin
+    p = Plot([NaN], [NaN]; xlim = (0, 8), ylim = (0, 8))
+    vline!(p, [2, 6], [2, 6], color = :red)
+    hline!(p, [2, 6], [2, 6], color = :white)
+
+    hline!(p, 7)
+    vline!(p, 1)
+    test_ref("lineplot/hvline.txt", @show_col(p))
 end

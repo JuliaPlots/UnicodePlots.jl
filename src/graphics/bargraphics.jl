@@ -1,4 +1,4 @@
-struct BarplotGraphics{R<:Number} <: GraphicsArea
+struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}
     char_width::Int
@@ -6,8 +6,8 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
     maximum::Float64
     max_val::RefValue{Float64}
     max_len::RefValue{Int}
-    symbols::AbstractVector{Char}
-    xscale::Any  # Union{Symbol,Function} ==> no, we support functors which are <: Any
+    symbols::Vector{Char}
+    xscale::XS
 
     function BarplotGraphics(
         bars::AbstractVector{R},
@@ -15,13 +15,12 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
         maximum::Union{Nothing,Number},
-        symbols::AbstractVector{S},
+        symbols::Union{NTuple{N,S},AbstractVector{S}},
         xscale,
-    ) where {R,S<:Union{Char,String}}
+    ) where {R<:Number,N,S<:Union{AbstractChar,AbstractString}}
         for s in symbols
-            length(s) == 1 || throw(
-                ArgumentError("Symbol has to be a single character, got: \"" * s * "\""),
-            )
+            length(s) == 1 ||
+                throw(ArgumentError("symbol has to be a single character, got \"$s\""))
         end
         xscale = scale_callback(xscale)
         char_width = max(10, char_width, length(string(bars[argmax(xscale.(bars))])) + 7)
@@ -30,7 +29,7 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
         else
             fill(ansi_color(color), length(bars))
         end
-        new{R}(
+        new{R,typeof(xscale)}(
             bars,
             colors,
             char_width,
@@ -38,7 +37,7 @@ struct BarplotGraphics{R<:Number} <: GraphicsArea
             float(something(maximum, -Inf)),
             Ref(-Inf),
             Ref(0),
-            map(s -> first(s), symbols),
+            collect(map(s -> first(s), symbols)),
             xscale,
         )
     end
@@ -89,28 +88,28 @@ function preprocess!(c::BarplotGraphics)
     c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
-function printrow(io::IO, print_nc, print_col, c::BarplotGraphics, row::Int)
-    0 < row ≤ nrows(c) || throw(ArgumentError("Argument \"row\" out of bounds: $row"))
+function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Int)
+    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     bar = c.bars[row]
     val = c.xscale(bar)
     nsyms = length(c.symbols)
     frac = c.max_val[] > 0 ? max(val, zero(val)) / c.max_val[] : 0.0
     max_bar_width = max(c.char_width - 2 - c.max_len[], 1)
     bar_head = round(Int, frac * max_bar_width, nsyms > 1 ? RoundDown : RoundNearestTiesUp)
-    print_col(io, c.colors[row], c.symbols[nsyms]^bar_head)
+    print_color(io, c.colors[row], c.symbols[nsyms]^bar_head)
     if nsyms > 1
         rem = (frac * max_bar_width - bar_head) * (nsyms - 2)
-        print_col(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
+        print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
     if bar ≥ 0
-        print_col(io, nothing, ' ', bar_lbl)
+        print_color(io, nothing, ' ', bar_lbl)
         len = length(bar_lbl)
     else
         len = -1
     end
     pad_len = max(max_bar_width + 1 + c.max_len[] - bar_head - len, 0)
-    print_nc(io, ' '^round(Int, pad_len))
+    print_nocol(io, ' '^round(Int, pad_len))
     nothing
 end

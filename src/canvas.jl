@@ -1,35 +1,79 @@
 abstract type Canvas <: GraphicsArea end
 
-@inline nrows(c::Canvas) = size(c.grid, 2)
-@inline ncols(c::Canvas) = size(c.grid, 1)
+grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
+grid_type(c::Canvas) = grid_type(typeof(c))
+
+# we store the grid as the transpose of an array of (w, h) => (height, width) = (nrows, ncols)
+@inline nrows(c::Canvas) = size(c.grid, 1)
+@inline ncols(c::Canvas) = size(c.grid, 2)
+
+@inline lookup_offset(c::Canvas) = grid_type(c)(0)
 @inline pixel_height(c::Canvas) = c.pixel_height
 @inline pixel_width(c::Canvas) = c.pixel_width
-@inline origin_x(c::Canvas) = c.origin_x
 @inline origin_y(c::Canvas) = c.origin_y
+@inline origin_x(c::Canvas) = c.origin_x
 @inline height(c::Canvas) = c.height
 @inline width(c::Canvas) = c.width
 
-@inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
-@inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
-
-@inline x_to_pixel(c::Canvas, x::Number) = (x - origin_x(c)) / width(c) * pixel_width(c)
 @inline y_to_pixel(c::Canvas, y::Number) =
-    (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+    if c.yflip
+        (y - origin_y(c)) / height(c) * pixel_height(c)
+    else
+        (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+    end
+@inline x_to_pixel(c::Canvas, x::Number) =
+    if c.xflip
+        (1 - (x - origin_x(c)) / width(c)) * pixel_width(c)
+    else
+        (x - origin_x(c)) / width(c) * pixel_width(c)
+    end
 
-@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
+@inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
+@inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
+
 @inline valid_y(c::Canvas, y::Number) = origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c)
+@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
 
-@inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)  # NOTE: relaxed upper bound for |=
-@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)
+@inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound [ref(1)]
+@inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)
+
+function char_point!(
+    c::Canvas,
+    char_x::Int,
+    char_y::Int,
+    char::AbstractChar,
+    color::UserColorType,
+)
+    if checkbounds(Bool, c.grid, char_y, char_x)
+        c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
+        set_color!(c, char_x, char_y, ansi_color(color))
+    end
+    c
+end
+
+@inline function set_color!(
+    c::Canvas,
+    x::Int,
+    y::Int,
+    color::ColorType,
+    blend::Bool = c.blend,
+)
+    c.colors[y, x] = if (col = c.colors[y, x]) == INVALID_COLOR || !blend
+        color
+    else
+        blend_colors(col, color)
+    end
+    nothing
+end
 
 """
     pixel_size(c::Canvas)
 
-Canvas pixel resolution.
+Canvas pixel resolution (height, width).
 """
-pixel_size(c::Canvas) = (pixel_width(c), pixel_height(c))
+pixel_size(c::Canvas) = (pixel_height(c), pixel_width(c))
+Base.size(c::Canvas) = (height(c), width(c))
 origin(c::Canvas) = (origin_x(c), origin_y(c))
-Base.size(c::Canvas) = (width(c), height(c))
 
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, color)
@@ -41,7 +85,8 @@ points!(c::Canvas, x::Number, y::Number, color::UserColorType) =
     pixel!(c, floor(Int, scale_x_to_pixel(c, x)), floor(Int, scale_y_to_pixel(c, y)), color)
 
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+    length(X) == length(Y) ||
+        throw(DimensionMismatch("`X` and `Y` must be the same length"))
     for I in eachindex(X, Y)
         points!(c, X[I], Y[I], color)
     end
@@ -55,7 +100,7 @@ function points!(
     color::AbstractVector{T},
 ) where {T<:UserColorType}
     length(X) == length(Y) == length(color) ||
-        throw(DimensionMismatch("X, Y, and color must be the same length"))
+        throw(DimensionMismatch("`X`, `Y` and `color` must be the same length"))
     for i in eachindex(X)
         points!(c, X[i], Y[i], color[i])
     end
@@ -133,7 +178,8 @@ lines!(
 ) = lines!(c, x1, y1, x2, y2, color)
 
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
-    length(X) == length(Y) || throw(DimensionMismatch("X and Y must be the same length"))
+    length(X) == length(Y) ||
+        throw(DimensionMismatch("`X` and `Y` must be the same length"))
     for i in 2:length(X)
         isfinite(X[i - 1]) || continue
         isfinite(Y[i - 1]) || continue
@@ -151,10 +197,10 @@ function get_canvas_dimensions_for_matrix(
     canvas::Type{T},
     nrow::Int,
     ncol::Int,
-    max_width::Int,
     max_height::Int,
-    width::Int,
-    height::Int,
+    max_width::Int,
+    height::Union{Nothing,Int},
+    width::Union{Nothing,Int},
     margin::Int,
     padding::Int,
     out_stream::Union{Nothing,IO},
@@ -189,7 +235,7 @@ function get_canvas_dimensions_for_matrix(
     # Note: if both width and height are 0, it means that there are no
     #       constraints and the plot should resemble the structure of
     #       the matrix as close as possible
-    if width == 0 && height == 0
+    if width ≡ nothing && height ≡ nothing
         # If the interactive code did not take care of this then try
         # to plot the matrix in the correct aspect ratio (within specified bounds)
         if min_canv_height > min_canv_width
@@ -205,9 +251,9 @@ function get_canvas_dimensions_for_matrix(
         end
     end
 
-    if width == 0 && height > 0
+    if width ≡ nothing && height > 0
         width = min(height * canv_ar, max_width)
-    elseif width > 0 && height == 0
+    elseif height ≡ nothing && width > 0
         height = min(width / canv_ar, max_height)
     end
 
@@ -233,7 +279,7 @@ function align_char_point(
     elseif halign ≡ :right
         char_x - (nchar - 1)
     else
-        error("Argument `halign=$halign` not supported.")
+        throw(ArgumentError("`halign=$halign` not supported"))
     end
     char_y = if valign in (:center, :vcenter)
         char_y
@@ -242,15 +288,15 @@ function align_char_point(
     elseif valign ≡ :bottom
         char_y - 1
     else
-        error("Argument `valign=$valign` not supported.")
+        throw(ArgumentError("`valign=$valign` not supported"))
     end
     char_x, char_y
 end
 
 function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
-    # when hitting right boundary with canvases capable of encoding more than 1 pixel per char
-    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
-    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    # when hitting boundaries with canvases capable of encoding more than 1 pixel per char (see ref(1))
+    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
+    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
     (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
@@ -258,8 +304,8 @@ function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:C
 end
 
 function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
-    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
-    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
+    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
+    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
     (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
@@ -289,63 +335,17 @@ function annotate!(
     c
 end
 
-function annotate!(c::Canvas, x::Number, y::Number, text::Char, color::UserColorType)
+function annotate!(
+    c::Canvas,
+    x::Number,
+    y::Number,
+    text::AbstractChar,
+    color::UserColorType,
+)
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_point!(c, char_x, char_y, text, color)
     c
-end
-
-function print_colorbar_row(
-    io::IO,
-    print_nc,
-    print_col,
-    c::Canvas,
-    row::Int,
-    cmap::ColorMap,
-    lim_str,
-    plot_padding,
-    zlabel,
-    max_len,
-    blank::Char,
-)
-    b = BORDERMAP[cmap.border]
-    bc = BORDER_COLOR[]
-    label = ""
-    if row == 1
-        label = lim_str[2]
-        # print top border and maximum z value
-        print_col(io, bc, b[:tl], b[:t], b[:t], b[:tr])
-        print_nc(io, plot_padding)
-        print_col(io, bc, label)
-    elseif row == nrows(c)
-        label = lim_str[1]
-        # print bottom border and minimum z value
-        print_col(io, bc, b[:bl], b[:b], b[:b], b[:br])
-        print_nc(io, plot_padding)
-        print_col(io, bc, label)
-    else
-        # print gradient
-        print_col(io, bc, b[:l])
-        if cmap.lim[1] == cmap.lim[2]  # if min and max are the same, single color
-            fgcol = bgcol = cmap.callback(1, 1, 1)
-        else  # otherwise, blend from min to max
-            n = 2(nrows(c) - 2)
-            r = row - 2
-            fgcol = cmap.callback(n - 2r - 1, 1, n)
-            bgcol = cmap.callback(n - 2r, 1, n)
-        end
-        print_col(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
-        print_col(io, bc, b[:r])
-        print_nc(io, plot_padding)
-        # print z label
-        if row == div(nrows(c), 2) + 1
-            label = zlabel
-            print_nc(io, label)
-        end
-    end
-    print_nc(io, blank^(max_len - length(label)))
-    nothing
 end

@@ -1,17 +1,23 @@
 @testset "empty" begin
     canvas =
-        BrailleCanvas(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
+        BrailleCanvas(10, 40, origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0)
     p = @inferred Plot(canvas)
     @test_throws ArgumentError Plot(canvas, margin = -1)
     test_ref("plot/empty.txt", @show_col(p))
-    canvas = BrailleCanvas(30, 5, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
-    p = @inferred Plot(canvas)
+    p = @inferred Plot(
+        BrailleCanvas(5, 30; origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0),
+    )
     test_ref("plot/empty_small.txt", @show_col(p))
 end
 
 @testset "invisible" begin
     p = Plot([0], [0], width = 0)
     @test !p.graphics.visible
+end
+
+@testset "width - height, :auto" begin
+    p = Plot([0], [0], height = :auto, width = :auto)
+    @test p isa Plot
 end
 
 @testset "x/y ticks" begin
@@ -22,9 +28,16 @@ end
     test_ref("plot/noyticks.txt", @show_col(p))
 end
 
-function _test_canvas()
-    canvas =
-        BrailleCanvas(40, 10, origin_x = 0.0, origin_y = 0.0, width = 1.0, height = 1.0)
+function _test_canvas(; kw...)
+    canvas = BrailleCanvas(
+        10,
+        40;
+        origin_y = 0.0,
+        origin_x = 0.0,
+        height = 1.0,
+        width = 1.0,
+        kw...,
+    )
     lines!(canvas, 0.0, 0.0, 1.0, 1.0, :blue)
     lines!(canvas, 0.2, 0.7, 1.0, 0.0, :red)
     lines!(canvas, 0.0, 2.0, 0.5, 0.0, :green)
@@ -47,6 +60,15 @@ end
 
     p = @inferred Plot(_test_canvas(), xlabel = "x", ylabel = "y", compact = true)
     test_ref("plot/xylabel_compact.txt", @show_col(p))
+end
+
+@testset "xyflip" begin
+    p = Plot(_test_canvas(; xflip = true))
+    test_ref("plot/xflip.txt", @show_col(p))
+    p = Plot(_test_canvas(; yflip = true))
+    test_ref("plot/yflip.txt", @show_col(p))
+    p = Plot(_test_canvas(; xflip = true, yflip = true))
+    test_ref("plot/xyflip.txt", @show_col(p))
 end
 
 @testset "padding" begin

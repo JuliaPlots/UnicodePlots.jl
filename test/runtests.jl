@@ -1,13 +1,18 @@
 using UnicodePlots, Test
 
+import UnicodePlots: lines!, points!, pixel!, nrows, ncols
+import UnicodePlots: print_row, preprocess!, addrow!
+
 # Incorrect usage of LazyModules could easily bring up world age issues. We need to test
 # this before loading all other test dependencies -- because otherwise potential world age
 # issues get automatically resolved.
 include("tst_world_age.jl")
 
-using Dates: Date, Day
-using ReferenceTests
+import Dates: Date, Day
 import Random: seed!
+import FileIO
+
+using ReferenceTests
 using LinearAlgebra
 using TimerOutputs
 using ColorTypes
@@ -15,13 +20,12 @@ using StableRNGs
 using StatsBase
 using Crayons
 using Unitful
-import FileIO
 
 include("fixes.jl")
 
 const TO = TimerOutput()
 const RNG = StableRNG(1337)
-const T_SZ = (24, 80)  # terminal size
+const T_SZ = (24, 80)  # default terminal size on unix
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(
@@ -75,20 +79,14 @@ end
 
 # return type Plot{BrailleCanvas{typeof(identity), typeof(identity)}} does not match
 # inferred return type Plot{var"#s129"} where var"#s129"<:Canvas
+const ID = typeof(identity)
 
 macro binf(ex)
-    :(@inferred(Plot{BrailleCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
+    :(@inferred(Plot{BrailleCanvas{ID,ID}}, $ex)) |> esc
 end
 
 macro hinf(ex)
-    :(@inferred(Plot{HeatmapCanvas{typeof(identity),typeof(identity)}}, $ex)) |> esc
-end
-
-macro dinf(ex)
-    :(@inferred(
-        Plot{DensityCanvas{typeof(identity),typeof(identity),typeof(identity)}},
-        $ex
-    )) |> esc
+    :(@inferred(Plot{HeatmapCanvas{ID,ID}}, $ex)) |> esc
 end
 
 macro timeit_include(path::AbstractString)
@@ -97,9 +95,10 @@ macro timeit_include(path::AbstractString)
     end) |> esc
 end
 
-withenv("FORCE_COLOR" => "X") do  # github.com/JuliaPlots/UnicodePlots.jl/issues/134
+println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
+
+withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
-    println("\n== TESTING WITH $(UnicodePlots.colormode())bit COLORMODE ==\n")
     @timeit_include "tst_depwarn.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
@@ -124,3 +123,5 @@ end
 
 # ~ 166s & 15.0GiB on 1.7
 print_timer(TO; compact = true, sortby = :firstexec)
+
+println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

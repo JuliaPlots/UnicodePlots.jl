@@ -3,89 +3,79 @@ module UnicodePlots
 using SparseArrays: AbstractSparseMatrix, findnz
 using StatsBase: Histogram, fit, percentile
 using LinearAlgebra
+using ColorSchemes
 using StaticArrays
 using LazyModules
+using ColorTypes
 using Crayons
 using Printf
 using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import LinearAlgebra: Transpose
 import Base: RefValue
 import MarchingCubes
 import NaNMath
 import Contour
 
 @lazy import FreeTypeAbstraction = "663a7486-cb36-511b-a19d-713bb74d65c9"
-import ColorTypes
 import FileIO
 
-export GraphicsArea,
-    Canvas,
+# composite types
+export Plot,
+    BarplotGraphics,
+    BoxplotGraphics,
+    GraphicsArea,
     BrailleCanvas,
     DensityCanvas,
+    HeatmapCanvas,
     BlockCanvas,
     AsciiCanvas,
     DotCanvas,
-    HeatmapCanvas,
-    BarplotGraphics,
-    BoxplotGraphics,
-    pixel_width,
-    pixel_height,
-    pixel_size,
-    width,
-    height,
-    origin_x,
-    origin_y,
-    origin,
-    printrow,
-    nrows,
-    ncols,
-    pixel!,
-    points!,
-    lines!,
-    addrow!,
-    Plot,
-    title,
-    title!,
-    xlabel,
-    xlabel!,
-    ylabel,
-    ylabel!,
-    zlabel,
-    zlabel!,
-    label!,
-    annotate!,
-    barplot,
-    barplot!,
-    lineplot,
-    lineplot!,
-    scatterplot,
-    scatterplot!,
-    contourplot,
-    contourplot!,
-    surfaceplot,
-    surfaceplot!,
-    isosurface,
-    isosurface!,
-    stairs,
-    stairs!,
-    histogram,
-    vertical_histogram,
-    horizontal_histogram,
-    densityplot,
-    densityplot!,
-    heatmap,
-    spy,
-    boxplot,
-    boxplot!,
-    polarplot,
-    polarplot!,
-    MVP,
-    savefig,
-    default_size!,
-    preprocess!
+    Canvas,
+    MVP
 
-include("colormaps.jl")
+# helpers
+export default_size!,
+    annotate!,
+    title!,
+    title,
+    label!,
+    xlabel!,
+    xlabel,
+    ylabel!,
+    ylabel,
+    zlabel!,
+    zlabel,
+    vline!,
+    hline!,
+    savefig
+
+# methods with mutating variants
+export scatterplot!,
+    scatterplot,
+    lineplot!,
+    lineplot,
+    densityplot!,
+    densityplot,
+    contourplot!,
+    contourplot,
+    surfaceplot!,
+    surfaceplot,
+    isosurface!,
+    isosurface,
+    polarplot!,
+    polarplot,
+    barplot!,
+    barplot,
+    boxplot!,
+    boxplot,
+    stairs!,
+    stairs
+
+# methods without mutating variants
+export horizontal_histogram, vertical_histogram, histogram, heatmap, spy
+
 include("common.jl")
 include("lut.jl")
 
@@ -101,11 +91,17 @@ include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
+@assert typemax(UnicodeType) ≥ maximum(
+    (
+        typemax ∘ grid_type
+    ).((HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)),
+)
 
 include("description.jl")
 include("volume.jl")
 
 include("plot.jl")
+include("show.jl")
 include("interface/barplot.jl")
 include("interface/histogram.jl")
 include("interface/scatterplot.jl")

@@ -33,6 +33,11 @@
         test_ref("issues/steps.txt", @show_col(p))
     end
 
+    @testset "signed zero (#229)" begin
+        p = histogram([-1.0, -0.0, 1.0])
+        test_ref("issues/signed_zero.txt", @show_col(p))
+    end
+
     @testset "grid log scale (#265)" begin
         @test lineplot(0.01:10, 0.01:10, xscale = :log10, yscale = :log10) isa Plot
     end
