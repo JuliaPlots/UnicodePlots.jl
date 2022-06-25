@@ -3,7 +3,7 @@ uuid = "b8865327-cd53-5732-bb35-84acbb429228"
 license = "MIT"
 desc = "Unicode-based scientific plotting for working in the terminal"
 authors = ["Christof Stocker <stocker.christof@gmail.com>", "T Bltg <tf.bltg@gmail.com>"]
-version = "3.0.0"
+version = "3.0.1"
 
 [deps]
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
@@ -48,4 +48,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [targets]
-test = ["ColorTypes", "ImageMagick", "ReferenceTests", "StableRNGs", "Random", "Test", "TimerOutputs"]
+test = ["ColorTypes", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TimerOutputs"]
