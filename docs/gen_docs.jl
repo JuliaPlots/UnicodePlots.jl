@@ -154,8 +154,7 @@ main() = begin
 
   plain_md_par(x) = x |> Paragraph |> MD |> plain
 
-  tab = ' '^2
-  indent(x, n=1) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
+  indent(x, n=1, tab=' '^2) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
 
   examples = NamedTuple{keys(exs)}(
     (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"450\"><br>") for (k, e) ∈ pairs(exs))

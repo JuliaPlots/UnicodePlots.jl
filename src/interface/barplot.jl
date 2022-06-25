@@ -38,8 +38,8 @@ $(arguments(
 
 ```julia-repl
 julia> barplot(["Paris", "New York", "Madrid"],
-                      [2.244, 8.406, 3.165],
-                      xlabel = "population [in mil]")
+               [2.244, 8.406, 3.165],
+               xlabel = "population [in mil]")
             ┌                                        ┐ 
       Paris ┤■■■■■■■■■ 2.244                           
    New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406   
@@ -58,7 +58,6 @@ function barplot(
     color::Union{UserColorType,AbstractVector} = :green,
     width::Union{Nothing,Integer} = nothing,
     xscale = KEYWORDS.xscale,
-    xlabel = transform_name(xscale),
     name::AbstractString = KEYWORDS.name,
     kw...,
 )
@@ -94,7 +93,7 @@ function barplot(
         maximum = nothing,
         okw...,
     )
-    plot = Plot(area; border = :barplot, xlabel = xlabel, pkw...)
+    plot = Plot(area; border = :barplot, xlabel = transform_name(xscale), pkw...)
 
     isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
     for i ∈ eachindex(text)

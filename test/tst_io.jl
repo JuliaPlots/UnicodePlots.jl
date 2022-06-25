@@ -45,22 +45,24 @@ end
 @testset "stringify plot - performance regression" begin
     p = heatmap(collect(1:30) * collect(1:30)')
     @test string(p; color = true) isa String  # 1st pass - ttfp
-    @test string(p; color = true) isa String  # spurious failures ?
 
     if Sys.islinux()
+        GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
         @test stats.bytes / 1e3 < 600  # ~ 550kB on 1.7
         @test stats.time * 1e3 < 2  # ~ 1.17ms on 1.7
+        GC.enable(true)
     end
 
     sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
     @test string(p; color = true) isa String  # 1st pass - ttfp
-    @test string(p; color = true) isa String  # spurious failures ?
 
     if Sys.islinux()
+        GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
         @test stats.bytes / 1e3 < 250  # ~ 155kB on 1.7
         @test stats.time * 1e3 < 1  # ~ 0.42ms on 1.7
+        GC.enable(true)
     end
 end
