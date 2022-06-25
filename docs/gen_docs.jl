@@ -28,7 +28,7 @@ main() = begin
     lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
     lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
     lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
-    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color = [:green :red :yellow :cyan])"),
+    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
     lineplot8 = ("Lineplot", """
       using Unitful
       a, t = 1u"m/s^2", (0:100) * u"s"
@@ -36,16 +36,16 @@ main() = begin
       """),
     lineplot9 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
     lineplot10 = ("Lineplot", """
-      p = Plot([NaN], [NaN]; xlim = (0, 8), ylim = (0, 8))
+      p = Plot([NaN], [NaN]; xlim=(0, 8), ylim=(0, 8))
       vline!(p, [2, 6], [2, 6], color=:red)
       hline!(p, [2, 6], [2, 6], color=:white)
       hline!(p, 7, color=:cyan)
       vline!(p, 1, color=:yellow)
-    """),
+      """),
     stairs1 = ("Staircase", """
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
              color=:yellow, style=:post, height=6, title="Staircase")
-    """),
+      """),
     barplot1 = ("Barplot", """
       barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165], title="Population")
       """),
@@ -66,10 +66,10 @@ main() = begin
       """),
     densityplot2 = ("Densityplot", """
       x = randn(10_000); x[1_000:6_000] .= 2
-      densityplot(x, randn(10_000); dscale = x -> log(1 + x))
+      densityplot(x, randn(10_000); dscale=x -> log(1 + x))
       """),
     contourplot1 = ("Contourplot", "contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2))"),
-    polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))"),
+    polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length=20), range(0, 2, length=20))"),
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     surfaceplot1 = ("Surfaceplot", """
@@ -154,13 +154,12 @@ main() = begin
 
   plain_md_par(x) = x |> Paragraph |> MD |> plain
 
+  tab = ' '^2
+  indent(x, n=1) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
+
   examples = NamedTuple{keys(exs)}(
     (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"450\"><br>") for (k, e) in pairs(exs))
   )
-
-  tab = ' '^2
-
-  indent(x, n) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
 
   desc_ex(k, d, n=2) = (
     if k ≡ :border
@@ -183,66 +182,69 @@ main() = begin
   summary(name) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary><br>"  # named anchor + formatting
 
   methods = plain_md_par("""
-    - `title!(plot::Plot, title::String)`
+Non-exhaustive methods description:
 
-      - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
+  - `title!(plot::Plot, title::String)`
 
-    - `xlabel!(plot::Plot, xlabel::String)`
+    - `title` the string to write in the top center of the plot window. If the title is empty the whole line of the title will not be drawn
 
-      - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
+  - `xlabel!(plot::Plot, xlabel::String)`
 
-    - `ylabel!(plot::Plot, xlabel::String)`
+    - `xlabel` the string to display on the bottom of the plot window. If the title is empty the whole line of the label will not be drawn
 
-      - `ylabel` the string to display on the far left of the plot window.
+  - `ylabel!(plot::Plot, xlabel::String)`
 
-  The method `label!` is responsible for the setting all the textual decorations of a plot. It has two functions:
+    - `ylabel` the string to display on the far left of the plot window.
 
-    - `label!(plot::Plot, where::Symbol, value::String)`
+The method `label!` is responsible for the setting all the textual decorations of a plot. It has two functions:
 
-      - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
+  - `label!(plot::Plot, where::Symbol, value::String)`
 
-    - `label!(plot::Plot, where::Symbol, row::Int, value::String)`
+    - `where` can be any of: `:tl` (top-left), `:t` (top-center), `:tr` (top-right), `:bl` (bottom-left), `:b` (bottom-center), `:br` (bottom-right), `:l` (left), `:r` (right)
 
-      - `where` can be any of: `:l` (left), `:r` (right)
+  - `label!(plot::Plot, where::Symbol, row::Int, value::String)`
 
-      - `row` can be between 1 and the number of character rows of the canvas
-  $(plain_md_par(indent(examples.decorate, 2)))
+    - `where` can be any of: `:l` (left), `:r` (right)
 
-    - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
-      - `text` arbitrary annotation at position (x, y)
+    - `row` can be between 1 and the number of character rows of the canvas
+$(plain_md_par(indent(examples.decorate)))
+
+  - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
+    - `text` arbitrary annotation at position (x, y)
   """)
 
   low_level_interface = plain_md_par("""
-  The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically, it uses Unicode characters to represent pixel.
+The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically, it uses Unicode characters to represent pixel.
 
-  Here is a simple example:
+Here is a simple example:
 
-  $(examples.canvas)
+$(indent(examples.canvas, 0))
 
-  You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `print_row` to embed the canvas anywhere you wish. For example, `print_row(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
+You can access the height and width of the canvas (in characters) with `nrows(canvas)` and `ncols(canvas)` respectively. You can use those functions in combination with `print_row` to embed the canvas anywhere you wish. For example, `print_row(STDOUT, canvas, 3)` writes the third character row of the canvas to the standard output.
 
-  As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
+As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
 
-  $(examples.blending)
+$(indent(examples.blending, 0))
 
-  The following types of `Canvas` are implemented:
-    - **BrailleCanvas**:
-      This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
+The following types of `Canvas` are implemented:
 
-    - **BlockCanvas**:
-      This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
+- **BrailleCanvas**:
+  This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
 
-    - **HeatmapCanvas**:
-      This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
+- **BlockCanvas**:
+  This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 
-    - **AsciiCanvas** and **DotCanvas**:
-      These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
+- **HeatmapCanvas**:
+  This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
 
-    - **DensityCanvas**:
-      Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+- **AsciiCanvas** and **DotCanvas**:
+  These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
-    - **BarplotGraphics**:
-      This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
+- **DensityCanvas**:
+  Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+
+- **BarplotGraphics**:
+  This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
   """)
 
   kw_description = plain_md_par("""
@@ -250,7 +252,7 @@ main() = begin
 
   $(join(
     (
-      "$tab- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
+      "- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
       for (k, d) in pairs(UnicodePlots.DESCRIPTION) if k in keys(UnicodePlots.KEYWORDS)
     ), '\n'
   ))
@@ -313,17 +315,17 @@ Here is a list of the main high-level functions for common scenarios:
 
   Here is a quick hello world example of a typical use-case:
 
-  $(examples.lineplot1)
+$(indent(examples.lineplot1))
 
   There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
 
   In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
 
-  $(examples.lineplot2)
+$(indent(examples.lineplot2))
 
   Some plot methods have a mutating variant that ends with an exclamation mark:
 
-  $(examples.lineplot3)
+$(indent(examples.lineplot3))
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
@@ -335,20 +337,20 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   $(summary("Scatterplot"))
 
-  $(examples.scatterplot1)
+$(indent(examples.scatterplot1))
 
   Axis scaling (`xscale` and/or `yscale`) is supported: choose from (`:identity`, `:ln`, `:log2`, `:log10`) or use an arbitrary scale function:
 
-  $(examples.scatterplot2)
+$(indent(examples.scatterplot2))
 
   For the axis scale exponent, one can revert to using `ASCII` characters instead of `Unicode` ones using the keyword `unicode_exponent=false`:
 
-  $(examples.scatterplot3)
+$(indent(examples.scatterplot3))
 
   Using a `marker` is supported, choose a `Char`, a unit length `String` or a symbol name such as `:circle` (more from `keys(UnicodePlots.MARKERS)`).
   One can also provide a vector of `marker`s and/or `color`s as in the following example:
 
-  $(examples.scatterplot4)
+$(indent(examples.scatterplot4))
 
   As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities, or plotting multiple series (`Matrix` argument).
 </details>
@@ -356,44 +358,44 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   $(summary("Lineplot"))
 
-  $(examples.lineplot4)
+$(indent(examples.lineplot4))
 
   It's also possible to specify a function and a range:
 
-  $(examples.lineplot5)
+$(indent(examples.lineplot5))
 
   You can also plot lines by specifying an intercept and slope:
 
-  $(examples.lineplot6)
+$(indent(examples.lineplot6))
 
   Plotting multiple series is supported by providing an `AbstractMatrix` for the `y` argument, with the individual series corresponding to the columns of the `Matrix`. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
 
-  $(examples.lineplot7)
+$(indent(examples.lineplot7))
 
   Physical units are supported through `Unitful`:
 
-  $(examples.lineplot8)
+$(indent(examples.lineplot8))
 
   Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
 
-  $(examples.lineplot9)
+$(indent(examples.lineplot9))
 
   `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
 
-  $(examples.lineplot10)
+$(indent(examples.lineplot10))
 
 </details>
 
 <details open>
   $(summary("Staircase plot"))
 
-  $(examples.stairs1)
+$(indent(examples.stairs1))
 </details>
 
 <details open>
   $(summary("Barplot"))
 
-  $(examples.barplot1)
+$(indent(examples.barplot1))
 
   _Note_: You can use the keyword argument `symbols` to specify the characters that should be used to plot the bars (e.g. `symbols=['#']`).
 </details>
@@ -401,49 +403,49 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   $(summary("Histogram"))
 
-  $(examples.histogram1)
+$(indent(examples.histogram1))
 
   The `histogram` function also supports axis scaling using the parameter `xscale`:
 
-  $(examples.histogram2)
+$(indent(examples.histogram2))
 
   Vertical histograms are supported:
 
-  $(examples.histogram3)
+$(indent(examples.histogram3))
 </details>
 
 <details open>
   $(summary("Boxplot"))
 
-  $(examples.boxplot1)
+$(indent(examples.boxplot1))
 
-  $(examples.boxplot2)
+$(indent(examples.boxplot2))
 </details>
 
 <details open>
   $(summary("Sparsity Pattern"))
 
-  $(examples.spy1)
+$(indent(examples.spy1))
 
   Plotting the zeros pattern is also possible using `show_zeros=true`:
 
-  $(examples.spy2)
+$(indent(examples.spy2))
 </details>
 
 <details open>
   $(summary("Density Plot"))
 
-  $(examples.densityplot1)
+$(indent(examples.densityplot1))
 
   Using a scale function (e.g. damping peaks) is supported using the `dscale` keyword:
 
-  $(examples.densityplot2)
+$(indent(examples.densityplot2))
 </details>
 
 <details open>
   $(summary("Contour Plot"))
 
-  $(examples.contourplot1)
+$(indent(examples.contourplot1))
 
   The keyword `levels` controls the number of contour levels. One can also choose a `colormap` as with `heatmap`, and disable the colorbar using `colorbar=false`.
 </details>
@@ -451,7 +453,7 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   $(summary("Heatmap Plot"))
 
-  $(examples.heatmap1)
+$(indent(examples.heatmap1))
 
   The `heatmap` function also supports axis scaling using the parameters `xfact`, `yfact` and axis offsets after scaling using `xoffset` and `yoffset`.
 
@@ -463,7 +465,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   Use the `array` keyword in order to display the matrix in the array convention (as in the repl).
 
-  $(examples.heatmap2)
+$(indent(examples.heatmap2))
 </details>
 
 <details open>
@@ -471,7 +473,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   Plots data in polar coordinates with `θ` the angles in radians.
 
-  $(examples.polarplot1)
+$(indent(examples.polarplot1))
 
 </details>
 
@@ -480,12 +482,12 @@ Here is a list of the main high-level functions for common scenarios:
 
   Plots a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
 
-  $(examples.surfaceplot1)
+$(indent(examples.surfaceplot1))
 
   Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
   To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
-  $(examples.surfaceplot2)
+$(indent(examples.surfaceplot2))
 </details>
 
 <details open>
@@ -496,7 +498,7 @@ Here is a list of the main high-level functions for common scenarios:
   Back face culling (hide not visible facets) can be activated using `cull=true`.
   One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
-  $(examples.isosurface)
+$(indent(examples.isosurface))
 </details>
 
 ## Documentation
@@ -566,19 +568,19 @@ Here is a list of the main high-level functions for common scenarios:
 <details>
   $(summary("Methods (API)"))
 
-  $(methods)
+$(methods)
 </details>
 
 <details>
   $(summary("Keywords description (API)"))
 
-  $(kw_description)
+$(indent(kw_description))
 </details>
 
 <details>
   $(summary("Low-level Interface"))
 
-  $(low_level_interface)
+$(indent(low_level_interface))
 </details>
 
 <details>
@@ -587,12 +589,12 @@ Here is a list of the main high-level functions for common scenarios:
   Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]` or `buf[y, x]`.
   Common users of UnicodePlots don't need to be aware of this axis difference if sticking to public interface.
 
-  $(examples.buffer_convention)
+$(indent(examples.buffer_convention))
 
 <details>
   $(summary("Documentation update"))
 
-  $(doc_update)
+$(indent(doc_update))
 </details>
 
 ## License
