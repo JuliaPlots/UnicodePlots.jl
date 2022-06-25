@@ -18,26 +18,24 @@
 end
 
 @testset "savefig" begin
-    for p in (
+    for p ∈ (
         lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title"),
         barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
     )
-        for bbox in (nothing, :red)
-            for tr in (true, false)
-                tmp = tempname() * ".png"
+        for bbox ∈ (nothing, :red), tr ∈ (true, false)
+            tmp = tempname() * ".png"
 
-                savefig(
-                    p,
-                    tmp;
-                    transparent = tr,
-                    bounding_box_glyph = bbox,
-                    bounding_box = bbox,
-                )
-                @test filesize(tmp) > 1_000
+            savefig(
+                p,
+                tmp;
+                transparent = tr,
+                bounding_box_glyph = bbox,
+                bounding_box = bbox,
+            )
+            @test filesize(tmp) > 1_000
 
-                img = FileIO.load(tmp)
-                @test all(size(img) .> (100, 100))
-            end
+            img = FileIO.load(tmp)
+            @test all(size(img) .> (100, 100))
         end
 
         @test_throws ArgumentError savefig(p, tempname() * ".jpg")
@@ -47,6 +45,7 @@ end
 @testset "stringify plot - performance regression" begin
     p = heatmap(collect(1:30) * collect(1:30)')
     @test string(p; color = true) isa String  # 1st pass - ttfp
+    @test string(p; color = true) isa String  # spurious failures ?
 
     if Sys.islinux()
         stats = @timed string(p; color = true)  # repeated !
@@ -57,6 +56,7 @@ end
     sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
     @test string(p; color = true) isa String  # 1st pass - ttfp
+    @test string(p; color = true) isa String  # spurious failures ?
 
     if Sys.islinux()
         stats = @timed string(p; color = true)  # repeated !

@@ -1,5 +1,6 @@
 """
     boxplot(data; kw...)
+    boxplot!(p, args...; kw...)
 
 # Description
 
@@ -17,7 +18,6 @@ and the keys, which have to be strings, will be used as the labels.
 # Usage
     
     boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
-
     boxplot(dict; kw...)
 
 # Arguments
@@ -55,45 +55,44 @@ julia> boxplot([1, 2, 3, 7], title = "Test")
 function boxplot(
     text::AbstractVector{<:AbstractString},
     data::AbstractVector{<:AbstractArray{<:Number}};
-    border = :corners,
     color::Union{UserColorType,AbstractVector} = :green,
     width::Union{Nothing,Integer} = nothing,
     xlim = KEYWORDS.xlim,
     kw...,
 )
+    pkw, okw = split_plot_kw(; kw...)
     length(xlim) == 2 ||
         throw(ArgumentError("`xlim` must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("wrong number of text"))
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(something(width, DEFAULT_WIDTH[]), 10)
 
-    area = BoxplotGraphics(first(data), width, color = color, min_x = min_x, max_x = max_x)
-    for i in 2:length(data)
+    area = BoxplotGraphics(
+        first(data),
+        width,
+        color = color,
+        min_x = min_x,
+        max_x = max_x,
+        okw...,
+    )
+    for i ∈ 2:length(data)
         addseries!(area, data[i])
     end
-
-    plot = Plot(area; border = border, kw...)
+    plot = Plot(area; border = :corners, pkw...)
 
     min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
     label!(plot, :bl, min_x_str, color = BORDER_COLOR[])
     label!(plot, :b, mean_x_str, color = BORDER_COLOR[])
     label!(plot, :br, max_x_str, color = BORDER_COLOR[])
 
-    for (i, name) in enumerate(text)
+    for (i, name) ∈ enumerate(text)
         # Find end of last 3-line region, then add 2 for center of current
         length(name) > 0 && label!(plot, :l, 3(i - 1) + 2, name)
     end
     plot
 end
 
-"""
-    boxplot!(plot, data; kw...)
-
-Mutating variant of `boxplot`, in which the first parameter (`plot`) specifies the existing plot to draw on.
-
-See `boxplot` for more information.
-"""
-function boxplot!(
+@doc (@doc boxplot) function boxplot!(
     plot::Plot{<:BoxplotGraphics},
     data::AbstractVector{<:Number};
     name = KEYWORDS.name,
@@ -122,4 +121,4 @@ boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...) =
 boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...) =
     boxplot([text], [data]; kw...)
 boxplot(data::AbstractVector{<:Number}; kw...) = boxplot("", data; kw...)
-boxplot(dict::Dict; kw...) = boxplot(sorted_keys_values(dict)...; kw...)
+boxplot(dict::AbstractDict; kw...) = boxplot(sorted_keys_values(dict)...; kw...)

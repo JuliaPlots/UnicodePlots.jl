@@ -1,5 +1,6 @@
 """
     surfaceplot(x, y, A; kw...)
+    surfaceplot!(p, args...; kw...)
 
 Draws a 3D surface plot on a new canvas (masking values using `NaN`s is supported).
 To plot a slice one can pass an anonymous function which maps to a constant height: `zscale = z -> a_constant`.
@@ -55,16 +56,12 @@ function surfaceplot(
     x::AbstractVecOrMat,
     y::AbstractVecOrMat,
     A::Union{Function,AbstractVecOrMat};
-    canvas::Type = BrailleCanvas,
-    color::UserColorType = nothing,  # NOTE: nothing as default (uses colormap), but allow single color
-    colormap = KEYWORDS.colormap,
-    colorbar::Bool = true,
-    projection::Union{MVP,Symbol} = KEYWORDS.projection,
+    canvas::Type = KEYWORDS.canvas,
     zscale::Union{Symbol,Function,NTuple{2}} = :identity,
-    lines::Bool = false,
-    zlim = KEYWORDS.zlim,
+    colormap = KEYWORDS.colormap,
     kw...,
 )
+    pkw, okw = split_plot_kw(; kw...)
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
         repeat(x, 1, length(y)), repeat(y', length(x), 1)
     else
@@ -94,34 +91,29 @@ function surfaceplot(
         throw(ArgumentError("zscale=$zscale not understood"))
     end
 
-    plot =
-        Plot(collect(ex), collect(ey), collect(ez), canvas; projection = projection, kw...)
-    surfaceplot!(
-        plot,
-        X,
-        Y,
-        Z,
-        H;
-        color = color,
+    plot = Plot(
+        collect.((ex, ey, ez))...,
+        canvas;
+        projection = KEYWORDS.projection,
         colormap = colormap,
-        colorbar = colorbar,
-        lines = lines,
-        zlim = zlim,
+        pkw...,
     )
+    surfaceplot!(plot, X, Y, Z, H; colormap = colormap, okw...)
 end
 
-function surfaceplot!(
+@doc (@doc surfaceplot) function surfaceplot!(
     plot::Plot{<:Canvas},
     X::AbstractVecOrMat,  # support AbstractVector for `Plots.jl`
     Y::AbstractVecOrMat,
     Z::AbstractVecOrMat,
-    H::AbstractVecOrMat;
-    color::UserColorType = nothing,
+    H::Union{AbstractVecOrMat,Nothing} = nothing;
+    color::UserColorType = nothing,  # NOTE: nothing as default (uses colormap), but allow single color
     colormap = KEYWORDS.colormap,
-    colorbar::Bool = true,
     lines::Bool = false,
     zlim = KEYWORDS.zlim,
+    kw...,
 )
+    H = something(H, Z)
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("`X`, `Y`, `Z` and `H` must have same length"))
 
@@ -130,11 +122,12 @@ function surfaceplot!(
 
     plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? NaNMath.extrema(as_float(H)) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
-    plot.cmap.bar = colorbar && cmapped
+    plot.cmap.bar |= cmapped
 
     F = float(eltype(Z))
     if (
         lines &&
+        cmapped &&
         X isa AbstractMatrix &&
         Y isa AbstractMatrix &&
         Z isa AbstractMatrix &&
@@ -144,8 +137,8 @@ function surfaceplot!(
         col_cb = h -> callback(h, mh, Mh)
         buf = MMatrix{4,2,F}(undef)
         incs = (0, 0, 1, 0), (0, 0, 0, 1), (0, 0, 1, 1), (1, 0, 0, 1)
-        @inbounds for j in axes(X, 2), i in axes(X, 1)
-            for inc in incs
+        @inbounds for j ∈ axes(X, 2), i ∈ axes(X, 1)
+            for inc ∈ incs
                 (i1 = i + inc[1]) > m && continue
                 (j1 = j + inc[2]) > n && continue
                 (i2 = i + inc[3]) > m && continue

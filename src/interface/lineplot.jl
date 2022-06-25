@@ -1,5 +1,6 @@
 """
     lineplot(x, y; kw...)
+    lineplot!(p, args...; kw...)
 
 # Description
 
@@ -12,7 +13,6 @@ This means that the two vectors must be of the same length and ordering.
 # Usage
 
     lineplot([x], y; $(keywords((; head_tail = nothing, head_tail_frac = 5 / 100); add = (:canvas,)))
-
     lineplot(fun, [start], [stop]; kw...)
 
 # Arguments
@@ -63,30 +63,20 @@ julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-lineplot(
+function lineplot(
     x::AbstractVector,
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
     canvas::Type = KEYWORDS.canvas,
-    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
-    name::AbstractString = KEYWORDS.name,
-    head_tail::Union{Nothing,Symbol} = nothing,
-    head_tail_frac::Number = 5 / 100,
     kw...,
-) = lineplot!(
-    Plot(x, y, z, canvas; kw...),
-    x,
-    y,
-    z;
-    color = color,
-    name = name,
-    head_tail = head_tail,
-    head_tail_frac = head_tail_frac,
 )
+    pkw, okw = split_plot_kw(; kw...)
+    lineplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
+end
 
 lineplot(y::AbstractVector; kw...) = lineplot(axes(y, 1), y; kw...)
 
-function lineplot!(
+@doc (@doc lineplot) function lineplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector,
@@ -104,7 +94,7 @@ function lineplot!(
     if col_vec
         nx == length(color) ||
             throw(ArgumentError("`x`, `y` and `color` must be the same length"))
-        for i in eachindex(color)
+        for i ∈ eachindex(color)
             lines!(plot, x[i], y[i], z ≡ nothing ? z : z[i], color[i])
         end
     else
@@ -114,7 +104,7 @@ function lineplot!(
 
     n = min(round(Int, head_tail_frac * nx, RoundToZero), nx - 1)
     callable = n > 0 ? lines! : points!
-    if head_tail in (:head, :both)
+    if head_tail ∈ (:head, :both)
         callable(
             plot,
             x[(end - n):end],
@@ -123,7 +113,7 @@ function lineplot!(
             complement(col_vec ? color[(end - n):end] : color),
         )
     end
-    if head_tail in (:tail, :both)
+    if head_tail ∈ (:tail, :both)
         callable(
             plot,
             x[begin:(begin + n)],
@@ -151,7 +141,7 @@ function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
         color = first(colors),
         filter(a -> a.first ∉ (:name, :color), kw)...,
     )
-    for (i, (name, color, ys)) in enumerate(zip(names, colors, eachcol(y)))
+    for (i, (name, color, ys)) ∈ enumerate(zip(names, colors, eachcol(y)))
         i == 1 && continue
         lineplot!(plot, x, ys; name = name, color = color)
     end
@@ -160,7 +150,7 @@ end
 
 function lineplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors = multiple_series_defaults(y, kw, plot.series[] + 1)
-    for (name, color, ys) in zip(names, colors, eachcol(y))
+    for (name, color, ys) ∈ zip(names, colors, eachcol(y))
         lineplot!(plot, x, ys; name = name, color = color)
     end
     plot
@@ -320,7 +310,7 @@ function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name =
     tcolor = color_is_vec ? first(color) : color
     tname  = name_is_vec ? first(name) : name
     plot   = lineplot(first(F), args...; color = tcolor, name = tname, kw...)
-    for i in 2:n
+    for i ∈ 2:n
         tcolor = color_is_vec ? color[i] : color
         tname  = name_is_vec ? name[i] : name
         lineplot!(plot, F[i], args...; color = tcolor, name = tname)

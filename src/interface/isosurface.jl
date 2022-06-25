@@ -1,5 +1,6 @@
 """
     isosurface(x, y, z, V; kw...)
+    isosurface!(p, args...; kw...)
 
 Extract and plot isosurface from volumetric data, or implicit function.
 
@@ -58,14 +59,9 @@ function isosurface(
     z::AbstractVector,
     V::Union{Function,AbstractArray};
     canvas::Type = BrailleCanvas,
-    color::UserColorType = KEYWORDS.color,
-    projection::Union{MVP,Symbol} = KEYWORDS.projection,
-    isovalue::Number = 0,
-    centroid::Bool = true,
-    legacy::Bool = false,
-    cull::Bool = false,
     kw...,
 )
+    pkw, okw = split_plot_kw(; kw...)
     V isa Function && (V = V.(x, y', reshape(z, 1, 1, length(z))))
 
     plot = Plot(
@@ -73,24 +69,13 @@ function isosurface(
         extrema(y) |> collect,
         extrema(z) |> collect,
         canvas;
-        projection = projection,
-        kw...,
+        projection = KEYWORDS.projection,
+        pkw...,
     )
-    isosurface!(
-        plot,
-        x,
-        y,
-        z,
-        V;
-        color = color,
-        isovalue = isovalue,
-        centroid = centroid,
-        legacy = legacy,
-        cull = cull,
-    )
+    isosurface!(plot, x, y, z, V; okw...)
 end
 
-function isosurface!(
+@doc (@doc isosurface) function isosurface!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector,
@@ -112,7 +97,7 @@ function isosurface!(
     zs = float(eltype(z))[]
     cs = UserColorType[]
 
-    for (i1, i2, i3) in mc.triangles
+    for (i1, i2, i3) ∈ mc.triangles
         (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
         v1 = mc.vertices[i1]
         v2 = mc.vertices[i2]

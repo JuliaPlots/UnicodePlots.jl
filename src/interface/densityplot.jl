@@ -1,5 +1,6 @@
 """
     densityplot(x, y; kw...)
+    densityplot!(p, args...; kw...)
 
 # Description
 
@@ -8,7 +9,7 @@ Draws a density plot for the given points.
 The first vector `x` should contain the horizontal positions for all the points.
 The second vector `y` should contain the corresponding vertical positions respectively.
 The two vectors must thus be of the same length and ordering.
-One can pass an arbitrary `dscale` `Function` or `Symbol` for transforming density counts (e.g. peaks damping).
+One can pass an arbitrary `dscale` (`Function` or `Symbol`) for transforming density counts (e.g. peaks damping).
 
 # Usage
 
@@ -54,23 +55,25 @@ julia> densityplot(randn(1_000), randn(1_000), title = "Density Plot")
 function densityplot(
     x::AbstractVector,
     y::AbstractVector;
-    color::UserColorType = KEYWORDS.color,
-    grid = false,
-    name = KEYWORDS.name,
     dscale::Union{Symbol,Function} = :identity,
     kw...,
 )
+    pkw, okw = split_plot_kw(; kw...)
     plot = Plot(
         x,
         y,
         nothing,
         DensityCanvas;
-        grid = grid,
         canvas_kw = (; dscale = scale_callback(dscale)),
-        kw...,
+        grid = false,
+        pkw...,
     )
-    scatterplot!(plot, x, y; color = color, name = name)
+    scatterplot!(plot, x, y; okw...)
 end
 
-densityplot!(plot::Plot{<:DensityCanvas}, x::AbstractVector, y::AbstractVector; kw...) =
-    scatterplot!(plot, x, y; kw...)
+@doc (@doc densityplot) densityplot!(
+    plot::Plot{<:DensityCanvas},
+    x::AbstractVector,
+    y::AbstractVector;
+    kw...,
+) = scatterplot!(plot, x, y; kw...)

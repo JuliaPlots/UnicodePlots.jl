@@ -12,8 +12,8 @@ y = [2, 0, -5, 2, -5]
 
 @testset "boundaries" begin
     # tests that the two points are drawn correctly on the canvas
-    for canvas in (BrailleCanvas, AsciiCanvas, DotCanvas)
-        for width in (20:10:60), height in (10:5:30)
+    for canvas ∈ (BrailleCanvas, AsciiCanvas, DotCanvas)
+        for width ∈ (20:10:60), height ∈ (10:5:30)
             p = scatterplot(
                 1:2,
                 reverse(1:2),
@@ -28,7 +28,7 @@ y = [2, 0, -5, 2, -5]
 end
 
 @testset "positional types" begin
-    for p in (
+    for p ∈ (
         @binf(scatterplot(x, y)),
         @binf(scatterplot(float.(x), y)),
         @binf(scatterplot(x, float.(y))),
@@ -37,7 +37,7 @@ end
         test_ref("scatterplot/default.txt", @show_col(p))
     end
 
-    for p in (@binf(scatterplot(y)), @binf(scatterplot(float.(y))))
+    for p ∈ (@binf(scatterplot(y)), @binf(scatterplot(float.(y))))
         @test p isa Plot
         test_ref("scatterplot/y_only.txt", @show_col(p))
     end
@@ -111,7 +111,7 @@ end
 
     n = collect(1:length(UnicodePlots.MARKERS))
     m = collect(keys(UnicodePlots.MARKERS))
-    for canvas in (BrailleCanvas, DotCanvas, AsciiCanvas)
+    for canvas ∈ (BrailleCanvas, DotCanvas, AsciiCanvas)
         p = scatterplot(n, n, title = "Supported markers", marker = m)
         test_ref("scatterplot/markers_$(canvas).txt", @show_col(p))
     end
@@ -134,7 +134,7 @@ end
     scatterplot!(p, x, y2, marker = :pentagon)
     test_ref("scatterplot/matrix_auto.txt", @show_col(p))
 
-    for name in (["1", "2"], ["1" "2"])
+    for name ∈ (["1", "2"], ["1" "2"])
         p = scatterplot(
             x,
             y1;

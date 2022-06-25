@@ -20,8 +20,7 @@ function horizontal_histogram(
     hist::Histogram;
     symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
     xscale = KEYWORDS.xscale,
-    xlabel = transform_name(xscale, "Frequency"),
-    info::AbstractString = "",  # unused
+    info::AbstractString = "",  # unused in horizontal version
     kw...,
 )
     edges, counts = hist.edges[1], hist.weights
@@ -31,7 +30,7 @@ function horizontal_histogram(
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
     io = PipeBuffer()
-    for i in eachindex(counts)
+    for i ∈ eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
@@ -43,7 +42,7 @@ function horizontal_histogram(
     # compute the labels using the computed padding
     l_chr = hist.closed ≡ :right ? '(' : '['
     r_chr = hist.closed ≡ :right ? ']' : ')'
-    for i in eachindex(counts)
+    for i ∈ eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
@@ -61,8 +60,14 @@ function horizontal_histogram(
             r_chr,
         )
     end
-    plot =
-        barplot(labels, counts; symbols = symbols, xlabel = xlabel, xscale = xscale, kw...)
+    plot = barplot(
+        labels,
+        counts;
+        symbols = symbols,
+        xlabel = transform_name(xscale, "Frequency"),
+        xscale = xscale,
+        kw...,
+    )
     plot
 end
 
@@ -85,7 +90,7 @@ function vertical_histogram(
     hist::Histogram;
     symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
     info::AbstractString = "",
-    color = :green,
+    color::UserColorType = :green,
     kw...,
 )
     edges, counts = hist.edges[1], hist.weights
@@ -105,11 +110,11 @@ function vertical_histogram(
     nsyms = length(symbols)
     canvas = plot.graphics
     nr = nrows(canvas)
-    for (x, y) in zip(centers, counts)
+    for (x, y) ∈ zip(centers, counts)
         frac = float(max_val > 0 ? max(y, zero(y)) / max_val : 0)
         n_full = (nsyms > 1 ? floor : round)(Int, frac * nr)
         δ = max_val / nr
-        for r in 1:n_full
+        for r ∈ 1:n_full
             annotate!(plot, x, (r - 0.5) * δ, symbols[nsyms]; color = color)
         end
         if nsyms > 1 && (rem = frac * nr - n_full) > 0

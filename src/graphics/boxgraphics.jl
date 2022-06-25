@@ -16,7 +16,7 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
 
     function BoxplotGraphics(
         data::AbstractVector{R},
-        char_width::Int,
+        char_width::Integer,
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
         min_x::R,
@@ -48,8 +48,8 @@ end
 
 BoxplotGraphics(
     data::AbstractVector{R},
-    char_width::Int;
-    visible::Bool = true,
+    char_width::Integer;
+    visible::Bool = KEYWORDS.visible,
     color::Union{UserColorType,AbstractVector} = :green,
     min_x::Number = minimum(data),
     max_x::Number = maximum(data),
@@ -83,7 +83,7 @@ transform(c::BoxplotGraphics, value) = clamp(
     c.char_width,
 )
 
-function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Int)
+function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     idx = ceil(Int, row / 3)
     series = c.data[idx]
@@ -109,16 +109,16 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Int)
     chars[transform(c, series.maximum)] = max_char
 
     # Fill in gaps with lines
-    for i in (transform(c, series.minimum) + 1):(transform(c, series.lower_quartile) - 1)
+    for i ∈ (transform(c, series.minimum) + 1):(transform(c, series.lower_quartile) - 1)
         chars[i] = line_char
     end
-    for i in (transform(c, series.lower_quartile) + 1):(transform(c, series.median) - 1)
+    for i ∈ (transform(c, series.lower_quartile) + 1):(transform(c, series.median) - 1)
         chars[i] = line_box_char
     end
-    for i in (transform(c, series.median) + 1):(transform(c, series.upper_quartile) - 1)
+    for i ∈ (transform(c, series.median) + 1):(transform(c, series.upper_quartile) - 1)
         chars[i] = line_box_char
     end
-    for i in (transform(c, series.upper_quartile) + 1):(transform(c, series.maximum) - 1)
+    for i ∈ (transform(c, series.upper_quartile) + 1):(transform(c, series.maximum) - 1)
         chars[i] = line_char
     end
 

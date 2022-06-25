@@ -39,8 +39,8 @@ grid_type(c::Canvas) = grid_type(typeof(c))
 
 function char_point!(
     c::Canvas,
-    char_x::Int,
-    char_y::Int,
+    char_x::Integer,
+    char_y::Integer,
     char::AbstractChar,
     color::UserColorType,
 )
@@ -53,12 +53,12 @@ end
 
 @inline function set_color!(
     c::Canvas,
-    x::Int,
-    y::Int,
+    x::Integer,
+    y::Integer,
     color::ColorType,
     blend::Bool = c.blend,
 )
-    c.colors[y, x] = if (col = c.colors[y, x]) == INVALID_COLOR || !blend
+    c.colors[y, x] = if (col = c.colors[y, x]) ≡ INVALID_COLOR || !blend
         color
     else
         blend_colors(col, color)
@@ -87,7 +87,7 @@ points!(c::Canvas, x::Number, y::Number, color::UserColorType) =
 function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
-    for I in eachindex(X, Y)
+    for I ∈ eachindex(X, Y)
         points!(c, X[I], Y[I], color)
     end
     c
@@ -101,7 +101,7 @@ function points!(
 ) where {T<:UserColorType}
     length(X) == length(Y) == length(color) ||
         throw(DimensionMismatch("`X`, `Y` and `color` must be the same length"))
-    for i in eachindex(X)
+    for i ∈ eachindex(X)
         points!(c, X[i], Y[i], color[i])
     end
     c
@@ -142,7 +142,7 @@ function lines!(
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
         start_x, start_y = cur_x, cur_y
         iΔ = 1 / √(Δx^2 + Δy^2)
-        for _ in range(1, length = len)
+        for _ ∈ range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
@@ -157,7 +157,7 @@ function lines!(
         end
     else
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
-        for _ in range(1, length = len)
+        for _ ∈ range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
@@ -180,7 +180,7 @@ lines!(
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
-    for i in 2:length(X)
+    for i ∈ 2:length(X)
         isfinite(X[i - 1]) || continue
         isfinite(Y[i - 1]) || continue
         isfinite(X[i]) || continue
@@ -195,14 +195,14 @@ lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :
 
 function get_canvas_dimensions_for_matrix(
     canvas::Type{T},
-    nrow::Int,
-    ncol::Int,
-    max_height::Int,
-    max_width::Int,
-    height::Union{Nothing,Int},
-    width::Union{Nothing,Int},
-    margin::Int,
-    padding::Int,
+    nrow::Integer,
+    ncol::Integer,
+    max_height::Integer,
+    max_width::Integer,
+    height::Union{Nothing,Integer},
+    width::Union{Nothing,Integer},
+    margin::Integer,
+    padding::Integer,
     out_stream::Union{Nothing,IO},
     fix_ar::Bool;
     extra_rows = 0,
@@ -272,7 +272,7 @@ function align_char_point(
     valign::Symbol,
 )
     nchar = length(text)
-    char_x = if halign in (:center, :hcenter)
+    char_x = if halign ∈ (:center, :hcenter)
         char_x - nchar ÷ 2
     elseif halign ≡ :left
         char_x
@@ -281,7 +281,7 @@ function align_char_point(
     else
         throw(ArgumentError("`halign=$halign` not supported"))
     end
-    char_y = if valign in (:center, :vcenter)
+    char_y = if valign ∈ (:center, :vcenter)
         char_y
     elseif valign ≡ :top
         char_y + 1
@@ -320,15 +320,15 @@ function annotate!(
     y::Number,
     text::AbstractString,
     color::UserColorType;
-    halign = :center,
-    valign = :center,
+    halign::Symbol = :center,
+    valign::Symbol = :center,
 )
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
-    for char in text
+    for char ∈ text
         char_point!(c, char_x, char_y, char, color)
         char_x += 1
     end

@@ -1,5 +1,6 @@
 """
     stairs(x, y; kw...)
+    stairs!(p, args...; kw...)
 
 # Description
 
@@ -56,32 +57,26 @@ julia> stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7], style = :post, title = "My Stair
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-function stairs(X::AbstractVector, Y::AbstractVector; style::Symbol = :post, kw...)
-    x_vex, y_vex = compute_stair_lines(X, Y, style)
-    lineplot(x_vex, y_vex; kw...)
-end
+stairs(X::AbstractVector, Y::AbstractVector; style::Symbol = :post, kw...) =
+    lineplot(compute_stair_lines(X, Y, style)...; kw...)
 
-function stairs!(
+@doc (@doc stairs) stairs!(
     plot::Plot{<:Canvas},
     X::AbstractVector,
     Y::AbstractVector;
     style::Symbol = :post,
     kw...,
-)
-    x_vex, y_vex = compute_stair_lines(X, Y, style)
-    lineplot!(plot, x_vex, y_vex; kw...)
-end
+) = lineplot!(plot, compute_stair_lines(X, Y, style)...; kw...)
 
 function compute_stair_lines(X::AbstractVector, Y::AbstractVector, style::Symbol)
+    o = 0
     if style ≡ :post
         x_vex = similar(X, 2length(X) - 1)
         y_vex = similar(Y, 2length(X) - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
-        o = 0
-        for i in 2:(length(X))
-            x_vex[i + o] = X[i]
-            x_vex[i + o + 1] = X[i]
+        for i ∈ 2:length(X)
+            x_vex[i + o + 1] = x_vex[i + o] = X[i]
             y_vex[i + o] = Y[i - 1]
             y_vex[i + o + 1] = Y[i]
             o += 1
@@ -92,12 +87,10 @@ function compute_stair_lines(X::AbstractVector, Y::AbstractVector, style::Symbol
         y_vex = zeros(2length(X) - 1)
         x_vex[1] = X[1]
         y_vex[1] = Y[1]
-        o = 0
-        for i in 2:(length(X))
+        for i ∈ 2:length(X)
             x_vex[i + o] = X[i - 1]
             x_vex[i + o + 1] = X[i]
-            y_vex[i + o] = Y[i]
-            y_vex[i + o + 1] = Y[i]
+            y_vex[i + o + 1] = y_vex[i + o] = Y[i]
             o += 1
         end
         return x_vex, y_vex

@@ -3,7 +3,7 @@ function print_colorbar_row(
     print_nocol,
     print_color,
     c::Canvas,
-    row::Int,
+    row::Integer,
     cmap::ColorMap,
     lim_str,
     plot_padding,
@@ -58,7 +58,7 @@ function print_title(
     title::AbstractString,
     right_pad::AbstractString,
     blank::AbstractChar;
-    p_width::Int = 0,
+    p_width::Integer = 0,
     color::UserColorType = :normal,
 )
     isempty(title) && return (0, 0)
@@ -79,10 +79,10 @@ function print_border(
     print_nocol,
     print_color,
     loc::Symbol,
-    length::Int,
+    length::Integer,
     left_pad::Union{Nothing,AbstractChar,AbstractString},
     right_pad::Union{Nothing,AbstractChar,AbstractString},
-    bmap = BORDERMAP[:solid],
+    bmap = BORDERMAP[KEYWORDS.border],
     color::UserColorType = BORDER_COLOR[],
 )
     left_pad ≡ nothing || print_nocol(io, string(left_pad))
@@ -227,7 +227,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     postprocess! = preprocess!(c)
 
     # plot all rows
-    for row in 1:nr
+    for row ∈ 1:nr
         # print left annotations
         print_nocol(io, 🗷^p.margin)
         if p.labels
@@ -359,12 +359,12 @@ fallback_font(mono::Bool = false) =
 const FT_FONTS = Dict{String,FreeTypeAbstraction.FTFont}()
 
 """
-    png_image(p::Plot, font = nothing, pixelsize = 16, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
+    png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 
 Render `png` image.
 
 # Arguments
-- `pixelsize::Integer = 16`: controls the image size scaling.
+- `pixelsize::Integer = 32`: controls the image size scaling.
 - `font::Union{Nothing,AbstractString} = nothing`: select a font by name, or fall-back to a system font.
 - `transparent::Bool = true`: use a transparent background.
 - `foreground::UserColorType = nothing`: choose a foreground color for un-colored text.
@@ -376,7 +376,7 @@ Render `png` image.
 function png_image(
     p::Plot;
     font::Union{Nothing,AbstractString} = nothing,
-    pixelsize::Integer = 16,
+    pixelsize::Integer = 32,
     transparent::Bool = true,
     foreground::UserColorType = nothing,
     background::UserColorType = nothing,
@@ -466,7 +466,7 @@ function png_image(
     lfcols = sizehint!([RGBA{Float32}[]], nr)
     lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
-    for (fchar, gchar, fcol, gcol) in zip(fchars, gchars, fcolors, gcolors)
+    for (fchar, gchar, fcol, gcol) ∈ zip(fchars, gchars, fcolors, gcolors)
         if fchar ≡ '\n'
             r += 1
             push!(lfchars, Char[])
@@ -483,12 +483,13 @@ function png_image(
 
     # render image
     face = nothing
-    for name in filter(!isnothing, (font, "JuliaMono", fallback_font()))
-        if haskey(FT_FONTS, name)
-            face = FT_FONTS[name]
-            break
-        elseif (ft = FreeTypeAbstraction.findfont(name)) ≢ nothing
-            face = FT_FONTS[name] = ft
+    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback_font()))
+        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
+            if (ft = FreeTypeAbstraction.findfont(name)) ≢ nothing
+                face = FT_FONTS[name] = ft
+                break
+            end
+        else
             break
         end
     end
@@ -551,7 +552,7 @@ julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
 """
 function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
     ext = lowercase(splitext(filename)[2])
-    if ext in ("", ".txt")
+    if ext ∈ ("", ".txt")
         open(filename, "w") do io
             show(IOContext(io, :color => color), p)
         end

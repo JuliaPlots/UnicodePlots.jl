@@ -45,14 +45,14 @@ function HeatmapCanvas(args...; kw...)
     c
 end
 
-function print_row(io::IO, _, print_color, c::HeatmapCanvas, row::Int)
+function print_row(io::IO, _, print_color, c::HeatmapCanvas, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     row *= y_pixel_per_char(HeatmapCanvas)
 
     # extend the plot upwards by half a row
     isodd(size(c.grid, 1)) && (row -= 1)
 
-    for col in 1:ncols(c)
+    for col ∈ 1:ncols(c)
         # for odd numbers of rows, only print the foreground for the top row
         bgcol = row > 1 ? c.colors[row - 1, col] : missing
         print_color(io, c.colors[row, col], HALF_BLOCK; bgcol = bgcol)

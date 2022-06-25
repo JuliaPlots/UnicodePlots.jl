@@ -8,14 +8,14 @@
 end
 
 @testset "interface" begin
-    for (T, xres, yres) in [
+    for (T, xres, yres) ∈ (
         (BrailleCanvas, 2, 4),
         (DensityCanvas, 1, 2),
         (BlockCanvas, 2, 2),
         (AsciiCanvas, 3, 3),
         (DotCanvas, 1, 2),
         (HeatmapCanvas, 1, 2),
-    ]
+    )
         @testset "$(nameof(T))" begin
             @test T <: Canvas
             c = T(15, 30; origin_y = -1.5, origin_x = -1, height = 3, width = 2)
@@ -45,14 +45,14 @@ end
     seed!(RNG, 1337)
     x1, y1 = rand(RNG, 20), rand(RNG, 20)
     x2, y2 = rand(RNG, 50), rand(RNG, 50)
-    for (T, str) in [
+    for (T, str) ∈ (
         (BrailleCanvas, "braille"),
         (DensityCanvas, "density"),
         (BlockCanvas, "block"),
         (AsciiCanvas, "ascii"),
         (DotCanvas, "dot"),
         (HeatmapCanvas, "heatmap"),
-    ]
+    )
         @testset "$T" begin
             c = T(10, 40; origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0)
             if T == BrailleCanvas
@@ -95,7 +95,7 @@ horz_line!(c, m, M, y, col) = lines!(c, m, y, M, y, col)
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vert_line!, horz_line!)
+    for line ∈ (vert_line!, horz_line!)
         line(c, m, M, 0.0, :dark_gray)
         line(c, m, M, 0.2, :light_red)
         line(c, m, M, 0.4, :light_green)
@@ -113,7 +113,7 @@ end
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vert_line!, horz_line!)
+    for line ∈ (vert_line!, horz_line!)
         line(c, m, M, 0.0, 8)
         line(c, m, M, 0.2, 9)
         line(c, m, M, 0.4, 10)
@@ -131,7 +131,7 @@ end
     m, M = 0.0, 1.4
     c = BrailleCanvas(15, 40; origin_y = m, origin_x = m, height = M, width = M)
 
-    for line in (vert_line!, horz_line!)
+    for line ∈ (vert_line!, horz_line!)
         line(c, m, M, 0.0, (0, 0, 0))
         line(c, m, M, 0.2, (255, 0, 0))
         line(c, m, M, 0.4, (0, 255, 0))

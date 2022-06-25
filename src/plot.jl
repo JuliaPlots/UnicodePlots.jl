@@ -32,7 +32,7 @@ $(arguments(
 
 - `label!(plot::Plot, where::Symbol, value::String)`
 
-- `label!(plot::Plot, where::Symbol, row::Int, value::String)`
+- `label!(plot::Plot, where::Symbol, row::Integer, value::String)`
 
 Author(s)
 
@@ -69,19 +69,19 @@ end
 
 function Plot(
     graphics::T;
-    title::AbstractString = KEYWORDS.title,
-    xlabel::AbstractString = KEYWORDS.xlabel,
-    ylabel::AbstractString = KEYWORDS.ylabel,
-    zlabel::AbstractString = KEYWORDS.zlabel,
-    border::Symbol = KEYWORDS.border,
-    compact::Bool = KEYWORDS.compact,
-    margin::Int = KEYWORDS.margin,
-    padding::Int = KEYWORDS.padding,
-    labels::Bool = KEYWORDS.labels,
-    colorbar::Bool = KEYWORDS.colorbar,
-    colorbar_border::Symbol = KEYWORDS.colorbar_border,
-    colorbar_lim = KEYWORDS.colorbar_lim,
-    colormap::Any = nothing,
+    title::AbstractString = PLOT_KEYWORDS.title,
+    xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
+    ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
+    zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+    border::Symbol = PLOT_KEYWORDS.border,
+    compact::Bool = PLOT_KEYWORDS.compact,
+    margin::Integer = PLOT_KEYWORDS.margin,
+    padding::Integer = PLOT_KEYWORDS.padding,
+    labels::Bool = PLOT_KEYWORDS.labels,
+    colorbar::Bool = PLOT_KEYWORDS.colorbar,
+    colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
+    colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
+    colormap::Any = PLOT_KEYWORDS.colormap,
     projection::Union{Nothing,MVP} = nothing,
     ignored...,
 ) where {T<:GraphicsArea}
@@ -154,40 +154,40 @@ function Plot(
     x::AbstractVector{<:Number},
     y::AbstractVector{<:Number},
     z::Union{AbstractVector{<:Number},Nothing} = nothing,
-    ::Type{C} = BrailleCanvas;
-    title::AbstractString = KEYWORDS.title,
-    xlabel::AbstractString = KEYWORDS.xlabel,
-    ylabel::AbstractString = KEYWORDS.ylabel,
-    zlabel::AbstractString = KEYWORDS.zlabel,
-    xscale::Union{Symbol,Function} = KEYWORDS.xscale,
-    yscale::Union{Symbol,Function} = KEYWORDS.yscale,
-    height::Union{Int,Nothing,Symbol} = nothing,
-    width::Union{Int,Nothing,Symbol} = nothing,
-    border::Symbol = KEYWORDS.border,
-    compact::Bool = KEYWORDS.compact,
-    blend::Bool = KEYWORDS.blend,
-    xlim = KEYWORDS.xlim,
-    ylim = KEYWORDS.ylim,
-    margin::Int = KEYWORDS.margin,
-    padding::Int = KEYWORDS.padding,
-    labels::Bool = KEYWORDS.labels,
-    unicode_exponent::Bool = KEYWORDS.unicode_exponent,
-    colorbar::Bool = KEYWORDS.colorbar,
-    colorbar_border::Symbol = KEYWORDS.colorbar_border,
-    colorbar_lim = KEYWORDS.colorbar_lim,
-    colormap::Any = nothing,
-    grid::Bool = KEYWORDS.grid,
-    xticks::Bool = KEYWORDS.xticks,
-    yticks::Bool = KEYWORDS.yticks,
-    min_height::Int = 2,
-    min_width::Int = 5,
-    yflip::Bool = KEYWORDS.yflip,
-    xflip::Bool = KEYWORDS.xflip,
+    canvas::Type{<:Canvas} = BrailleCanvas;
+    title::AbstractString = PLOT_KEYWORDS.title,
+    xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
+    ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
+    zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+    xscale::Union{Symbol,Function} = PLOT_KEYWORDS.xscale,
+    yscale::Union{Symbol,Function} = PLOT_KEYWORDS.yscale,
+    height::Union{Integer,Nothing,Symbol} = nothing,
+    width::Union{Integer,Nothing,Symbol} = nothing,
+    border::Symbol = PLOT_KEYWORDS.border,
+    compact::Bool = PLOT_KEYWORDS.compact,
+    blend::Bool = PLOT_KEYWORDS.blend,
+    xlim = PLOT_KEYWORDS.xlim,
+    ylim = PLOT_KEYWORDS.ylim,
+    margin::Integer = PLOT_KEYWORDS.margin,
+    padding::Integer = PLOT_KEYWORDS.padding,
+    labels::Bool = PLOT_KEYWORDS.labels,
+    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
+    colorbar::Bool = PLOT_KEYWORDS.colorbar,
+    colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
+    colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
+    colormap::Any = PLOT_KEYWORDS.colormap,
+    grid::Bool = PLOT_KEYWORDS.grid,
+    yticks::Bool = PLOT_KEYWORDS.yticks,
+    xticks::Bool = PLOT_KEYWORDS.xticks,
+    min_height::Integer = PLOT_KEYWORDS.min_height,
+    min_width::Integer = PLOT_KEYWORDS.min_width,
+    yflip::Bool = PLOT_KEYWORDS.yflip,
+    xflip::Bool = PLOT_KEYWORDS.xflip,
     projection::Union{Nothing,Symbol,MVP} = nothing,
-    axes3d = KEYWORDS.axes3d,
-    canvas_kw = (;),
+    axes3d = PLOT_KEYWORDS.axes3d,
+    canvas_kw = PLOT_KEYWORDS.canvas_kw,
     kw...,
-) where {C<:Canvas}
+)
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
@@ -228,7 +228,7 @@ function Plot(
     p_width = Mx - mx
     p_height = My - my
 
-    canvas = C(
+    can = canvas(
         height,
         width;
         blend = blend,
@@ -244,7 +244,7 @@ function Plot(
         canvas_kw...,
     )
     plot = Plot(
-        canvas;
+        can;
         title = title,
         margin = margin,
         padding = padding,
@@ -274,7 +274,7 @@ function Plot(
         end
         if yticks
             base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(canvas), base_y_str * (yflip ? M_y : m_y), color = bc)
+            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y), color = bc)
             label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y), color = bc)
         end
     end
@@ -392,7 +392,7 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
         ArgumentError("unknown location $loc: try one of these :tl :t :tr :bl :b :br"),
     )
     if loc ≡ :l || loc ≡ :r
-        for row in 1:nrows(plot.graphics)
+        for row ∈ 1:nrows(plot.graphics)
             if loc ≡ :l
                 if !haskey(plot.labels_left, row) || isempty(plot.labels_left[row])
                     plot.labels_left[row] = value
@@ -420,7 +420,7 @@ label!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType = :n
 function label!(
     plot::Plot,
     loc::Symbol,
-    row::Int,
+    row::Integer,
     value::AbstractString,
     color::UserColorType,
 )
@@ -439,7 +439,7 @@ end
 label!(
     plot::Plot,
     loc::Symbol,
-    row::Int,
+    row::Integer,
     value::AbstractString;
     color::UserColorType = :normal,
 ) = label!(plot, loc, row, value, color)

@@ -57,13 +57,13 @@ end
 @testset "azimuth / elevation" begin
     ellipsoid(θs = (-π / 2):(π / 10):(π / 2), ϕs = (-π):(π / 10):π, a = 2, b = 0.5, c = 1) =
         (
-            [a * cos(θ) .* cos(ϕ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
-            [b * cos(θ) .* sin(ϕ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
-            [c * sin(θ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
+            [a * cos(θ) .* cos(ϕ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
+            [b * cos(θ) .* sin(ϕ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
+            [c * sin(θ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
         )
 
     x, y, z = ellipsoid()
-    for (plane, az, el) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
+    for (plane, az, el) ∈ [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
         p = Plot(
             x,
             y,
@@ -80,7 +80,7 @@ end
 end
 
 @testset "cube" begin
-    for proj in (:orthographic, :perspective)
+    for proj ∈ (:orthographic, :perspective)
         ortho = proj ≡ :orthographic
 
         T = MVP(
@@ -119,7 +119,7 @@ end
             title = "proj=$proj",
             axes3d = false,
         )
-        for s in cube[2:end]
+        for s ∈ cube[2:end]
             lineplot!(p, segment2xyz(s)...)
         end
 
@@ -128,7 +128,7 @@ end
 end
 
 @testset "zoom" begin
-    for zoom in (0.5, 1, 2)
+    for zoom ∈ (0.5, 1, 2)
         T = MVP([-1, 1], [-1, 1], [-1, 1]; zoom = zoom)
 
         tetrahedron = (
@@ -147,9 +147,9 @@ end
         )
 
         segments2xyz(segments) = (
-            [p[1] for s in segments for p in s],
-            [p[2] for s in segments for p in s],
-            [p[3] for s in segments for p in s],
+            [p[1] for s ∈ segments for p ∈ s],
+            [p[2] for s ∈ segments for p ∈ s],
+            [p[3] for s ∈ segments for p ∈ s],
         )
 
         p = lineplot(

@@ -1,5 +1,6 @@
 """
     scatterplot(x, y; kw...)
+    scatterplot!(p, args...; kw...)
 
 # Description
 
@@ -57,35 +58,28 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 [`BrailleCanvas`](@ref), [`BlockCanvas`](@ref),
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
-scatterplot(
+function scatterplot(
     x::AbstractVector,
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
     canvas::Type = KEYWORDS.canvas,
-    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
-    marker::Union{MarkerType,AbstractVector} = :pixel,
-    name = "",
     kw...,
-) = scatterplot!(
-    Plot(x, y, z, canvas; kw...),
-    x,
-    y,
-    z;
-    color = color,
-    name = name,
-    marker = marker,
 )
+    pkw, okw = split_plot_kw(; kw...)
+    scatterplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
+end
 
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
-function scatterplot!(
+@doc (@doc scatterplot) function scatterplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector,
     z::Union{AbstractVector,Nothing} = nothing;
     color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
     marker::Union{MarkerType,AbstractVector} = :pixel,
-    name = "",
+    name = KEYWORDS.name,
+    kw...,
 )
     color = color ≡ :auto ? next_color!(plot) : color
     isempty(name) ||
@@ -94,8 +88,8 @@ function scatterplot!(
         points!(plot, x, y, z, color)
     else
         z ≡ nothing || throw(ArgumentError("unsupported scatter with 3D data"))
-        for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
-            annotate!(plot, xi, yi, char_marker(mi); color = ci)
+        for (xi, yi, mi, ci) ∈ zip(x, y, iterable(marker), iterable(color))
+            annotate!(plot, xi, yi, char_marker(mi); color = ci, kw...)
         end
     end
     plot.series[] += 1
@@ -116,9 +110,9 @@ function scatterplot(x::AbstractVector, y::AbstractMatrix; kw...)
         name = first(names),
         color = first(colors),
         marker = first(markers),
-        filter(a -> a.first ∉ (:name, :color, :marker), kw)...,
+        filter(k -> k.first ∉ (:name, :color, :marker), kw)...,
     )
-    for (i, (name, color, marker, ys)) in enumerate(zip(names, colors, markers, eachcol(y)))
+    for (i, (name, color, marker, ys)) ∈ enumerate(zip(names, colors, markers, eachcol(y)))
         i == 1 && continue
         scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
     end
@@ -127,7 +121,7 @@ end
 
 function scatterplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors, markers = multiple_series_defaults(y, kw, plot.series[] + 1)
-    for (name, color, marker, ys) in zip(names, colors, markers, eachcol(y))
+    for (name, color, marker, ys) ∈ zip(names, colors, markers, eachcol(y))
         scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
     end
     plot

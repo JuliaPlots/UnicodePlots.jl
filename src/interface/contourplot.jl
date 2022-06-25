@@ -1,5 +1,6 @@
 """
     contourplot(x, y, A; kw...)
+    contourplot!(p, args...; kw...)
 
 Draws a contour plot on a new canvas.
 
@@ -52,48 +53,43 @@ function contourplot(
     x::AbstractVector,
     y::AbstractVector,
     A::Union{Function,AbstractMatrix};
-    canvas::Type = BrailleCanvas,
-    name::AbstractString = KEYWORDS.name,
-    levels::Integer = 3,
+    canvas::Type = KEYWORDS.canvas,
     colormap = KEYWORDS.colormap,
-    colorbar::Bool = true,
-    blend::Bool = false,
-    grid::Bool = false,
     kw...,
 )
-    callback = colormap_callback(colormap)
+    pkw, okw = split_plot_kw(; kw...)
     plot = Plot(
         extrema(x) |> collect,
         extrema(y) |> collect,
         nothing,
         canvas;
-        blend = blend,
-        grid = grid,
-        colormap = callback,
-        colorbar = colorbar,
-        kw...,
+        colormap = colormap,
+        colorbar = true,
+        blend = false,
+        grid = false,
+        pkw...,
     )
     A isa Function && (A = A.(x', y))
-    contourplot!(plot, x, y, A; name = name, levels = levels, colormap = callback)
+    contourplot!(plot, x, y, A; colormap = colormap, okw...)
 end
 
-function contourplot!(
+@doc (@doc contourplot) function contourplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector,
     y::AbstractVector,
     A::AbstractMatrix;
-    name::AbstractString = "",
-    levels::Integer = 3,
+    name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
+    levels::Integer = 3,
 )
     isempty(name) || label!(plot, :r, string(name))
 
     plot.cmap.callback = callback = colormap_callback(colormap)
     mA, MA = NaNMath.extrema(as_float(A))
 
-    for cl in Contour.levels(Contour.contours(y, x, A, levels))
+    for cl ∈ Contour.levels(Contour.contours(y, x, A, levels))
         color = callback(Contour.level(cl), mA, MA)
-        for line in Contour.lines(cl)
+        for line ∈ Contour.lines(cl)
             yi, xi = Contour.coordinates(line)
             lineplot!(plot, xi, yi, color = color)
         end

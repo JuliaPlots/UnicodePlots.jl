@@ -1,5 +1,6 @@
 """
     barplot(text, heights; kw...)
+    barplot!(p, args...; kw...)
 
 # Description
 
@@ -14,7 +15,6 @@ which have to be numeric, will be used as the heights of the bars.
 # Usage
     
     barplot(text, heights; $(keywords((border = :barplot, color = :green, maximum = nothing), remove = (:xlim, :ylim, :yscale, :height, :grid), add = (:symbols,))))
-
     barplot(dict; kw...)
 
 # Arguments
@@ -37,16 +37,15 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> barplot(["Paris", "New York", "Moskau", "Madrid"],
-               [2.244, 8.406, 11.92, 3.165],
-               xlabel = "population [in mil]")
-            ┌                                        ┐
-      Paris ┤■■■■■■ 2.244
-   New York ┤■■■■■■■■■■■■■■■■■■■■■■■ 8.406
-     Moskau ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 11.92
-     Madrid ┤■■■■■■■■■ 3.165
-            └                                        ┘
-                       population [in mil]
+julia> barplot(["Paris", "New York", "Madrid"],
+                      [2.244, 8.406, 3.165],
+                      xlabel = "population [in mil]")
+            ┌                                        ┐ 
+      Paris ┤■■■■■■■■■ 2.244                           
+   New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406   
+     Madrid ┤■■■■■■■■■■■■ 3.165                        
+            └                                        ┘ 
+                        population [in mil]
 ```
 
 # See also
@@ -56,28 +55,26 @@ julia> barplot(["Paris", "New York", "Moskau", "Madrid"],
 function barplot(
     text::AbstractVector{<:AbstractString},
     heights::AbstractVector{<:Number};
-    border = :barplot,
     color::Union{UserColorType,AbstractVector} = :green,
     width::Union{Nothing,Integer} = nothing,
-    symbols = KEYWORDS.symbols,
     xscale = KEYWORDS.xscale,
     xlabel = transform_name(xscale),
-    maximum::Union{Nothing,Number} = nothing,
     name::AbstractString = KEYWORDS.name,
     kw...,
 )
+    pkw, okw = split_plot_kw(; kw...)
     length(text) == length(heights) ||
         throw(DimensionMismatch("the given vectors must be of the same length"))
     minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))
 
-    if any('\n' in t for t in text)
+    if any(occursin('\n', t) for t ∈ text)
         _text = eltype(text)[]
         _heights = eltype(heights)[]
-        for (t, h) in zip(text, heights)
+        for (t, h) ∈ zip(text, heights)
             lines = split(t, '\n')
             if (n = length(lines)) > 1
                 append!(_text, lines)
-                for i in eachindex(lines)
+                for i ∈ eachindex(lines)
                     push!(_heights, i == n ? h : -1)
                 end
             else
@@ -93,36 +90,27 @@ function barplot(
         something(width, DEFAULT_WIDTH[]),
         xscale;
         color = color,
-        symbols = symbols,
-        maximum = maximum,
+        symbols = KEYWORDS.symbols,
+        maximum = nothing,
+        okw...,
     )
-    plot = Plot(area; border = border, xlabel = xlabel, kw...)
-    for i in eachindex(text)
+    plot = Plot(area; border = :barplot, xlabel = xlabel, pkw...)
+
+    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
+    for i ∈ eachindex(text)
         label!(plot, :l, i, text[i])
     end
-    isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
 
     plot
 end
 
-barplot(dict::Dict{T,N}; kw...) where {T,N<:Number} =
-    barplot(sorted_keys_values(dict)...; kw...)
 barplot(label, height::Number; kw...) = barplot([string(label)], [height]; kw...)
+barplot(dict::AbstractDict{<:Any,<:Number}; kw...) =
+    barplot(sorted_keys_values(dict)...; kw...)
+barplot(text::AbstractVector, heights::AbstractVector{<:Number}; kw...) =
+    barplot(map(string, text), heights; kw...)
 
-function barplot(text::AbstractVector, heights::AbstractVector{<:Number}; kw...)
-    text_str = map(string, text)
-    barplot(text_str, heights; kw...)
-end
-
-"""
-    barplot!(plot, text, heights)
-
-Mutating variant of `barplot`, in which the first parameter
-(`plot`) specifies the existing plot to draw additional bars on.
-
-See [`barplot`](@ref) for more information.
-"""
-function barplot!(
+@doc (@doc barplot) function barplot!(
     plot::Plot{<:BarplotGraphics},
     text::AbstractVector{<:AbstractString},
     heights::AbstractVector{<:Number};
@@ -134,25 +122,22 @@ function barplot!(
     isempty(text) && throw(ArgumentError("can't append empty array to barplot"))
     curidx = nrows(plot.graphics)
     addrow!(plot.graphics, heights, color)
-    for i in eachindex(heights)
+    for i ∈ eachindex(heights)
         label!(plot, :l, curidx + i, text[i])
     end
     isempty(name) || label!(plot, :r, string(name), suitable_color(plot.graphics, color))
     plot
 end
 
-barplot!(plot::Plot{<:BarplotGraphics}, dict::Dict{T,N}; kw...) where {T,N<:Number} =
+barplot!(plot::Plot{<:BarplotGraphics}, dict::AbstractDict{<:Any,<:Number}; kw...) =
     barplot!(plot, sorted_keys_values(dict)...; kw...)
 
-function barplot!(
+barplot!(
     plot::Plot{<:BarplotGraphics},
     text::AbstractVector,
     heights::AbstractVector{<:Number};
     kw...,
-)
-    text_str = map(string, text)
-    barplot!(plot, text_str, heights; kw...)
-end
+) = barplot!(plot, map(string, text), heights; kw...)
 
 function barplot!(
     plot::Plot{<:BarplotGraphics},

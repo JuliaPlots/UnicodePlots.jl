@@ -28,18 +28,18 @@ end
 @inline x_pixel_per_char(::Type{<:DensityCanvas}) = 1
 
 function DensityCanvas(
-    char_height::Int,
-    char_width::Int;
-    blend::Bool = true,
-    visible::Bool = true,
+    char_height::Integer,
+    char_width::Integer;
+    blend::Bool = KEYWORDS.blend,
+    visible::Bool = KEYWORDS.visible,
     origin_y::Number = 0.0,
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
-    yflip::Bool = false,
-    xflip::Bool = false,
-    yscale::Union{Symbol,Function} = :identity,
-    xscale::Union{Symbol,Function} = :identity,
+    yflip::Bool = KEYWORDS.yflip,
+    xflip::Bool = KEYWORDS.xflip,
+    yscale::Union{Symbol,Function} = KEYWORDS.yscale,
+    xscale::Union{Symbol,Function} = KEYWORDS.xscale,
     dscale::Union{Symbol,Function} = :identity,
 )
     height > 0 || throw(ArgumentError("`height` has to be positive"))
@@ -70,7 +70,7 @@ function DensityCanvas(
     )
 end
 
-function pixel!(c::DensityCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
+function pixel!(c::DensityCanvas, pixel_x::Integer, pixel_y::Integer, color::UserColorType)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)
@@ -86,11 +86,11 @@ function preprocess!(c::DensityCanvas)
     c -> c.max_density[] = -Inf
 end
 
-function print_row(io::IO, _, print_color, c::DensityCanvas, row::Int)
+function print_row(io::IO, _, print_color, c::DensityCanvas, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     signs = DEN_SIGNS[]
     fact = (length(signs) - 1) / c.max_density[]
-    for col in 1:ncols(c)
+    for col ∈ 1:ncols(c)
         val = fact * c.dscale(c.grid[row, col])
         print_color(io, c.colors[row, col], signs[round(Int, val, RoundNearestTiesUp) + 1])
     end

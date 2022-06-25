@@ -5,7 +5,7 @@
 
 Draws a heatmap for the given points.
 It uses the `Matrix` `A` as the values of the heatmap, with the column and row indices
-of the matrix as x and y coordinates respectively.
+of the matrix as `x` and `y` coordinates respectively.
 
 # Usage
 
@@ -55,18 +55,21 @@ function heatmap(
     yoffset::Number = 0.0,
     xoffset::Number = 0.0,
     out_stream::Union{Nothing,IO} = nothing,
-    height::Union{Nothing,Int} = nothing,
-    width::Union{Nothing,Int} = nothing,
-    margin::Int = KEYWORDS.margin,
-    padding::Int = KEYWORDS.padding,
+    height::Union{Nothing,Integer} = nothing,
+    width::Union{Nothing,Integer} = nothing,
+    margin::Integer = KEYWORDS.margin,
+    padding::Integer = KEYWORDS.padding,
     colormap = KEYWORDS.colormap,
     yfact::Union{Nothing,Number} = nothing,
     xfact::Union{Nothing,Number} = nothing,
-    fix_ar::Bool = false,
+    fix_ar::Bool = KEYWORDS.fix_ar,
+    labels::Bool = KEYWORDS.labels,
     array::Bool = false,
-    labels::Bool = true,
     kw...,
 ) where {T}
+    pkw, okw = split_plot_kw(; kw...)
+    warn_on_lost_kw(; okw...)
+
     nrows = size(A, 1)
     ncols = size(A, 2)
 
@@ -122,7 +125,7 @@ function heatmap(
 
     # if A is an rgb image, translate the colors directly to the terminal
     callback =
-        if length(A) > 0 && isconcretetype(T) && all(x -> x in fieldnames(T), (:r, :g, :b))
+        if length(A) > 0 && isconcretetype(T) && all(x -> x ∈ fieldnames(T), (:r, :g, :b))
             (A, minz, maxz) -> ansi_color(c256.((A.r, A.g, A.b)))
         else
             colormap_callback(colormap)
@@ -184,15 +187,15 @@ function heatmap(
         min_height = 1,
         min_width = 1,
         yflip = array,
-        filter(x -> x.first ≢ :colorbar, kw)...,
+        filter(x -> x.first ≢ :colorbar, pairs(pkw))...,
     )
 
-    for row in eachindex(Y)
+    for row ∈ eachindex(Y)
         points!(
             plot,
             X,
             fill(Y[row], length(X)),
-            UserColorType[callback(v, minz, maxz) for v in A[row, :]],
+            UserColorType[callback(v, minz, maxz) for v ∈ A[row, :]],
         )
     end
     plot

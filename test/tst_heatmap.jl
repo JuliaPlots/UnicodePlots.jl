@@ -1,6 +1,6 @@
 @testset "aspect ratio" begin
     seed!(RNG, 1337)
-    for i in 1:minimum(T_SZ)
+    for i ∈ 1:minimum(T_SZ)
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
     p = @hinf heatmap(collect(1:30) * collect(1:30)', fix_ar = true)
@@ -28,7 +28,7 @@ end
 @testset "color maps" begin
     x = collect(0:30) * collect(0:30)'
 
-    for cmap in (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
+    for cmap ∈ (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
         p = @hinf heatmap(x, colormap = cmap)
         test_ref(
             "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$cmap.txt",
@@ -51,11 +51,11 @@ end
 
 @testset "squareness (aspect ratio)" begin
     seed!(RNG, 1337)
-    for m in 1:minimum(T_SZ)
+    for m ∈ 1:minimum(T_SZ)
         p = @hinf heatmap(randn(RNG, m, m))
         @test size(p.graphics.grid) == (m, m)
     end
-    for m in minimum(T_SZ):maximum(T_SZ)
+    for m ∈ minimum(T_SZ):maximum(T_SZ)
         p = @hinf heatmap(randn(RNG, m, m))
         s1, s2 = size(p.graphics.grid)
         @test s1 == s2
@@ -68,7 +68,7 @@ end
 end
 
 @testset "sizing" begin
-    for dims in (
+    for dims ∈ (
         (0, 0),
         (1, 1),
         (2, 1),
@@ -104,14 +104,14 @@ end
 end
 
 kw2str(kw) = replace(
-    replace(join(("$(k)_$(v)" for (k, v) in pairs(kw)), '_'), r"[\[\]\(\),]" => ""),
+    replace(join(("$(k)_$(v)" for (k, v) ∈ pairs(kw)), '_'), r"[\[\]\(\),]" => ""),
     ' ' => '_',
 )
 
 @testset "axis scaling" begin
     x = repeat(collect(0:10), outer = (1, 11))
 
-    for kw in (
+    for kw ∈ (
         (; xfact = 0.1),
         (; yfact = 0.1),
         (; xfact = 0.1, xoffset = -0.5),
@@ -129,7 +129,7 @@ end
 @testset "axis limits" begin
     x = collect(0:30) * collect(0:30)'
 
-    for kw in (
+    for kw ∈ (
         (; ylim = (10, 20)),
         (; ylim = (50, 50)),
         (; ylim = (1, 50)),
@@ -154,7 +154,7 @@ end
 @testset "parameters" begin
     seed!(RNG, 1337)
     x = randn(RNG, 200, 200)
-    for kw in (
+    for kw ∈ (
         (; colorbar = false),
         (; labels = false),
         (; title = "hmap", zlabel = "lab", colorbar_border = :ascii, colormap = :inferno),
@@ -166,10 +166,10 @@ end
         )
     end
 
-    for sz in ((10, 10), (10, 11))
+    for sz ∈ ((10, 10), (10, 11))
         seed!(RNG, 1337)
         x = randn(RNG, sz...)
-        for kw in ((; xfact = 0.1), (; yfact = 1))
+        for kw ∈ ((; xfact = 0.1), (; yfact = 1))
             p = @hinf heatmap(x; kw...)
             test_ref(
                 "heatmap/parameters_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",

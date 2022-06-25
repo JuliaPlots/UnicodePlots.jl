@@ -85,25 +85,27 @@ function _strict_non_zeros(rows, cols, vals)
 end
 
 function spy(
-    nrow::Int,
-    ncol::Int,
+    nrow::Integer,
+    ncol::Integer,
     rows::AbstractArray{<:Integer},
     cols::AbstractArray{<:Integer},
     vals::AbstractArray;
-    maxwidth::Int = 0,
-    maxheight::Int = 0,
-    title = KEYWORDS.title,
+    maxwidth::Integer = 0,
+    maxheight::Integer = 0,
     out_stream::Union{Nothing,IO} = nothing,
-    height::Union{Nothing,Int} = nothing,
-    width::Union{Nothing,Int} = nothing,
-    margin::Int = KEYWORDS.margin,
-    padding::Int = KEYWORDS.padding,
+    height::Union{Nothing,Integer} = nothing,
+    width::Union{Nothing,Integer} = nothing,
+    margin::Integer = KEYWORDS.margin,
+    padding::Integer = KEYWORDS.padding,
     color::UserColorType = KEYWORDS.color,
-    canvas::Type{T} = BrailleCanvas,
+    canvas::Type{<:Canvas} = KEYWORDS.canvas,
+    fix_ar::Bool = KEYWORDS.fix_ar,
     show_zeros::Bool = false,
-    fix_ar::Bool = false,
     kw...,
-) where {T<:Canvas}
+)
+    pkw, okw = split_plot_kw(; kw...)
+    warn_on_lost_kw(; okw...)
+
     height, width = get_canvas_dimensions_for_matrix(
         canvas,
         nrow,
@@ -119,8 +121,8 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
-    can = T(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
-    plot = Plot(can; title = title, margin = margin, padding = padding, kw...)
+    can = canvas(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
+    plot = Plot(can; margin = margin, padding = padding, pkw...)
 
     if color ≢ :auto
         points!(plot, cols, nrow + 1 .- rows, color)
@@ -146,7 +148,7 @@ function spy(
     label!(plot, :l, nrows(plot.graphics), string(nrow), BORDER_COLOR[])
     label!(plot, :bl, "1", BORDER_COLOR[])
     label!(plot, :br, string(ncol), BORDER_COLOR[])
-    haskey(kw, :xlabel) ||
+    isempty(xlabel(plot)) &&
         xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
     plot
 end

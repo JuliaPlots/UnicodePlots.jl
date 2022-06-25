@@ -4,7 +4,7 @@ gaussian_2d(x = -3:0.01:3, y = -7:0.01:3; x₀ = 0, y₀ = -2, σx = 1, σy = 2)
 end
 
 @testset "arbitrary colormap" begin
-    colormap = :viridis
+    colormap = :cividis
     p = @binf contourplot(gaussian_2d()...; colormap = colormap)
     test_ref("contourplot/gauss_$colormap.txt", @show_col(p))
 end
@@ -17,6 +17,7 @@ end
 
 @testset "update contourplot" begin
     p = @binf contourplot(gaussian_2d()...; levels = 2)
+    # mutate the colormap & number of levels
     contourplot!(p, gaussian_2d(; σx = 0.5, σy = 0.25)...; levels = 1, colormap = :magma)
     test_ref("contourplot/gauss_nested.txt", @show_col(p))
 end
