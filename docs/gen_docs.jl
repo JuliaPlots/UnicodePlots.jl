@@ -154,11 +154,10 @@ main() = begin
 
   plain_md_par(x) = x |> Paragraph |> MD |> plain
 
-  tab = ' '^2
-  indent(x, n=1) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
+  indent(x, n=1, tab=' '^2) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
 
   examples = NamedTuple{keys(exs)}(
-    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"450\"><br>") for (k, e) in pairs(exs))
+    (plain_md_par("```julia\n$(rstrip(e[2]))\n```\n<img src=\"$docs_url/$ver/$k.png\" width=\"450\"><br>") for (k, e) ∈ pairs(exs))
   )
 
   desc_ex(k, d, n=2) = (
@@ -171,7 +170,7 @@ main() = begin
         indent(examples.border_dotted, n),
         indent(examples.border_none, n),
       ), '\n')
-    elseif k in (:width, :height, :labels)
+    elseif k ∈ (:width, :height, :labels)
       join((d, indent(getindex(examples, k), n)), '\n')
     else
       d
@@ -253,7 +252,7 @@ The following types of `Canvas` are implemented:
   $(join(
     (
       "- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
-      for (k, d) in pairs(UnicodePlots.DESCRIPTION) if k in keys(UnicodePlots.KEYWORDS)
+      for (k, d) ∈ pairs(UnicodePlots.DESCRIPTION) if k ∈ keys(UnicodePlots.KEYWORDS)
     ), '\n'
   ))
 
@@ -640,7 +639,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         cursor_hide(stdout)
         run(`clear`)
         print(stdout, g)
-        win = if "WINDOWID" in keys(ENV)
+        win = if "WINDOWID" ∈ keys(ENV)
           ENV["WINDOWID"]
         else
           readchomp(`xdotool getactivewindow`)
@@ -683,9 +682,9 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         banner()
       """
     )
-    for (i, (k, e)) in enumerate(pairs(exs))
+    for (i, (k, e)) ∈ enumerate(pairs(exs))
       println(io, "  # $k")
-      code = fix_rand.(filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c in split(e[2], '\n')]))
+      code = fix_rand.(filter(x -> length(x) != 0 && !startswith(lstrip(x), r"using|import"), [lstrip(c) for c ∈ split(e[2], '\n')]))
       println(io, """
           println("ex n°$i - $k")
           default_size!()

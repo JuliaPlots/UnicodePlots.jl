@@ -58,7 +58,7 @@ end
     )
     test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
-    for symbols in (["="], ['='], tuple("="), tuple('='))
+    for symbols ∈ (["="], ['='], tuple("="), tuple('='))
         p = histogram(
             x,
             title = "My Histogram",
@@ -87,7 +87,7 @@ end
 @testset "vertical" begin
     n = 10
     dat = Float64[]
-    for i in 1:n
+    for i ∈ 1:n
         append!(dat, repeat([i], i))
     end
     p = histogram(dat; vertical = true, nbins = n)

@@ -55,7 +55,7 @@ end
     @test haskey(UnicodePlots.BORDERMAP, :dotted)
     @test haskey(UnicodePlots.BORDERMAP, :dashed)
     @test haskey(UnicodePlots.BORDERMAP, :ascii)
-    for (k, v) in zip(bmap_keys, UnicodePlots.BORDERMAP)
+    for (k, v) ∈ zip(bmap_keys, UnicodePlots.BORDERMAP)
         @test length(keys(v)) == 8
         @test haskey(v, :tl)
         @test haskey(v, :tr)
@@ -149,7 +149,7 @@ end
 
     io = PipeBuffer()
     _cfast = UnicodePlots.CRAYONS_FAST[]
-    for fast in (false, true)
+    for fast ∈ (false, true)
         UnicodePlots.CRAYONS_FAST[] = fast
         UnicodePlots.print_crayons(io, Crayon(foreground = :red), 123)
         UnicodePlots.print_crayons(io, Crayon(), 123)
@@ -175,6 +175,12 @@ end
 end
 
 @testset "miscellaneous" begin
+    @test isempty(first(UnicodePlots.split_plot_kw(; foo = 1, bar = 2)))
+    @test isempty(last(UnicodePlots.split_plot_kw(; width = 1, height = 2)))
+
+    @test_logs (:warn, r".*will be lost") UnicodePlots.warn_on_lost_kw(; a = 1)
+    @test UnicodePlots.warn_on_lost_kw() ≡ nothing
+
     @test UnicodePlots.char_marker('a') ≡ 'a'
     @test UnicodePlots.char_marker("a") ≡ 'a'
     @test UnicodePlots.char_marker(:+) ≡ '+'

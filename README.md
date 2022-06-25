@@ -577,6 +577,7 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
   - `near::Float = 1.0`: distance to the near clipping plane (`:perspective` projection only).
   - `far::Float = 100.0`: distance to the far clipping plane (`:perspective` projection only).
+  - `canvas_kw::NamedTuple = NamedTuple()`: extra canvas keywords.
   - `blend::Bool = true`: blend colors on the underlying canvas.
   - `fix_ar::Bool = false`: fix terminal aspect ratio (experimental).
   - `visible::Bool = true`: visible canvas.

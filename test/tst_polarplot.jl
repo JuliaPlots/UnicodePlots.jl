@@ -9,11 +9,17 @@ end
 end
 
 @testset "kwargs" begin
+    h, w = map(x -> round(Int, 1.5x), default_size!())
     p = polarplot(
         range(0, 2π, length = 20),
-        range(0, 2, length = 20);
-        color = :red,
+        range(0, 1, length = 20);
         scatter = true,
+        border = :solid,  # override
+        color = :red,
+        height = h,
+        width = w,
     )
+    @test nrows(p.graphics) == h
+    @test ncols(p.graphics) == w
     test_ref("polarplot/kwargs.txt", @show_col(p))
 end

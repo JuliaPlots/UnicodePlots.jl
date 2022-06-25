@@ -11,7 +11,7 @@ Base.print(io::IO, c::GraphicsArea) = _print(io, print, print_color, c)
 
 function _print(io::IO, print_nocol, print_color, c::GraphicsArea)
     postprocess! = preprocess!(c)
-    for row in 1:nrows(c)
+    for row ∈ 1:nrows(c)
         print_row(io, print_nocol, print_color, c, row)
         row < nrows(c) && print_nocol(io, '\n')
     end
@@ -27,7 +27,7 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
     border_length = ncols(c)
     print_border(io, print_nocol, print_color, :t, border_length, nothing, '\n', b, bc)
     postprocess! = preprocess!(c)
-    for row in 1:nrows(c)
+    for row ∈ 1:nrows(c)
         print_color(io, bc, b[:l])
         print_row(io, print_nocol, print_color, c, row)
         print_color(io, bc, b[:r])
@@ -38,7 +38,7 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
     nothing
 end
 
-print_row(io::IO, c::GraphicsArea, row::Int) = print_row(io, print, print_color, c, row)
+print_row(io::IO, c::GraphicsArea, row::Integer) = print_row(io, print, print_color, c, row)
 
 """
     preprocess!(c::GraphicsArea)

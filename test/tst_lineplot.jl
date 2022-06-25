@@ -19,7 +19,7 @@ y = [2, 0, -5, 2, -5]
 end
 
 @testset "numeric array types" begin
-    for p in (
+    for p ∈ (
         @binf(lineplot(x, y)),
         @binf(lineplot(float.(x), y)),
         @binf(lineplot(x, float.(y))),
@@ -28,7 +28,7 @@ end
         test_ref("lineplot/default.txt", @show_col(p))
     end
 
-    for p in (@binf(lineplot(y)), @binf(lineplot(float.(y))))
+    for p ∈ (@binf(lineplot(y)), @binf(lineplot(float.(y))))
         @test p isa Plot
         test_ref("lineplot/y_only.txt", @show_col(p))
     end
@@ -113,7 +113,7 @@ end
 
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, color = [:red])
-    for (xlim, ylim) in zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
+    for (xlim, ylim) ∈ zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
         p = @binf lineplot(
             [sin, cos],
             -0.5,
@@ -131,7 +131,7 @@ end
 end
 
 @testset "keyword arguments" begin
-    for (xlim, ylim) in zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
+    for (xlim, ylim) ∈ zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
         p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
         test_ref("lineplot/limits.txt", @show_col(p))
     end
@@ -197,7 +197,7 @@ end
     lineplot!(p, 1, 0.5)
     test_ref("lineplot/squeeze_annotations.txt", @show_col(p))
 
-    dx = [Date(2020, 8, i) for i in 1:10]
+    dx = [Date(2020, 8, i) for i ∈ 1:10]
     p = stairs(dx, 1:10, xlim = (Date(2020, 8, 1), Date(2020, 8, 15)))
     test_ref("lineplot/stairs_date.txt", @show_col(p))
 end
@@ -205,7 +205,7 @@ end
 @testset "scales" begin
     x = y = collect(10:10:1000)
     tmp = tempname()
-    for s in (:ln, :log2, :log10)
+    for s ∈ (:ln, :log2, :log10)
         fscale = UnicodePlots.FSCALES[s]
 
         xs = fscale.(x)
@@ -287,7 +287,7 @@ end
     lineplot!(p, x, y2)
     test_ref("lineplot/matrix_auto.txt", @show_col(p))
 
-    for name in (["1", "2", "3"], ["1" "2" "3"])
+    for name ∈ (["1", "2", "3"], ["1" "2" "3"])
         p = lineplot(x, y1; name = name, color = [:red :green :blue])
         lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
         test_ref("lineplot/matrix_parameters.txt", @show_col(p))

@@ -17,14 +17,16 @@
 end
 
 @testset "single color - no colormap" begin
-    p = surfaceplot(
-        0:0.5:(2π),
-        0:0.5:(2π),
-        (x, y) -> sin(x) + cos(y),
-        color = :yellow,
-        axes3d = false,
-    )
+    f = (x, y) -> sin(x) + cos(y)
+    x, y = 0:0.5:(2π), 0:0.5:(2π)
+    p = surfaceplot(x, y, f, color = :cyan, axes3d = false)
     test_ref("surfaceplot/single_color.txt", @show_col(p))
+
+    x, y = 0:π, π:(2π)
+    X, Y = repeat(x, 1, length(y)), repeat(y', length(x), 1)  # meshgrid like
+    surfaceplot!(p, X, Y, zero(X), nothing; color = :white, lines = true)
+    @test !p.cmap.bar  # since we gave the `color` keyword twice
+    test_ref("surfaceplot/mutate.txt", @show_col(p))
 end
 
 @testset "matrix" begin
@@ -37,23 +39,23 @@ end
         -2:2,
         -2:2,
         (x, y) -> 15sinc(√(x^2 + y^2) / π),
-        elevation = 80,
-        width = 80,
-        height = 30,
-        zoom = 1.8,
         colormap = :jet,
+        elevation = 80,
+        zoom = 1.8,
         lines = true,
+        height = 30,
+        width = 80,
     )
     test_ref("surfaceplot/interpolation.txt", @show_col(p))
 end
 
 @testset "slice" begin
     data = zeros(40, 20, 20)
-    x, y, z = (axes(data, d) for d in 1:ndims(data))
+    x, y, z = (axes(data, d) for d ∈ 1:ndims(data))
     xc, yc, zc = 30, 8, 8  # centers
     xr, yr, zr = 10, 6, 3  # radii
 
-    for k in z, j in y, i in x  # ellipsoid
+    for k ∈ z, j ∈ y, i ∈ x  # ellipsoid
         data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2
     end
 

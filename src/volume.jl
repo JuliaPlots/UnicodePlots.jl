@@ -305,7 +305,7 @@ function (tr::MVP{E,T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user)
     mul!(o, transform_matrix(tr, n), p)
     persp = !is_ortho(tr, n)
     # homogeneous coordinates
-    @inbounds for i in axes(p, 2)
+    @inbounds for i ∈ axes(p, 2)
         w = o[4, i]
         if abs(w) > eps(T)
             o[1, i] /= w

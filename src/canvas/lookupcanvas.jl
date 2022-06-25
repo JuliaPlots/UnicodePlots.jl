@@ -3,20 +3,20 @@ abstract type LookupCanvas <: Canvas end
 function CreateLookupCanvas(
     ::Type{T},
     min_max,
-    char_height::Int,
-    char_width::Int;
-    blend::Bool = true,
-    visible::Bool = true,
+    char_height::Integer,
+    char_width::Integer;
+    blend::Bool = KEYWORDS.blend,
+    visible::Bool = KEYWORDS.visible,
     origin_y::Number = 0.0,
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
-    yflip::Bool = false,
-    xflip::Bool = false,
-    yscale::Union{Symbol,Function} = :identity,
-    xscale::Union{Symbol,Function} = :identity,
-    min_char_height::Int = 5,
-    min_char_width::Int = 2,
+    yflip::Bool = KEYWORDS.yflip,
+    xflip::Bool = KEYWORDS.xflip,
+    yscale::Union{Symbol,Function} = KEYWORDS.yscale,
+    xscale::Union{Symbol,Function} = KEYWORDS.xscale,
+    min_char_height::Integer = 5,
+    min_char_width::Integer = 2,
 ) where {T<:LookupCanvas}
     height > 0 || throw(ArgumentError("`height` has to be positive"))
     width > 0 || throw(ArgumentError("`width` has to be positive"))
@@ -45,12 +45,7 @@ function CreateLookupCanvas(
     )
 end
 
-function pixel!(
-    c::T,
-    pixel_x::Int,
-    pixel_y::Int,
-    color::UserColorType,
-) where {T<:LookupCanvas}
+function pixel!(c::LookupCanvas, pixel_x::Integer, pixel_y::Integer, color::UserColorType)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
@@ -65,9 +60,9 @@ function pixel!(
     c
 end
 
-function print_row(io::IO, _, print_color, c::LookupCanvas, row::Int)
+function print_row(io::IO, _, print_color, c::LookupCanvas, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    for col in 1:ncols(c)
+    for col ∈ 1:ncols(c)
         print_color(io, c.colors[row, col], lookup_decode(c)[c.grid[row, col] + 1])
     end
     nothing

@@ -34,16 +34,16 @@ end
 @inline x_pixel_per_char(::Type{<:BrailleCanvas}) = 2
 
 function BrailleCanvas(
-    char_height::Int,
-    char_width::Int;
-    blend::Bool = true,
-    visible::Bool = true,
+    char_height::Integer,
+    char_width::Integer;
+    blend::Bool = KEYWORDS.blend,
+    visible::Bool = KEYWORDS.visible,
     origin_y::Number = 0.0,
     origin_x::Number = 0.0,
     height::Number = 1.0,
     width::Number = 1.0,
-    yflip::Bool = false,
-    xflip::Bool = false,
+    yflip::Bool = KEYWORDS.xflip,
+    xflip::Bool = KEYWORDS.yflip,
     yscale::Union{Symbol,Function} = :identity,
     xscale::Union{Symbol,Function} = :identity,
 )
@@ -73,7 +73,7 @@ function BrailleCanvas(
     )
 end
 
-function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorType)
+function pixel!(c::BrailleCanvas, pixel_x::Integer, pixel_y::Integer, color::UserColorType)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
@@ -86,9 +86,9 @@ function pixel!(c::BrailleCanvas, pixel_x::Int, pixel_y::Int, color::UserColorTy
     c
 end
 
-function print_row(io::IO, _, print_color, c::BrailleCanvas, row::Int)
+function print_row(io::IO, _, print_color, c::BrailleCanvas, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    for col in 1:ncols(c)
+    for col ∈ 1:ncols(c)
         print_color(io, c.colors[row, col], Char(c.grid[row, col]))
     end
     nothing

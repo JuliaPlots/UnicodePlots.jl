@@ -1,7 +1,8 @@
 """
     polarplot(θ, 𝓇; kw...)
+    polarplot!(p, args...; kw...)
 
-Draws angles and radii on a polar plot.
+Draws `θ` angles and `𝓇` radii on a polar plot.
 
 # Usage
 
@@ -53,11 +54,11 @@ julia> polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))
 `Plot`, `lineplot`, `BrailleCanvas`
 """
 function polarplot(θ::AbstractVector, 𝓇::Union{Function,AbstractVector}; kw...)
+    pkw, okw = split_plot_kw(; kw...)
     𝓇 = 𝓇 isa Function ? 𝓇.(θ) : 𝓇
 
     mr, Mr = extrema(𝓇)
-    x = y = [-Mr, +Mr]
-    lims = -Mr, +Mr
+    lims = x = y = [-Mr, +Mr]
     plot = Plot(
         x,
         y;
@@ -68,11 +69,12 @@ function polarplot(θ::AbstractVector, 𝓇::Union{Function,AbstractVector}; kw.
         xticks = false,
         yticks = false,
         blend = false,
+        pkw...,
     )
-    polarplot!(plot, θ, 𝓇; kw...)
+    polarplot!(plot, θ, 𝓇; okw...)
 end
 
-function polarplot!(
+@doc (@doc polarplot) function polarplot!(
     plot::Plot{<:Canvas},
     θ::AbstractVector,
     𝓇::AbstractVector;
@@ -89,7 +91,7 @@ function polarplot!(
     grid_color = BORDER_COLOR[]
     lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta), color = grid_color)
 
-    for theta in 0:(π / 4):(2π)
+    for theta ∈ 0:(π / 4):(2π)
         lineplot!(plot, [mr, Mr] .* cos(theta), [mr, Mr] .* sin(theta); color = grid_color)
     end
 
@@ -97,13 +99,13 @@ function polarplot!(
     (scatter ? scatterplot! : lineplot!)(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ); kw...)
 
     # labels
-    row = round(Int, nrows(plot.graphics) / 2)
+    row = ceil(Int, nrows(plot.graphics) / 2)
     label!(plot, :r, row, degrees ? "0°" : "0", color = grid_color)
     label!(plot, :t, degrees ? "90°" : "π / 2", color = grid_color)
     label!(plot, :l, row, degrees ? "180°" : "π", color = grid_color)
     label!(plot, :b, degrees ? "270°" : "3π / 4", color = grid_color)
 
-    for r in range(mr, Mr, length = num_rad_lab)
+    for r ∈ range(mr, Mr, length = num_rad_lab)
         annotate!(
             plot,
             r * cos(ang_rad_lab),

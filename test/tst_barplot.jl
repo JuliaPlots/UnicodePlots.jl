@@ -1,22 +1,22 @@
 @testset "positional types" begin
     dct = Dict("foo" => 37, "bar" => 23)
-    p = @inferred Plot barplot(dct)
+    p = barplot(dct)
     test_ref("barplot/default.txt", @print_col(p))
     test_ref("barplot/default.txt", @show_col(p))
     test_ref("barplot/nocolor.txt", @show_nocol(p))
 
     dct = Dict("foo" => 37.0, :bar => 23.0, 2.1 => 10)
-    p = @inferred Plot barplot(dct)
+    p = barplot(dct)
     test_ref("barplot/default_mixed.txt", @print_col(p))
 
     dct = Dict(:foo => 37, :bar => 23)
-    p = @inferred Plot barplot(dct)
+    p = barplot(dct)
     test_ref("barplot/default.txt", @print_col(p))
 
-    p = @inferred Plot barplot([:bar, :foo], Int16[23, 37])
+    p = barplot([:bar, :foo], Int16[23, 37])
     test_ref("barplot/default.txt", @print_col(p))
 
-    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     test_ref("barplot/default.txt", @print_col(p))
     @test_throws DimensionMismatch barplot!(p, ["zoom"], [90, 80])
     @test_throws DimensionMismatch barplot!(p, ["zoom", "boom"], [90])
@@ -25,20 +25,20 @@
     @test barplot!(p, ["zoom"], [90]) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     @test barplot!(p, :zoom, 90.0) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     @test_throws MethodError barplot!(p, Dict("zoom" => 90.0))
     @test barplot!(p, Dict("zoom" => 90)) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred Plot barplot(["bar", "foo"], [23, 37])
+    p = barplot(["bar", "foo"], [23, 37])
     @test barplot!(p, Dict(:zoom => 90)) ≡ p
     test_ref("barplot/default2.txt", @print_col(p))
 
-    p = @inferred Plot barplot(2:6, 11:15)
+    p = barplot(2:6, 11:15)
     test_ref("barplot/ranges.txt", @print_col(p))
     @test barplot!(p, 9:10, 20:21) ≡ p
     test_ref("barplot/ranges2.txt", @print_col(p))
@@ -85,7 +85,7 @@ end
     )
     test_ref("barplot/parameters1_nolabels.txt", @print_col(p))
 
-    for sym in ("=", '=')
+    for sym ∈ ("=", '=')
         p = barplot(
             ["Paris", "New York", "Moskau", "Madrid"],
             [2.244, 8.406, 11.92, 3.165],

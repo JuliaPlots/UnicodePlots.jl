@@ -1,28 +1,39 @@
-const KEYWORDS = (
-    canvas = BrailleCanvas,
-    symbols = ['■'],
+@assert typemax(UnicodeType) ≥ maximum(
+    (
+        typemax ∘ grid_type
+    ).((HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)),
+)
+
+const PLOT_KEYWORDS = (  # intercepted by `split_plot_kw`
+    canvas = BrailleCanvas,  # positional argument, but left here
     title = "",
-    name = "",
     xlabel = "",
     ylabel = "",
     zlabel = "",
     xscale = :identity,
     yscale = :identity,
-    labels = true,
-    border = :solid,
     height = DEFAULT_HEIGHT[],
     width = DEFAULT_WIDTH[],
+    border = :solid,
+    compact = false,
+    blend = true,
     xlim = (0, 0),
     ylim = (0, 0),
-    zlim = (0, 0),
-    yflip = false,
-    xflip = false,
     margin = 3,
     padding = 1,
-    color = :auto,
-    colorbar_lim = (0, 1),
+    labels = true,
+    unicode_exponent = true,
+    colorbar = false,
     colorbar_border = :solid,
+    colorbar_lim = (0, 1),
     colormap = :viridis,
+    grid = true,
+    yticks = true,
+    xticks = true,
+    min_height = 2,
+    min_width = 5,
+    yflip = false,
+    xflip = false,
     projection = :orthographic,
     elevation = round(atand(1 / √2); digits = 2),
     azimuth = 45.0,
@@ -31,20 +42,26 @@ const KEYWORDS = (
     far = 100.0,
     zoom = 1.0,
     up = :z,
-    colorbar = false,
-    unicode_exponent = true,
-    xticks = true,
-    yticks = true,
-    compact = false,
-    blend = true,
-    grid = true,
+    canvas_kw = (;),
+)
+
+const PLOT_KEYS = keys(PLOT_KEYWORDS)
+
+const KEYWORDS = (
+    PLOT_KEYWORDS...,
+    # propagated keywords (canvas, interface, ...)
+    symbols = ['■'],
+    name = "",
+    zscale = :identity,
+    zlim = (0, 0),
+    color = :auto,
     # internals
     visible = true,
     fix_ar = false,
 )
 
 const DESCRIPTION = (
-    # NOTE: this named tuple has to stay ordered
+    # NOTE: this named tuple has to stay ordered (for `README.md`)
     x = "horizontal position for each point",
     y = "vertical position for each point",
     z = "depth position for each point",
@@ -86,6 +103,7 @@ const DESCRIPTION = (
     up = "up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards",
     near = "distance to the near clipping plane (`:perspective` projection only)",
     far = "distance to the far clipping plane (`:perspective` projection only)",
+    canvas_kw = "extra canvas keywords",
     blend = "blend colors on the underlying canvas",
     fix_ar = "fix terminal aspect ratio (experimental)",
     visible = "visible canvas",
@@ -132,7 +150,7 @@ const DEFAULT_EXCLUDED = (
 base_type(x) = replace(string(typeof(x).name.name), "64" => "")
 
 default_with_type(s::Symbol) = (
-    if s in keys(KEYWORDS)
+    if s ∈ keys(KEYWORDS)
         "$s::$(base_type(KEYWORDS[s])) = $(KEYWORDS[s] |> repr)"
     else
         s |> string
@@ -162,7 +180,7 @@ function keywords(
     candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra goes first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
-    join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")
+    join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k ∈ kw), ", ")
 end
 
 """
@@ -195,7 +213,7 @@ function arguments(
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
     join(
-        ("- **`$(default_with_type(k))`** : $(get_description(k, all_desc))." for k in kw),
+        ("- **`$(default_with_type(k))`** : $(get_description(k, all_desc))." for k ∈ kw),
         '\n',
     )
 end

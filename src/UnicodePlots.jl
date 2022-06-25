@@ -91,11 +91,6 @@ include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
-@assert typemax(UnicodeType) ≥ maximum(
-    (
-        typemax ∘ grid_type
-    ).((HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)),
-)
 
 include("description.jl")
 include("volume.jl")

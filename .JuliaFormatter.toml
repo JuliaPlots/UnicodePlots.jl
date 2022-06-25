@@ -10,4 +10,3 @@ align_conditional = true
 align_assignment = true
 align_pair_arrow = true
 import_to_using = false
-always_for_in = true

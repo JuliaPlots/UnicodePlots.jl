@@ -106,10 +106,10 @@ ASCII_LOOKUP[0b110_011_110] = '}'
 
 const ASCII_DECODE = Vector{Char}(undef, typemax(N_ASCII))
 ASCII_DECODE[1] = ' '
-for i in 2:N_ASCII
+for i ∈ 2:N_ASCII
     min_dist = typemax(Int)
     min_char = ' '
-    for (k, v) in sort_by_keys(ASCII_LOOKUP)
+    for (k, v) ∈ sort_by_keys(ASCII_LOOKUP)
         if (cur_dist = count_ones(xor(typeof(N_ASCII)(i - 1), k))) < min_dist
             min_dist = cur_dist
             min_char = v

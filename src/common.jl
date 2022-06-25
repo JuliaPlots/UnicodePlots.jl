@@ -179,11 +179,11 @@ const PLANE2_STOP = 0x2ffff
 
 # TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
 const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
-for i in PLANE0_START:PLANE0_STOP
+for i ∈ PLANE0_START:PLANE0_STOP
     UNICODE_TABLE[i + 1] = Char(i)
 end
 
-for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+for (j, i) ∈ enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
     UNICODE_TABLE[i + 1] = MARKERS[j]
 end
 
@@ -200,7 +200,7 @@ const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # i
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 const CRAYONS_FAST = Ref(true)
-const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
+const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ ∈ 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
 #! format: on
@@ -232,11 +232,11 @@ brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
 faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 
 # see gist.github.com/XVilka/8346728#checking-for-colorterm
-terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) in ("24bit", "truecolor")
+terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
 
 # specific to UnicodePlots
-forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) in ("24", "24bit", "truecolor")
-forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) in ("8", "8bit")
+forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
+forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
 
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
@@ -289,7 +289,7 @@ iterable(obj) = Iterators.repeated(obj)
 function transform_name(tr, basename = "")
     name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))
     name == "identity" && return basename
-    name = occursin("#", name) ? "custom" : name
+    name = occursin('#', name) ? "custom" : name
     string(basename, " [", name, "]")
 end
 
@@ -355,7 +355,7 @@ unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 function superscript(s::AbstractString)
     v = collect(s)
-    for (i, k) in enumerate(v)
+    for (i, k) ∈ enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)
     end
     String(v)
@@ -402,7 +402,7 @@ function sorted_keys_values(dict::Dict; k2s = true)
     if k2s  # check and force key type to be of AbstractString type if necessary
         kt, vt = eltype(dict).types
         if !(kt <: AbstractString)
-            dict = Dict(string(k) => v for (k, v) in pairs(dict))
+            dict = Dict(string(k) => v for (k, v) ∈ pairs(dict))
         end
     end
     keys_vals = sort_by_keys(dict)
@@ -580,3 +580,12 @@ mutable struct ColorMap
     lim::NTuple{2,Number}
     callback::Function
 end
+
+split_plot_kw(; kw...) =
+    if isempty(kw)
+        (;), (;)  # avoids `filter` allocations
+    else
+        filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
+    end
+
+warn_on_lost_kw(; kw...) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)
