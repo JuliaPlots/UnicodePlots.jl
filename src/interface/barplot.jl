@@ -66,7 +66,7 @@ function barplot(
         throw(DimensionMismatch("the given vectors must be of the same length"))
     minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))
 
-    if any(occursin('\n', t) for t ∈ text)
+    if any(map(t -> occursin('\n', t), text))
         _text = eltype(text)[]
         _heights = eltype(heights)[]
         for (t, h) ∈ zip(text, heights)

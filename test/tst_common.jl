@@ -155,28 +155,58 @@ end
         UnicodePlots.print_crayons(io, Crayon(), 123)
     end
     UnicodePlots.CRAYONS_FAST[] = _cfast
+end
 
+@testset "colormaps" begin
     @test UnicodePlots.colormap_callback(:inferno) isa Function
     @test UnicodePlots.colormap_callback(() -> nothing) isa Function
     @test UnicodePlots.colormap_callback([1, 2, 3]) isa Function
     @test UnicodePlots.colormap_callback(nothing) isa Function
+end
 
+@testset "ColorSchemes: custom registered cmap" begin
+    ColorSchemes.loadcolorscheme(
+        :test_unicodeplots,
+        map(i -> RGB{Float64}(i, i, i), 0.0:0.1:1.0),
+        "general",
+        "test colorscheme (grays)",
+    )
+    callback = UnicodePlots.colormap_callback(:test_unicodeplots)
+    lft = callback(0.5, 0.0, 2.0)
+    rgt = callback(1.5, 0.0, 2.0)
+    if UnicodePlots.colormode() == 8
+        @test lft == UnicodePlots.THRESHOLD + 0x3b
+        @test rgt == UnicodePlots.THRESHOLD + 0x91
+    elseif UnicodePlots.colormode() == 24
+        @test UnicodePlots.red(lft) ==
+              UnicodePlots.grn(lft) ==
+              UnicodePlots.blu(lft) ==
+              UnicodePlots.c256(0.25)
+        @test UnicodePlots.red(rgt) ==
+              UnicodePlots.grn(rgt) ==
+              UnicodePlots.blu(rgt) ==
+              UnicodePlots.c256(0.75)
+    else
+        @test false
+    end
+end
+
+@testset "clamp colors values within smaller range" begin
     values = collect(-10:0.5:10)
     left, right = 15, length(values) - 10
-    mini, maxi = values[left], values[right]  # clamp values within smaller range
+    mini, maxi = values[left], values[right]
 
-    cmap = collect(1:10)
-    callback = UnicodePlots.colormap_callback(cmap)
+    callback = UnicodePlots.colormap_callback(collect(1:10))
     colors = map(v -> callback(v, mini, maxi), values)
 
-    # smaller interval, must not hit colormap extrema
+    # smaller interval, must hit colormap extrema
     @test all(x -> x == first(colors), colors[1:left])
     @test all(x -> x == last(colors), colors[right:end])
 end
 
 @testset "miscellaneous" begin
-    @test isempty(first(UnicodePlots.split_plot_kw(; foo = 1, bar = 2)))
-    @test isempty(last(UnicodePlots.split_plot_kw(; width = 1, height = 2)))
+    @test isempty(last(UnicodePlots.split_plot_kw(; width = 1, height = 2)))  # only plot keywords
+    @test isempty(first(UnicodePlots.split_plot_kw(; foo = 1, bar = 2)))  # only other keywords
 
     @test_logs (:warn, r".*will be lost") UnicodePlots.warn_on_lost_kw(; a = 1)
     @test UnicodePlots.warn_on_lost_kw() ≡ nothing

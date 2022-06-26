@@ -485,7 +485,7 @@ function ansi_4bit_to_8bit(c::UInt8)::UInt8
     r + (q > 0x0 ? 0x8 : 0x0)
 end
 
-c256(c::AbstractFloat) = round(Int, 255c)
+c256(c::AbstractFloat) = round(UInt32, 255c)
 c256(c::Integer) = c
 
 # `ColorType` conversion - colormaps
@@ -547,7 +547,7 @@ multiple_series_defaults(y::AbstractMatrix, kw, start) = (
 )
 
 function colormap_callback(cmap::Symbol)
-    cdata = getfield(ColorSchemes, cmap)
+    cdata = ColorSchemes.colorschemes[cmap]
     (z, minz, maxz) -> begin
         isfinite(z) || return nothing
         get(
