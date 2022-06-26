@@ -10,6 +10,7 @@ include("tst_world_age.jl")
 
 import Dates: Date, Day
 import Random: seed!
+import ColorSchemes
 import FileIO
 
 using ReferenceTests

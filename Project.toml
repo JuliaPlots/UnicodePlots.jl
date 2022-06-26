@@ -39,7 +39,6 @@ Unitful = "1"
 julia = "1.6"
 
 [extras]
-ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 ImageMagick = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ReferenceTests = "324d217c-45ce-50fc-942e-d289b448e8cf"
@@ -48,4 +47,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [targets]
-test = ["ColorTypes", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TimerOutputs"]
+test = ["ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TimerOutputs"]
