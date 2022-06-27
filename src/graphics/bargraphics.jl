@@ -34,7 +34,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
             colors,
             char_width,
             visible,
-            float(something(maximum, -Inf)),
+            Float64(something(maximum, -Inf)),
             Ref(-Inf),
             Ref(0),
             collect(map(s -> first(s), symbols)),

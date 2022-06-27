@@ -41,4 +41,11 @@
     @testset "grid log scale (#265)" begin
         @test lineplot(0.01:10, 0.01:10, xscale = :log10, yscale = :log10) isa Plot
     end
+
+    @testset "Float input (#277)" begin
+        for FX ∈ (Float16, Float32, Float64), FY ∈ (Float16, Float32, Float64)
+            @test lineplot(FX[-1, 2], FY[-1, 9]) isa Plot
+        end
+        @test barplot(["Paris", "Madrid"], Float32[2.2, 8.4]; maximum = 10.0f0) isa Plot
+    end
 end
