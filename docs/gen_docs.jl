@@ -133,8 +133,8 @@ main() = begin
       p = Plot([NaN], [NaN]; xlim=(1, 10), ylim=(1, 10), title="internal buffer conventions")
 
       # plot axes
-      hline!(p, 1, head_tail=:head, color=:red, name="x-axis (rows)")
-      vline!(p, 1, head_tail=:head, color=:green, name="y-axis (cols)")
+      vline!(p, 1, head_tail=:head, color=:green, name="y-axis (rows)")
+      hline!(p, 1, head_tail=:head, color=:red, name="x-axis (cols)")
 
       # square
       vline!(p, 2, [2, 9], color=:cyan, name="buf[y, x] - buf[row, col]")
@@ -145,6 +145,7 @@ main() = begin
       vline!(p, 3, range(3, 8; length=20), head_tail=:tail, color=:light_green, name="y-buffer (rows)")
       hline!(p, 8, range(3, 8; length=20), head_tail=:head, color=:light_red, name="x-buffer (cols)")
 
+      # mem layout
       vline!(p, 4, [4, 7], color=:yellow, name="memory layout")
       vline!(p, 7, [4, 7], color=:yellow)
       hline!(p, [4, 7], [4, 7], color=:yellow)
