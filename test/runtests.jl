@@ -12,6 +12,7 @@ import Dates: Date, Day
 import Random: seed!
 import ColorSchemes
 import FileIO
+import Aqua
 
 using ReferenceTests
 using LinearAlgebra
@@ -120,6 +121,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_volume.jl"
     @timeit_include "tst_surfaceplot.jl"
     @timeit_include "tst_isosurface.jl"
+    @timeit_include "tst_quality.jl"
 end
 
 # ~ 166s & 15.0GiB on 1.7

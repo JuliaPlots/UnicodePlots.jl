@@ -15,7 +15,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
         visible::Bool,
         color::Union{UserColorType,AbstractVector},
         maximum::Union{Nothing,Number},
-        symbols::Union{NTuple{<:Any,S},AbstractVector{S}},
+        symbols::AbstractVector{S},
         xscale,
     ) where {R<:Number,S<:Union{AbstractChar,AbstractString}}
         for s ∈ symbols
@@ -54,7 +54,7 @@ BarplotGraphics(
     color::Union{UserColorType,AbstractVector} = :green,
     maximum::Union{Nothing,Number} = nothing,
     symbols = KEYWORDS.symbols,
-) = BarplotGraphics(bars, char_width, visible, color, maximum, symbols, xscale)
+) = BarplotGraphics(bars, char_width, visible, color, maximum, collect(symbols), xscale)
 
 function addrow!(
     c::BarplotGraphics{R},
