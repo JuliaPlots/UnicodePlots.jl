@@ -62,7 +62,7 @@ function polarplot(
 )
     pkw, okw = split_plot_kw(; kw...)
 
-    if 𝓇lim == (0, 0)
+    if is_auto(𝓇lim)
         𝓇 = 𝓇 isa Function ? 𝓇.(θ) : 𝓇
 
         mr, Mr = extrema(𝓇)
@@ -96,7 +96,7 @@ end
     scatter = false,
     kw...,
 )
-    mr, Mr = 𝓇lim == (0, 0) ? extrema(𝓇) : 𝓇lim
+    mr, Mr = is_auto(𝓇lim) ? extrema(𝓇) : 𝓇lim
 
     # grid
     theta = range(0, 2π, length = 360)
