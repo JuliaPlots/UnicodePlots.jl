@@ -64,7 +64,7 @@ function polarplot(
 
     if is_auto(rlim)
         r = r isa Function ? r.(θ) : r
-        mr, Mr = extrema(r)
+        _, Mr = extrema(r)
     else
         Mr = rlim[2]
     end
