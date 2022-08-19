@@ -1,20 +1,20 @@
 """
-    polarplot(θ, 𝓇; kw...)
+    polarplot(θ, r; kw...)
     polarplot!(p, args...; kw...)
 
-Draws `θ` angles and `𝓇` radii on a polar plot.
+Draws `θ` angles and `r` radii on a polar plot.
 
 # Usage
 
-    polarplot(θ, 𝓇)
+    polarplot(θ, r)
 
 # Arguments
 
 $(arguments(
     (
         θ = "angles values (radians)",
-        𝓇 = "radii, or `Function` evaluated as `𝓇(θ)`",
-        𝓇lim = "plotting range for the `𝓇` axis (`(0, 0)` stands for automatic)",
+        r = "radii, or `Function` evaluated as `r(θ)`",
+        rlim = "plotting range for the `r` axis (`(0, 0)` stands for automatic)",
         degrees = "label angles using degrees",
         num_rad_lab = "number of radius labels",
         ang_rad_lab = "angle where the radius labels are drawn",
@@ -56,18 +56,17 @@ julia> polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))
 """
 function polarplot(
     θ::AbstractVector,
-    𝓇::Union{Function,AbstractVector};
-    𝓇lim = (0, 0),
+    r::Union{Function,AbstractVector};
+    rlim = (0, 0),
     kw...,
 )
     pkw, okw = split_plot_kw(; kw...)
 
-    if is_auto(𝓇lim)
-        𝓇 = 𝓇 isa Function ? 𝓇.(θ) : 𝓇
-
-        mr, Mr = extrema(𝓇)
+    if is_auto(rlim)
+        r = r isa Function ? r.(θ) : r
+        mr, Mr = extrema(r)
     else
-        Mr = 𝓇lim[2]
+        Mr = rlim[2]
     end
     lims = x = y = [-Mr, +Mr]
     plot = Plot(
@@ -82,21 +81,21 @@ function polarplot(
         blend = false,
         pkw...,
     )
-    polarplot!(plot, θ, 𝓇; 𝓇lim = 𝓇lim, okw...)
+    polarplot!(plot, θ, r; rlim = rlim, okw...)
 end
 
 @doc (@doc polarplot) function polarplot!(
     plot::Plot{<:Canvas},
     θ::AbstractVector,
-    𝓇::AbstractVector;
-    𝓇lim = (0, 0),
+    r::AbstractVector;
+    rlim = (0, 0),
     degrees = true,
     num_rad_lab = 3,
     ang_rad_lab = π / 4,
     scatter = false,
     kw...,
 )
-    mr, Mr = is_auto(𝓇lim) ? extrema(𝓇) : 𝓇lim
+    mr, Mr = is_auto(rlim) ? extrema(r) : rlim
 
     # grid
     theta = range(0, 2π, length = 360)
@@ -108,7 +107,7 @@ end
     end
 
     # user data
-    (scatter ? scatterplot! : lineplot!)(plot, 𝓇 .* cos.(θ), 𝓇 .* sin.(θ); kw...)
+    (scatter ? scatterplot! : lineplot!)(plot, r .* cos.(θ), r .* sin.(θ); kw...)
 
     # labels
     row = ceil(Int, nrows(plot.graphics) / 2)

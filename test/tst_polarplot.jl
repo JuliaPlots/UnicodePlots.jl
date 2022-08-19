@@ -4,7 +4,7 @@
 end
 
 @testset "simple with 𝓇lim" begin
-    p = polarplot(range(0, 2π, length = 20), range(0, 2, length = 20), 𝓇lim = (0, 3))
+    p = polarplot(range(0, 2π, length = 20), range(0, 2, length = 20), rlim = (0, 3))
     test_ref("polarplot/simple_with_rlim.txt", @show_col(p))
 end
 
