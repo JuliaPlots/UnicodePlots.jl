@@ -47,7 +47,9 @@
 
     @test UnicodePlots.is_ortho(T, :user)
     @test UnicodePlots.is_ortho(T, :orthographic)
+    @test UnicodePlots.is_ortho(T, :ortho)
     @test !UnicodePlots.is_ortho(T, :perspective)
+    @test !UnicodePlots.is_ortho(T, :persp)
 
     corners = UnicodePlots.cube_corners(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
     @test size(corners) == (3, 8)
@@ -68,7 +70,7 @@ end
             x,
             y,
             z,
-            projection = :orthographic,
+            projection = :ortho,
             elevation = el,
             azimuth = az,
             title = "plane=$plane",
@@ -80,8 +82,8 @@ end
 end
 
 @testset "cube" begin
-    for proj ∈ (:orthographic, :perspective)
-        ortho = proj ≡ :orthographic
+    for proj ∈ (:ortho, :orthographic, :persp, :perspective)
+        ortho = proj ∈ (:ortho, :orthographic)
 
         T = MVP(
             [-1, 1],
