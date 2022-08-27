@@ -209,7 +209,11 @@ function Plot(
         (xscale ≢ identity || yscale ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
 
-        projection isa Symbol && (projection = MVP(x, y, z; kw...))
+        mvp = if projection isa Symbol
+            MVP(x, y, z; projection = projection, kw...)
+        else
+            projection
+        end
 
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
@@ -220,7 +224,7 @@ function Plot(
 
         grid = blend = false
     else  # 2D
-        projection = MVP()
+        mvp = MVP()
         mx, Mx = extend_limits(x, xlim, xscale)
         my, My = extend_limits(y, ylim, yscale)
     end
@@ -258,7 +262,7 @@ function Plot(
         colorbar = colorbar,
         colorbar_border = colorbar_border,
         colorbar_lim = colorbar_lim,
-        projection = projection,
+        projection = mvp,
     )
     if xticks || yticks
         m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My))
@@ -283,7 +287,7 @@ function Plot(
         mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
-    (is_enabled(projection) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
+    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
 
     plot
 end

@@ -54,6 +54,11 @@
     corners = UnicodePlots.cube_corners(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
     @test size(corners) == (3, 8)
     @test all(-1 .≤ corners .≤ 1)
+
+    p = Plot([-1, 1], [-1, 1], [-1, 1]; projection = :ortho)
+    @test p.projection.ortho
+    p = Plot([-1, 1], [-1, 1], [-1, 1]; projection = :persp)
+    @test !p.projection.ortho
 end
 
 @testset "azimuth / elevation" begin
@@ -116,12 +121,13 @@ end
         segment2xyz(s) = [s[1][1], s[2][1]], [s[1][2], s[2][2]], [s[1][3], s[2][3]]
 
         p = lineplot(
-            segment2xyz(cube[1])...,
+            segment2xyz(first(cube))...,
             projection = T,
             title = "proj=$proj",
             axes3d = false,
         )
-        for s ∈ cube[2:end]
+        for (i, s) ∈ enumerate(cube)
+            i == 1 && continue
             lineplot!(p, segment2xyz(s)...)
         end
 
