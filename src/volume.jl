@@ -230,12 +230,12 @@ struct MVP{E,T}
         far = KEYWORDS.far,
         up = KEYWORDS.up,
     )
-        @assert projection ∈ (:orthographic, :perspective)
+        @assert projection ∈ (:ortho, :orthographic, :persp, :perspective)
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
 
         F = float(eltype(z))
-        is_ortho = projection ≡ :orthographic
+        is_ortho = projection ∈ (:ortho, :orthographic)
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
         # half the diagonal (cam distance to the center)
@@ -278,18 +278,18 @@ end
 @inline transform_matrix(t::MVP, n::Symbol) =
     if n ≡ :user
         t.mvp_mat
-    elseif n ≡ :orthographic
+    elseif n ∈ (:ortho, :orthographic)
         t.mvp_ortho_mat
-    elseif n ≡ :perspective
+    elseif n ∈ (:persp, :perspective)
         t.mvp_persp_mat
     end
 
 @inline is_ortho(t::MVP, n::Symbol) =
     if n ≡ :user
         t.ortho
-    elseif n ≡ :orthographic
+    elseif n ∈ (:ortho, :orthographic)
         true
-    elseif n ≡ :perspective
+    elseif n ∈ (:persp, :perspective)
         false
     end
 
@@ -362,7 +362,7 @@ function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
     # constant apparent size, independent of zoom level
     len = scale .* SVector{3}(T.dist, T.dist, T.dist)
 
-    proj = :orthographic  # force axes projection
+    proj = :ortho  # force orthographic axes projection
 
     pos = SVector{3}(if length(p) == 2
         (transform_matrix(T, proj) \ SVector{4}(p..., 0, 1))[1:3]
