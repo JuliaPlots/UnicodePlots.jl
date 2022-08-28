@@ -81,7 +81,7 @@ function pixel!(c::DensityCanvas, pixel_x::Integer, pixel_y::Integer, color::Use
     c
 end
 
-function preprocess!(c::DensityCanvas)
+function preprocess!(::IO, c::DensityCanvas)
     c.max_density[] = max(eps(), maximum(c.dscale, c.grid))
     c -> c.max_density[] = -Inf
 end

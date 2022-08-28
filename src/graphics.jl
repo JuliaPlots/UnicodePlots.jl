@@ -10,7 +10,7 @@ suitable_color(c::GraphicsArea, color::Union{UserColorType,AbstractVector}) = an
 Base.print(io::IO, c::GraphicsArea) = _print(io, print, print_color, c)
 
 function _print(io::IO, print_nocol, print_color, c::GraphicsArea)
-    postprocess! = preprocess!(c)
+    postprocess! = preprocess!(io, c)
     for row ∈ 1:nrows(c)
         print_row(io, print_nocol, print_color, c, row)
         row < nrows(c) && print_nocol(io, '\n')
@@ -26,7 +26,7 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
     bc = BORDER_COLOR[]
     border_length = ncols(c)
     print_border(io, print_nocol, print_color, :t, border_length, nothing, '\n', b, bc)
-    postprocess! = preprocess!(c)
+    postprocess! = preprocess!(io, c)
     for row ∈ 1:nrows(c)
         print_color(io, bc, b[:l])
         print_row(io, print_nocol, print_color, c, row)
@@ -46,4 +46,4 @@ print_row(io::IO, c::GraphicsArea, row::Integer) = print_row(io, print, print_co
 Optional step: pre-process canvas before printing rows (e.g. for costly computations).
 Returns a cleanup callback for optional cleanup after printing.
 """
-preprocess!(c::GraphicsArea) = c -> nothing
+preprocess!(::IO, c::GraphicsArea) = c -> nothing

@@ -1,3 +1,4 @@
+using ImageInTerminal
 using UnicodePlots, Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
@@ -17,6 +18,7 @@ import Aqua
 using ReferenceTests
 using LinearAlgebra
 using TimerOutputs
+using TestImages
 using ColorTypes
 using StableRNGs
 using StatsBase
@@ -102,6 +104,7 @@ println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n"
 withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
     @timeit_include "tst_depwarn.jl"
+    @timeit_include "tst_imageplot.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
     @timeit_include "tst_common.jl"

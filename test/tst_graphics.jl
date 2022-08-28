@@ -10,7 +10,7 @@
         @test @inferred(ncols(g)) ≡ 30
         @test_throws ArgumentError print_row(stdout, g, 0)
         @test_throws ArgumentError print_row(stdout, g, 7)
-        postprocess! = preprocess!(g)
+        postprocess! = preprocess!(devnull, g)
         test_ref(
             "graphics/bar_print_row.txt",
             @io2str(print_row(IOContext(::IO, :color => true), g, 3))
@@ -77,7 +77,7 @@ end
         @test @inferred(ncols(g)) ≡ 30
         @test_throws ArgumentError print_row(stdout, g, 0)
         @test_throws ArgumentError print_row(stdout, g, 4)
-        postprocess! = preprocess!(g)
+        postprocess! = preprocess!(devnull, g)
         test_ref(
             "graphics/box_print_row.txt",
             @io2str(print_row(IOContext(::IO, :color => true), g, 3))

@@ -18,6 +18,7 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MarchingCubes = "299715c1-40a9-479a-aaf9-4a633d36f717"
 NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
@@ -33,6 +34,7 @@ FreeTypeAbstraction = "0.9 - 0.10"
 LazyModules = "0.3"
 MarchingCubes = "0.1"
 NaNMath = "0.3, 1"
+Requires = "1"
 StaticArrays = "1"
 StatsBase = "0.33"
 Unitful = "1"
@@ -40,12 +42,14 @@ julia = "1.6"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
 ImageMagick = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ReferenceTests = "324d217c-45ce-50fc-942e-d289b448e8cf"
 StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [targets]
-test = ["Aqua", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TimerOutputs"]
+test = ["Aqua", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs"]
