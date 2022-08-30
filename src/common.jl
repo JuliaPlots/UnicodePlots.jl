@@ -251,7 +251,7 @@ function __init__()
     end
     @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
         imageplot(img::AbstractArray{<:Colorant}; kwargs...) =
-            Plot(ImgCanvas(img); kwargs...)
+            Plot(ImageGraphics(img); kwargs...)
     end
     nothing
 end

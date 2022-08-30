@@ -137,20 +137,20 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     io_color = get(end_io, :color, false)
     io = IOContext(buf, :color => io_color, :displaysize => displaysize(end_io))
 
-    c = p.graphics
-    🗷 = Char(BLANK)  # blank outside canvas
-    🗹 = blank(c)  # blank inside canvas
+    g = p.graphics
+    🗷 = Char(BLANK)  # blank outside graphics
+    🗹 = blank(g)  # blank inside graphics
     ############################################################
     # 🗷 = 'x'  # debug
-    # 🗹 = Char(typeof(c) <: BrailleCanvas ? '⠿' : 'o')  # debug
+    # 🗹 = Char(typeof(g) <: BrailleCanvas ? '⠿' : 'o')  # debug
     ############################################################
-    postprocess! = preprocess!(io, c)
+    postprocess! = preprocess!(io, g)
 
-    nr = nrows(c)
-    nc = ncols(c)
-    p_width = nc + 2  # left corner + border length (number of canvas cols) + right corner
+    nr = nrows(g)
+    nc = ncols(g)
+    p_width = nc + 2  # left corner + border length (number of graphics cols) + right corner
 
-    bmap = BORDERMAP[p.border ≡ :none && c isa BrailleCanvas ? :bnone : p.border]
+    bmap = BORDERMAP[p.border ≡ :none && g isa BrailleCanvas ? :bnone : p.border]
     bc = BORDER_COLOR[]
 
     # get length of largest strings to the left and right
@@ -212,7 +212,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         🗹 * border_right_pad * '\n',
         🗹,
     )
-    c.visible && print_border(
+    g.visible && print_border(
         io,
         print_nocol,
         print_color,
@@ -255,16 +255,16 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             # print the left annotation
             print_color(io, left_col, left_str)
         end
-        if c.visible
+        if g.visible
             # print left border
             print_nocol(io, plot_padding)
             print_color(io, bc, bmap[:l])
             # print canvas row
-            print_row(io, print_nocol, print_color, c, row)
-            if c isa ImgCanvas && c.sixel[]
+            print_row(io, print_nocol, print_color, g, row)
+            if g isa ImageGraphics && g.sixel[]
                 offset = plot_offset + nc + 1
-                # 1F: move cursor to beginning of previous line, 1 line up
-                # $(offset)C: move cursor right $offset columns
+                # 1F: move cursor to the beginning of the previous line, 1 line up
+                # $(offset)C: move cursor to the right by an amount of $offset columns
                 write(io, "\e[1F\e[$(offset)C")
             end
             # print right label and padding
@@ -282,7 +282,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 io,
                 print_nocol,
                 print_color,
-                c,
+                g,
                 row,
                 p.cmap,
                 min_max_z_str,
@@ -292,13 +292,13 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 🗷,
             )
         end
-        row < nrows(c) && print_nocol(io, '\n')
+        row < nrows(g) && print_nocol(io, '\n')
     end
 
-    postprocess!(c)
+    postprocess!(g)
 
     # draw bottom border
-    c.visible && print_border(
+    g.visible && print_border(
         io,
         print_nocol,
         print_color,

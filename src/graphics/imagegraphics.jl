@@ -1,4 +1,4 @@
-struct ImgCanvas{C<:Colorant} <: Canvas
+struct ImageGraphics{C<:Colorant} <: GraphicsArea
     img::Matrix{C}
     sixel::RefValue{Bool}
     visible::Bool
@@ -6,25 +6,24 @@ struct ImgCanvas{C<:Colorant} <: Canvas
     ren::Vector{String}
 end
 
-ImgCanvas(img::AbstractArray{<:Colorant}) =
-    ImgCanvas(img, Ref(false), true, [0, 0], String[])
+ImageGraphics(img::AbstractArray{<:Colorant}) =
+    ImageGraphics(img, Ref(false), true, [0, 0], String[])
 
-@inline nrows(c::ImgCanvas) = c.encoded_size[1]
-@inline ncols(c::ImgCanvas) = c.encoded_size[2]
+@inline nrows(c::ImageGraphics) = c.encoded_size[1]
+@inline ncols(c::ImageGraphics) = c.encoded_size[2]
 
-function preprocess!(io::IO, c::ImgCanvas)
+function preprocess!(io::IO, c::ImageGraphics)
     ctx = IOContext(PipeBuffer(), :displaysize => displaysize(io))
-    caret = fallback_caret = 15, 7  # determine the terminal caret size, in pixels
     c.sixel[] = false
+    char_h = char_w = nothing  # determine the terminal caret size, in pixels
     if ImageInTerminal.choose_sixel(c.img)
         ans = ImageInTerminal.Sixel.TerminalTools.query_terminal("\e[16t", stdout)
         if ans isa String && (m = match(r"\e\[6;(\d+);(\d+)t", ans)) ≢ nothing
-            caret = tryparse.(Int, m.captures)
-            c.sixel[] = true
+            char_h, char_w = tryparse.(Int, m.captures)
+            c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
         end
     end
     if c.sixel[]
-        char_h, char_w = something.(caret, fallback_caret)
         h, w = size(c.img)
         lines = String[]
         for r ∈ 1:char_h:h
@@ -43,7 +42,7 @@ function preprocess!(io::IO, c::ImgCanvas)
     c -> nothing
 end
 
-function print_row(io::IO, print_nocol, _, c::ImgCanvas, row::Integer)
+function print_row(io::IO, print_nocol, _, c::ImageGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     print_nocol(io, c.ren[row])
     nothing

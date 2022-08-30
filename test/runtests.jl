@@ -104,7 +104,6 @@ println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n"
 withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     UnicodePlots.CRAYONS_FAST[] = false
     @timeit_include "tst_depwarn.jl"
-    @timeit_include "tst_imageplot.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
     @timeit_include "tst_common.jl"
@@ -124,6 +123,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_volume.jl"
     @timeit_include "tst_surfaceplot.jl"
     @timeit_include "tst_isosurface.jl"
+    @timeit_include "tst_imageplot.jl"
     @timeit_include "tst_quality.jl"
 end
 
