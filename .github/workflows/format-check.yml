@@ -10,17 +10,11 @@ on:
 
 jobs:
   check:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        julia-version: ['1']
-        julia-arch: [x64]
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: julia-actions/setup-julia@latest
         with:
-          version: ${{ matrix.julia-version }}
-
+          version: '1'
       - uses: actions/checkout@v3
       - name: Install JuliaFormatter and format
         run: |
@@ -29,11 +23,12 @@ jobs:
       - name: Format check
         run: |
           julia -e '
-          out = Cmd(`git diff --name-only`) |> read |> String
-          if out == ""
-              exit(0)
-          else
-              @error "Some files have not been formatted !!!"
-              write(stdout, out)
-              exit(1)
-          end'
+            out = Cmd(`git diff --name-only`) |> read |> String
+            if out == ""
+                exit(0)
+            else
+                @error "Some files have not been formatted !!!"
+                write(stdout, out)
+                exit(1)
+            end
+          '
