@@ -25,10 +25,10 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
-ColorSchemes = "≥ 3.19"
+ColorSchemes = "^3.19"
 ColorTypes = "0.11"
 Contour = "0.5 - 0.6"
-Crayons = "≥ 4.1"
+Crayons = "^4.1"
 FileIO = "1"
 FreeTypeAbstraction = "0.9 - 0.10"
 LazyModules = "0.3"
