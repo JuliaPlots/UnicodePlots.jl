@@ -73,7 +73,7 @@ end
             lines!(c, 0, 0, 1, 1, color = :blue)
             lines!(c, 0.1, 0.7, 0.9, 0.6, :red)
 
-            postprocess! = preprocess!(c)
+            postprocess! = preprocess!(devnull, c)
             test_ref(
                 "canvas/$(str)_print_row.txt",
                 @io2str(print_row(IOContext(::IO, :color => true), c, 3))

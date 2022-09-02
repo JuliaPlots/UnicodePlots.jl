@@ -1,3 +1,4 @@
+using ImageInTerminal
 using UnicodePlots, Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
@@ -17,6 +18,7 @@ import Aqua
 using ReferenceTests
 using LinearAlgebra
 using TimerOutputs
+using TestImages
 using ColorTypes
 using StableRNGs
 using StatsBase
@@ -121,6 +123,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_volume.jl"
     @timeit_include "tst_surfaceplot.jl"
     @timeit_include "tst_isosurface.jl"
+    @timeit_include "tst_imageplot.jl"
     @timeit_include "tst_quality.jl"
 end
 

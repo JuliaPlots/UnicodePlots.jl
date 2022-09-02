@@ -7,6 +7,7 @@ using ColorSchemes
 using StaticArrays
 using LazyModules
 using ColorTypes
+using Requires
 using Crayons
 using Printf
 using Dates
@@ -74,7 +75,7 @@ export scatterplot!,
     stairs
 
 # methods without mutating variants
-export horizontal_histogram, vertical_histogram, histogram, heatmap, spy
+export horizontal_histogram, vertical_histogram, histogram, heatmap, spy, imageplot
 
 include("common.jl")
 include("lut.jl")
@@ -82,6 +83,7 @@ include("lut.jl")
 include("graphics.jl")
 include("graphics/bargraphics.jl")
 include("graphics/boxgraphics.jl")
+include("graphics/imagegraphics.jl")
 
 include("canvas.jl")
 include("canvas/lookupcanvas.jl")

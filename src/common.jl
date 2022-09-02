@@ -238,6 +238,9 @@ terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
 forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
 
+imageplot(args...; kwargs...) =
+    error("not implemented, did you forget 'using ImageInTerminal' ?")
+
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
         truecolors!()
@@ -245,6 +248,10 @@ function __init__()
     else
         colors256!()
         faintcolors!()
+    end
+    @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
+        imageplot(img::AbstractArray{<:Colorant}; kwargs...) =
+            Plot(ImageGraphics(img); kwargs...)
     end
     nothing
 end

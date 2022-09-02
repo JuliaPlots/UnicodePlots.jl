@@ -81,7 +81,7 @@ function addrow!(
     c
 end
 
-function preprocess!(c::BarplotGraphics)
+function preprocess!(::IO, c::BarplotGraphics)
     max_val, i = findmax(c.xscale.(c.bars))
     c.max_val[] = max(max_val, c.maximum)
     c.max_len[] = length(string(c.bars[i]))
