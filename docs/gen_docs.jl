@@ -72,6 +72,11 @@ main() = begin
     polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length=20), range(0, 2, length=20))"),
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
+    imageplot = ("ImagePlot", """
+      using ImageInTerminal  # mandatory
+      using TestImages
+      imageplot(testimage("monarch_color_256"))
+      """),
     surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
       surfaceplot(-8:.5:8, -8:.5:8, sombrero, colormap=:jet)
@@ -85,11 +90,6 @@ main() = begin
     isosurface = ("Isosurface", """
       torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
       isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
-      """),
-    imageplot = ("ImagePlot", """
-      using ImageInTerminal  # mandatory
-      using TestImages
-      imageplot(testimage("monarch_color_256"))
       """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
@@ -457,6 +457,15 @@ $(indent(examples.contourplot1))
 </details>
 
 <details open>
+  $(summary("Polar Plot"))
+
+  Plots data in polar coordinates with `θ` the angles in radians.
+
+$(indent(examples.polarplot1))
+
+</details>
+
+<details open>
   $(summary("Heatmap Plot"))
 
 $(indent(examples.heatmap1))
@@ -475,12 +484,11 @@ $(indent(examples.heatmap2))
 </details>
 
 <details open>
-  $(summary("Polar Plot"))
+  $(summary("Image Plot"))
 
-  Plots data in polar coordinates with `θ` the angles in radians.
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
 
-$(indent(examples.polarplot1))
-
+$(indent(examples.imageplot))
 </details>
 
 <details open>
@@ -505,14 +513,6 @@ $(indent(examples.surfaceplot2))
   One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
 $(indent(examples.isosurface))
-</details>
-
-<details open>
-  $(summary("Image Plot"))
-
-  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
-
-$(indent(examples.imageplot))
 </details>
 
 ## Documentation
@@ -639,17 +639,20 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot"),
         surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot"),
         iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface"),
-        vhist = panel(histogram(randn(100_000), nbins=60, vertical=true); title="histogram (vertical)"),
+        vhist = panel(histogram(randn(1_000_000), nbins=150, vertical=true); title="histogram (vertical)"),
         hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="histogram (horizontal)"),
         dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot"),
         hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap"),
-        bar = panel(barplot(["Paris", "New York", "Madrid"], [2.244, 8.406, 3.165]); title="barplot"),
+        bar = panel(barplot(["Paris", "New York", "Madrid", "Berlin"], [2.244, 8.406, 3.165, 4.645]); title="barplot"),
         polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot"),
         box = panel(boxplot(["one", "two"], [collect(1:5), collect(3:6)]); title="boxplot"),
         stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stairs"),
-        spy = panel(spy([1 -1 0; -1 2 1; 0 -1 1]); title="spy"),
+        img = panel(imageplot(testimage("monarch_color_256")); title="imageplot"),
+        spy = panel(spy(sprandn(20, 50, .05)); title="spy"),
       )
-      g = grid(panels, layout=:((line * scat * polar * stair) / (hmap * cont * surf * iso) / (hhist * (vhist / (bar * spy)) * (dens / box))))
+      g = grid(panels, layout=:(
+        (line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist* img * hmap * (box / spy)) / (vhist * bar)
+      ))
 
       if true
         cursor_hide(stdout)
@@ -661,8 +664,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
           readchomp(`xdotool getactivewindow`)
         end
         tmp = tempname()
-        # 95%x100% => remove the right scrollbar (run in a big terminal window)
-        run(`import -window \$win -gravity West -crop 95%x100%+0+0 -trim -quality 100 \$tmp.miff`)
+        # XX%x100% => remove the right scrollbar (run in a big terminal window)
+        run(`import -window \$win -gravity West -crop 70%x100%+0+0 -trim -quality 100 \$tmp.miff`)
         # FIXME: export to `jpg` format, since we have an issue with rendering this `png` on github
         run(`convert -bordercolor '#2e3336' -border 4 -quality 100 \$tmp.miff $ver/banner.jpg`)
         cursor_show(stdout)
@@ -677,6 +680,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
     println(io, """
       # $warn
+      using ImageInTerminal, TestImages
       using UnicodePlots, StableRNGs, SparseArrays, Unitful, Term
       import UnicodePlots: lines!, points!, pixel!
 
