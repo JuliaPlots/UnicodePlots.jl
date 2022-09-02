@@ -86,6 +86,11 @@ main() = begin
       torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
       isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
       """),
+    imageplot = ("ImagePlot", """
+      using ImageInTerminal  # mandatory
+      using TestImages
+      imageplot(testimage("monarch_color_256"))
+      """),
     width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
     height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
     labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false)"),
@@ -307,6 +312,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   - [`polarplot`](https://github.com/JuliaPlots/UnicodePlots.jl#polar-plot) (Polar Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  - [`imageplot`](https://github.com/JuliaPlots/UnicodePlots.jl#image-plot) (Image Plot)
   - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
@@ -499,6 +505,14 @@ $(indent(examples.surfaceplot2))
   One can use the legacy 'Marching Cubes' algorithm using `legacy=true`.
 
 $(indent(examples.isosurface))
+</details>
+
+<details open>
+  $(summary("Image Plot"))
+
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+
+$(indent(examples.imageplot))
 </details>
 
 ## Documentation

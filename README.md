@@ -27,6 +27,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   - [`polarplot`](https://github.com/JuliaPlots/UnicodePlots.jl#polar-plot) (Polar Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  - [`imageplot`](https://github.com/JuliaPlots/UnicodePlots.jl#image-plot) (Image Plot)
   - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
@@ -367,6 +368,20 @@ Here is a list of the main high-level functions for common scenarios:
   isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/isosurface.png" width="450"><br>
+  
+</details>
+
+<details open>
+  <summary><a name=image-plot></a><b>Image Plot</b></summary><br>
+
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+
+  ```julia
+  using ImageInTerminal  # mandatory
+  using TestImages
+  imageplot(testimage("monarch_color_256"))
+  ```
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/imageplot.png" width="450"><br>
   
 </details>
 

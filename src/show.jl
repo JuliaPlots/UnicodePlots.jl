@@ -265,7 +265,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 offset = plot_offset + nc + 1
                 # 1F: move cursor to the beginning of the previous line, 1 line up
                 # $(offset)C: move cursor to the right by an amount of $offset columns
-                write(io, "\e[1F\e[$(offset)C")
+                print_nocol(io, "\e[1F\e[$(offset)C")
             end
             # print right label and padding
             print_color(io, bc, bmap[:r])

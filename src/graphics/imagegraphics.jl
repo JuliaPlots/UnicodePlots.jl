@@ -42,8 +42,8 @@ function preprocess!(io::IO, c::ImageGraphics)
     c -> nothing
 end
 
-function print_row(io::IO, print_nocol, _, c::ImageGraphics, row::Integer)
+function print_row(io::IO, _, print_color, c::ImageGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    print_nocol(io, c.ren[row])
+    print_color(io, INVALID_COLOR, c.ren[row])  # color already encoded
     nothing
 end
