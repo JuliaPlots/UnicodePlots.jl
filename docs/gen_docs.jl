@@ -72,10 +72,10 @@ main() = begin
     polarplot1 = ("Polarplot", "polarplot(range(0, 2π, length=20), range(0, 2, length=20))"),
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
-    imageplot = ("ImagePlot", """
+    imageplot1 = ("ImagePlot", """
       using ImageInTerminal  # mandatory
       using TestImages
-      imageplot(testimage("monarch_color_256"))
+      imageplot(testimage("monarch_color_256"), title="monarch")
       """),
     surfaceplot1 = ("Surfaceplot", """
       sombrero(x, y) = 15sinc(√(x^2 + y^2) / π)
@@ -488,7 +488,7 @@ $(indent(examples.heatmap2))
 
   Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
 
-$(indent(examples.imageplot))
+$(indent(examples.imageplot1))
 </details>
 
 <details open>

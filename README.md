@@ -338,9 +338,9 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   using ImageInTerminal  # mandatory
   using TestImages
-  imageplot(testimage("monarch_color_256"))
+  imageplot(testimage("monarch_color_256"), title="monarch")
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/imageplot.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/imageplot1.png" width="450"><br>
   
 </details>
 

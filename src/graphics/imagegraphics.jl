@@ -3,7 +3,7 @@ struct ImageGraphics{C<:Colorant} <: GraphicsArea
     sixel::RefValue{Bool}
     visible::Bool
     encoded_size::Vector{Int}
-    chars::Vector{Vector{Char}}  # nested vector structure chars[row][col] is more suited to this context
+    chars::Vector{Vector{Char}}  # nested vector structure chars[row][col] is more suited for this context
     fgcols::Vector{Vector{ColorType}}  # only used in no-sixel context
     bgcols::Vector{Vector{ColorType}}  # only used in no-sixel context
 end
@@ -28,12 +28,11 @@ function preprocess!(io::IO, c::ImageGraphics)
     if (choose_sixel = ImageInTerminal.choose_sixel(c.img))
         ans = ImageInTerminal.Sixel.TerminalTools.query_terminal("\e[16t", stdout)
         if ans isa String && (m = match(r"\e\[6;(\d+);(\d+)t", ans)) ≢ nothing
-            char_h, char_w = tryparse.(Int, m)
+            char_h, char_w = tryparse.(Int, m.captures)
             c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
         end
     end
     postprocess = c -> begin
-        c.sixel[] = false
         c.encoded_size .= (0, 0)
         empty!(c.chars)
         empty!(c.fgcols)
@@ -51,8 +50,8 @@ function preprocess!(io::IO, c::ImageGraphics)
         ImageInTerminal.imshow(ctx, c.img)
         lines_colors = readlines(ctx)  # characters and ansi colors
         re_bg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+);48;2;(\d+);(\d+);(\d+)[\d;]*?m"
-        re_fg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+)[\d;]*?m"
         re_bg_8bit = r"\e\[38;5;(\d+);48;5;(\d+)[\d;]*?m"
+        re_fg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+)[\d;]*?m"
         re_fg_8bit = r"\e\[38;5;(\d+)[\d;]*?m"
         line1 = first(lines_colors)
         nc = line1 |> no_ansi_escape |> length
@@ -65,22 +64,27 @@ function preprocess!(io::IO, c::ImageGraphics)
                     m -> ansi_color(parse.(Int, m.captures[1:3]) |> Tuple),
                     m -> ansi_color(parse.(Int, m.captures[4:6]) |> Tuple),
                 )
-            elseif eachmatch(re_fg_24bit, line1) |> collect |> length > 0
-                (
-                    re_fg_24bit,
-                    re_fg_24bit,
-                    m -> ansi_color(parse.(Int, m) |> Tuple),
-                    invalid,
-                )
             elseif eachmatch(re_bg_8bit, line1) |> collect |> length > 0
                 (
                     re_bg_8bit,
                     re_fg_8bit,
-                    m -> ansi_color(parse(Int, first(m))),
-                    m -> ansi_color(parse(Int, m[2])),
+                    m -> ansi_color(parse(Int, m.captures[1])),
+                    m -> ansi_color(parse(Int, m.captures[2])),
+                )
+            elseif eachmatch(re_fg_24bit, line1) |> collect |> length > 0
+                (
+                    re_fg_24bit,
+                    re_fg_24bit,
+                    m -> ansi_color(parse.(Int, m.captures) |> Tuple),
+                    invalid,
                 )
             elseif eachmatch(re_fg_8bit, line1) |> collect |> length > 0
-                (re_fg_8bit, re_fg_8bit, m -> ansi_color(parse(Int, first(m))), invalid)
+                (
+                    re_fg_8bit,
+                    re_fg_8bit,
+                    m -> ansi_color(parse(Int, m.captures[1])),
+                    invalid,
+                )
             else
                 # degenerate case where the sixel encoder is chosen, but auto selection in `ImageInTerminal.Sixel.TerminalTools` failed (e.g. tests)
                 @error "something went wrong: choose_sixel=$choose_sixel - c.sixel[]=$(c.sixel[])"
