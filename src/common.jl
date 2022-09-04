@@ -167,7 +167,7 @@ const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 const MarkerType = Union{Symbol,AbstractChar,AbstractString}
 const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
 const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
-const ColorType = UInt32  # internal UnicodePlots color type (on canvas)
+const ColorType = UInt32  # internal UnicodePlots color type (on canvas), 8bit or 24bit
 
 # en.wikipedia.org/wiki/Plane_(Unicode)
 const PLANE0_START = 0x00000
@@ -190,7 +190,7 @@ end
 # `UInt32` is enough to hold all values of `UNICODE_TABLE`: common supertype for `DotCanvas`, `AsciiCanvas`, `BlockCanvas` `HeatmapCanvas` and `BrailleCanvas`.
 const UnicodeType = UInt32
 
-const THRESHOLD = UInt32(256^3)
+const THRESHOLD = UInt32(256^3)  # 8bit - 24bit threshold
 const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
 const USE_LUT = Ref(false)
