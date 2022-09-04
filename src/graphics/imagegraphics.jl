@@ -8,8 +8,15 @@ struct ImageGraphics{C<:Colorant} <: GraphicsArea
     bgcols::Vector{Vector{ColorType}}  # only used in no-sixel context
 end
 
-ImageGraphics(img::AbstractArray{<:Colorant}) =
-    ImageGraphics(img, Ref(false), true, [0, 0], Vector{Char}[], Vector{ColorType}[], Vector{ColorType}[])
+ImageGraphics(img::AbstractArray{<:Colorant}) = ImageGraphics(
+    img,
+    Ref(false),
+    true,
+    [0, 0],
+    Vector{Char}[],
+    Vector{ColorType}[],
+    Vector{ColorType}[],
+)
 
 @inline nrows(c::ImageGraphics) = c.encoded_size[1]
 @inline ncols(c::ImageGraphics) = c.encoded_size[2]
@@ -21,11 +28,18 @@ function preprocess!(io::IO, c::ImageGraphics)
     if (choose_sixel = ImageInTerminal.choose_sixel(c.img))
         ans = ImageInTerminal.Sixel.TerminalTools.query_terminal("\e[16t", stdout)
         if ans isa String && (m = match(r"\e\[6;(\d+);(\d+)t", ans)) ≢ nothing
-            char_h, char_w = tryparse.(Int, m.captures)
+            char_h, char_w = tryparse.(Int, m)
             c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
         end
     end
-    postprocess = c -> nothing
+    postprocess = c -> begin
+        c.sixel[] = false
+        c.encoded_size .= (0, 0)
+        empty!(c.chars)
+        empty!(c.fgcols)
+        empty!(c.bgcols)
+        nothing
+    end
     if c.sixel[]
         h, w = size(c.img)
         for r ∈ 1:char_h:h
@@ -43,26 +57,43 @@ function preprocess!(io::IO, c::ImageGraphics)
         line1 = first(lines_colors)
         nc = line1 |> no_ansi_escape |> length
         invalid = m -> INVALID_COLOR
-        re, re_fg, fgcolor, bgcolor = if eachmatch(re_bg_24bit, line1) |> collect |> length > 0
-            re_bg_24bit, re_fg_24bit, m -> ansi_color(parse.(Int, m.captures[1:3]) |> Tuple), m -> ansi_color(parse.(Int, m.captures[4:6]) |> Tuple)
-        elseif eachmatch(re_fg_24bit, line1) |> collect |> length > 0
-            re_fg_24bit, re_fg_24bit, m -> ansi_color(parse.(Int, m.captures) |> Tuple), m -> INVALID_COLOR
-        elseif eachmatch(re_bg_8bit, line1) |> collect |> length > 0
-            re_bg_8bit, re_fg_8bit, m -> ansi_color(parse(Int, m.captures[1])), m -> ansi_color(parse(Int, m.captures[2]))
-        elseif eachmatch(re_fg_8bit, line1) |> collect |> length > 0
-            re_fg_8bit, re_fg_8bit, m -> ansi_color(parse(Int, m.captures[1])), m -> INVALID_COLOR
-        else
-            # degenerate case where the sixel encoder is chosen, but auto selection in `ImageInTerminal.Sixel.TerminalTools` failed
-            @warn "something went wrong: choose_sixel=$choose_sixel - c.sixel[]=$(c.sixel[])"
-            return postprocess
-        end
+        re, re_fg, fgcolor, bgcolor =
+            if eachmatch(re_bg_24bit, line1) |> collect |> length > 0
+                (
+                    re_bg_24bit,
+                    re_fg_24bit,
+                    m -> ansi_color(parse.(Int, m.captures[1:3]) |> Tuple),
+                    m -> ansi_color(parse.(Int, m.captures[4:6]) |> Tuple),
+                )
+            elseif eachmatch(re_fg_24bit, line1) |> collect |> length > 0
+                (
+                    re_fg_24bit,
+                    re_fg_24bit,
+                    m -> ansi_color(parse.(Int, m) |> Tuple),
+                    invalid,
+                )
+            elseif eachmatch(re_bg_8bit, line1) |> collect |> length > 0
+                (
+                    re_bg_8bit,
+                    re_fg_8bit,
+                    m -> ansi_color(parse(Int, first(m))),
+                    m -> ansi_color(parse(Int, m[2])),
+                )
+            elseif eachmatch(re_fg_8bit, line1) |> collect |> length > 0
+                (re_fg_8bit, re_fg_8bit, m -> ansi_color(parse(Int, first(m))), invalid)
+            else
+                # degenerate case where the sixel encoder is chosen, but auto selection in `ImageInTerminal.Sixel.TerminalTools` failed (e.g. tests)
+                @error "something went wrong: choose_sixel=$choose_sixel - c.sixel[]=$(c.sixel[])"
+                return postprocess
+            end
         for line_col in lines_colors
             push!(c.chars, no_ansi_escape(line_col) |> collect)
-            colors, bgcolor = if (colors = eachmatch(re, line_col) |> collect) |> length == 0
-                eachmatch(re_fg, line_col) |> collect, invalid
-            else
-                colors, bgcolor
-            end
+            colors, bgcolor =
+                if (colors = eachmatch(re, line_col) |> collect) |> length == 0
+                    eachmatch(re_fg, line_col) |> collect, invalid
+                else
+                    colors, bgcolor
+                end
             push!(c.fgcols, fgcolor.(colors))
             push!(c.bgcols, bgcolor.(colors))
         end
