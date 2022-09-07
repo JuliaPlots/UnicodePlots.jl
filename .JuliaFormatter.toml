@@ -1,5 +1,6 @@
 annotate_untyped_fields_with_any = false
 short_to_long_function_def = false
+long_to_short_function_def = true
 whitespace_ops_in_indices = true
 remove_extra_newlines = true
 whitespace_in_kwargs = true
