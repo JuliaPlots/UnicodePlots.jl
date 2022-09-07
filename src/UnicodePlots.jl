@@ -115,7 +115,7 @@ include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 
 @precompile_setup begin
-    buf = IOContext(PipeBuffer(), :color => true, :displaysize => displaysize(stdout))
+    ctx = IOContext(devnull, :color => Base.get_have_color())
     @precompile_all_calls begin
         for T ∈ (Int, Float64)  # most common types
             I = one(T)
@@ -141,7 +141,7 @@ include("interface/polarplot.jl")
                 surfaceplot(I:4, I:2, (x, y) -> sinc(√(x^2 + y^2)); lines = true),
                 isosurface(I:4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
             )
-            foreach(p -> show(buf, p), plots)
+            foreach(p -> show(ctx, p), plots)
         end
     end
 end
