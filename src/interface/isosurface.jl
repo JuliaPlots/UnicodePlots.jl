@@ -89,12 +89,14 @@ end
 )
     color = color ≡ :auto ? next_color!(plot) : color
 
-    mc = MarchingCubes.MC(V, Int; x = collect(x), y = collect(y), z = collect(z))
+    F = float(promote_type(eltype(x), eltype(y), eltype(z)))
+
+    mc = MarchingCubes.MC(V, Int; x = collect(F, x), y = collect(F, y), z = collect(F, z))
     (legacy ? MarchingCubes.march_legacy : MarchingCubes.march)(mc, isovalue)
 
-    xs = float(eltype(x))[]
-    ys = float(eltype(y))[]
-    zs = float(eltype(z))[]
+    xs = F[]
+    ys = F[]
+    zs = F[]
     cs = UserColorType[]
 
     for (i1, i2, i3) ∈ mc.triangles
