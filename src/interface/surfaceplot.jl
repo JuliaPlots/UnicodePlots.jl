@@ -124,7 +124,7 @@ end
     plot.cmap.callback = callback = colormap_callback(colormap)
     plot.cmap.bar |= cmapped
 
-    F = float(eltype(Z))
+    F = float(promote_type(eltype(X), eltype(Y), eltype(Z)))
     if (
         lines &&
         cmapped &&

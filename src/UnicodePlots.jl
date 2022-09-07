@@ -134,7 +134,7 @@ include("interface/polarplot.jl")
                 histogram(T[1, 2, 3]),
                 histogram(T[1, 2, 3]; vertical = true),
                 polarplot(0:(π / 4):π, I:5),
-                densityplot(T[1, 2, 3], T[1, 2, 3]; dscale = x -> log(1 + x)),
+                densityplot(T[1, 2], T[3, 4]; dscale = x -> log(1 + x)),
                 heatmap(repeat(collect(T, 0:4)', outer = (5, 1))),
                 spy(T[1 -1 0; -1 2 1; 0 -1 1]),
                 contourplot(I:4, I:2, (x, y) -> exp(-(x / 2)^2 - (y - 2)^2)),
