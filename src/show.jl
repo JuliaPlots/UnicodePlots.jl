@@ -362,7 +362,7 @@ fallback_font(mono::Bool = false) =
     end
 # COV_EXCL_STOP
 
-const FT_FONTS = Dict{String,FreeTypeAbstraction.FTFont}()
+const FT_FONTS = Dict{String,Any}()  # NOTE: `Any`: cannot use `FreeTypeAbstraction.FTFont`, `@lazy` loaded
 
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
