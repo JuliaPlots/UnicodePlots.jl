@@ -1,26 +1,25 @@
 module UnicodePlots
 
-using SparseArrays: AbstractSparseMatrix, findnz
-using StatsBase: Histogram, fit, percentile
 using SnoopPrecompile
 using LinearAlgebra
-using ColorSchemes
 using StaticArrays
 using LazyModules
 using ColorTypes
-using Requires
 using Crayons
 using Printf
 using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
-import LinearAlgebra: Transpose
+import SparseArrays: AbstractSparseMatrix, findnz
+import StatsBase: Histogram, fit, percentile
 import Base: RefValue
-import MarchingCubes
-import NaNMath
-import Contour
 
 @lazy import FreeTypeAbstraction = "663a7486-cb36-511b-a19d-713bb74d65c9"
+import MarchingCubes
+import ColorSchemes
+import Requires
+import NaNMath
+import Contour
 import FileIO
 
 # composite types

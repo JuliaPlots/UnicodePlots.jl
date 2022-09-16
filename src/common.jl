@@ -249,7 +249,7 @@ function __init__()
         colors256!()
         faintcolors!()
     end
-    @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
+    Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
         imageplot(img::AbstractArray{<:Colorant}; kwargs...) =
             Plot(ImageGraphics(img); kwargs...)
     end
