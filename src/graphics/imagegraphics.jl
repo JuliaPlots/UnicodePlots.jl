@@ -49,10 +49,10 @@ function preprocess!(io::IO, c::ImageGraphics)
     else
         ImageInTerminal.imshow(ctx, c.img)
         lines_colors = readlines(ctx)  # characters and ansi colors
-        re_bg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+);48;2;(\d+);(\d+);(\d+)[\d;]*?m"
-        re_bg_8bit = r"\e\[38;5;(\d+);48;5;(\d+)[\d;]*?m"
-        re_fg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+)[\d;]*?m"
-        re_fg_8bit = r"\e\[38;5;(\d+)[\d;]*?m"
+        re_bg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+);48;2;(\d+);(\d+);(\d+)m"
+        re_bg_8bit = r"\e\[38;5;(\d+);48;5;(\d+)m"
+        re_fg_24bit = r"\e\[38;2;(\d+);(\d+);(\d+)m"
+        re_fg_8bit = r"\e\[38;5;(\d+)m"
         line1 = first(lines_colors)
         nc = line1 |> no_ansi_escape |> length
         invalid = m -> INVALID_COLOR

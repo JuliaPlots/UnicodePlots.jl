@@ -10,7 +10,7 @@ img = testimage("monarch_color_256")
 end
 
 # experimental testing: see github.com/JuliaLang/Pkg.jl/pull/3186
-# must launched with `Pkg.test("UnicodePlots"; forward_stdin=true)` on `1.8`+
+# must be launched with `Pkg.test("UnicodePlots"; forward_stdin=true)` on `1.8`+
 if ImageInTerminal.Sixel.is_sixel_supported()
     @testset "sixel" begin
         _old_enc = ImageInTerminal.ENCODER_BACKEND[]
