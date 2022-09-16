@@ -113,6 +113,7 @@ include("interface/spy.jl")
 include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 
+# COV_EXCL_START
 @precompile_setup begin
     ctx = IOContext(devnull, :color => Base.get_have_color())
     @precompile_all_calls begin
@@ -147,5 +148,6 @@ include("interface/polarplot.jl")
         end
     end
 end
+# COV_EXCL_STOP
 
 end
