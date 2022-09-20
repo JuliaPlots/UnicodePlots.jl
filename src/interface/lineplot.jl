@@ -23,6 +23,7 @@ $(arguments(
         head_tail = "color the line head and/or tail with the complement of the chosen color (`:head`, `:tail`, `:both`)",
         head_tail_frac = "fraction of the arrow head or tail (e.g. provide `0.1` for 10%)",
         x = "horizontal position for each point (can be a real number or of type `TimeType`), if omitted, the axes of `y` will be used as `x`",
+        format = "specify the date format (`Dates` only)",
         color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
     ) ; add = (:x, :y, :canvas)
 ))
@@ -161,14 +162,20 @@ end
 function lineplot(
     x::AbstractVector{D},
     y::AbstractVector;
+    format::Union{Nothing, AbstractString} = nothing,
     xlim = extrema(x),
+    xticks = true,
     kw...,
 ) where {D<:TimeType}
     d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
-    plot = lineplot(d, y; xlim = dlim, kw...)
-    label!(plot, :bl, string(xlim[1]), color = BORDER_COLOR[])
-    label!(plot, :br, string(xlim[2]), color = BORDER_COLOR[])
+    plot = lineplot(d, y; xlim = dlim, xticks = xticks, kw...)
+    if xticks
+        fmt(dt) = format ≡ nothing ? string(dt) : Dates.format(dt, format)
+        label!(plot, :bl, fmt(xlim[1]), color = BORDER_COLOR[])
+        label!(plot, :br, fmt(xlim[2]), color = BORDER_COLOR[])
+    end
+    plot
 end
 
 function lineplot!(
