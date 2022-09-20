@@ -3,11 +3,23 @@ struct ImageGraphics{C<:Colorant} <: GraphicsArea
     sixel::RefValue{Bool}
     visible::Bool
     encoded_size::Vector{Int}
-    ren::Vector{String}
+    chars::Vector{Vector{Char}}  # nested vector structure chars[row][col] is more suited for this context
+    fgcols::Vector{Vector{ColorType}}  # only used in no-sixel context
+    bgcols::Vector{Vector{ColorType}}  # only used in no-sixel context
 end
 
-ImageGraphics(img::AbstractArray{<:Colorant}) =
-    ImageGraphics(img, Ref(false), true, [0, 0], String[])
+function ImageGraphics(img::AbstractArray{<:Colorant})
+    h = size(img, 1)
+    ImageGraphics(
+        img,
+        Ref(false),
+        true,
+        [0, 0],
+        sizehint!(Vector{Char}[], h),
+        sizehint!(Vector{ColorType}[], h),
+        sizehint!(Vector{ColorType}[], h),
+    )
+end
 
 @inline nrows(c::ImageGraphics) = c.encoded_size[1]
 @inline ncols(c::ImageGraphics) = c.encoded_size[2]
@@ -23,27 +35,52 @@ function preprocess!(io::IO, c::ImageGraphics)
             c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
         end
     end
-    if c.sixel[]
-        h, w = size(c.img)
-        lines = String[]
-        for r ∈ 1:char_h:h
-            ImageInTerminal.sixel_encode(ctx, c.img[r:min(r + char_h - 1, h), :])
-            push!(lines, read(ctx, String))
-        end
-        nc = ceil(Int, w / char_w)
-    else
-        ImageInTerminal.imshow(ctx, c.img)
-        lines = readlines(ctx)
-        nc = length(no_ansi_escape(first(lines)))
+    postprocess = c -> begin
+        c.encoded_size .= (0, 0)
+        empty!(c.chars)
+        empty!(c.fgcols)
+        empty!(c.bgcols)
+        nothing
     end
-    c.encoded_size .= length(lines), nc
-    resize!(c.ren, nrows(c))
-    copyto!(c.ren, lines)
-    c -> nothing
+    img_h, img_w = size(c.img)
+    if c.sixel[]
+        for r ∈ 1:char_h:img_h
+            ImageInTerminal.sixel_encode(ctx, c.img[r:min(r + char_h - 1, img_h), :])
+            push!(c.chars, read(ctx, String) |> collect)
+        end
+        nc = ceil(Int, img_w / char_w)
+    else
+        callback(I, fgcol, bgcol, chars...) = begin
+            if (row = first(I)) > length(c.chars)
+                push!(c.chars, sizehint!(Char[], img_w))
+                push!(c.fgcols, sizehint!(ColorType[], img_w))
+                push!(c.bgcols, sizehint!(ColorType[], img_w))
+            end
+            append!(c.chars[row], chars)
+            _fgcol = ansi_color(fgcol)
+            _bgcol = ansi_color(bgcol)
+            for _ ∈ eachindex(chars)
+                push!(c.fgcols[row], _fgcol)
+                push!(c.bgcols[row], _bgcol)
+            end
+            nothing
+        end
+        ImageInTerminal.imshow(ctx, c.img; callback = callback)
+        nc = length(c.chars |> first)
+    end
+    c.encoded_size .= length(c.chars), nc
+    postprocess
 end
 
-function print_row(io::IO, print_nocol, _, c::ImageGraphics, row::Integer)
+function print_row(io::IO, _, print_color, c::ImageGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    print_nocol(io, c.ren[row])
+    if c.sixel[]
+        print_color(io, INVALID_COLOR, String(c.chars[row]))  # color already encoded
+    else
+        for col ∈ 1:ncols(c)
+            bgcol = (bgcol = c.bgcols[row][col]) == INVALID_COLOR ? missing : bgcol
+            print_color(io, c.fgcols[row][col], c.chars[row][col]; bgcol = bgcol)
+        end
+    end
     nothing
 end

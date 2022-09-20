@@ -27,6 +27,7 @@ Here is a list of the main high-level functions for common scenarios:
   - [`contourplot`](https://github.com/JuliaPlots/UnicodePlots.jl#contour-plot) (Contour Plot)
   - [`polarplot`](https://github.com/JuliaPlots/UnicodePlots.jl#polar-plot) (Polar Plot)
   - [`heatmap`](https://github.com/JuliaPlots/UnicodePlots.jl#heatmap-plot) (Heatmap Plot)
+  - [`imageplot`](https://github.com/JuliaPlots/UnicodePlots.jl#image-plot) (Image Plot)
   - [`surfaceplot`](https://github.com/JuliaPlots/UnicodePlots.jl#surface-plot) (Surface Plot - 3D)
   - [`isosurface`](https://github.com/JuliaPlots/UnicodePlots.jl#isosurface-plot) (Isosurface Plot - 3D)
 
@@ -291,6 +292,19 @@ Here is a list of the main high-level functions for common scenarios:
 </details>
 
 <details open>
+  <summary><a name=polar-plot></a><b>Polar Plot</b></summary><br>
+
+  Plots data in polar coordinates with `θ` the angles in radians.
+
+  ```julia
+  polarplot(range(0, 2π, length=20), range(0, 2, length=20))
+  ```
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/polarplot1.png" width="450"><br>
+  
+
+</details>
+
+<details open>
   <summary><a name=heatmap-plot></a><b>Heatmap Plot</b></summary><br>
 
   ```julia
@@ -317,16 +331,17 @@ Here is a list of the main high-level functions for common scenarios:
 </details>
 
 <details open>
-  <summary><a name=polar-plot></a><b>Polar Plot</b></summary><br>
+  <summary><a name=image-plot></a><b>Image Plot</b></summary><br>
 
-  Plots data in polar coordinates with `θ` the angles in radians.
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
 
   ```julia
-  polarplot(range(0, 2π, length=20), range(0, 2, length=20))
+  using ImageInTerminal  # mandatory
+  using TestImages
+  imageplot(testimage("monarch_color_256"), title="monarch")
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/polarplot1.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/imageplot1.png" width="450"><br>
   
-
 </details>
 
 <details open>
