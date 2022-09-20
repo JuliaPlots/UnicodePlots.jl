@@ -10,7 +10,7 @@ Note internally that `horizontal_histogram` is a simply wrapper for
 
 # Usage
 
-    horizontal_histogram(hist; $(keywords((border = :barplot, color = :green), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,)))
+    horizontal_histogram(hist; $(keywords((border = :barplot, color = :green), remove = (:ylim, :yscale, :height, :grid), add = (:symbols,))))
 
 # Arguments
 
@@ -80,7 +80,7 @@ Draws a vertical histogram of the given `StatsBase.Histogram`.
 
 # Usage
 
-    vertical_histogram(hist; $(keywords((border = :barplot, color = :green), remove = (:xlim, :ylim, :xscale, :yscale, :width, :height, :grid), add = (:symbols,)))
+    vertical_histogram(hist; $(keywords((border = :barplot, color = :green), remove = (:xlim, :ylim, :xscale, :yscale, :width, :height, :grid), add = (:symbols,))))
 
 # Arguments
 

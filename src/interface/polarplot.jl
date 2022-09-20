@@ -6,7 +6,7 @@ Draws `θ` angles and `r` radii on a polar plot.
 
 # Usage
 
-    polarplot(θ, r)
+    polarplot(θ, r; $(keywords(; add = (:canvas,))))
 
 # Arguments
 

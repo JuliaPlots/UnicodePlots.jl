@@ -17,7 +17,7 @@ and the keys, which have to be strings, will be used as the labels.
 
 # Usage
     
-    boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid)))
+    boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid))))
     boxplot(dict; kw...)
 
 # Arguments
