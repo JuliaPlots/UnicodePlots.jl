@@ -499,6 +499,7 @@ c256(c::Integer) = c
 ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
 ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
 
+ansi_color(color::Missing) = INVALID_COLOR
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
 

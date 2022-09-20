@@ -39,6 +39,8 @@ test_ref(reference, actual) = @test_reference(
     format = "TXT"
 )
 
+is_ci() = get(ENV, "CI", "false") == "true"
+
 # helpers
 macro show_col(p, kv...)
     :(@io2str(
@@ -102,7 +104,6 @@ end
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
 
 withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
-    UnicodePlots.CRAYONS_FAST[] = false
     @timeit_include "tst_depwarn.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
