@@ -67,12 +67,12 @@ end
 
 @testset "dataframes" begin
     df = DataFrame(
-        Time=map(x -> DateTime(2022, 09, 20, x...), [1:3, 4:6, 7:9]),
-        Test=[0, 1, -1]
+        Time = map(x -> DateTime(2022, 09, 20, x...), [1:3, 4:6, 7:9]),
+        Test = [0, 1, -1],
     )
-    p = lineplot(df.Time, df.Test; xticks=false)
+    p = lineplot(df.Time, df.Test; xticks = false)
     test_ref("lineplot/df1.txt", @show_col(p))
-    p = lineplot(df.Time, df.Test; format="M:S:s")
+    p = lineplot(df.Time, df.Test; format = "M:S:s")
     test_ref("lineplot/df2.txt", @show_col(p))
 end
 

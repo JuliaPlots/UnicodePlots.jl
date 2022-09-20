@@ -23,7 +23,7 @@ $(arguments(
         head_tail = "color the line head and/or tail with the complement of the chosen color (`:head`, `:tail`, `:both`)",
         head_tail_frac = "fraction of the arrow head or tail (e.g. provide `0.1` for 10%)",
         x = "horizontal position for each point (can be a real number or of type `TimeType`), if omitted, the axes of `y` will be used as `x`",
-        format = "specify the date format (`Dates` only)",
+        format = "specify the ticks date format (`TimeType` only)",
         color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
     ) ; add = (:x, :y, :canvas)
 ))
@@ -162,7 +162,7 @@ end
 function lineplot(
     x::AbstractVector{D},
     y::AbstractVector;
-    format::Union{Nothing, AbstractString} = nothing,
+    format::Union{Nothing,AbstractString} = nothing,
     xlim = extrema(x),
     xticks = true,
     kw...,
