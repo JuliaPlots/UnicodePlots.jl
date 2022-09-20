@@ -12,7 +12,7 @@ This means that the two vectors must be of the same length and ordering.
 
 # Usage
 
-    scatterplot([x], y; $(keywords(; add = (:canvas,)))
+    scatterplot([x], y; $(keywords(; add = (:canvas,))))
 
 # Arguments
 

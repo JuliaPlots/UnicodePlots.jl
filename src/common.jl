@@ -238,9 +238,6 @@ terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
 forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
 
-imageplot(args...; kwargs...) =
-    error("not implemented, did you forget 'using ImageInTerminal' ?")
-
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
         truecolors!()

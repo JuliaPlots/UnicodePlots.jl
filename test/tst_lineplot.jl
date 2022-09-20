@@ -65,6 +65,17 @@ end
     test_ref("lineplot/dates2.txt", @show_col(p))
 end
 
+@testset "dataframes" begin
+    df = DataFrame(
+        Time = map(x -> DateTime(2022, 09, 20, x...), [1:3, 4:6, 7:9]),
+        Test = [0, 1, -1],
+    )
+    p = lineplot(df.Time, df.Test; xticks = false)
+    test_ref("lineplot/df1.txt", @show_col(p))
+    p = lineplot(df.Time, df.Test; format = "M:S:s")
+    test_ref("lineplot/df2.txt", @show_col(p))
+end
+
 @testset "line with intercept and slope" begin
     p = @binf lineplot(y)
     @test @binf(lineplot!(p, -3, 1)) ≡ p

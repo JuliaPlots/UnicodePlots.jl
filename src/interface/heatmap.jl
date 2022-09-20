@@ -9,7 +9,7 @@ of the matrix as `x` and `y` coordinates respectively.
 
 # Usage
 
-    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = nothing, xfact = nothing, array = false); add = (Z_DESCRIPTION..., :fix_ar)))
+    heatmap(A::AbstractMatrix; $(keywords((height = 0, width = 0, yfact = nothing, xfact = nothing, array = false); add = (Z_DESCRIPTION..., :fix_ar))))
 
 # Arguments
 
