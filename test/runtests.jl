@@ -9,7 +9,7 @@ import UnicodePlots: print_row, preprocess!, addrow!
 # issues get automatically resolved.
 include("tst_world_age.jl")
 
-import Dates: Date, Day
+import Dates: DateTime, Date, Day
 import Random: seed!
 import ColorSchemes
 import FileIO
