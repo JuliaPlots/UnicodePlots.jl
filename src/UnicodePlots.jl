@@ -112,6 +112,7 @@ include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
 include("interface/polarplot.jl")
+include("interface/imageplot.jl")
 
 # COV_EXCL_START
 @precompile_setup begin
