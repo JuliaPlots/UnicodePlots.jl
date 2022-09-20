@@ -135,7 +135,7 @@ Draws a horizontal or vertical histogram of the given `data`, fitted to an `Hist
 
 # Usage
 
-    histogram(x; nbins, closed = :left, vertical = false, stats = true, kw...)
+    histogram(x; nbins, closed = :left, vertical = false, stats = true, $(keywords((border = :barplot, color = :green), remove = (:xlim, :ylim, :xscale, :yscale, :width, :height, :grid), add = (:symbols,))))
 
 # Arguments
 
@@ -144,7 +144,7 @@ $(arguments(
         x = "array of numbers for which the histogram should be computed",
         nbins = "approximate number of bins that should be used",
         closed = "if `:left` (default), the bin intervals are left-closed ``[a, b)``; if `:right`, intervals are right-closed ``(a, b]``",
-        vertical = "vertical histogram",
+        vertical = "vertical histogram instead of the default horizontal one",
         stats = "display statistics (vertical only)",
     ); add = (:symbols,)
 ))
