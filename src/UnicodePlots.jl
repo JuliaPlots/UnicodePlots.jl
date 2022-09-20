@@ -127,6 +127,7 @@ include("interface/polarplot.jl")
                 lineplot(I:2, I:2),
                 lineplot(I:2, T[0:1 2:3]),
                 lineplot([cos, sin], -π / 2, 2π),
+                lineplot([Date(2020), Date(2021)], I:2),
                 scatterplot(I:2),
                 scatterplot(I:2, I:2),
                 scatterplot(I:2, T[0:1 2:3]),

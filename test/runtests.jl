@@ -10,6 +10,7 @@ import UnicodePlots: print_row, preprocess!, addrow!
 include("tst_world_age.jl")
 
 import Dates: DateTime, Date, Day
+import DataFrames: DataFrame
 import Random: seed!
 import ColorSchemes
 import FileIO
