@@ -10,7 +10,7 @@ using FreeType
 export FTFont, findfont, fallback_font, renderstring!
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
-const FF_LIBRARY = FT_Library[C_NULL]
+const FT_LIB = FT_Library[C_NULL]
 const VALID_FONTPATHS = String[]
 
 struct FontExtent{T}
@@ -31,7 +31,7 @@ mutable struct FTFont
         face = new(ft_ptr, use_cache, extent_cache)
         finalizer(
             face ->
-                (getfield(face, :ft_ptr) != C_NULL && FF_LIBRARY[1] != C_NULL) &&
+                (getfield(face, :ft_ptr) != C_NULL && FT_LIB[1] != C_NULL) &&
                     FT_Done_Face(face),
             face,
         )
@@ -64,13 +64,14 @@ Base.show(io::IO, font::FTFont) =
 
 check_error(err, error_msg) = err == 0 || error("$error_msg with error: $err")
 
-function newface(facename, faceindex::Real = 0, ftlib = FF_LIBRARY)
+function newface(facename, faceindex::Real = 0, ftlib = FT_LIB)
     face = Ref{FT_Face}()
     err = FT_New_Face(ftlib[1], facename, Int32(faceindex), face)
     check_error(err, "Couldn't load font $facename")
     face[]
 end
 
+# COV_EXCL_START
 fallback_font(mono::Bool = false) =
     if Sys.islinux()
         mono ? "DejaVu Sans Mono" : "DejaVu Sans"
@@ -82,6 +83,7 @@ fallback_font(mono::Bool = false) =
         @warn "Unsupported $(Base.KERNEL)"
         mono ? "Courier" : "Helvetica"
     end
+# COV_EXCL_STOP
 
 """
 Match a font using the user-specified search string. Each part of the search string
@@ -145,7 +147,7 @@ function findfont(searchstring::String; additional_fonts::String = "")
     # \W splits at all groups of non-word characters (like space, -, ., etc)
     searchparts = unique(split(lowercase(searchstring), r"\W+", keepempty = false))
 
-    best_score_so_far = 0, 0, false, typemin(Int)
+    best_score = 0, 0, false, typemin(Int)
     best_fpath = nothing
 
     for folder in font_folders, font in readdir(folder)
@@ -163,9 +165,9 @@ function findfont(searchstring::String; additional_fonts::String = "")
         # 2. number of style match characters
         # 3. is font a "regular" style variant?
         # 4. the negative length of the font name, the shorter the better
-        if (family_match_score = first(score)) > 0 && score > best_score_so_far
+        if (family_match_score = first(score)) > 0 && score > best_score
             best_fpath = fpath
-            best_score_so_far = score
+            best_score = score
         end
         finalize(face)
     end
@@ -419,23 +421,22 @@ function renderstring!(
 end
 
 function ft_init()
-    FF_LIBRARY[1] != C_NULL &&
+    FT_LIB[1] != C_NULL &&
         error("Freetype already initalized. init() called two times?")
-    FT_Init_FreeType(FF_LIBRARY) == 0
+    FT_Init_FreeType(FT_LIB) == 0
 end
 
 function ft_done()
-    FF_LIBRARY[1] == C_NULL &&
+    FT_LIB[1] == C_NULL &&
         error("Library == CNULL. done() called before init(), or done called two times?")
-    err = FT_Done_FreeType(FF_LIBRARY[1])
-    FF_LIBRARY[1] = C_NULL
+    err = FT_Done_FreeType(FT_LIB[1])
+    FT_LIB[1] = C_NULL
     err == 0
 end
 
 add_recursive(result, path) =
     for p in readdir(path)
-        pabs = joinpath(path, p)
-        if isdir(pabs)
+        if (pabs = joinpath(path, p)) |> isdir
             push!(result, pabs)
             add_recursive(result, pabs)
         end
@@ -474,13 +475,9 @@ function __init__()
         end
         result
     end
-    paths = filter(isdir, font_paths)
-    if (path = get(ENV, "UP_FONT_PATH", nothing) ≢ nothing)
-        isdir(path) ||
-            error("Path in environment variable `UP_FONT_PATH` is not a valid directory!")
-        push!(paths, path)
-    end
-    append!(VALID_FONTPATHS, paths)
+    env_path = get(ENV, "UP_FONT_PATH", nothing)
+    env_path ≡ nothing || push!(font_paths, env_path)
+    append!(VALID_FONTPATHS, filter(isdir, font_paths))
     nothing
 end
 
