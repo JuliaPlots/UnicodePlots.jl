@@ -20,8 +20,6 @@ struct FontExtent{T}
     scale::SVector{2,T}
 end
 
-FontExtent(v1::AbstractVector{T}, args...) where {T} = FontExtent{T}(v1, args...)
-
 mutable struct FTFont
     ft_ptr::FT_Face
     use_cache::Bool
@@ -192,6 +190,13 @@ FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloa
         SVector{2,T}(fontmetric.width, fontmetric.height) ./ scale,
     )
 
+FontExtent(func::Function, ext::FontExtent) = FontExtent(
+    func(ext.vertical_bearing),
+    func(ext.horizontal_bearing),
+    func(ext.advance),
+    func(ext.scale),
+)
+
 function set_pixelsize(face::FTFont, size::Integer)
     err = FT_Set_Pixel_Sizes(face, size, size)
     check_error(err, "Couldn't set pixelsize")
@@ -298,26 +303,23 @@ function renderstring!(
     bitmaps = Vector{Matrix{UInt8}}(undef, len)
     metrics = Vector{FontExtent{Int}}(undef, len)
 
-    y_min = y_max = sum_adv_x, = 0  # y_min and y_max are w.r.t the baseline
+    y_min = y_max = sum_adv_x = 0  # y_min and y_max are w.r.t the baseline
     for (i, char) in enumerate(fstr)
         bitmap, metricf = renderface(face, char, pixelsize; set_pix = false)
-        metric = FontExtent(
-            map(s -> round.(Int, getfield(metricf, s)), fieldnames(FontExtent))...,
-        )
+        metric = FontExtent(x -> round.(Int, x), metricf)
         bitmaps[i] = bitmap
         metrics[i] = metric
 
         y_min = min(y_min, bottominkbound(metric))
         y_max = max(y_max, topinkbound(metric))
-        sum_adv_x, += hadvance(metric)
+        sum_adv_x += hadvance(metric)
     end
 
     bitmap_max = bitmaps |> first |> eltype |> typemax
     imgh, imgw = size(img)
 
     # initial pen position
-    px =
-        x0 - (halign ≡ :hright ? sum_adv_x, : halign ≡ :hcenter ? sum_adv_x, >> 1 : 0)
+    px = x0 - (halign ≡ :hright ? sum_adv_x : halign ≡ :hcenter ? sum_adv_x >> 1 : 0)
     py =
         y0 + (
             valign ≡ :vtop ? y_max :
@@ -328,7 +330,7 @@ function renderstring!(
     if bcolor ≢ nothing
         img[
             clamp(py - y_max, 1, imgh):clamp(py - y_min, 1, imgh),
-            clamp(px, 1, imgw):clamp(px + sum_adv_x,, 1, imgw),
+            clamp(px, 1, imgw):clamp(px + sum_adv_x, 1, imgw),
         ] .= bcolor
     end
 
@@ -361,10 +363,8 @@ function renderstring!(
             end
         else
             if gstr ≢ nothing
-                exts = extents(face, gstr[i], pixelsize)
-                gmetric = FontExtent(
-                    map(s -> round.(Int, getfield(exts, s)), fieldnames(FontExtent))...,
-                )
+                gexts = extents(face, gstr[i], pixelsize)
+                gmetric = FontExtent(x -> round.(Int, x), gexts)
                 y_min = bottominkbound(gmetric)
                 y_max = topinkbound(gmetric)
             end
@@ -415,8 +415,7 @@ function renderstring!(
 end
 
 function ft_init()
-    FT_LIB[1] != C_NULL &&
-        error("Freetype already initalized. init() called two times?")
+    FT_LIB[1] != C_NULL && error("Freetype already initalized. init() called two times?")
     FT_Init_FreeType(FT_LIB) == 0
 end
 
