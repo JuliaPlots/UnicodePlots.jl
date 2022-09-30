@@ -150,7 +150,6 @@ try_load(fpath) =
     try
         FTFont(fpath)
     catch e
-        @debug e
         nothing
     end
 
