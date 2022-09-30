@@ -22,15 +22,10 @@ end
 
 mutable struct FTFont
     ft_ptr::FT_Face
-    use_cache::Bool
-    extent_cache::Dict{UInt64,FontExtent{Float32}}
-    function FTFont(ft_ptr::FT_Face, use_cache::Bool = true)
-        extent_cache = Dict{UInt64,FontExtent{Float32}}()
-        face = new(ft_ptr, use_cache, extent_cache)
+    function FTFont(ft_ptr::FT_Face)
+        face = new(ft_ptr)
         finalizer(
-            face ->
-                (getfield(face, :ft_ptr) != C_NULL && FT_LIB[1] != C_NULL) &&
-                    FT_Done_Face(face),
+            face -> (face.ft_ptr != C_NULL && FT_LIB[1] != C_NULL) && FT_Done_Face(face),
             face,
         )
         face
@@ -39,16 +34,16 @@ end
 FTFont(path::String) = FTFont(newface(path))
 FTFont(::Nothing) = nothing
 
-family_name(x::FTFont) = lowercase(x.family_name)
-style_name(x::FTFont) = lowercase(x.style_name)
+family_name(font::FTFont) = lowercase(ft_property(font, :family_name))
+style_name(font::FTFont) = lowercase(ft_property(font, :style_name))
 Base.propertynames(font::FTFont) = fieldnames(FT_FaceRec)
 
 # C interop
 Base.cconvert(::Type{FT_Face}, font::FTFont) = font
-Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = getfield(font, :ft_ptr)
+Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = font.ft_ptr
 
-function Base.getproperty(font::FTFont, fieldname::Symbol)
-    fontrect = unsafe_load(getfield(font, :ft_ptr))
+function ft_property(font::FTFont, fieldname::Symbol)
+    fontrect = unsafe_load(font.ft_ptr)
     if (field = getfield(fontrect, fieldname)) isa Ptr{FT_String}
         field == C_NULL && return ""
         unsafe_string(field)
@@ -57,8 +52,10 @@ function Base.getproperty(font::FTFont, fieldname::Symbol)
     end
 end
 
-Base.show(io::IO, font::FTFont) =
-    print(io, "FTFont (family = $(font.family_name), style = $(font.style_name))")
+Base.show(io::IO, font::FTFont) = print(
+    io,
+    "FTFont (family = $(ft_property(font, :family_name)), style = $(ft_property(font, :style_name)))",
+)
 
 check_error(err, error_msg) = err == 0 || error("$error_msg with error: $err")
 
@@ -227,9 +224,21 @@ end
 function loadglyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     set_pix && set_pixelsize(face, pixelsize)
     load_glyph(face, glyph)
-    gl = unsafe_load(face.glyph)
+    gl = unsafe_load(ft_property(face, :glyph))
     @assert gl.format == FT_GLYPH_FORMAT_BITMAP
     gl
+end
+
+function glyphbitmap(bitmap::FT_Bitmap)
+    @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
+    bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
+    row = bitmap.buffer
+    bitmap.pitch < 0 && (row -= bitmap.pitch * (rbmpRec.rows - 1))
+    for r = 1:(bitmap.rows)
+        bmp[:, r] = unsafe_wrap(Array, row, bitmap.width)
+        row += bitmap.pitch
+    end
+    bmp
 end
 
 function renderface(face::FTFont, glyph, pixelsize::Integer; kw...)
@@ -239,20 +248,6 @@ end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
     FontExtent(loadglyph(face, glyph, pixelsize).metrics)
-
-function glyphbitmap(bitmap::FT_Bitmap)
-    @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
-    bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
-    row = bitmap.buffer
-    if bitmap.pitch < 0
-        row -= bitmap.pitch * (rbmpRec.rows - 1)
-    end
-    for r = 1:(bitmap.rows)
-        bmp[:, r] = unsafe_wrap(Array, row, bitmap.width)
-        row += bitmap.pitch
-    end
-    bmp
-end
 
 one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
     T <: Integer ? typemax(T) : oneunit(T)
