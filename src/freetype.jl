@@ -148,11 +148,10 @@ function findfont(searchstring::String; additional_fonts::String = "")
     searchparts = unique(split(lowercase(searchstring), r"\W+", keepempty = false))
 
     best_score = 0, 0, false, typemin(Int)
-    best_fpath = nothing
+    best_fpath = face = nothing
 
     for folder in font_folders, font in readdir(folder)
         fpath = joinpath(folder, font)
-        local face::FTFont
         try
             face = FTFont(fpath)
         catch
@@ -299,7 +298,7 @@ function renderstring!(
     bitmaps = Vector{Matrix{UInt8}}(undef, len)
     metrics = Vector{FontExtent{Int}}(undef, len)
 
-    y_min = y_max = sum_advance_x = 0  # y_min and y_max are w.r.t the baseline
+    y_min = y_max = sum_adv_x, = 0  # y_min and y_max are w.r.t the baseline
     for (i, char) in enumerate(fstr)
         bitmap, metricf = renderface(face, char, pixelsize; set_pix = false)
         metric = FontExtent(
@@ -310,7 +309,7 @@ function renderstring!(
 
         y_min = min(y_min, bottominkbound(metric))
         y_max = max(y_max, topinkbound(metric))
-        sum_advance_x += hadvance(metric)
+        sum_adv_x, += hadvance(metric)
     end
 
     bitmap_max = bitmaps |> first |> eltype |> typemax
@@ -318,7 +317,7 @@ function renderstring!(
 
     # initial pen position
     px =
-        x0 - (halign ≡ :hright ? sum_advance_x : halign ≡ :hcenter ? sum_advance_x >> 1 : 0)
+        x0 - (halign ≡ :hright ? sum_adv_x, : halign ≡ :hcenter ? sum_adv_x, >> 1 : 0)
     py =
         y0 + (
             valign ≡ :vtop ? y_max :
@@ -329,11 +328,11 @@ function renderstring!(
     if bcolor ≢ nothing
         img[
             clamp(py - y_max, 1, imgh):clamp(py - y_min, 1, imgh),
-            clamp(px, 1, imgw):clamp(px + sum_advance_x, 1, imgw),
+            clamp(px, 1, imgw):clamp(px + sum_adv_x,, 1, imgw),
         ] .= bcolor
     end
 
-    local prev_char::Char
+    first_char = first(fstr)
     for (i, char) in enumerate(fstr)
         bitmap = bitmaps[i]
         metric = metrics[i]
@@ -341,12 +340,7 @@ function renderstring!(
         ax, ay = metric.advance
         sx, sy = metric.scale
 
-        if i == 1
-            prev_char = char
-        else
-            kx, _ = map(x -> round(Int, x), kerning(face, prev_char, char))
-            px += kx
-        end
+        i > 1 && (px += round(Int, kerning(face, first_char, char) |> first))
 
         # glyph origin
         oy = py - by
