@@ -22,11 +22,6 @@ end
 
 FontExtent(v1::AbstractVector{T}, args...) where {T} = FontExtent{T}(v1, args...)
 
-safe_free(face) =
-    if getfield(face, :ft_ptr) != C_NULL && FF_LIBRARY[1] != C_NULL
-        FT_Done_Face(face)
-    end
-
 mutable struct FTFont
     ft_ptr::FT_Face
     use_cache::Bool
@@ -34,11 +29,17 @@ mutable struct FTFont
     function FTFont(ft_ptr::FT_Face, use_cache::Bool = true)
         extent_cache = Dict{UInt64,FontExtent{Float32}}()
         face = new(ft_ptr, use_cache, extent_cache)
-        finalizer(safe_free, face)
+        finalizer(
+            face ->
+                (getfield(face, :ft_ptr) != C_NULL && FF_LIBRARY[1] != C_NULL) &&
+                    FT_Done_Face(face),
+            face,
+        )
         face
     end
 end
 FTFont(path::String) = FTFont(newface(path))
+FTFont(::Nothing) = nothing
 
 family_name(x::FTFont) = lowercase(x.family_name)
 style_name(x::FTFont) = lowercase(x.style_name)
@@ -69,15 +70,6 @@ function newface(facename, faceindex::Real = 0, ftlib = FF_LIBRARY)
     check_error(err, "Couldn't load font $facename")
     face[]
 end
-
-add_recursive(result, path) =
-    for p in readdir(path)
-        pabs = joinpath(path, p)
-        if isdir(pabs)
-            push!(result, pabs)
-            add_recursive(result, pabs)
-        end
-    end
 
 fallback_font(mono::Bool = false) =
     if Sys.islinux()
@@ -146,13 +138,6 @@ function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
     family_score, style_score, is_regular_style, fontlength_penalty
 end
 
-try_load(fpath) =
-    try
-        FTFont(fpath)
-    catch e
-        nothing
-    end
-
 function findfont(searchstring::String; additional_fonts::String = "")
     font_folders = copy(VALID_FONTPATHS)
     isempty(additional_fonts) || pushfirst!(font_folders, additional_fonts)
@@ -165,7 +150,12 @@ function findfont(searchstring::String; additional_fonts::String = "")
 
     for folder in font_folders, font in readdir(folder)
         fpath = joinpath(folder, font)
-        (face = try_load(fpath)) ≡ nothing && continue
+        local face::FTFont
+        try
+            face = FTFont(fpath)
+        catch
+            continue
+        end
 
         score = match_font(face, searchparts)
         # we can compare all four tuple elements of the score at once in order of importance:
@@ -179,7 +169,7 @@ function findfont(searchstring::String; additional_fonts::String = "")
         end
         finalize(face)
     end
-    try_load(best_fpath)
+    FTFont(best_fpath)
 end
 
 hadvance(ext::FontExtent) = ext.advance[1]
@@ -201,27 +191,6 @@ FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloa
         SVector{2,T}(fontmetric.width, fontmetric.height) ./ scale,
     )
 
-Base.:(==)(x::FontExtent, y::FontExtent) = (
-    x.vertical_bearing == y.vertical_bearing &&
-    x.horizontal_bearing == y.horizontal_bearing &&
-    x.advance == y.advance &&
-    x.scale == y.scale
-)
-
-FontExtent(fontmetric::FT_Glyph_Metrics, scale::Integer) = FontExtent(
-    div.(SVector{2,Int}(fontmetric.vertBearingX, fontmetric.vertBearingY), scale),
-    div.(SVector{2,Int}(fontmetric.horiBearingX, fontmetric.horiBearingY), scale),
-    div.(SVector{2,Int}(fontmetric.horiAdvance, fontmetric.vertAdvance), scale),
-    div.(SVector{2,Int}(fontmetric.width, fontmetric.height), scale),
-)
-
-# origin to SW corner of the horizontal metric
-# with the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
-bearing(extent::FontExtent{T}) where {T} = SVector{2,T}(
-    hbearing_ori_to_left(extent),
-    hbearing_ori_to_top(extent) - inkheight(extent),
-)
-
 function set_pixelsize(face::FTFont, size::Integer)
     err = FT_Set_Pixel_Sizes(face, size, size)
     check_error(err, "Couldn't set pixelsize")
@@ -230,11 +199,10 @@ end
 
 glyph_index(face::FTFont, glyphname::String)::UInt64 = FT_Get_Name_Index(face, glyphname)
 glyph_index(face::FTFont, char::Char)::UInt64 = FT_Get_Char_Index(face, char)
-glyph_index(face::FTFont, int::Integer) = UInt64(int)
+glyph_index(face::FTFont, idx::Integer) = UInt64(idx)
 
-function kerning(glyphspec1, glyphspec2, face::FTFont)
-    i1 = glyph_index(face, glyphspec1)
-    i2 = glyph_index(face, glyphspec2)
+function kerning(face::FTFont, glyphspecs...)
+    i1, i2 = glyph_index.(Ref(face), glyphspecs)
     kerning2d = Ref{FT_Vector}()
     err = FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
     # Can error if font has no kerning! Since that's somewhat expected, we just return 0
@@ -250,16 +218,16 @@ function load_glyph(face::FTFont, glyph)
     check_error(err, "Could not load glyph $(repr(glyph)) from $face to render.")
 end
 
-function loadglyph(face::FTFont, glyph, pixelsize::Integer)
-    set_pixelsize(face, pixelsize)
+function loadglyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
+    set_pix && set_pixelsize(face, pixelsize)
     load_glyph(face, glyph)
     gl = unsafe_load(face.glyph)
     @assert gl.format == FT_GLYPH_FORMAT_BITMAP
     gl
 end
 
-function renderface(face::FTFont, glyph, pixelsize::Integer)
-    gl = loadglyph(face, glyph, pixelsize)
+function renderface(face::FTFont, glyph, pixelsize::Integer; kw...)
+    gl = loadglyph(face, glyph, pixelsize; kw...)
     glyphbitmap(gl.bitmap), FontExtent(gl.metrics)
 end
 
@@ -331,7 +299,7 @@ function renderstring!(
 
     y_min = y_max = sum_advance_x = 0  # y_min and y_max are w.r.t the baseline
     for (i, char) in enumerate(fstr)
-        bitmap, metricf = renderface(face, char, pixelsize)
+        bitmap, metricf = renderface(face, char, pixelsize; set_pix = false)
         metric = FontExtent(
             map(s -> round.(Int, getfield(metricf, s)), fieldnames(FontExtent))...,
         )
@@ -374,7 +342,7 @@ function renderstring!(
         if i == 1
             prev_char = char
         else
-            kx, _ = map(x -> round(Int, x), kerning(prev_char, char, face))
+            kx, _ = map(x -> round(Int, x), kerning(face, prev_char, char))
             px += kx
         end
 
@@ -463,6 +431,15 @@ function ft_done()
     FF_LIBRARY[1] = C_NULL
     err == 0
 end
+
+add_recursive(result, path) =
+    for p in readdir(path)
+        pabs = joinpath(path, p)
+        if isdir(pabs)
+            push!(result, pabs)
+            add_recursive(result, pabs)
+        end
+    end
 
 function __init__()
     ft_init()
