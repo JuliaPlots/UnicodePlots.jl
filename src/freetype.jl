@@ -10,7 +10,7 @@ using FreeType
 export FTFont, findfont, fallback_font, renderstring!
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
-const FF_LIBRARY = FT_Library[C_NULL]
+const FT_LIB = FT_Library[C_NULL]
 const VALID_FONTPATHS = String[]
 
 struct FontExtent{T}
@@ -20,19 +20,12 @@ struct FontExtent{T}
     scale::SVector{2,T}
 end
 
-FontExtent(v1::AbstractVector{T}, args...) where {T} = FontExtent{T}(v1, args...)
-
 mutable struct FTFont
     ft_ptr::FT_Face
-    use_cache::Bool
-    extent_cache::Dict{UInt64,FontExtent{Float32}}
-    function FTFont(ft_ptr::FT_Face, use_cache::Bool = true)
-        extent_cache = Dict{UInt64,FontExtent{Float32}}()
-        face = new(ft_ptr, use_cache, extent_cache)
+    function FTFont(ft_ptr::FT_Face)
+        face = new(ft_ptr)
         finalizer(
-            face ->
-                (getfield(face, :ft_ptr) != C_NULL && FF_LIBRARY[1] != C_NULL) &&
-                    FT_Done_Face(face),
+            face -> (face.ft_ptr != C_NULL && FT_LIB[1] != C_NULL) && FT_Done_Face(face),
             face,
         )
         face
@@ -41,16 +34,16 @@ end
 FTFont(path::String) = FTFont(newface(path))
 FTFont(::Nothing) = nothing
 
-family_name(x::FTFont) = lowercase(x.family_name)
-style_name(x::FTFont) = lowercase(x.style_name)
+family_name(font::FTFont) = lowercase(ft_property(font, :family_name))
+style_name(font::FTFont) = lowercase(ft_property(font, :style_name))
 Base.propertynames(font::FTFont) = fieldnames(FT_FaceRec)
 
 # C interop
 Base.cconvert(::Type{FT_Face}, font::FTFont) = font
-Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = getfield(font, :ft_ptr)
+Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = font.ft_ptr
 
-function Base.getproperty(font::FTFont, fieldname::Symbol)
-    fontrect = unsafe_load(getfield(font, :ft_ptr))
+function ft_property(font::FTFont, fieldname::Symbol)
+    fontrect = unsafe_load(font.ft_ptr)
     if (field = getfield(fontrect, fieldname)) isa Ptr{FT_String}
         field == C_NULL && return ""
         unsafe_string(field)
@@ -59,18 +52,21 @@ function Base.getproperty(font::FTFont, fieldname::Symbol)
     end
 end
 
-Base.show(io::IO, font::FTFont) =
-    print(io, "FTFont (family = $(font.family_name), style = $(font.style_name))")
+Base.show(io::IO, font::FTFont) = print(
+    io,
+    "FTFont (family = $(ft_property(font, :family_name)), style = $(ft_property(font, :style_name)))",
+)
 
 check_error(err, error_msg) = err == 0 || error("$error_msg with error: $err")
 
-function newface(facename, faceindex::Real = 0, ftlib = FF_LIBRARY)
+function newface(facename, faceindex::Real = 0, ftlib = FT_LIB)
     face = Ref{FT_Face}()
     err = FT_New_Face(ftlib[1], facename, Int32(faceindex), face)
     check_error(err, "Couldn't load font $facename")
     face[]
 end
 
+# COV_EXCL_START
 fallback_font(mono::Bool = false) =
     if Sys.islinux()
         mono ? "DejaVu Sans Mono" : "DejaVu Sans"
@@ -82,6 +78,7 @@ fallback_font(mono::Bool = false) =
         @warn "Unsupported $(Base.KERNEL)"
         mono ? "Courier" : "Helvetica"
     end
+# COV_EXCL_STOP
 
 """
 Match a font using the user-specified search string. Each part of the search string
@@ -145,12 +142,11 @@ function findfont(searchstring::String; additional_fonts::String = "")
     # \W splits at all groups of non-word characters (like space, -, ., etc)
     searchparts = unique(split(lowercase(searchstring), r"\W+", keepempty = false))
 
-    best_score_so_far = 0, 0, false, typemin(Int)
-    best_fpath = nothing
+    best_score = 0, 0, false, typemin(Int)
+    best_fpath = face = nothing
 
     for folder in font_folders, font in readdir(folder)
         fpath = joinpath(folder, font)
-        local face::FTFont
         try
             face = FTFont(fpath)
         catch
@@ -163,9 +159,9 @@ function findfont(searchstring::String; additional_fonts::String = "")
         # 2. number of style match characters
         # 3. is font a "regular" style variant?
         # 4. the negative length of the font name, the shorter the better
-        if (family_match_score = first(score)) > 0 && score > best_score_so_far
+        if (family_match_score = first(score)) > 0 && score > best_score
             best_fpath = fpath
-            best_score_so_far = score
+            best_score = score
         end
         finalize(face)
     end
@@ -190,6 +186,13 @@ FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloa
         SVector{2,T}(fontmetric.horiAdvance, fontmetric.vertAdvance) ./ scale,
         SVector{2,T}(fontmetric.width, fontmetric.height) ./ scale,
     )
+
+FontExtent(func::Function, ext::FontExtent) = FontExtent(
+    func(ext.vertical_bearing),
+    func(ext.horizontal_bearing),
+    func(ext.advance),
+    func(ext.scale),
+)
 
 function set_pixelsize(face::FTFont, size::Integer)
     err = FT_Set_Pixel_Sizes(face, size, size)
@@ -221,9 +224,21 @@ end
 function loadglyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     set_pix && set_pixelsize(face, pixelsize)
     load_glyph(face, glyph)
-    gl = unsafe_load(face.glyph)
+    gl = unsafe_load(ft_property(face, :glyph))
     @assert gl.format == FT_GLYPH_FORMAT_BITMAP
     gl
+end
+
+function glyphbitmap(bitmap::FT_Bitmap)
+    @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
+    bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
+    row = bitmap.buffer
+    bitmap.pitch < 0 && (row -= bitmap.pitch * (rbmpRec.rows - 1))
+    for r = 1:(bitmap.rows)
+        bmp[:, r] = unsafe_wrap(Array, row, bitmap.width)
+        row += bitmap.pitch
+    end
+    bmp
 end
 
 function renderface(face::FTFont, glyph, pixelsize::Integer; kw...)
@@ -233,20 +248,6 @@ end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
     FontExtent(loadglyph(face, glyph, pixelsize).metrics)
-
-function glyphbitmap(bitmap::FT_Bitmap)
-    @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
-    bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
-    row = bitmap.buffer
-    if bitmap.pitch < 0
-        row -= bitmap.pitch * (rbmpRec.rows - 1)
-    end
-    for r = 1:(bitmap.rows)
-        bmp[:, r] = unsafe_wrap(Array, row, bitmap.width)
-        row += bitmap.pitch
-    end
-    bmp
-end
 
 one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
     T <: Integer ? typemax(T) : oneunit(T)
@@ -297,26 +298,23 @@ function renderstring!(
     bitmaps = Vector{Matrix{UInt8}}(undef, len)
     metrics = Vector{FontExtent{Int}}(undef, len)
 
-    y_min = y_max = sum_advance_x = 0  # y_min and y_max are w.r.t the baseline
+    y_min = y_max = sum_adv_x = 0  # y_min and y_max are w.r.t the baseline
     for (i, char) in enumerate(fstr)
         bitmap, metricf = renderface(face, char, pixelsize; set_pix = false)
-        metric = FontExtent(
-            map(s -> round.(Int, getfield(metricf, s)), fieldnames(FontExtent))...,
-        )
+        metric = FontExtent(x -> round.(Int, x), metricf)
         bitmaps[i] = bitmap
         metrics[i] = metric
 
         y_min = min(y_min, bottominkbound(metric))
         y_max = max(y_max, topinkbound(metric))
-        sum_advance_x += hadvance(metric)
+        sum_adv_x += hadvance(metric)
     end
 
     bitmap_max = bitmaps |> first |> eltype |> typemax
     imgh, imgw = size(img)
 
     # initial pen position
-    px =
-        x0 - (halign ≡ :hright ? sum_advance_x : halign ≡ :hcenter ? sum_advance_x >> 1 : 0)
+    px = x0 - (halign ≡ :hright ? sum_adv_x : halign ≡ :hcenter ? sum_adv_x >> 1 : 0)
     py =
         y0 + (
             valign ≡ :vtop ? y_max :
@@ -327,11 +325,11 @@ function renderstring!(
     if bcolor ≢ nothing
         img[
             clamp(py - y_max, 1, imgh):clamp(py - y_min, 1, imgh),
-            clamp(px, 1, imgw):clamp(px + sum_advance_x, 1, imgw),
+            clamp(px, 1, imgw):clamp(px + sum_adv_x, 1, imgw),
         ] .= bcolor
     end
 
-    local prev_char::Char
+    first_char = first(fstr)
     for (i, char) in enumerate(fstr)
         bitmap = bitmaps[i]
         metric = metrics[i]
@@ -339,12 +337,7 @@ function renderstring!(
         ax, ay = metric.advance
         sx, sy = metric.scale
 
-        if i == 1
-            prev_char = char
-        else
-            kx, _ = map(x -> round(Int, x), kerning(face, prev_char, char))
-            px += kx
-        end
+        i > 1 && (px += round(Int, kerning(face, first_char, char) |> first))
 
         # glyph origin
         oy = py - by
@@ -365,10 +358,8 @@ function renderstring!(
             end
         else
             if gstr ≢ nothing
-                exts = extents(face, gstr[i], pixelsize)
-                gmetric = FontExtent(
-                    map(s -> round.(Int, getfield(exts, s)), fieldnames(FontExtent))...,
-                )
+                gexts = extents(face, gstr[i], pixelsize)
+                gmetric = FontExtent(x -> round.(Int, x), gexts)
                 y_min = bottominkbound(gmetric)
                 y_max = topinkbound(gmetric)
             end
@@ -419,23 +410,21 @@ function renderstring!(
 end
 
 function ft_init()
-    FF_LIBRARY[1] != C_NULL &&
-        error("Freetype already initalized. init() called two times?")
-    FT_Init_FreeType(FF_LIBRARY) == 0
+    FT_LIB[1] != C_NULL && error("Freetype already initalized. init() called two times?")
+    FT_Init_FreeType(FT_LIB) == 0
 end
 
 function ft_done()
-    FF_LIBRARY[1] == C_NULL &&
+    FT_LIB[1] == C_NULL &&
         error("Library == CNULL. done() called before init(), or done called two times?")
-    err = FT_Done_FreeType(FF_LIBRARY[1])
-    FF_LIBRARY[1] = C_NULL
+    err = FT_Done_FreeType(FT_LIB[1])
+    FT_LIB[1] = C_NULL
     err == 0
 end
 
 add_recursive(result, path) =
     for p in readdir(path)
-        pabs = joinpath(path, p)
-        if isdir(pabs)
+        if (pabs = joinpath(path, p)) |> isdir
             push!(result, pabs)
             add_recursive(result, pabs)
         end
@@ -474,13 +463,9 @@ function __init__()
         end
         result
     end
-    paths = filter(isdir, font_paths)
-    if (path = get(ENV, "UP_FONT_PATH", nothing) ≢ nothing)
-        isdir(path) ||
-            error("Path in environment variable `UP_FONT_PATH` is not a valid directory!")
-        push!(paths, path)
-    end
-    append!(VALID_FONTPATHS, paths)
+    env_path = get(ENV, "UP_FONT_PATH", nothing)
+    env_path ≡ nothing || push!(font_paths, env_path)
+    append!(VALID_FONTPATHS, filter(isdir, font_paths))
     nothing
 end
 
