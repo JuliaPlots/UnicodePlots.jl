@@ -348,21 +348,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     )
 end
 
-# COV_EXCL_START
-fallback_font(mono::Bool = false) =
-    if Sys.islinux()
-        mono ? "DejaVu Sans Mono" : "DejaVu Sans"
-    elseif Sys.isbsd()
-        mono ? "Courier New" : "Helvetica"
-    elseif Sys.iswindows()
-        mono ? "Courier New" : "Arial"
-    else
-        @warn "Unsupported $(Base.KERNEL)"
-        mono ? "Courier" : "Helvetica"
-    end
-# COV_EXCL_STOP
-
-const FT_FONTS = Dict{String,Any}()  # NOTE: `Any`: cannot use `FreeTypeAbstraction.FTFont`, `@lazy` loaded
+const FT_FONTS = Dict{String,FTFont}()
 
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
@@ -491,7 +477,7 @@ function png_image(
     face = nothing
     for name ∈ filter(!isnothing, (font, "JuliaMono", fallback_font()))
         if (face = get(FT_FONTS, name, nothing)) ≡ nothing
-            if (ft = FreeTypeAbstraction.findfont(name)) ≢ nothing
+            if (ft = findfont(name)) ≢ nothing
                 face = FT_FONTS[name] = ft
                 break
             end
@@ -515,7 +501,7 @@ function png_image(
     for (r, (fchars, gchars, fcols, gcols)) in
         enumerate(zip(lfchars, lgchars, lfcols, lgcols))
         y = ceil(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
-        incy = FreeTypeAbstraction.renderstring!(
+        incy = renderstring!(
             img,
             fchars,
             face,

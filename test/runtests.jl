@@ -4,11 +4,6 @@ using UnicodePlots, Test
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
 import UnicodePlots: print_row, preprocess!, addrow!
 
-# Incorrect usage of LazyModules could easily bring up world age issues. We need to test
-# this before loading all other test dependencies -- because otherwise potential world age
-# issues get automatically resolved.
-include("tst_world_age.jl")
-
 import Dates: DateTime, Date, Day
 import DataFrames: DataFrame
 import Random: seed!
@@ -105,6 +100,7 @@ end
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
 
 withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
+    @timeit_include "tst_freetype.jl"
     @timeit_include "tst_depwarn.jl"
     @timeit_include "tst_issues.jl"
     @timeit_include "tst_io.jl"
