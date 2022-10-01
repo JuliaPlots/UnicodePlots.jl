@@ -155,6 +155,10 @@ end
         UnicodePlots.print_crayons(io, Crayon(), 123)
     end
     UnicodePlots.CRAYONS_FAST[] = _cfast
+
+    @test UnicodePlots.ignored_color(nothing)
+    @test UnicodePlots.crayon_color(missing) isa Crayons.ANSIColor
+    @test UnicodePlots.crayon_color(nothing) isa Crayons.ANSIColor
 end
 
 @testset "colormaps" begin
