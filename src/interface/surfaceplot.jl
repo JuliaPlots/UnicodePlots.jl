@@ -69,8 +69,7 @@ function surfaceplot(
     end
     H = A isa Function ? A.(X, Y) : A
 
-    ex = extrema(x)
-    ey = extrema(y)
+    ex, ey = map(extrema, (x, y))
     eh = NaNMath.extrema(as_float(H))
 
     if zscale ≡ :identity

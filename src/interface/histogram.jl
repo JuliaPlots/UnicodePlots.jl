@@ -93,8 +93,8 @@ function vertical_histogram(
     color::UserColorType = :green,
     kw...,
 )
-    edges, counts = hist.edges[1], hist.weights
-    centers = (edges[1:(end - 1)] + edges[2:end]) / 2
+    edges, counts = first(hist.edges), hist.weights
+    centers = (edges[begin:(end - 1)] + edges[(begin + 1):end]) / 2
     plot = Plot(
         float.(centers),
         float.(counts);

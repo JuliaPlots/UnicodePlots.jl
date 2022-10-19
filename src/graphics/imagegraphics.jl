@@ -28,6 +28,7 @@ function preprocess!(io::IO, c::ImageGraphics)
     ctx = IOContext(PipeBuffer(), :displaysize => displaysize(io))
     c.sixel[] = false
     char_h = char_w = nothing  # determine the terminal caret size, in pixels
+    # COV_EXCL_START
     if ImageInTerminal.choose_sixel(c.img)
         ans = ImageInTerminal.Sixel.TerminalTools.query_terminal("\e[16t", stdout)
         if ans isa String && (m = match(r"\e\[6;(\d+);(\d+)t", ans)) ≢ nothing
@@ -35,6 +36,7 @@ function preprocess!(io::IO, c::ImageGraphics)
             c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
         end
     end
+    # COV_EXCL_STOP
     postprocess = c -> begin
         c.encoded_size .= (0, 0)
         empty!(c.chars)
@@ -44,11 +46,13 @@ function preprocess!(io::IO, c::ImageGraphics)
     end
     img_h, img_w = size(c.img)
     if c.sixel[]
+        # COV_EXCL_START
         for r ∈ 1:char_h:img_h
             ImageInTerminal.sixel_encode(ctx, c.img[r:min(r + char_h - 1, img_h), :])
             push!(c.chars, read(ctx, String) |> collect)
         end
         nc = ceil(Int, img_w / char_w)
+        # COV_EXCL_STOP
     else
         callback(I, fgcol, bgcol, chars...) = begin
             if (row = first(I)) > length(c.chars)

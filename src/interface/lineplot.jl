@@ -167,9 +167,8 @@ function lineplot(
     xticks = true,
     kw...,
 ) where {D<:TimeType}
-    d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
-    plot = lineplot(d, y; xlim = dlim, xticks = xticks, kw...)
+    plot = lineplot(Dates.value.(x), y; xlim = dlim, xticks = xticks, kw...)
     if xticks
         fmt(dt) = format ≡ nothing ? string(dt) : Dates.format(dt, format)
         label!(plot, :bl, fmt(xlim[1]), color = BORDER_COLOR[])
@@ -178,15 +177,8 @@ function lineplot(
     plot
 end
 
-function lineplot!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector{<:TimeType},
-    y::AbstractVector;
-    kw...,
-)
-    d = Dates.value.(x)
-    lineplot!(plot, d, y; kw...)
-end
+lineplot!(plot::Plot{<:Canvas}, x::AbstractVector{<:TimeType}, y::AbstractVector; kw...) =
+    lineplot!(plot, Dates.value.(x), y; kw...)
 
 # ---------------------------------------------------------------------------- #
 # Unitful
@@ -296,24 +288,21 @@ lineplot(F::AbstractVector{<:Function}, startx::Number, endx::Number; kw...) =
 lineplot(F::AbstractVector{<:Function}, x::AbstractVector; kw...) = _lineplot(F, x; kw...)
 
 function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name = "", kw...)
-    n = length(F)
-    n > 0 || throw(ArgumentError("cannot plot empty array of functions"))
+    (n = length(F)) > 0 || throw(ArgumentError("cannot plot empty array of functions"))
     color_is_vec = color isa AbstractVector
     name_is_vec  = name isa AbstractVector
-    color_is_vec && (
-        length(color) == n || throw(
-            DimensionMismatch(
-                "`color` must be a symbol or same length as the function vector",
-            ),
-        )
-    )
-    name_is_vec && (
-        length(name) == n || throw(
-            DimensionMismatch(
-                "`name` must be a string or same length as the function vector",
-            ),
-        )
-    )
+    if color_is_vec
+        length(color) == n ||
+            "`color` must be a symbol or same length as the function vector" |>
+            DimensionMismatch |>
+            throw
+    end
+    if name_is_vec
+        length(name) == n ||
+            "`name` must be a string or same length as the function vector" |>
+            DimensionMismatch |>
+            throw
+    end
     tcolor = color_is_vec ? first(color) : color
     tname  = name_is_vec ? first(name) : name
     plot   = lineplot(first(F), args...; color = tcolor, name = tname, kw...)
@@ -355,7 +344,7 @@ function vline!(
     y::Union{AbstractVector{<:Number},Nothing} = nothing;
     kw...,
 )
-    map(v -> vline!(plot, v, y; kw...), x)
+    foreach(v -> vline!(plot, v, y; kw...), x)
     plot
 end
 
@@ -386,6 +375,6 @@ function hline!(
     x::Union{AbstractVector{<:Number},Nothing} = nothing;
     kw...,
 )
-    map(v -> hline!(plot, v, x; kw...), y)
+    foreach(v -> hline!(plot, v, x; kw...), y)
     plot
 end

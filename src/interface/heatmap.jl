@@ -70,8 +70,7 @@ function heatmap(
     pkw, okw = split_plot_kw(; kw...)
     warn_on_lost_kw(; okw...)
 
-    nrows = size(A, 1)
-    ncols = size(A, 2)
+    nrows, ncols = size(A)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero

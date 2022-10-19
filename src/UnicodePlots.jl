@@ -124,8 +124,7 @@ function __init__()
         faintcolors!()
     end
     Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
-        imageplot(img::AbstractArray{<:Colorant}; kwargs...) =
-            Plot(ImageGraphics(img); kwargs...)
+        imageplot(img::AbstractArray{<:Colorant}; kw...) = Plot(ImageGraphics(img); kw...)
     end
     nothing
 end
@@ -137,7 +136,7 @@ if get(ENV, "UP_PRECOMPILE", "true") == "true"
         @precompile_all_calls begin
             for T in (  # most common types
                 Float64,
-                # Int,
+                Int,
             )
                 I = one(T)
                 plots = (

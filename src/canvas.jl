@@ -1,6 +1,6 @@
 abstract type Canvas <: GraphicsArea end
 
-grid_type(T::Type{<:Canvas}) = eltype(first(fieldtypes(T)))
+grid_type(T::Type{<:Canvas}) = fieldtypes(T) |> first |> eltype
 grid_type(c::Canvas) = grid_type(typeof(c))
 
 # we store the grid as the transpose of an array of (w, h) => (height, width) = (nrows, ncols)
@@ -181,11 +181,11 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColo
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
     for i ∈ 2:length(X)
-        isfinite(X[i - 1]) || continue
-        isfinite(Y[i - 1]) || continue
-        isfinite(X[i]) || continue
-        isfinite(Y[i]) || continue
-        lines!(c, X[i - 1], Y[i - 1], X[i], Y[i], color)
+        (x = X[i]) |> isfinite || continue
+        (y = Y[i]) |> isfinite || continue
+        (xm1 = X[i - 1]) |> isfinite || continue
+        (ym1 = Y[i - 1]) |> isfinite || continue
+        lines!(c, xm1, ym1, x, y, color)
     end
     c
 end
@@ -227,9 +227,7 @@ function get_canvas_dimensions_for_matrix(
     max_height = max_height > 0 ? max_height : term_height - height_diff
     max_width = max_width > 0 ? max_width : term_width - width_diff
 
-    if nrow == 0 && ncol == 0
-        return 0, 0, max_width, max_height
-    end
+    (nrow == 0 && ncol == 0) && return 0, 0, max_width, max_height
 
     # Check if the size of the plot should be derived from the matrix
     # Note: if both width and height are 0, it means that there are no

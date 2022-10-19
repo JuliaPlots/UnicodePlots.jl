@@ -262,10 +262,12 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             # print canvas row
             print_row(io, print_nocol, print_color, g, row)
             if g isa ImageGraphics && g.sixel[]
+                # COV_EXCL_START
                 offset = plot_offset + nc + 1
                 # 1F: move cursor to the beginning of the previous line, 1 line up
                 # $(offset)C: move cursor to the right by an amount of $offset columns
                 print_nocol(io, "\e[1F\e[$(offset)C")
+                # COV_EXCL_STOP
             end
             # print right label and padding
             print_color(io, bc, bmap[:r])
