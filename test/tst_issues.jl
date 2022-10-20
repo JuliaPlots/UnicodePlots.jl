@@ -42,10 +42,16 @@
         @test lineplot(0.01:10, 0.01:10, xscale = :log10, yscale = :log10) isa Plot
     end
 
-    @testset "Float input (#277)" begin
+    @testset "float input (#277)" begin
         for FX ∈ (Float16, Float32, Float64), FY ∈ (Float16, Float32, Float64)
             @test lineplot(FX[-1, 2], FY[-1, 9]) isa Plot
         end
         @test barplot(["Paris", "Madrid"], Float32[2.2, 8.4]; maximum = 10.0f0) isa Plot
+    end
+
+    @testset "invalid data (#297)" begin
+        @test_throws DomainError lineplot([nextfloat(-Inf), prevfloat(+Inf)])
+        @test lineplot([nextfloat(-Inf32), prevfloat(+Inf32)]) isa Plot
+        @test lineplot([nextfloat(-Inf16), prevfloat(+Inf16)]) isa Plot
     end
 end

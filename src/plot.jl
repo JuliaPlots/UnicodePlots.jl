@@ -132,9 +132,7 @@ function validate_input(
 )
     length(x) == length(y) == length(z) ||
         throw(DimensionMismatch("`x`, `y` and `z` must have same length"))
-    idx = BitVector(map(x, y, z) do i, j, k
-        isfinite(i) && isfinite(j) && isfinite(k)
-    end)
+    idx = BitVector(map((i, j, k) -> isfinite(i) && isfinite(j) && isfinite(k), x, y, z))
     x[idx], y[idx], z[idx]
 end
 
@@ -144,9 +142,7 @@ function validate_input(
     z::Nothing,
 )
     length(x) == length(y) || throw(DimensionMismatch("`x` and `y` must have same length"))
-    idx = BitVector(map(x, y) do i, j
-        isfinite(i) && isfinite(j)
-    end)
+    idx = BitVector(map((i, j) -> isfinite(i) && isfinite(j), x, y))
     x[idx], y[idx], z
 end
 
