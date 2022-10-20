@@ -297,17 +297,6 @@ nice_repr(x::AbstractFloat) =
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
 
-round_up_tick(x::T, m) where {T} = T(
-    x == 0 ? 0 :
-    (x > 0 ? ceil(x, digits = ceil_neg_log10(m)) : -floor(-x, digits = ceil_neg_log10(m))),
-)
-
-round_down_tick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
-    floor(x, digits = ceil_neg_log10(m))
-else
-    -ceil(-x, digits = ceil_neg_log10(m))
-end)
-
 round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
     ceil(x, digits = ceil_neg_log10(m) + 1)
 else
@@ -352,13 +341,10 @@ function superscript(s::AbstractString)
     String(v)
 end
 
-function plotting_range(xmin, xmax)
-    Δ = xmax - xmin
-    float(round_down_tick(xmin, Δ)), float(round_up_tick(xmax, Δ))
-end
-
 function plotting_range_narrow(xmin, xmax)
-    Δ = xmax - xmin
+    Δ = Float64(xmax) - Float64(xmin)  # NOTE: support e.g. xmin == -Inf32 - xmax == Inf32
+    (isfinite(Δ) && !iszero(Δ)) ||
+        throw(DomainError("Invalid plotting range: ($xmin, $xmax)"))
     float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
@@ -380,10 +366,10 @@ function extend_limits(vec, lims, scale::Union{Symbol,Function})
         mi -= 1
         ma += 1
     end
-    if scale != identity
-        scale(mi), scale(ma)
-    else
+    if scale == identity
         all(iszero.(lims)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+    else
+        scale(mi), scale(ma)
     end
 end
 
