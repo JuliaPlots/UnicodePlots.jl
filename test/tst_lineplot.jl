@@ -59,9 +59,9 @@ end
 @testset "dates" begin
     d = collect(Date(1999, 12, 31):Day(1):Date(2000, 1, 30))
     v = range(0, stop = 3pi, length = 31)
-    p = @binf lineplot(d, sin.(v), name = "sin", height = 5, xlabel = "date")
+    p = @binf lineplot(d, sin.(v); name = "sin", height = 5, xlabel = "date")
     test_ref("lineplot/dates1.txt", @show_col(p))
-    @test @binf(lineplot!(p, d, cos.(v), name = "cos")) ≡ p
+    @test @binf(lineplot!(p, d, cos.(v); name = "cos")) ≡ p
     test_ref("lineplot/dates2.txt", @show_col(p))
 end
 
@@ -80,7 +80,7 @@ end
     p = @binf lineplot(y)
     @test @binf(lineplot!(p, -3, 1)) ≡ p
     test_ref("lineplot/slope1.txt", @show_col(p))
-    @test @binf(lineplot!(p, -4, 0.5, color = :cyan, name = "foo")) ≡ p
+    @test @binf(lineplot!(p, -4, 0.5; color = :cyan, name = "foo")) ≡ p
     test_ref("lineplot/slope2.txt", @show_col(p))
 end
 
@@ -122,8 +122,8 @@ end
     p = @binf lineplot([sin, cos], tmp)
     test_ref("lineplot/sincos4.txt", @show_col(p))
 
-    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, name = ["s", "c", "d"])
-    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3, color = [:red])
+    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3; name = ["s", "c", "d"])
+    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3; color = [:red])
     for (xlim, ylim) ∈ zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
         p = @binf lineplot(
             [sin, cos],
@@ -150,7 +150,7 @@ end
     p = @binf lineplot(x, y, grid = false)
     test_ref("lineplot/nogrid.txt", @show_col(p))
 
-    p = @binf lineplot(x, y, color = 20, name = "points1")
+    p = @binf lineplot(x, y; color = 20, name = "points1")
     test_ref("lineplot/blue.txt", @show_col(p))
 
     p = @binf lineplot(
@@ -164,14 +164,14 @@ end
     @test p isa Plot
     test_ref("lineplot/parameters1.txt", @show_col(p))
 
-    @test @binf(lineplot!(p, [0.5, 1, 1.5], name = "points2")) ≡ p
+    @test @binf(lineplot!(p, [0.5, 1, 1.5]; name = "points2")) ≡ p
     test_ref("lineplot/parameters2.txt", @show_col(p))
 
-    @test @binf(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) ≡ p
+    @test @binf(lineplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5]; name = "points3")) ≡ p
     test_ref("lineplot/parameters3.txt", @show_col(p))
     test_ref("lineplot/nocolor.txt", @show_nocol(p))
 
-    p = lineplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
+    p = lineplot(x, y; title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("lineplot/canvassize.txt", @show_col(p))
 end
@@ -187,10 +187,10 @@ end
     p = @binf stairs(sx, sy, style = :post)
     test_ref("lineplot/stairs_post.txt", @show_col(p))
 
-    p = @binf stairs(sx, sy, title = "Foo", color = :red, xlabel = "x", name = "1")
-    @test @binf(stairs!(p, sx .- 0.2, sy .+ 1.5, name = "2")) ≡ p
+    p = @binf stairs(sx, sy; title = "Foo", color = :red, xlabel = "x", name = "1")
+    @test @binf(stairs!(p, sx .- 0.2, sy .+ 1.5; name = "2")) ≡ p
     test_ref("lineplot/stairs_parameters.txt", @show_col(p))
-    @test @binf(stairs!(p, sx, sy, name = "3", style = :pre)) ≡ p
+    @test @binf(stairs!(p, sx, sy; name = "3", style = :pre)) ≡ p
     test_ref("lineplot/stairs_parameters2.txt", @show_col(p))
     test_ref("lineplot/stairs_parameters2_nocolor.txt", @show_nocol(p))
 
@@ -223,20 +223,20 @@ end
         ys = fscale.(y)
 
         # xscale
-        savefig(lineplot(xs, y, xlim = extrema(xs), labels = false), tmp; color = true)
-        test_ref(tmp, @show_col(lineplot(x, y, xscale = s, labels = false)))
+        savefig(lineplot(xs, y; xlim = extrema(xs), labels = false), tmp; color = true)
+        test_ref(tmp, @show_col(lineplot(x, y; xscale = s, labels = false)))
 
         # yscale
-        savefig(lineplot(x, ys, ylim = extrema(ys), labels = false), tmp; color = true)
-        test_ref(tmp, @show_col(lineplot(x, y, yscale = s, labels = false)))
+        savefig(lineplot(x, ys; ylim = extrema(ys), labels = false), tmp; color = true)
+        test_ref(tmp, @show_col(lineplot(x, y; yscale = s, labels = false)))
 
         # xscale & yscale
         savefig(
-            lineplot(xs, ys, xlim = extrema(xs), ylim = extrema(xs), labels = false),
+            lineplot(xs, ys; xlim = extrema(xs), ylim = extrema(xs), labels = false),
             tmp;
             color = true,
         )
-        test_ref(tmp, @show_col(lineplot(x, y, xscale = s, yscale = s, labels = false)))
+        test_ref(tmp, @show_col(lineplot(x, y; xscale = s, yscale = s, labels = false)))
 
         # xscale & yscale & labels
         test_ref(
@@ -251,9 +251,9 @@ end
 end
 
 @testset "arrows" begin
-    p = lineplot([0.0, 1.0], [0.0, 1.0], head_tail = :head, name = "head", color = :red)
-    lineplot!(p, [0.0, 1.0], [1.0, 0.0], head_tail = :tail, name = "tail", color = :green)
-    lineplot!(p, [0.0, 1.0], [0.5, 0.5], head_tail = :both, name = "both", color = :blue)
+    p = lineplot([0.0, 1.0], [0.0, 1.0]; head_tail = :head, name = "head", color = :red)
+    lineplot!(p, [0.0, 1.0], [1.0, 0.0]; head_tail = :tail, name = "tail", color = :green)
+    lineplot!(p, [0.0, 1.0], [0.5, 0.5]; head_tail = :both, name = "both", color = :blue)
     test_ref("lineplot/arrows.txt", @show_col(p))
 
     n = 20
@@ -268,7 +268,7 @@ end
     )
     for (i, (frac, name)) in
         enumerate(zip((0.1, 0.15, 0.2, 0.25), ("10%", "15%", "20%", "25%")))
-        lineplot!(p, x, fill(i, n), head_tail = :head, head_tail_frac = frac, name)
+        lineplot!(p, x, fill(i, n); name, head_tail = :head, head_tail_frac = frac)
     end
     test_ref("lineplot/arrows_fractions.txt", @show_col(p))
 end
@@ -287,7 +287,7 @@ end
     x = a / 2 * t .^ 2
     v = a * t
     p = lineplot(x, v, xlabel = "position", ylabel = "speed")
-    lineplot!(p, extrema(x) |> collect, [maximum(v), maximum(v)], color = :red)
+    lineplot!(p, extrema(x) |> collect, [maximum(v), maximum(v)]; color = :red)
     test_ref("lineplot/units_pos_vel.txt", @show_col(p))
 end
 
@@ -307,8 +307,8 @@ end
 
 @testset "hline - vline" begin
     p = Plot([NaN], [NaN]; xlim = (0, 8), ylim = (0, 8))
-    vline!(p, [2, 6], [2, 6], color = :red)
-    hline!(p, [2, 6], [2, 6], color = :white)
+    vline!(p, [2, 6], [2, 6]; color = :red)
+    hline!(p, [2, 6], [2, 6]; color = :white)
 
     hline!(p, 7)
     vline!(p, 1)

@@ -115,7 +115,7 @@ end
         p = lineplot(
             segment2xyz(first(cube))...,
             projection = T,
-            title = "proj=$proj",
+            title = "proj=$projection",
             axes3d = false,
         )
         for (i, s) ∈ enumerate(cube)
@@ -123,7 +123,7 @@ end
             lineplot!(p, segment2xyz(s)...)
         end
 
-        test_ref("volume/cube_$proj.txt", @show_col(p))
+        test_ref("volume/cube_$projection.txt", @show_col(p))
     end
 end
 
@@ -158,6 +158,6 @@ end
             title = "zoom=$zoom",
             axes3d = false,
         )
-        test_ref("volume/tetrahedron_$(zoom).txt", @show_col(p))
+        test_ref("volume/tetrahedron_$zoom.txt", @show_col(p))
     end
 end
