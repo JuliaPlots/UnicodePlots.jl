@@ -114,7 +114,7 @@ function scatterplot(x::AbstractVector, y::AbstractMatrix; kw...)
     )
     for (i, (name, color, marker, ys)) ∈ enumerate(zip(names, colors, markers, eachcol(y)))
         i == 1 && continue
-        scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
+        scatterplot!(plot, x, ys; name, color, marker)
     end
     plot
 end
@@ -122,7 +122,7 @@ end
 function scatterplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors, markers = multiple_series_defaults(y, kw, plot.series[] + 1)
     for (name, color, marker, ys) ∈ zip(names, colors, markers, eachcol(y))
-        scatterplot!(plot, x, ys; name = name, color = color, marker = marker)
+        scatterplot!(plot, x, ys; name, color, marker)
     end
     plot
 end
@@ -142,9 +142,9 @@ function scatterplot(
     scatterplot(
         ustrip.(x),
         ustrip.(y);
-        unicode_exponent = unicode_exponent,
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
+        unicode_exponent,
         kw...,
     )
 end

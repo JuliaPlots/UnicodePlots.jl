@@ -23,7 +23,7 @@ end
     test_ref("surfaceplot/single_color.txt", @show_col(p))
 
     x, y = 0:π, π:(2π)
-    X, Y = repeat(x, 1, length(y)), repeat(y', length(x), 1)  # meshgrid like
+    X, Y = UnicodePlots.meshgrid(x, y)
     surfaceplot!(p, X, Y, zero(X), nothing; color = :white, lines = true)
     @test !p.cmap.bar  # since we gave the `color` keyword twice
     test_ref("surfaceplot/mutate.txt", @show_col(p))

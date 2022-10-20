@@ -78,7 +78,7 @@ function polarplot(
         blend = false,
         pkw...,
     )
-    polarplot!(plot, θ, r; rlim = rlim, okw...)
+    polarplot!(plot, θ, r; rlim, okw...)
 end
 
 @doc (@doc polarplot) function polarplot!(

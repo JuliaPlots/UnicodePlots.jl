@@ -144,7 +144,7 @@ function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
     )
     for (i, (name, color, ys)) ∈ enumerate(zip(names, colors, eachcol(y)))
         i == 1 && continue
-        lineplot!(plot, x, ys; name = name, color = color)
+        lineplot!(plot, x, ys; name, color)
     end
     plot
 end
@@ -152,7 +152,7 @@ end
 function lineplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors = multiple_series_defaults(y, kw, plot.series[] + 1)
     for (name, color, ys) ∈ zip(names, colors, eachcol(y))
-        lineplot!(plot, x, ys; name = name, color = color)
+        lineplot!(plot, x, ys; name, color)
     end
     plot
 end
@@ -195,9 +195,9 @@ function lineplot(
     lineplot(
         ustrip.(x),
         ustrip.(y);
-        unicode_exponent = unicode_exponent,
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
+        unicode_exponent,
         kw...,
     )
 end
@@ -236,7 +236,7 @@ function lineplot(
 )
     y = float.(f.(x))
     name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
+    lineplot(x, y; name, xlabel, ylabel, kw...)
 end
 
 function lineplot(
@@ -249,7 +249,7 @@ function lineplot(
     width = something(width, DEFAULT_WIDTH[])
     diff = abs(endx - startx)
     x = startx:(diff / 3width):endx
-    lineplot(f, x; width = width, kw...)
+    lineplot(f, x; width, kw...)
 end
 
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
@@ -263,7 +263,7 @@ function lineplot!(
 )
     y = float.(f.(x))
     name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot!(plot, x, y; name = name, kw...)
+    lineplot!(plot, x, y; name, kw...)
 end
 
 function lineplot!(

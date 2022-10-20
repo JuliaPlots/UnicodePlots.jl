@@ -37,7 +37,7 @@ function print_colorbar_row(
             fgcol = cmap.callback(n - 2r - 1, 1, n)
             bgcol = cmap.callback(n - 2r, 1, n)
         end
-        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol = bgcol)
+        print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol)
         print_color(io, bc, b[:r])
         print_nocol(io, plot_padding)
         # print z label
@@ -107,27 +107,25 @@ function print_labels(
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
     left_str  = get(p.decorations, lloc, "")
-    left_col  = get(p.colors_deco, lloc, bc)
     mid_str   = get(p.decorations, mloc, "")
-    mid_col   = get(p.colors_deco, mloc, bc)
     right_str = get(p.decorations, rloc, "")
+    (isempty(left_str) && isempty(mid_str) && isempty(right_str)) && return 0
+    left_col  = get(p.colors_deco, lloc, bc)
+    mid_col   = get(p.colors_deco, mloc, bc)
     right_col = get(p.colors_deco, rloc, bc)
-    if left_str != "" || right_str != "" || mid_str != ""
-        left_len  = length(left_str)
-        mid_len   = length(mid_str)
-        right_len = length(right_str)
-        print_nocol(io, left_pad)
-        print_color(io, left_col, left_str)
-        cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
-        print_nocol(io, cnt > 0 ? blank^cnt : "")
-        print_color(io, mid_col, mid_str)
-        cnt = border_length - right_len - left_len - mid_len + 2 - cnt
-        print_nocol(io, cnt > 0 ? blank^cnt : "")
-        print_color(io, right_col, right_str)
-        print_nocol(io, right_pad)
-        return 1
-    end
-    return 0
+    left_len  = length(left_str)
+    mid_len   = length(mid_str)
+    right_len = length(right_str)
+    print_nocol(io, left_pad)
+    print_color(io, left_col, left_str)
+    cnt = round(Int, border_length / 2 - mid_len / 2 - left_len, RoundNearestTiesAway)
+    print_nocol(io, cnt > 0 ? blank^cnt : "")
+    print_color(io, mid_col, mid_str)
+    cnt = border_length - right_len - left_len - mid_len + 2 - cnt
+    print_nocol(io, cnt > 0 ? blank^cnt : "")
+    print_color(io, right_col, right_str)
+    print_nocol(io, right_pad)
+    return 1
 end
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
@@ -164,7 +162,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     else
         0
     end
-    if !p.compact && p.labels && ylabel(p) != ""
+    if !p.compact && p.labels && !isempty(ylabel(p))
         max_len_l += length(ylabel(p)) + 1
     end
 
@@ -333,7 +331,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 xlabel(p),
                 border_right_pad,
                 🗹;
-                p_width = p_width,
+                p_width,
             )
             h_lbl += h_w[1]
             w_lbl += h_w[2]
@@ -515,11 +513,11 @@ function png_image(
             bcolor = nothing,  # not needed (initial fill, avoid overlaps)
             valign = :vcenter,
             halign = :hcenter,
-            bbox_glyph = bbox_glyph,
-            bbox = bbox,
             gstr = gchars,
             off_bg = 1,
-            incx = incx,
+            bbox_glyph,
+            bbox,
+            incx,
         )
     end
 

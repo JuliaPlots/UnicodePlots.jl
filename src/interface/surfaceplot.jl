@@ -63,7 +63,7 @@ function surfaceplot(
 )
     pkw, okw = split_plot_kw(; kw...)
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
-        repeat(x, 1, length(y)), repeat(y', length(x), 1)
+        meshgrid(x, y)
     else
         x, y
     end

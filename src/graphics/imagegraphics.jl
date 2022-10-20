@@ -21,8 +21,8 @@ function ImageGraphics(img::AbstractArray{<:Colorant})
     )
 end
 
-@inline nrows(c::ImageGraphics) = c.encoded_size[1]
-@inline ncols(c::ImageGraphics) = c.encoded_size[2]
+@inline nrows(c::ImageGraphics) = first(c.encoded_size)
+@inline ncols(c::ImageGraphics) = last(c.encoded_size)
 
 function preprocess!(io::IO, c::ImageGraphics)
     ctx = IOContext(PipeBuffer(), :displaysize => displaysize(io))
@@ -83,7 +83,7 @@ function print_row(io::IO, _, print_color, c::ImageGraphics, row::Integer)
     else
         for col ∈ 1:ncols(c)
             bgcol = (bgcol = c.bgcols[row][col]) == INVALID_COLOR ? missing : bgcol
-            print_color(io, c.fgcols[row][col], c.chars[row][col]; bgcol = bgcol)
+            print_color(io, c.fgcols[row][col], c.chars[row][col]; bgcol)
         end
     end
     nothing

@@ -113,7 +113,7 @@ end
 end
 
 boxplot!(plot, name, data::AbstractVector{<:Number}; kw...) =
-    boxplot!(plot, data; name = name, kw...)
+    boxplot!(plot, data; name, kw...)
 boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...) =
     boxplot(fill("", length(data)), data; kw...)
 boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...) =

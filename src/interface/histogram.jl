@@ -108,8 +108,7 @@ function vertical_histogram(
     )
     max_val = maximum(counts)
     nsyms = length(symbols)
-    canvas = plot.graphics
-    nr = nrows(canvas)
+    nr = nrows(plot.graphics)
     for (x, y) ∈ zip(centers, counts)
         frac = float(max_val > 0 ? max(y, zero(y)) / max_val : 0)
         n_full = (nsyms > 1 ? floor : round)(Int, frac * nr)
@@ -190,9 +189,9 @@ function histogram(x::AbstractArray; closed = :left, vertical = false, stats = t
         μ = sum(x_plot) / length(x_plot)
         σ = √(sum((x_plot .- μ) .^ 2) / length(x_plot))
         "μ ± σ: " *
-        lpad(round(μ; digits = digits), digits + 1) *
+        lpad(round(μ; digits), digits + 1) *
         " ± " *
-        lpad(round(σ; digits = digits), digits + 1)
+        lpad(round(σ; digits), digits + 1)
     else
         ""
     end
