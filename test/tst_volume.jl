@@ -70,31 +70,23 @@ end
         )
 
     x, y, z = ellipsoid()
-    for (plane, az, el) ∈ [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
-        p = Plot(
-            x,
-            y,
-            z,
-            projection = :ortho,
-            elevation = el,
-            azimuth = az,
-            title = "plane=$plane",
-        )
+    for (pl, azimuth, elevation) ∈ [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
+        p = Plot(x, y, z; title = "plane=$pl", projection = :ortho, elevation, azimuth)
         scatterplot!(p, x, y, z)
 
-        test_ref("volume/ellipsoid_$plane.txt", @show_col(p))
+        test_ref("volume/ellipsoid_$pl.txt", @show_col(p))
     end
 end
 
 @testset "cube" begin
-    for proj ∈ (:ortho, :orthographic, :persp, :perspective)
-        ortho = proj ∈ (:ortho, :orthographic)
+    for projection ∈ (:ortho, :orthographic, :persp, :perspective)
+        ortho = projection ∈ (:ortho, :orthographic)
 
         T = MVP(
             [-1, 1],
             [-1, 1],
             [-1, 1];
-            projection = proj,
+            projection,
             elevation = ortho ? UnicodePlots.KEYWORDS.elevation : 0,
             azimuth = ortho ? UnicodePlots.KEYWORDS.azimuth : 0,
         )

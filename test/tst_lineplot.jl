@@ -268,7 +268,7 @@ end
     )
     for (i, (frac, name)) in
         enumerate(zip((0.1, 0.15, 0.2, 0.25), ("10%", "15%", "20%", "25%")))
-        lineplot!(p, x, fill(i, n), head_tail = :head, head_tail_frac = frac, name = name)
+        lineplot!(p, x, fill(i, n), head_tail = :head, head_tail_frac = frac, name)
     end
     test_ref("lineplot/arrows_fractions.txt", @show_col(p))
 end
@@ -299,7 +299,7 @@ end
     test_ref("lineplot/matrix_auto.txt", @show_col(p))
 
     for name ∈ (["1", "2", "3"], ["1" "2" "3"])
-        p = lineplot(x, y1; name = name, color = [:red :green :blue])
+        p = lineplot(x, y1; name, color = [:red :green :blue])
         lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
         test_ref("lineplot/matrix_parameters.txt", @show_col(p))
     end

@@ -14,13 +14,7 @@ y = [2, 0, -5, 2, -5]
     # tests that the two points are drawn correctly on the canvas
     for canvas ∈ (BrailleCanvas, AsciiCanvas, DotCanvas)
         for width ∈ (20:10:60), height ∈ (10:5:30)
-            p = scatterplot(
-                1:2,
-                reverse(1:2),
-                height = height,
-                width = width,
-                canvas = canvas,
-            )
+            p = scatterplot(1:2, reverse(1:2); height, width, canvas)
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
             @test last(p.graphics.grid) != UnicodePlots.blank(p.graphics)
         end
@@ -135,13 +129,7 @@ end
     test_ref("scatterplot/matrix_auto.txt", @show_col(p))
 
     for name ∈ (["1", "2"], ["1" "2"])
-        p = scatterplot(
-            x,
-            y1;
-            name = name,
-            color = [:red :green],
-            marker = [:utriangle :rect],
-        )
+        p = scatterplot(x, y1; name, color = [:red :green], marker = [:utriangle :rect])
         scatterplot!(
             p,
             x,
