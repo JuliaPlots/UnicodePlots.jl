@@ -28,10 +28,10 @@ end
 @testset "color maps" begin
     x = collect(0:30) * collect(0:30)'
 
-    for cmap ∈ (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
-        p = @hinf heatmap(x, colormap = cmap)
+    for colormap ∈ (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
+        p = @hinf heatmap(x; colormap)
         test_ref(
-            "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$cmap.txt",
+            "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$colormap.txt",
             @show_col(p, :displaysize => T_SZ)
         )
     end

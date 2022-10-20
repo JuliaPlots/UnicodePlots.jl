@@ -6,9 +6,9 @@
     for xlim ∈ ([-1, 8], (-1, 8))
         p = boxplot(
             "series1",
-            [1, 2, 3, 4, 5],
+            [1, 2, 3, 4, 5];
+            xlim,
             title = "Test",
-            xlim = xlim,
             color = :blue,
             width = 50,
             border = :solid,
@@ -22,7 +22,7 @@ end
 @testset "scaling" begin
     for (i, max_x) ∈ enumerate([5, 6, 10, 20, 40])
         for xlim ∈ ((0, max_x), [0, max_x])
-            p = boxplot([1, 2, 3, 4, 5], xlim = xlim)
+            p = boxplot([1, 2, 3, 4, 5]; xlim)
             test_ref("boxplot/scale$i.txt", @show_col(p))
         end
     end

@@ -78,11 +78,10 @@ function spy(A::AbstractMatrix; kw...)
     spy(size(A)..., rows, cols, vals; kw...)
 end
 
-function _strict_non_zeros(rows, cols, vals)
-    # findnz(A) returns stored zeros, ignore those
-    I = findall(!iszero, vals)
-    rows[I], cols[I], vals[I]
-end
+_strict_non_zeros(rows, cols, vals) =
+    let I = findall(!iszero, vals)  # findnz(A) returns stored zeros, ignore those
+        rows[I], cols[I], vals[I]
+    end
 
 function spy(
     nrow::Integer,
@@ -153,9 +152,9 @@ function spy(
     plot
 end
 
-function _findnz(A::AbstractMatrix)
-    I = findall(!iszero, A)
-    getindex.(I, 1), getindex.(I, 2), A[I]
-end
+_findnz(A::AbstractMatrix) =
+    let I = findall(!iszero, A)
+        getindex.(I, 1), getindex.(I, 2), A[I]
+    end
 
 _findnz(A::AbstractSparseMatrix) = findnz(A)

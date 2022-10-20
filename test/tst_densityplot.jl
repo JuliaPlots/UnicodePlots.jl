@@ -36,7 +36,7 @@ end
     )
         x′ = copy(x)
         x′[round(Int, 0.1length(x)):round(Int, 0.6length(x))] .= 0.5maximum(x)
-        p = densityplot(x′, y; dscale = dscale)
+        p = densityplot(x′, y; dscale)
         test_ref("densityplot/densityplot_dscale_$name.txt", @show_col(p))
     end
 end

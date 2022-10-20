@@ -14,13 +14,7 @@ y = [2, 0, -5, 2, -5]
     # tests that the two points are drawn correctly on the canvas
     for canvas ∈ (BrailleCanvas, AsciiCanvas, DotCanvas)
         for width ∈ (20:10:60), height ∈ (10:5:30)
-            p = scatterplot(
-                1:2,
-                reverse(1:2),
-                height = height,
-                width = width,
-                canvas = canvas,
-            )
+            p = scatterplot(1:2, reverse(1:2); height, width, canvas)
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
             @test last(p.graphics.grid) != UnicodePlots.blank(p.graphics)
         end
@@ -56,27 +50,27 @@ end
     test_ref("scatterplot/scale2.txt", @show_col(p))
     miny = -1.2796649117521434e218
     maxy = -miny
-    p = @binf scatterplot([1], [miny], xlim = (1, 1), ylim = (miny, maxy))
+    p = @binf scatterplot([1], [miny]; xlim = (1, 1), ylim = (miny, maxy))
     test_ref("scatterplot/scale3.txt", @show_col(p))
-    p = @binf scatterplot([1], [miny], xlim = [1, 1], ylim = [miny, maxy])
+    p = @binf scatterplot([1], [miny]; xlim = [1, 1], ylim = [miny, maxy])
     test_ref("scatterplot/scale3.txt", @show_col(p))
 end
 
 @testset "keyword arguments" begin
-    p = @binf scatterplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
+    p = @binf scatterplot(x, y; xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
     test_ref("scatterplot/limits.txt", @show_col(p))
-    p = @binf scatterplot(x, y, xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
+    p = @binf scatterplot(x, y; xlim = [-1.5, 3.5], ylim = [-5.5, 2.5])
     test_ref("scatterplot/limits.txt", @show_col(p))
 
-    p = @binf scatterplot(x, y, grid = false)
+    p = @binf scatterplot(x, y; grid = false)
     test_ref("scatterplot/nogrid.txt", @show_col(p))
 
-    p = @binf scatterplot(x, y, color = :blue, name = "points1")
+    p = @binf scatterplot(x, y; color = :blue, name = "points1")
     test_ref("scatterplot/blue.txt", @show_col(p))
 
     p = @binf scatterplot(
         x,
-        y,
+        y;
         name = "points1",
         title = "Scatter",
         xlabel = "x",
@@ -85,14 +79,14 @@ end
     @test p isa Plot
     test_ref("scatterplot/parameters1.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [0.5, 1, 1.5], name = "points2")) ≡ p
+    @test @binf(scatterplot!(p, [0.5, 1, 1.5]; name = "points2")) ≡ p
     test_ref("scatterplot/parameters2.txt", @show_col(p))
 
-    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5], name = "points3")) ≡ p
+    @test @binf(scatterplot!(p, [-0.5, 0.5, 1.5], [0.5, 1, 1.5]; name = "points3")) ≡ p
     test_ref("scatterplot/parameters3.txt", @show_col(p))
     test_ref("scatterplot/nocolor.txt", @show_nocol(p))
 
-    p = scatterplot(x, y, title = "Scatter", canvas = DotCanvas, height = 5, width = 10)
+    p = scatterplot(x, y, title = "Scatter"; canvas = DotCanvas, height = 5, width = 10)
     @test p isa Plot
     test_ref("scatterplot/canvassize.txt", @show_col(p))
 end
@@ -100,7 +94,7 @@ end
 @testset "markers" begin
     p = scatterplot(
         x,
-        y,
+        y;
         title = "Vector of markers",
         marker = [:circle, "!", '.', :star5, :vline],
         color = [:red, :green, :yellow, :blue, :cyan],
@@ -119,9 +113,9 @@ end
 
 @testset "units" begin
     y1 = [22.0, 23.0, 24.0] * u"°C"
-    p = scatterplot(y1, marker = :circle)
+    p = scatterplot(y1; marker = :circle)
     y2 = [23.5, 22.5, 23.0] * u"°C"
-    p = scatterplot!(p, y2, marker = :cross, color = :red)
+    p = scatterplot!(p, y2; marker = :cross, color = :red)
     test_ref("scatterplot/units_temp.txt", @show_col(p))
 end
 
@@ -135,13 +129,7 @@ end
     test_ref("scatterplot/matrix_auto.txt", @show_col(p))
 
     for name ∈ (["1", "2"], ["1" "2"])
-        p = scatterplot(
-            x,
-            y1;
-            name = name,
-            color = [:red :green],
-            marker = [:utriangle :rect],
-        )
+        p = scatterplot(x, y1; name, color = [:red :green], marker = [:utriangle :rect])
         scatterplot!(
             p,
             x,

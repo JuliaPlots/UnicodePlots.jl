@@ -144,7 +144,7 @@ function lineplot(x::AbstractVector, y::AbstractMatrix; kw...)
     )
     for (i, (name, color, ys)) ∈ enumerate(zip(names, colors, eachcol(y)))
         i == 1 && continue
-        lineplot!(plot, x, ys; name = name, color = color)
+        lineplot!(plot, x, ys; name, color)
     end
     plot
 end
@@ -152,7 +152,7 @@ end
 function lineplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors = multiple_series_defaults(y, kw, plot.series[] + 1)
     for (name, color, ys) ∈ zip(names, colors, eachcol(y))
-        lineplot!(plot, x, ys; name = name, color = color)
+        lineplot!(plot, x, ys; name, color)
     end
     plot
 end
@@ -167,9 +167,8 @@ function lineplot(
     xticks = true,
     kw...,
 ) where {D<:TimeType}
-    d = Dates.value.(x)
     dlim = Dates.value.(D.(xlim))
-    plot = lineplot(d, y; xlim = dlim, xticks = xticks, kw...)
+    plot = lineplot(Dates.value.(x), y; xlim = dlim, xticks = xticks, kw...)
     if xticks
         fmt(dt) = format ≡ nothing ? string(dt) : Dates.format(dt, format)
         label!(plot, :bl, fmt(xlim[1]), color = BORDER_COLOR[])
@@ -178,15 +177,8 @@ function lineplot(
     plot
 end
 
-function lineplot!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector{<:TimeType},
-    y::AbstractVector;
-    kw...,
-)
-    d = Dates.value.(x)
-    lineplot!(plot, d, y; kw...)
-end
+lineplot!(plot::Plot{<:Canvas}, x::AbstractVector{<:TimeType}, y::AbstractVector; kw...) =
+    lineplot!(plot, Dates.value.(x), y; kw...)
 
 # ---------------------------------------------------------------------------- #
 # Unitful
@@ -203,9 +195,9 @@ function lineplot(
     lineplot(
         ustrip.(x),
         ustrip.(y);
-        unicode_exponent = unicode_exponent,
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
+        unicode_exponent,
         kw...,
     )
 end
@@ -244,7 +236,7 @@ function lineplot(
 )
     y = float.(f.(x))
     name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot(x, y; name = name, xlabel = xlabel, ylabel = ylabel, kw...)
+    lineplot(x, y; name, xlabel, ylabel, kw...)
 end
 
 function lineplot(
@@ -257,7 +249,7 @@ function lineplot(
     width = something(width, DEFAULT_WIDTH[])
     diff = abs(endx - startx)
     x = startx:(diff / 3width):endx
-    lineplot(f, x; width = width, kw...)
+    lineplot(f, x; width, kw...)
 end
 
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
@@ -271,7 +263,7 @@ function lineplot!(
 )
     y = float.(f.(x))
     name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot!(plot, x, y; name = name, kw...)
+    lineplot!(plot, x, y; name, kw...)
 end
 
 function lineplot!(
@@ -296,24 +288,21 @@ lineplot(F::AbstractVector{<:Function}, startx::Number, endx::Number; kw...) =
 lineplot(F::AbstractVector{<:Function}, x::AbstractVector; kw...) = _lineplot(F, x; kw...)
 
 function _lineplot(F::AbstractVector{<:Function}, args...; color = :auto, name = "", kw...)
-    n = length(F)
-    n > 0 || throw(ArgumentError("cannot plot empty array of functions"))
+    (n = length(F)) > 0 || throw(ArgumentError("cannot plot empty array of functions"))
     color_is_vec = color isa AbstractVector
     name_is_vec  = name isa AbstractVector
-    color_is_vec && (
-        length(color) == n || throw(
-            DimensionMismatch(
-                "`color` must be a symbol or same length as the function vector",
-            ),
-        )
-    )
-    name_is_vec && (
-        length(name) == n || throw(
-            DimensionMismatch(
-                "`name` must be a string or same length as the function vector",
-            ),
-        )
-    )
+    if color_is_vec
+        length(color) == n ||
+            "`color` must be a symbol or same length as the function vector" |>
+            DimensionMismatch |>
+            throw
+    end
+    if name_is_vec
+        length(name) == n ||
+            "`name` must be a string or same length as the function vector" |>
+            DimensionMismatch |>
+            throw
+    end
     tcolor = color_is_vec ? first(color) : color
     tname  = name_is_vec ? first(name) : name
     plot   = lineplot(first(F), args...; color = tcolor, name = tname, kw...)
@@ -355,7 +344,7 @@ function vline!(
     y::Union{AbstractVector{<:Number},Nothing} = nothing;
     kw...,
 )
-    map(v -> vline!(plot, v, y; kw...), x)
+    foreach(v -> vline!(plot, v, y; kw...), x)
     plot
 end
 
@@ -386,6 +375,6 @@ function hline!(
     x::Union{AbstractVector{<:Number},Nothing} = nothing;
     kw...,
 )
-    map(v -> hline!(plot, v, x; kw...), y)
+    foreach(v -> hline!(plot, v, x; kw...), y)
     plot
 end

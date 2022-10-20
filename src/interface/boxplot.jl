@@ -75,9 +75,7 @@ function boxplot(
         max_x = max_x,
         okw...,
     )
-    for i ∈ 2:length(data)
-        addseries!(area, data[i])
-    end
+    foreach(i -> addseries!(area, data[i]), 2:length(data))
     plot = Plot(area; border = :corners, pkw...)
 
     min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
@@ -115,7 +113,7 @@ end
 end
 
 boxplot!(plot, name, data::AbstractVector{<:Number}; kw...) =
-    boxplot!(plot, data; name = name, kw...)
+    boxplot!(plot, data; name, kw...)
 boxplot(data::AbstractVector{<:AbstractArray{<:Number}}; kw...) =
     boxplot(fill("", length(data)), data; kw...)
 boxplot(text::AbstractString, data::AbstractVector{<:Number}; kw...) =

@@ -63,13 +63,9 @@ function polarplot(
 )
     pkw, okw = split_plot_kw(; kw...)
 
-    if is_auto(rlim)
-        r = r isa Function ? r.(θ) : r
-        _, Mr = extrema(r)
-    else
-        Mr = rlim[2]
-    end
-    lims = x = y = [-Mr, +Mr]
+    r = r isa Function ? r.(θ) : r
+    max_r = last(is_auto(rlim) ? extrema(r) : rlim)
+    lims = x = y = [-max_r, +max_r]
     plot = Plot(
         x,
         y;
@@ -82,7 +78,7 @@ function polarplot(
         blend = false,
         pkw...,
     )
-    polarplot!(plot, θ, r; rlim = rlim, okw...)
+    polarplot!(plot, θ, r; rlim, okw...)
 end
 
 @doc (@doc polarplot) function polarplot!(

@@ -103,11 +103,11 @@ function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::In
         bar_head += 1  # padding, we printed one more char
     end
     bar_lbl = string(bar)
-    if bar ≥ 0
+    len = if bar ≥ 0
         print_color(io, nothing, ' ', bar_lbl)
-        len = length(bar_lbl)
+        length(bar_lbl)
     else
-        len = -1
+        -1
     end
     pad_len = max(max_bar_width + 1 + c.max_len[] - bar_head - len, 0)
     print_nocol(io, ' '^round(Int, pad_len))

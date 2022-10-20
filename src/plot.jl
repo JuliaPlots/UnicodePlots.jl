@@ -112,8 +112,8 @@ function Plot(
         ColorMap(colorbar_border, colorbar, colorbar_lim, colormap_callback(colormap)),
     )
     if compact
-        xlabel != "" && label!(p, :b, xlabel)
-        ylabel != "" && label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
+        isempty(xlabel) || label!(p, :b, xlabel)
+        isempty(ylabel) || label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
     end
     p
 end
@@ -210,7 +210,7 @@ function Plot(
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
 
         mvp = if projection isa Symbol
-            MVP(x, y, z; projection = projection, kw...)
+            MVP(x, y, z; projection, kw...)
         else
             projection
         end
@@ -235,33 +235,33 @@ function Plot(
     can = canvas(
         height,
         width;
-        blend = blend,
-        visible = visible,
         origin_y = my,
         origin_x = mx,
         height = p_height,
         width = p_width,
-        yscale = yscale,
-        xscale = xscale,
-        yflip = yflip,
-        xflip = xflip,
+        blend,
+        visible,
+        yscale,
+        xscale,
+        yflip,
+        xflip,
         canvas_kw...,
     )
     plot = Plot(
         can;
-        title = title,
-        margin = margin,
-        padding = padding,
-        border = border,
-        compact = compact,
-        labels = labels,
-        xlabel = xlabel,
-        ylabel = ylabel,
-        zlabel = zlabel,
-        colormap = colormap,
-        colorbar = colorbar,
-        colorbar_border = colorbar_border,
-        colorbar_lim = colorbar_lim,
+        title,
+        margin,
+        padding,
+        border,
+        compact,
+        labels,
+        xlabel,
+        ylabel,
+        zlabel,
+        colormap,
+        colorbar,
+        colorbar_border,
+        colorbar_lim,
         projection = mvp,
     )
     if xticks || yticks

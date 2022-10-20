@@ -124,8 +124,7 @@ function __init__()
         faintcolors!()
     end
     Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
-        imageplot(img::AbstractArray{<:Colorant}; kwargs...) =
-            Plot(ImageGraphics(img); kwargs...)
+        imageplot(img::AbstractArray{<:Colorant}; kw...) = Plot(ImageGraphics(img); kw...)
     end
     nothing
 end
@@ -134,17 +133,22 @@ end
 if get(ENV, "UP_PRECOMPILE", "true") == "true"
     @precompile_setup begin
         ctx = IOContext(devnull, :color => Base.get_have_color())
+        surf(x, y) = sinc(√(x^2 + y^2))
         @precompile_all_calls begin
             for T in (  # most common types
                 Float64,
-                # Int,
+                Int,
             )
                 I = one(T)
                 plots = (
                     lineplot(I:2),
                     lineplot(I:2, I:2),
+                    lineplot(sin, -I, I),
+                    lineplot(sin, (-I):I),
+                    lineplot([sin, cos], -I, I),
+                    lineplot([sin, cos], (-I):I),
                     lineplot(I:2, T[0:1 2:3]),
-                    lineplot([cos, sin], -π / 2, 2π),
+                    lineplot(I:2, I:2, xscale = :ln, yscale = :log10),
                     lineplot([Date(2020), Date(2021)], I:2),
                     scatterplot(I:2),
                     scatterplot(I:2, I:2),
@@ -159,9 +163,11 @@ if get(ENV, "UP_PRECOMPILE", "true") == "true"
                     densityplot(T[1, 2], T[3, 4]; dscale = x -> log(1 + x)),
                     heatmap(repeat(collect(T, 0:4)', outer = (5, 1))),
                     spy(T[1 -1 0; -1 2 1; 0 -1 1]),
-                    contourplot(I:4, I:2, (x, y) -> exp(-(x / 2)^2 - (y - 2)^2)),
-                    surfaceplot(I:4, I:2, (x, y) -> sinc(√(x^2 + y^2)); lines = true),
-                    isosurface(I:4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
+                    contourplot(surf.(meshgrid((-I):I, (-2I):(2I))...)),
+                    contourplot((-I):I, (-2I):(2I), surf),
+                    surfaceplot((-I):I, (-2I):(2I), surf; lines = true),
+                    surfaceplot((-I):I, (-2I):(2I), surf.(meshgrid((-I):I, (-2I):(2I))...)),
+                    isosurface((-I):4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
                 )
                 foreach(p -> show(ctx, p), plots)
             end

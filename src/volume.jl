@@ -364,11 +364,11 @@ function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
 
     proj = :ortho  # force orthographic axes projection
 
-    pos = SVector{3}(if length(p) == 2
+    pos = if length(p) == 2
         (transform_matrix(T, proj) \ SVector{4}(p..., 0, 1))[1:3]
     else
         float(p)
-    end)
+    end |> SVector{3}
 
     lines!(plot.graphics, axis_line(T, proj, pos, len, 1)..., color = :red)
     lines!(plot.graphics, axis_line(T, proj, pos, len, 2)..., color = :green)

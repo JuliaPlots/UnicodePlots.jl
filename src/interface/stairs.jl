@@ -70,29 +70,24 @@ stairs(X::AbstractVector, Y::AbstractVector; style::Symbol = :post, kw...) =
 
 function compute_stair_lines(X::AbstractVector, Y::AbstractVector, style::Symbol)
     o = 0
+    x_vex = similar(X, 2length(X) - 1)
+    y_vex = similar(Y, 2length(Y) - 1)
+    x_vex[1] = first(X)
+    y_vex[1] = first(Y)
     if style ≡ :post
-        x_vex = similar(X, 2length(X) - 1)
-        y_vex = similar(Y, 2length(X) - 1)
-        x_vex[1] = X[1]
-        y_vex[1] = Y[1]
         for i ∈ 2:length(X)
             x_vex[i + o + 1] = x_vex[i + o] = X[i]
             y_vex[i + o] = Y[i - 1]
             y_vex[i + o + 1] = Y[i]
             o += 1
         end
-        return x_vex, y_vex
     elseif style ≡ :pre
-        x_vex = zeros(2length(X) - 1)
-        y_vex = zeros(2length(X) - 1)
-        x_vex[1] = X[1]
-        y_vex[1] = Y[1]
         for i ∈ 2:length(X)
             x_vex[i + o] = X[i - 1]
             x_vex[i + o + 1] = X[i]
             y_vex[i + o + 1] = y_vex[i + o] = Y[i]
             o += 1
         end
-        return x_vex, y_vex
     end
+    x_vex, y_vex
 end

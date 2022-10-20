@@ -131,8 +131,10 @@ function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
     any(occursin.(remaining_parts, Ref(sname))) ||
         return family_score, 0, is_regular_style, fontlength_penalty
 
+    # COV_EXCL_START
     style_score = sum(map(length, filter(part -> occursin(part, sname), remaining_parts)))
     family_score, style_score, is_regular_style, fontlength_penalty
+    # COV_EXCL_STOP
 end
 
 function findfont(searchstring::String; additional_fonts::String = "")
@@ -208,10 +210,9 @@ function kerning(face::FTFont, glyphspecs...)
     i1, i2 = glyph_index.(Ref(face), glyphspecs)
     kerning2d = Ref{FT_Vector}()
     err = FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
-    # Can error if font has no kerning! Since that's somewhat expected, we just return 0
+    # can error if font has no kerning! Since that's somewhat expected, we just return 0
     err == 0 || return SVector{2}(0, 0)
-    # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
-    divisor = 64
+    divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
     SVector{2}(kerning2d[].x / divisor, kerning2d[].y / divisor)
 end
 
@@ -241,10 +242,10 @@ function glyphbitmap(bitmap::FT_Bitmap)
     bmp
 end
 
-function renderface(face::FTFont, glyph, pixelsize::Integer; kw...)
-    gl = loadglyph(face, glyph, pixelsize; kw...)
-    glyphbitmap(gl.bitmap), FontExtent(gl.metrics)
-end
+renderface(face::FTFont, glyph, pixelsize::Integer; kw...) =
+    let gl = loadglyph(face, glyph, pixelsize; kw...)
+        glyphbitmap(gl.bitmap), FontExtent(gl.metrics)
+    end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
     FontExtent(loadglyph(face, glyph, pixelsize).metrics)

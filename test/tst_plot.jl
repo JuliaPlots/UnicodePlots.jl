@@ -51,7 +51,7 @@ end
     test_ref("plot/canvas_only.txt", @show_col(p))
 
     for border ∈ (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
-        local p = @inferred Plot(_test_canvas(), border = border)
+        local p = @inferred Plot(_test_canvas(); border)
         test_ref("plot/border_$(string(border)).txt", @show_col(p))
     end
 

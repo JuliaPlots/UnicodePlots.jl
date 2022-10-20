@@ -70,8 +70,7 @@ function heatmap(
     pkw, okw = split_plot_kw(; kw...)
     warn_on_lost_kw(; okw...)
 
-    nrows = size(A, 1)
-    ncols = size(A, 2)
+    nrows, ncols = size(A)
 
     # if scale is auto, use the matrix indices as axis labels
     # otherwise, start axis labels at zero
@@ -175,18 +174,18 @@ function heatmap(
         ys,
         nothing,
         HeatmapCanvas;
-        grid = false,
-        colormap = callback,
-        colorbar = colorbar,
+        colorbar,
+        ylim,
+        xlim,
+        labels,
+        height,
+        width,
         colorbar_lim = (minz, maxz),
-        ylim = ylim,
-        xlim = xlim,
-        labels = labels,
-        height = height,
-        width = width,
+        colormap = callback,
         min_height = 1,
         min_width = 1,
         yflip = array,
+        grid = false,
         filter(x -> x.first ≢ :colorbar, pairs(pkw))...,
     )
 
