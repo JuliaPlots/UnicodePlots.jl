@@ -1,4 +1,3 @@
-# COV_EXCL_START
 """
     imageplot(img; kw...)
 
@@ -49,5 +48,4 @@ julia> imageplot(testimage("monarch_color_256"), title="monarch")
 `Plot`
 """
 imageplot(args...; kw...) =
-    error("not implemented, did you forget 'using ImageInTerminal' ?")
-# COV_EXCL_STOP
+    error("not implemented, did you forget 'using ImageInTerminal' ?")  # COV_EXCL_LINE

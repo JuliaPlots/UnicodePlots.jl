@@ -131,10 +131,8 @@ function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
     any(occursin.(remaining_parts, Ref(sname))) ||
         return family_score, 0, is_regular_style, fontlength_penalty
 
-    # COV_EXCL_START
-    style_score = sum(map(length, filter(part -> occursin(part, sname), remaining_parts)))
-    family_score, style_score, is_regular_style, fontlength_penalty
-    # COV_EXCL_STOP
+    style_score = sum(map(length, filter(part -> occursin(part, sname), remaining_parts)))  # COV_EXCL_LINE
+    family_score, style_score, is_regular_style, fontlength_penalty  # COV_EXCL_LINE
 end
 
 function findfont(searchstring::String; additional_fonts::String = "")
@@ -436,7 +434,7 @@ function __init__()
     atexit(ft_done)
     # This method of finding fonts might not work for exotic platforms,
     # so we supply a way to help it with an environment variable.
-    font_paths = if Sys.isapple()
+    font_paths = if Sys.isapple()  # COV_EXCL_LINE
         [
             "/Library/Fonts", # Additional fonts that can be used by all users. This is generally where fonts go if they are to be used by other applications.
             joinpath(homedir(), "Library/Fonts"), # Fonts specific to each user.
@@ -444,7 +442,7 @@ function __init__()
             "/System/Library/Fonts", # System specific fonts
             "/System/Library/Fonts/Supplemental", # new location since Catalina
         ]
-    elseif Sys.iswindows()
+    elseif Sys.iswindows()  # COV_EXCL_LINE
         [
             joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "Fonts"),
             joinpath(homedir(), "AppData", "Local", "Microsoft", "Windows", "Fonts"),
@@ -462,7 +460,7 @@ function __init__()
                 add_recursive(result, p)
             end
         end
-        result
+        result  # COV_EXCL_LINE
     end
     env_path = get(ENV, "UP_FONT_PATH", nothing)
     env_path ≡ nothing || push!(font_paths, env_path)
