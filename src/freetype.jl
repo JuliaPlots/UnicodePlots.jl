@@ -377,7 +377,7 @@ function renderstring!(
                 (bm = bitmap[c, r]) == 0 && continue
                 w1 = bm / bitmap_max
                 color0 = w1 * fcol
-                color1 = (1.0 - w1) * gcol
+                color1 = (1 - w1) * gcol
                 img[oy + r, ox + c] =
                     T <: Integer ? round(T, color0 + color1) : T(color0 + color1)
             end
