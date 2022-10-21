@@ -312,7 +312,7 @@ end)
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 float_round_log10(x::T, m) where {T<:AbstractFloat} = T(x == 0 ? 0 : if x > 0
-    round(x, digits = ceil_neg_log10(m) + 1)
+    +round(+x, digits = ceil_neg_log10(m) + 1)
 else
     -round(-x, digits = ceil_neg_log10(m) + 1)
 end)
@@ -342,9 +342,14 @@ function superscript(s::AbstractString)
 end
 
 function plotting_range_narrow(xmin, xmax)
-    Δ = Float64(xmax) - Float64(xmin)  # NOTE: support e.g. xmin == -Inf32 - xmax == Inf32
-    (isfinite(Δ) && !iszero(Δ)) ||
-        throw(DomainError("Invalid plotting range: ($xmin, $xmax)"))
+    Δ = xmax - xmin
+    if iszero(Δ) || !isfinite(Δ)
+        Δ = Float64(xmax) - Float64(xmin)  # NOTE: support e.g. xmin == -Inf32 | xmax == Inf32
+        if iszero(Δ) || !isfinite(Δ)
+            @warn "Invalid plotting range" xmin xmax
+            return -Inf, +Inf
+        end
+    end
     float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
