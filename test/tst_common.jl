@@ -6,9 +6,9 @@
         @test UnicodePlots.plotting_range_narrow(0x0, 0x1) ≡ (0.0, 1.0)
     end
 
-    @test_throws DomainError UnicodePlots.plotting_range_narrow(
+    @test_logs (:warn, "Invalid plotting range") UnicodePlots.plotting_range_narrow(
         nextfloat(-Inf),
-        prevfloat(Inf),
+        prevfloat(+Inf),
     )
     @test UnicodePlots.plotting_range_narrow(nextfloat(-Inf32), prevfloat(Inf32)) ≡
           (-Inf32, Inf32)

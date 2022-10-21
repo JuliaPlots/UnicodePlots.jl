@@ -50,7 +50,10 @@
     end
 
     @testset "invalid data (#297)" begin
-        @test_throws DomainError lineplot([nextfloat(-Inf), prevfloat(+Inf)])
+        @test_logs (:warn, "Invalid plotting range") lineplot([
+            nextfloat(-Inf),
+            prevfloat(+Inf),
+        ]) isa Plot
         @test lineplot([nextfloat(-Inf32), prevfloat(+Inf32)]) isa Plot
         @test lineplot([nextfloat(-Inf16), prevfloat(+Inf16)]) isa Plot
     end
