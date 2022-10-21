@@ -150,7 +150,7 @@ const SUPERSCRIPT = Dict(
     'e' => 'ᵉ',
 )
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)
+const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)  # COV_EXCL_LINE
 const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
 const BORDER_COLOR = Ref(:dark_gray)
@@ -462,9 +462,9 @@ ignored_color(::Any) = false
 
 no_ansi_escape(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
 
-function ansi_4bit_to_8bit(c::UInt8)::UInt8
+function ansi_4bit_to_8bit(c::UInt8)
     q, r = divrem(c, UInt8(60))
-    r + (q > 0x0 ? 0x8 : 0x0)
+    UInt8(r + (q > 0x0 ? 0x8 : 0x0))
 end
 
 c256(c::AbstractFloat) = round(UInt32, 255c)

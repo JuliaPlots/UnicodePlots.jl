@@ -79,7 +79,7 @@ end
 function print_row(io::IO, _, print_color, c::ImageGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     if c.sixel[]
-        print_color(io, INVALID_COLOR, String(c.chars[row]))  # color already encoded
+        print_color(io, INVALID_COLOR, String(c.chars[row]))  # color already encoded - COV_EXCL_LINE
     else
         for col ∈ 1:ncols(c)
             bgcol = (bgcol = c.bgcols[row][col]) == INVALID_COLOR ? missing : bgcol
