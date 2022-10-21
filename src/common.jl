@@ -462,10 +462,10 @@ ignored_color(::Any) = false
 
 no_ansi_escape(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
 
-function ansi_4bit_to_8bit(c::UInt8)
-    q, r = divrem(c, UInt8(60))
-    UInt8(r + (q > 0x0 ? 0x8 : 0x0))
-end
+ansi_4bit_to_8bit(c::UInt8) =
+    let (q, r) = divrem(c, 0x3c)  # UInt8(60)
+        UInt8(r + (q > 0x0 ? 0x8 : 0x0))
+    end
 
 c256(c::AbstractFloat) = round(UInt32, 255c)
 c256(c::Integer) = c
