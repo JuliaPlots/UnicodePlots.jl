@@ -63,14 +63,14 @@ function contourplot(
         extrema(y) |> collect,
         nothing,
         canvas;
-        colormap = colormap,
         colorbar = true,
         blend = false,
         grid = false,
+        colormap,
         pkw...,
     )
     A isa Function && (A = A.(x', y))
-    contourplot!(plot, x, y, A; colormap = colormap, okw...)
+    contourplot!(plot, x, y, A; colormap, okw...)
 end
 
 @doc (@doc contourplot) function contourplot!(
@@ -80,18 +80,20 @@ end
     A::AbstractMatrix;
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
+    zlim = KEYWORDS.zlim,
     levels::Integer = 3,
 )
     isempty(name) || label!(plot, :r, string(name))
 
-    plot.cmap.callback = callback = colormap_callback(colormap)
     mA, MA = NaNMath.extrema(as_float(A))
+    plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? (mA, MA) : zlim
+    plot.cmap.callback = callback = colormap_callback(colormap)
 
     for cl ∈ Contour.levels(Contour.contours(y, x, A, levels))
-        color = callback(Contour.level(cl), mA, MA)
+        color = callback(Contour.level(cl), mh, Mh)
         for line ∈ Contour.lines(cl)
             yi, xi = Contour.coordinates(line)
-            lineplot!(plot, xi, yi, color = color)
+            lineplot!(plot, xi, yi; color)
         end
     end
     plot

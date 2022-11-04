@@ -67,14 +67,7 @@ function boxplot(
     min_x, max_x = extend_limits(reduce(vcat, data), xlim)
     width = max(something(width, DEFAULT_WIDTH[]), 10)
 
-    area = BoxplotGraphics(
-        first(data),
-        width,
-        color = color,
-        min_x = min_x,
-        max_x = max_x,
-        okw...,
-    )
+    area = BoxplotGraphics(first(data), width; color, min_x, max_x, okw...)
     foreach(i -> addseries!(area, data[i]), 2:length(data))
     plot = Plot(area; border = :corners, pkw...)
 

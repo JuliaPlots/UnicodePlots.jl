@@ -69,3 +69,11 @@ end
     p = surfaceplot(x, y, z; kw..., lines = true)
     test_ref("surfaceplot/slice_lines.txt", @show_col(p))
 end
+
+@testset "consistency with `contourplot`" begin
+    x = -2:0.2:2
+    y = -3:0.2:1
+    z = (x, y) -> 10x * exp(-x^2 - y^2)
+    p = surfaceplot(x, y, z; azimuth = -60, elevation = 30, axes3d = false)
+    test_ref("surfaceplot/consistency.txt", @show_col(p))
+end

@@ -88,9 +88,9 @@ function barplot(
         heights,
         something(width, DEFAULT_WIDTH[]),
         xscale;
-        color = color,
         symbols = KEYWORDS.symbols,
         maximum = nothing,
+        color,
         okw...,
     )
     plot = Plot(area; border = :barplot, xlabel = transform_name(xscale), pkw...)
