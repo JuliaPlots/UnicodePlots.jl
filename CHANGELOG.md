@@ -1,9 +1,14 @@
 # Changelog
 
+## [3.1] - 2022-11-04
+### Changed
+- Removed labels in `3d` plots by default.
+- Fix default `contourplot` colorbar limits.
+
 ## [3.1] - 2022-09-02
 ### Added
-- `imageplot`.
-- sixel support in `ImageGraphics`.
+- Add `imageplot` (`ansi` or `sixel`).
+- Sixel support in `ImageGraphics`.
 
 ## [3.0] - 2022-06-24
 ### Added
