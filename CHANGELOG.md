@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.1] - 2022-11-04
+## [3.2] - 2022-11-04
 ### Changed
 - Removed labels in `3d` plots by default.
 - Fix default `contourplot` colorbar limits.
