@@ -63,9 +63,9 @@ function horizontal_histogram(
     plot = barplot(
         labels,
         counts;
-        symbols = symbols,
+        symbols,
+        xscale,
         xlabel = transform_name(xscale, "Frequency"),
-        xscale = xscale,
         kw...,
     )
     plot
@@ -114,11 +114,11 @@ function vertical_histogram(
         n_full = (nsyms > 1 ? floor : round)(Int, frac * nr)
         δ = max_val / nr
         for r ∈ 1:n_full
-            annotate!(plot, x, (r - 0.5) * δ, symbols[nsyms]; color = color)
+            annotate!(plot, x, (r - 0.5) * δ, symbols[nsyms]; color)
         end
         if nsyms > 1 && (rem = frac * nr - n_full) > 0
             if 1 ≤ (I = round(Int, rem * nsyms)) ≤ nsyms
-                annotate!(plot, x, (n_full + 0.5) * δ, symbols[I]; color = color)
+                annotate!(plot, x, (n_full + 0.5) * δ, symbols[I]; color)
             end
         end
     end
@@ -182,12 +182,14 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 """
 function histogram(x::AbstractArray; closed = :left, vertical = false, stats = true, kw...)
     x_plot = dropdims(x, dims = Tuple(filter(d -> size(x, d) == 1, 1:ndims(x))))
-    hist = fit(Histogram, x_plot; closed = closed, filter(p -> p.first ≡ :nbins, kw)...)
+    len = length(x_plot)
+    nbins = get(kw, :nbins, StatsBase.sturges(len))
+    hist = fit(Histogram, x_plot; closed, nbins)
     info = if vertical && stats
         digits = 2
         mx, Mx = extrema(x_plot)
-        μ = sum(x_plot) / length(x_plot)
-        σ = √(sum((x_plot .- μ) .^ 2) / length(x_plot))
+        μ = sum(x_plot) / len
+        σ = √(sum((x_plot .- μ) .^ 2) / len)
         "μ ± σ: " *
         lpad(round(μ; digits), digits + 1) *
         " ± " *
@@ -196,5 +198,5 @@ function histogram(x::AbstractArray; closed = :left, vertical = false, stats = t
         ""
     end
     callable = vertical ? vertical_histogram : horizontal_histogram
-    callable(hist; info = info, filter(p -> p.first ≢ :nbins, kw)...)
+    callable(hist; info, filter(p -> p.first ≢ :nbins, kw)...)
 end

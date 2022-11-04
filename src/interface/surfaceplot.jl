@@ -94,10 +94,10 @@ function surfaceplot(
         collect.((ex, ey, ez))...,
         canvas;
         projection = KEYWORDS.projection,
-        colormap = colormap,
+        colormap,
         pkw...,
     )
-    surfaceplot!(plot, X, Y, Z, H; colormap = colormap, okw...)
+    surfaceplot!(plot, X, Y, Z, H; colormap, okw...)
 end
 
 @doc (@doc surfaceplot) function surfaceplot!(

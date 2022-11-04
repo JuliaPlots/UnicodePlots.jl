@@ -121,7 +121,7 @@ function spy(
         extra_cols = 6,
     )
     can = canvas(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
-    plot = Plot(can; margin = margin, padding = padding, pkw...)
+    plot = Plot(can; margin, padding, pkw...)
 
     if color ≢ :auto
         points!(plot, cols, nrow + 1 .- rows, color)

@@ -69,10 +69,10 @@ function boxplot(
 
     area = BoxplotGraphics(
         first(data),
-        width,
-        color = color,
-        min_x = min_x,
-        max_x = max_x,
+        width;
+        color,
+        min_x,
+        max_x,
         okw...,
     )
     foreach(i -> addseries!(area, data[i]), 2:length(data))
