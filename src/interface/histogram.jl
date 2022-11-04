@@ -183,7 +183,7 @@ julia> histogram(randn(1000) * 0.1, closed = :right, nbins = 15)
 function histogram(x::AbstractArray; closed = :left, vertical = false, stats = true, kw...)
     x_plot = dropdims(x, dims = Tuple(filter(d -> size(x, d) == 1, 1:ndims(x))))
     len = length(x_plot)
-    nbins = get(kw, :nbins, StatsBase.sturges(len))
+    nbins = get(kw, :nbins, sturges(len))
     hist = fit(Histogram, x_plot; closed, nbins)
     info = if vertical && stats
         digits = 2

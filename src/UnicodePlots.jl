@@ -9,8 +9,8 @@ using Printf
 using Dates
 
 import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import StatsBase: Histogram, fit, percentile, sturges
 import SparseArrays: AbstractSparseMatrix, findnz
-import StatsBase: Histogram, fit, percentile
 import Base: RefValue
 
 import MarchingCubes

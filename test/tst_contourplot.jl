@@ -30,3 +30,11 @@ end
     )
     test_ref("contourplot/function_contour.txt", @show_col(p))
 end
+
+@testset "consistency with `surfaceplot`" begin
+    x = -2:0.2:2
+    y = -3:0.2:1
+    z = (x, y) -> 10x * exp(-x^2 - y^2)
+    p = contourplot(x, y, z; levels = 10)
+    test_ref("contourplot/consistency.txt", @show_col(p))
+end
