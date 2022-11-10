@@ -296,12 +296,12 @@ end
 "transform a matrix of points, with allocation"
 function (tr::MVP{E,T})(p::AbstractMatrix, n::Symbol = :user) where {E,T}
     o = Array{T}(undef, 4, size(p, 2))
-    tr(o, p, n)
+    tr(p, o, n)
     @view(o[1, :]), @view(o[2, :])
 end
 
 "inplace transform"
-function (tr::MVP{E,T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user) where {E,T}
+function (tr::MVP{E,T})(p::AbstractMatrix, o::AbstractMatrix, n::Symbol = :user) where {E,T}
     mul!(o, transform_matrix(tr, n), p)
     persp = !is_ortho(tr, n)
     # homogeneous coordinates
@@ -320,7 +320,7 @@ function (tr::MVP{E,T})(o::AbstractMatrix, p::AbstractMatrix, n::Symbol = :user)
             end
         end
     end
-    return
+    nothing
 end
 
 "transform a vector"
@@ -336,7 +336,7 @@ function (tr::MVP{E,T})(v::SVector{4}, n::Symbol = :user) where {E,T}
 end
 
 (tr::MVP)(v::AbstractVector, n::Symbol = :user) =
-    tr(length(v) == 4 ? SVector{4}(v) : SVector{4}(v..., 1))
+    tr(length(v) == 4 ? SVector{4}(v) : SVector{4}(v..., 1), n)
 
 function axis_line(tr, proj, start::AbstractVector{T}, l, d) where {T}
     stop = collect(start)

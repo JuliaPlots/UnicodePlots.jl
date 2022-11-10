@@ -225,16 +225,13 @@ function Plot(
         my, My = extend_limits(y, ylim, yscale)
     end
 
-    p_width = Mx - mx
-    p_height = My - my
-
     can = canvas(
         height,
         width;
         origin_y = my,
         origin_x = mx,
-        height = p_height,
-        width = p_width,
+        height = My - my,
+        width = Mx - mx,
         blend,
         visible,
         yscale,
@@ -503,7 +500,7 @@ end
 
 transform(tr, args...) = args  # catch all
 transform(tr::MVP{Val{false}}, x, y, c::UserColorType) = (x, y, c)
-transform(tr::MVP{Val{false}}, x, y, z::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP{Val{false}}, x, y, ::Nothing, c::UserColorType) = (x, y, c)  # drop z
 transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector,Number}, args...) =
     (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 
