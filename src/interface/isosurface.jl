@@ -2,7 +2,7 @@
     isosurface(x, y, z, V; kw...)
     isosurface!(p, args...; kw...)
 
-Extract and plot isosurface from volumetric data, or implicit function.
+Extract and plot an isosurface from volumetric data, or a given implicit function.
 
 # Usage
 
@@ -50,7 +50,7 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, elevation = 50, zoom = 2, cu
 
 # See also
 
-`Plot`, `MVP`, `lineplot`, `BrailleCanvas`
+`Plot`, `MVP`, `surfaceplot`, `BrailleCanvas`
 """
 function isosurface(
     x::AbstractVector,
@@ -64,9 +64,7 @@ function isosurface(
     V isa Function && (V = V.(x, y', reshape(z, 1, 1, length(z))))
 
     plot = Plot(
-        extrema(x) |> collect,
-        extrema(y) |> collect,
-        extrema(z) |> collect,
+        map(collect ∘ extrema, (x, y, z))...,
         canvas;
         projection = KEYWORDS.projection,
         labels = false,
@@ -87,34 +85,35 @@ end
     legacy::Bool = false,
     cull::Bool = false,
 )
-    color = color ≡ :auto ? next_color!(plot) : color
-
     F = float(promote_type(eltype(x), eltype(y), eltype(z), eltype(V)))
 
     mc = MarchingCubes.MC(V, Int; x = collect(F, x), y = collect(F, y), z = collect(F, z))
-    (legacy ? MarchingCubes.march_legacy : MarchingCubes.march)(mc, isovalue)
+    if legacy
+        MarchingCubes.march_legacy(mc, isovalue)
+    else
+        MarchingCubes.march(mc, isovalue)
+    end
 
     ntri = length(mc.triangles)
     npts = centroid ? ntri : 3ntri
-    xs = sizehint!(F[], npts)
-    ys = sizehint!(F[], npts)
-    zs = sizehint!(F[], npts)
+    xs, ys, zs = map(_ -> sizehint!(F[], npts), 1:3)
     cs = sizehint!(UserColorType[], npts)
 
-    for (i1, i2, i3) ∈ mc.triangles
+    color = color ≡ :auto ? next_color!(plot) : color
+    @inbounds for (i1, i2, i3) ∈ mc.triangles
         (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
-        v1 = mc.vertices[i1]
-        v2 = mc.vertices[i2]
-        v3 = mc.vertices[i3]
         back_face = (
             dot(mc.normals[i1], plot.projection.view_dir) < 0 &&
             dot(mc.normals[i2], plot.projection.view_dir) < 0 &&
             dot(mc.normals[i3], plot.projection.view_dir) < 0
         )
         (cull && back_face) && continue
+        v1 = mc.vertices[i1]
+        v2 = mc.vertices[i2]
+        v3 = mc.vertices[i3]
         vc = back_face ? complement(color) : color
         if centroid
-            c = (v1 .+ v2 .+ v3) ./ 3
+            c = @. (v1 + v2 + v3) / 3
             push!(xs, c[1])
             push!(ys, c[2])
             push!(zs, c[3])

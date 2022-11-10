@@ -4,6 +4,8 @@
 
 Draws a 3D surface plot on a new canvas (masking values using `NaN`s is supported).
 To plot a slice one can pass an anonymous function which maps to a constant height: `zscale = z -> a_constant`.
+Providing `zscale = :aspect` normalizes heights (`z` axis) to the `x` or `y` axes.
+The `x`, `y` and `z` axes of the 3D cartesian frames are mapped respectively to the `:red`, `:green` and `:blue` colors.
 
 # Usage
 
@@ -49,7 +51,7 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 
 # See also
 
-`Plot`, `MVP`, `lineplot`, `BrailleCanvas`
+`Plot`, `MVP`, `lineplot`, `scatterplot`, `BrailleCanvas`
 """
 function surfaceplot(
     x::AbstractVecOrMat,
@@ -68,8 +70,8 @@ function surfaceplot(
     end
     H = A isa Function ? A.(X, Y) : A
 
-    ex, ey = map(extrema, (x, y))
-    eh = NaNMath.extrema(as_float(H))
+    ex, ey = map(collect ∘ extrema, (x, y))
+    eh = (collect ∘ NaNMath.extrema)(as_float(H))
 
     if zscale ≡ :identity
         ez = eh
@@ -77,20 +79,22 @@ function surfaceplot(
     elseif zscale isa Function
         ez = zscale.(eh)
         Z = zscale.(H)
-    elseif zscale ≡ :aspect || zscale isa NTuple{2}
+    elseif (aspect = zscale ≡ :aspect) || zscale isa NTuple{2}
         mh, Mh = eh
-        mz, Mz = ez = if zscale ≡ :aspect
-            diff(ex |> collect) > diff(ey |> collect) ? ex : ey
+        mz, Mz = ez = if aspect
+            diff(ex) > diff(ey) ? ex : ey
         else
             zscale
         end
-        Z = (H .- mh) .* ((Mz - mz) / (Mh - mh)) .+ mz
+        Z = @. (H - mh) * ((Mz - mz) / (Mh - mh)) + mz
     else
         throw(ArgumentError("zscale=$zscale not understood"))
     end
 
     plot = Plot(
-        collect.((ex, ey, ez))...,
+        ex,
+        ey,
+        ez,
         canvas;
         projection = KEYWORDS.projection,
         labels = false,
@@ -143,7 +147,6 @@ end
                 (i2 = i + inc[3]) > m && continue
                 (j2 = j + inc[4]) > n && continue
                 plot.projection(
-                    buf,
                     @SMatrix(
                         [
                             X[i1, j1] X[i2, j2]
@@ -151,7 +154,8 @@ end
                             Z[i1, j1] Z[i2, j2]
                             1 1
                         ]
-                    )
+                    ),
+                    buf,
                 )
                 lines!(
                     plot.graphics,
@@ -172,8 +176,8 @@ end
         npts = length(Z)
         buf = Array{F}(undef, 4, npts)
         plot.projection(
-            buf,
             vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :), ones(1, npts)),
+            buf,
         )
         points!(
             plot.graphics,

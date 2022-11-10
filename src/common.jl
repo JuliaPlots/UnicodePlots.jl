@@ -1,100 +1,97 @@
-#! format: off
 const BLANK = 0x0020
 const BLANK_BRAILLE = 0x2800
 const FULL_BRAILLE = 0x28ff
 
-const FULL_BLOCK = '█'
-const HALF_BLOCK = '▄'
-
+#! format: off
 const BORDER_SOLID = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t = '─',
-    l = '│',
-    b = '─',
-    r = '│',
+    t  = '─',
+    l  = '│',
+    b  = '─',
+    r  = '│',
 )
 const BORDER_CORNERS = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t = ' ',
-    l = ' ',
-    b = ' ',
-    r = ' ',
+    t  = ' ',
+    l  = ' ',
+    b  = ' ',
+    r  = ' ',
 )
 const BORDER_BARPLOT = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t = ' ',
-    l = '┤',
-    b = ' ',
-    r = ' ',
+    t  = ' ',
+    l  = '┤',
+    b  = ' ',
+    r  = ' ',
 )
 const BORDER_BOLD = (
     tl = '┏',
     tr = '┓',
     bl = '┗',
     br = '┛',
-    t = '━',
-    l = '┃',
-    b = '━',
-    r = '┃',
+    t  = '━',
+    l  = '┃',
+    b  = '━',
+    r  = '┃',
 )
 const BORDER_NONE = (
     tl = ' ',
     tr = ' ',
     bl = ' ',
     br = ' ',
-    t = ' ',
-    l = ' ',
-    b = ' ',
-    r = ' ',
+    t  = ' ',
+    l  = ' ',
+    b  = ' ',
+    r  = ' ',
 )
 const BORDER_BNONE = (
     tl = Char(BLANK_BRAILLE),
     tr = Char(BLANK_BRAILLE),
     bl = Char(BLANK_BRAILLE),
     br = Char(BLANK_BRAILLE),
-    t = Char(BLANK_BRAILLE),
-    l = Char(BLANK_BRAILLE),
-    b = Char(BLANK_BRAILLE),
-    r = Char(BLANK_BRAILLE),
+    t  = Char(BLANK_BRAILLE),
+    l  = Char(BLANK_BRAILLE),
+    b  = Char(BLANK_BRAILLE),
+    r  = Char(BLANK_BRAILLE),
 )
 const BORDER_DASHED = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t = '╌',
-    l = '┊',
-    b = '╌',
-    r = '┊',
+    t  = '╌',
+    l  = '┊',
+    b  = '╌',
+    r  = '┊',
 )
 const BORDER_DOTTED = (
     tl = '⡤',
     tr = '⢤',
     bl = '⠓',
     br = '⠚',
-    t = '⠤',
-    l = '⡇',
-    b = '⠒',
-    r = '⢸',
+    t  = '⠤',
+    l  = '⡇',
+    b  = '⠒',
+    r  = '⢸',
 )
 const BORDER_ASCII = (
     tl = '+',
     tr = '+',
     bl = '+',
     br = '+',
-    t = '-',
-    l = '|',
-    b = '-',
-    r = '|',
+    t  = '-',
+    l  = '|',
+    b  = '-',
+    r  = '|',
 )
 const BORDERMAP = (
     solid   = BORDER_SOLID,
@@ -107,6 +104,8 @@ const BORDERMAP = (
     dotted  = BORDER_DOTTED,
     ascii   = BORDER_ASCII,
 )
+#! format: on
+
 const MARKERS = (
     circle    = '⚬',
     rect      = '▫',
@@ -149,26 +148,16 @@ const SUPERSCRIPT = Dict(
     '9' => '⁹',
     'e' => 'ᵉ',
 )
-const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)  # COV_EXCL_LINE
-const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
-const BORDER_COLOR = Ref(:dark_gray)
-
-# standard terminals seem to respect a 4:3 aspect ratio
-# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
-# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
-const ASPECT_RATIO = Ref(4 / 3)
-
-# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
-const DEFAULT_HEIGHT = Ref(15)
-const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
-
+############################################################################################
+# define types
 const MarkerType = Union{Symbol,AbstractChar,AbstractString}
 const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
 const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas), 8bit or 24bit
 
+############################################################################################
+# unicode table
 # en.wikipedia.org/wiki/Plane_(Unicode)
 const PLANE0_START = 0x00000
 const PLANE0_STOP = 0x0ffff
@@ -182,28 +171,48 @@ const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + leng
 for i ∈ PLANE0_START:PLANE0_STOP
     UNICODE_TABLE[i + 1] = Char(i)
 end
-
 for (j, i) ∈ enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
     UNICODE_TABLE[i + 1] = MARKERS[j]
 end
 
-# `UInt32` is enough to hold all values of `UNICODE_TABLE`: common supertype for `DotCanvas`, `AsciiCanvas`, `BlockCanvas` `HeatmapCanvas` and `BrailleCanvas`.
+# `UInt32` is enough to hold all values of `UNICODE_TABLE`:
+# common supertype for `DotCanvas`, `AsciiCanvas`, `BlockCanvas` `HeatmapCanvas` and `BrailleCanvas`.
 const UnicodeType = UInt32
 
+############################################################################################
+# colors
 const THRESHOLD = UInt32(256^3)  # 8bit - 24bit threshold
 const COLORMODE = Ref(Crayons.COLORS_256)
 const INVALID_COLOR = typemax(ColorType)
 const USE_LUT = Ref(false)
 
-const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
-const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
-const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
-
 const CRAYONS_FAST = Ref(true)
 const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ ∈ 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
-#! format: on
+const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
+const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)  # COV_EXCL_LINE
+const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
+
+const BORDER_COLOR = Ref(:dark_gray)
+
+############################################################################################
+# misc
+const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
+const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
+const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
+
+const FULL_BLOCK = '█'
+const HALF_BLOCK = '▄'
+
+# standard terminals seem to respect a 4:3 aspect ratio
+# unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio
+# retrocomputing.stackexchange.com/questions/5629/why-did-80x25-become-the-text-monitor-standard
+const ASPECT_RATIO = Ref(4 / 3)
+
+# default display size for the default BrailleCanvas (which has aspect ratio = 2) ==> (40, 15)
+const DEFAULT_HEIGHT = Ref(15)
+const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
 colormode() =
     if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
@@ -244,7 +253,7 @@ forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
         width::Union{Integer,Nothing} = nothing,
     )
 
-# Change and return the default plot size (height, width).
+Change and return the default plot size (height, width).
 """
 function default_size!(;
     height::Union{Integer,Nothing} = nothing,
@@ -364,7 +373,7 @@ extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
-    if mi == 0 && ma == 0
+    if mi == ma == 0
         mi, ma = as_float(extrema(vec))
     end
     if mi == ma
@@ -532,7 +541,7 @@ multiple_series_defaults(y::AbstractMatrix, kw, start) = (
 function colormap_callback(cmap::Symbol)
     cdata = ColorSchemes.colorschemes[cmap]
     (z, minz, maxz) -> begin
-        isfinite(z) || return nothing
+        isfinite(z) || return
         get(
             cdata,
             minz == maxz ? zero(z) : (max(minz, min(z, maxz)) - minz) / (maxz - minz),
@@ -542,7 +551,7 @@ end
 
 function colormap_callback(cmap::AbstractVector)
     (z, minz, maxz) -> begin
-        isfinite(z) || return nothing
+        isfinite(z) || return
         i = if minz == maxz || z < minz
             1
         elseif z > maxz
