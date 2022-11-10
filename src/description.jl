@@ -1,8 +1,6 @@
-@assert typemax(UnicodeType) ≥ maximum(
-    (
-        typemax ∘ grid_type
-    ).((HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)),
-)
+let canvases = (HeatmapCanvas, BlockCanvas, AsciiCanvas, DotCanvas, BrailleCanvas)
+    @assert typemax(UnicodeType) ≥ maximum((typemax ∘ grid_type).(canvases))
+end
 
 const PLOT_KEYWORDS = (  # intercepted by `split_plot_kw`
     canvas = BrailleCanvas,  # positional argument, but left here
@@ -52,7 +50,7 @@ const KEYWORDS = (
     # propagated keywords (canvas, interface, ...)
     symbols = ['■'],
     name = "",
-    zscale = :identity,
+    zscale = :aspect,
     zlim = (0, 0),
     color = :auto,
     # internals
