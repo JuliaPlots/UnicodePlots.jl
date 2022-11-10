@@ -335,7 +335,7 @@ $(indent(examples.lineplot3))
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
-  One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
+  One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 </details>
@@ -499,6 +499,7 @@ $(indent(examples.imageplot1))
 $(indent(examples.surfaceplot1))
 
   Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
+  By default, `surfaceplot` scales heights to adjust aspect the other axes with `zscale=:aspect`.
   To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 $(indent(examples.surfaceplot2))
@@ -644,7 +645,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         dens = panel(densityplot(randn(1_000), randn(1_000)); title="densityplot"),
         hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1); title="heatmap"),
         bar = panel(barplot(["Paris", "New York", "Madrid", "Berlin"], [2.244, 8.406, 3.165, 4.645]); title="barplot"),
-        polar = panel(polarplot(range(0, 2π, length = 20), range(0, 2, length = 20)); title="polarplot"),
+        polar = panel(polarplot(range(0, 2π, length=20), range(0, 2, length = 20)); title="polarplot"),
         box = panel(boxplot(["one", "two"], [collect(1:5), collect(3:6)]); title="boxplot"),
         stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stairs"),
         img = panel(imageplot(testimage("monarch_color_256")); title="imageplot"),
@@ -708,10 +709,9 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       println(io, """
           println("ex n°$i - $k")
           default_size!()
-          _func_$i(rng) = begin
+          plt = begin
         """ * indent(code, 2) * '\n' * """
           end
-          plt = _func_$i(rng)
           display(plt)
           savefig(plt, "$ver/$k.png"; transparent=false, bounding_box=bb, bounding_box_glyph=bb_glyph, pixelsize=32)
           # savefig(plt, "$ver/$k.txt"; color=true)

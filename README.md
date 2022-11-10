@@ -64,7 +64,7 @@ Here is a list of the main high-level functions for common scenarios:
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
 
-  One can adjust the plot `height` and `width` to the current terminal size by using `height = :auto` and/or `width = :auto`.
+  One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 </details>
@@ -357,6 +357,7 @@ Here is a list of the main high-level functions for common scenarios:
   
 
   Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
+  By default, `surfaceplot` scales heights to adjust aspect the other axes with `zscale=:aspect`.
   To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
   ```julia

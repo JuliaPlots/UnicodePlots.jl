@@ -1,19 +1,16 @@
 @testset "zscale" begin
-    sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
+    sombrero(x, y) = 50sinc(√(x^2 + y^2) / π)
 
-    # NOTE: projection precision issues, forcing `azimuth` and `elevation` instead of automatic computation
-    kw = (; azimuth = 45, elevation = 20)
-
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; kw...)
-    test_ref("surfaceplot/sombrero.txt", @show_col(p))
-
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :aspect, kw...)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
     test_ref("surfaceplot/sombrero_aspect.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = h -> h / 2, kw...)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :identity)
+    test_ref("surfaceplot/sombrero_identity.txt", @show_col(p))
+
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = h -> h / 2)
     test_ref("surfaceplot/sombrero_zscale.txt", @show_col(p))
 
-    @test_throws ArgumentError surfaceplot([1 2; 3 4]; zscale = :not_supported, kw...)
+    @test_throws ArgumentError surfaceplot([1 2; 3 4]; zscale = :not_supported)
 end
 
 @testset "single color - no colormap" begin
@@ -40,8 +37,7 @@ end
         -2:2,
         (x, y) -> 15sinc(√(x^2 + y^2) / π),
         colormap = :jet,
-        elevation = 80,
-        zoom = 1.8,
+        elevation = 60,
         lines = true,
         height = 30,
         width = 80,
@@ -61,12 +57,12 @@ end
 
     kw = (; zscale = z -> zc, colormap = :jet, azimuth = -90, elevation = 90)
 
-    z = data[:, :, zc]
+    slice = data[:, :, zc]
 
-    p = surfaceplot(x, y, z; kw...)
+    p = surfaceplot(x, y, slice; kw...)
     test_ref("surfaceplot/slice_scatter.txt", @show_col(p))
 
-    p = surfaceplot(x, y, z; kw..., lines = true)
+    p = surfaceplot(x, y, slice; kw..., lines = true)
     test_ref("surfaceplot/slice_lines.txt", @show_col(p))
 end
 

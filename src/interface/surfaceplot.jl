@@ -4,8 +4,8 @@
 
 Draws a 3D surface plot on a new canvas (masking values using `NaN`s is supported).
 To plot a slice one can pass an anonymous function which maps to a constant height: `zscale = z -> a_constant`.
-Providing `zscale = :aspect` normalizes heights (`z` axis) to the `x` or `y` axes.
-The `x`, `y` and `z` axes of the 3D cartesian frames are mapped respectively to the `:red`, `:green` and `:blue` colors.
+By default, `zscale = :aspect` normalizes heights (`z` axis) to the `x` or `y` axes.
+The `x`, `y` and `z` axes of the 3D cartesian frame are mapped respectively to the `:red`, `:green` and `:blue` colors.
 
 # Usage
 
@@ -58,7 +58,7 @@ function surfaceplot(
     y::AbstractVecOrMat,
     A::Union{Function,AbstractVecOrMat};
     canvas::Type = KEYWORDS.canvas,
-    zscale::Union{Symbol,Function,NTuple{2}} = :identity,
+    zscale::Union{Symbol,Function,NTuple} = KEYWORDS.zscale,
     colormap = KEYWORDS.colormap,
     kw...,
 )
@@ -73,20 +73,20 @@ function surfaceplot(
     ex, ey = map(collect ∘ extrema, (x, y))
     eh = (collect ∘ NaNMath.extrema)(as_float(H))
 
-    if zscale ≡ :identity
-        ez = eh
-        Z = H
-    elseif zscale isa Function
-        ez = zscale.(eh)
-        Z = zscale.(H)
-    elseif (aspect = zscale ≡ :aspect) || zscale isa NTuple{2}
+    if (aspect = zscale ≡ :aspect) || zscale isa NTuple
         mh, Mh = eh
         mz, Mz = ez = if aspect
-            diff(ex) > diff(ey) ? ex : ey
+            only(diff(ex)) > only(diff(ey)) ? ex : ey
         else
             zscale
         end
         Z = @. (H - mh) * ((Mz - mz) / (Mh - mh)) + mz
+    elseif zscale isa Function
+        ez = zscale.(eh)
+        Z = zscale.(H)
+    elseif zscale ≡ :identity
+        ez = eh
+        Z = H
     else
         throw(ArgumentError("zscale=$zscale not understood"))
     end
