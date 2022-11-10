@@ -7,8 +7,8 @@
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; kw...)
     test_ref("surfaceplot/sombrero.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :aspect, kw...)
-    test_ref("surfaceplot/sombrero_aspect.txt", @show_col(p))
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :identity, kw...)
+    test_ref("surfaceplot/sombrero_identity.txt", @show_col(p))
 
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = h -> h / 2, kw...)
     test_ref("surfaceplot/sombrero_zscale.txt", @show_col(p))
