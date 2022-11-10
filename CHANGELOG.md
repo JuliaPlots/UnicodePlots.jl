@@ -4,6 +4,7 @@
 ### Changed
 - Removed labels in `3d` plots by default.
 - Fix default `contourplot` colorbar limits.
+- Change `surfaceplot` default aspect.
 
 ## [3.1] - 2022-09-02
 ### Added
