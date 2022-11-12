@@ -18,21 +18,23 @@
 end
 
 @testset "savefig" begin
+    font_found = UnicodePlots.get_font_face() ≢ nothing  # `PkgEval` can fail
     for p ∈ (
         lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title"),
         barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
     )
-        if (face = UnicodePlots.get_font_face()) ≢ nothing
-            for bbox ∈ (nothing, :red), tr ∈ (true, false)
-                tmp = tempname() * ".png"
+        for bbox ∈ (nothing, :red), tr ∈ (true, false)
+            tmp = tempname() * ".png"
 
-                savefig(
-                    p,
-                    tmp;
-                    transparent = tr,
-                    bounding_box_glyph = bbox,
-                    bounding_box = bbox,
-                )
+            savefig(
+                p,
+                tmp;
+                transparent = tr,
+                bounding_box_glyph = bbox,
+                bounding_box = bbox,
+            )
+
+            if font_found
                 @test filesize(tmp) > 1_000
 
                 img = FileIO.load(tmp)
