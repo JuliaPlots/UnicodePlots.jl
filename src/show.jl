@@ -346,23 +346,6 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     )
 end
 
-const FT_FONTS = Dict{String,FTFont}()
-
-function get_font_face(font = nothing, fallback = fallback_font())
-    face = nothing
-    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback))
-        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
-            if (ft = findfont(name)) ≢ nothing
-                face = FT_FONTS[name] = ft
-                break
-            end
-        else
-            break
-        end
-    end
-    face
-end
-
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 

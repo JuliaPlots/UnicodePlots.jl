@@ -7,7 +7,7 @@ using ..StaticArrays
 using ..ColorTypes
 using FreeType
 
-export FTFont, findfont, fallback_font, renderstring!
+export get_font_face, renderstring!
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]
@@ -66,19 +66,39 @@ function newface(facename, faceindex::Real = 0, ftlib = FT_LIB)
     face[]
 end
 
+add_mono(fts...) = tuple(map(x -> x * "Mono", fts)..., fts...)
+
 # COV_EXCL_START
-fallback_font(mono::Bool = false) =
+fallback_fonts() =
+# those fallback fonts are likely to fail braille characters
     if Sys.islinux()
-        mono ? "DejaVu Sans Mono" : "DejaVu Sans"
+        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")
     elseif Sys.isbsd()
-        mono ? "Courier New" : "Helvetica"
+        ("Courier New", "Helvetica")
     elseif Sys.iswindows()
-        mono ? "Courier New" : "Arial"
+        ("Courier New", "Arial")
     else
         @warn "Unsupported $(Base.KERNEL)"
-        mono ? "Courier" : "Helvetica"
-    end
+        ("Courier", "Helvetica")
+    end::Tuple
 # COV_EXCL_STOP
+
+const FT_FONTS = Dict{String,FTFont}()
+
+function get_font_face(font = nothing, fallback = fallback_fonts())
+    face = nothing
+    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
+        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
+            if (ft = find_font(name)) ≢ nothing
+                face = FT_FONTS[name] = ft
+                break  # found new font, cache and return it
+            end
+        else
+            break  # found in cache
+        end
+    end
+    face
+end
 
 """
 Match a font using the user-specified search string. Each part of the search string
@@ -135,7 +155,7 @@ function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
     family_score, style_score, is_regular_style, fontlength_penalty  # COV_EXCL_LINE
 end
 
-function findfont(searchstring::String; additional_fonts::String = "")
+function find_font(searchstring::String; additional_fonts::String = "")
     font_folders = copy(VALID_FONTPATHS)
     isempty(additional_fonts) || pushfirst!(font_folders, additional_fonts)
 

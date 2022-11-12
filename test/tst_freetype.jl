@@ -8,7 +8,7 @@ push!(FR.VALID_FONTPATHS, joinpath(@__DIR__, "fonts"))
     @test FR.ft_init()
 end
 
-face = FR.findfont("hack")  # must occur after `ft_init` and `ft_done` !
+face = FR.find_font("hack")  # must occur after `ft_init` and `ft_done` !
 
 @testset "basics" begin
     @test face ≢ nothing
@@ -198,7 +198,7 @@ end
 end
 
 @testset "misc" begin
-    @test UnicodePlots.fallback_font() isa String
+    @test FR.fallback_fonts() isa Tuple
 end
 
 pop!(FR.VALID_FONTPATHS)
