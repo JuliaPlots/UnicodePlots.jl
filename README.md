@@ -388,8 +388,9 @@ Here is a list of the main high-level functions for common scenarios:
 
 ## Documentation
 
+##### Installation
 <details>
-  <summary><a name=installation></a><b>Installation</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   To install UnicodePlots, start up `Julia` and type the following code snippet into the `REPL` (makes use of the native `Julia` package manager `Pkg`):
 ```julia
@@ -400,16 +401,18 @@ julia> Pkg.add("UnicodePlots")
 
 </details>
 
+##### Saving figures
 <details>
-  <summary><a name=saving-figures></a><b>Saving figures</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>
 
+##### Color mode
 <details>
-  <summary><a name=color-mode></a><b>Color mode</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   When the `COLORTERM` environment variable is set to either `24bit` or `truecolor`, `UnicodePlots` will use [24bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) as opposed to [8bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) or even [4bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) for named colors.
 
@@ -420,8 +423,9 @@ julia> Pkg.add("UnicodePlots")
   The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
 </details>
 
+##### 3D plots
 <details>
-  <summary><a name=3d-plots></a><b>3D plots</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
 
@@ -434,8 +438,9 @@ julia> Pkg.add("UnicodePlots")
   For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using `default_size!(width=60)` for all future plots).
 </details>
 
+##### Layout
 <details>
-  <summary><a name=layout></a><b>Layout</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
@@ -458,8 +463,9 @@ julia> Pkg.add("UnicodePlots")
   ```
 </details>
 
+##### Know Issues
 <details>
-  <summary><a name=know-issues></a><b>Know Issues</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border versus canvas).
 
@@ -472,8 +478,9 @@ julia> Pkg.add("UnicodePlots")
   You can pass the experimental keyword `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio.
 </details>
 
+##### Methods (API)
 <details>
-  <summary><a name=methods-(api)></a><b>Methods (API)</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
 Non-exhaustive methods description:
 
@@ -526,8 +533,9 @@ The method `label!` is responsible for the setting all the textual decorations o
 
 </details>
 
+##### Keywords description (API)
 <details>
-  <summary><a name=keywords-description-(api)></a><b>Keywords description (API)</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   All plots support the set (or a subset) of the following named parameters:
   
@@ -619,8 +627,9 @@ The method `label!` is responsible for the setting all the textual decorations o
   
 </details>
 
+##### Low-level Interface
 <details>
-  <summary><a name=low-level-interface></a><b>Low-level Interface</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically, it uses Unicode characters to represent pixel.
   
@@ -678,8 +687,9 @@ The method `label!` is responsible for the setting all the textual decorations o
   
 </details>
 
+##### Developer notes
 <details>
-  <summary><a name=developer-notes></a><b>Developer notes</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]` or `buf[y, x]`.
   Common users of UnicodePlots don't need to be aware of this axis difference if sticking to public interface.
@@ -710,8 +720,9 @@ The method `label!` is responsible for the setting all the textual decorations o
   
 </details>
 
+##### Documentation update
 <details>
-  <summary><a name=documentation-update></a><b>Documentation update</b></summary><br>
+  <summary></a><b>...</b></summary><br>
 
   The following snippet:
   ```bash

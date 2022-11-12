@@ -184,7 +184,8 @@ main() = begin
   )
 
   anchor(name) = replace(lowercase(name), ' ' => '-')
-  summary(name) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary><br>"  # named anchor + formatting
+  summary(name::AbstractString) = "<summary><a name=$(anchor(name))></a><b>$(name)</b></summary><br>"  # named anchor + formatting
+  summary(::Nothing) = "<summary></a><b>...</b></summary><br>"  # named anchor + formatting
 
   methods = plain_md_par("""
 Non-exhaustive methods description:
@@ -518,22 +519,25 @@ $(indent(examples.isosurface))
 
 ## Documentation
 
+##### Installation
 <details>
-  $(summary("Installation"))
+  $(summary(nothing))
 
   $(installation)
 </details>
 
+##### Saving figures
 <details>
-  $(summary("Saving figures"))
+  $(summary(nothing))
 
   Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>
 
+##### Color mode
 <details>
-  $(summary("Color mode"))
+  $(summary(nothing))
 
   When the `COLORTERM` environment variable is set to either `24bit` or `truecolor`, `UnicodePlots` will use [24bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#24-bit) as opposed to [8bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) or even [4bit colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit) for named colors.
 
@@ -544,8 +548,9 @@ $(indent(examples.isosurface))
   The default color cycle can be changed to bright (high intensity) colors using `UnicodePlots.brightcolors!()` instead of the default `UnicodePlots.faintcolors!()`.
 </details>
 
+##### 3D plots
 <details>
-  $(summary("3D plots"))
+  $(summary(nothing))
 
   3d plots use a so-called "Model-View-Projection" transformation matrix `MVP` on input data to project 3D plots to a 2D screen.
 
@@ -558,8 +563,9 @@ $(indent(examples.isosurface))
   For enhanced resolution, use a wider and/or taller `Plot` (this can be achieved using `default_size!(width=60)` for all future plots).
 </details>
 
+##### Layout
 <details>
-  $(summary("Layout"))
+  $(summary(nothing))
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
@@ -582,8 +588,9 @@ $(indent(examples.isosurface))
   ```
 </details>
 
+##### Know Issues
 <details>
-  $(summary("Know Issues"))
+  $(summary(nothing))
 
   Using a non `true monospace font` can lead to visual problems on a `BrailleCanvas` (border versus canvas).
 
@@ -596,26 +603,30 @@ $(indent(examples.isosurface))
   You can pass the experimental keyword `fix_ar=true` to `spy` or `heatmap` in order to recover a unit aspect ratio.
 </details>
 
+##### Methods (API)
 <details>
-  $(summary("Methods (API)"))
+  $(summary(nothing))
 
 $(methods)
 </details>
 
+##### Keywords description (API)
 <details>
-  $(summary("Keywords description (API)"))
+  $(summary(nothing))
 
 $(indent(kw_description))
 </details>
 
+##### Low-level Interface
 <details>
-  $(summary("Low-level Interface"))
+  $(summary(nothing))
 
 $(indent(low_level_interface))
 </details>
 
+##### Developer notes
 <details>
-  $(summary("Developer notes"))
+  $(summary(nothing))
 
   Because Julia uses column-major indexing order for an array type, and because displaying data on a terminal is row based, we need an internal buffer compatible with efficient columns based iteration. We solve this by using the transpose of a (`width`, `height`) array for indexing into an internal buffer like `buf[row, col]` or `buf[y, x]`.
   Common users of UnicodePlots don't need to be aware of this axis difference if sticking to public interface.
@@ -623,8 +634,9 @@ $(indent(low_level_interface))
 $(indent(examples.buffer_convention))
 </details>
 
+##### Documentation update
 <details>
-  $(summary("Documentation update"))
+  $(summary(nothing))
 
 $(indent(doc_update))
 </details>
