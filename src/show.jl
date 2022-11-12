@@ -486,9 +486,12 @@ function png_image(
         push!(lgcols[r], gcol)
     end
 
-    # render image
-    face = get_font_face(font)
+    if (face = get_font_face(font)) ≡ nothing
+        @warn "font=$font has not been found, or missing fallback font, no `png` image has been generated."
+        return
+    end
 
+    # render image
     kr = ASPECT_RATIO[]
     kc = kr / 2
 
