@@ -470,7 +470,7 @@ function png_image(
     end
 
     if (face = get_font_face(font)) ≡ nothing
-        @warn "font=$font has not been found, or missing fallback font, no `png` image has been generated."
+        @warn "font=$font has not been found, or missing fallback font: no `png` image has been generated."
         return
     end
 
@@ -528,7 +528,7 @@ see help?> UnicodePlots.png_image
 
 ```julia-repl
 julia> savefig(lineplot([0, 1]), "foo.txt")
-julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32)
+julia> savefig(lineplot([0, 1]), "foo.png"; font = "JuliaMono", pixelsize = 32, transparent = false)
 ```
 """
 function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
@@ -538,13 +538,13 @@ function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
             show(IOContext(io, :color => color), p)
         end
     elseif ext == ".png"
-        FileIO.save(filename, png_image(p; kw...))
+        # `png_image` can fail if fonts are not found: a warning has already been
+        # thrown there, so just bail out at this stage
+        (img = png_image(p; kw...)) ≢ nothing && FileIO.save(filename, img)
     else
-        throw(
-            ArgumentError(
-                "extension \"$ext\" is unsupported: `savefig` only supports writing to `txt` or `png` files",
-            ),
-        )
+        "extension \"$ext\" is unsupported: `savefig` only supports writing to `txt` or `png` files" |>
+        ArgumentError |>
+        throw
     end
     nothing
 end
