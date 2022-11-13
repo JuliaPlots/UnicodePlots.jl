@@ -591,7 +591,7 @@ $(indent(examples.isosurface))
   ```
 </details>
 
-##### Know Issues
+##### Known issues
 <details>
   $(summary(nothing))
 
@@ -620,7 +620,7 @@ $(methods)
 $(indent(kw_description))
 </details>
 
-##### Low-level Interface
+##### Low-level interface
 <details>
   $(summary(nothing))
 
