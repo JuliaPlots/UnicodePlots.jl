@@ -167,10 +167,10 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     end
 
     # offset where the plot (including border) begins
-    plot_offset = max_len_l + p.margin + p.padding
+    plot_offset = max_len_l + p.margin[] + p.padding[]
 
     # padding-string from left to border
-    plot_padding = 🗷^p.padding
+    plot_padding = 🗷^p.padding[]
 
     cbar_pad = if p.cmap.bar
         min_max_z_str =
@@ -227,7 +227,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     # plot all rows
     for row ∈ 1:nr
         # print left annotations
-        print_nocol(io, 🗷^p.margin)
+        print_nocol(io, 🗷^p.margin[])
         if p.labels
             # Current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")

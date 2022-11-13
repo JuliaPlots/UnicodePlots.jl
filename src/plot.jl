@@ -53,8 +53,8 @@ struct Plot{T<:GraphicsArea,E,F}
     xlabel::RefValue{String}
     ylabel::RefValue{String}
     zlabel::RefValue{String}
-    margin::Int
-    padding::Int
+    margin::RefValue{Int}
+    padding::RefValue{Int}
     border::Symbol
     compact::Bool
     labels::Bool
@@ -98,8 +98,8 @@ function Plot(
         Ref(string(xlabel)),
         Ref(string(ylabel)),
         Ref(string(zlabel)),
-        margin,
-        padding,
+        Ref(Int(margin)),
+        Ref(Int(padding)),
         border,
         compact,
         labels && graphics.visible,
