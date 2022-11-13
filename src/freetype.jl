@@ -7,7 +7,7 @@ using ..StaticArrays
 using ..ColorTypes
 using FreeType
 
-export get_font_face, renderstring!
+export get_font_face, render_string!
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]
@@ -215,8 +215,7 @@ FontExtent(func::Function, ext::FontExtent) = FontExtent(
 )
 
 function set_pixelsize(face::FTFont, size::Integer)
-    err = FT_Set_Pixel_Sizes(face, size, size)
-    check_error(err, "Couldn't set pixelsize")
+    check_error(FT_Set_Pixel_Sizes(face, size, size), "Couldn't set pixelsize")
     size
 end
 
@@ -240,7 +239,7 @@ function load_glyph(face::FTFont, glyph)
     check_error(err, "Could not load glyph $(repr(glyph)) from $face to render.")
 end
 
-function loadglyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
+function load_glyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     set_pix && set_pixelsize(face, pixelsize)
     load_glyph(face, glyph)
     gl = unsafe_load(ft_property(face, :glyph))
@@ -248,7 +247,7 @@ function loadglyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     gl
 end
 
-function glyphbitmap(bitmap::FT_Bitmap)
+function glyph_bitmap(bitmap::FT_Bitmap)
     @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
     bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
     row = bitmap.buffer
@@ -260,19 +259,19 @@ function glyphbitmap(bitmap::FT_Bitmap)
     bmp
 end
 
-renderface(face::FTFont, glyph, pixelsize::Integer; kw...) =
-    let gl = loadglyph(face, glyph, pixelsize; kw...)
-        glyphbitmap(gl.bitmap), FontExtent(gl.metrics)
+render_face(face::FTFont, glyph, pixelsize::Integer; kw...) =
+    let gl = load_glyph(face, glyph, pixelsize; kw...)
+        glyph_bitmap(gl.bitmap), FontExtent(gl.metrics)
     end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
-    FontExtent(loadglyph(face, glyph, pixelsize).metrics)
+    FontExtent(load_glyph(face, glyph, pixelsize).metrics)
 
 one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
     T <: Integer ? typemax(T) : oneunit(T)
 
 """
-    renderstring!(img::AbstractMatrix, str::String, face, pixelsize, y0, x0;
+    render_string!(img::AbstractMatrix, str::String, face, pixelsize, y0, x0;
     fcolor=one_or_typemax(T), bcolor=zero(T), halign=:hleft, valign=:vbaseline) -> Matrix
 Render `str` into `img` using the font `face` of size `pixelsize` at coordinates `y0,x0`.
 Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
@@ -288,7 +287,7 @@ Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 * `gstr`: background string or array of chars (for background sizing)
 * `incx`: extra x spacing
 """
-function renderstring!(
+function render_string!(
     img::AbstractMatrix{T},
     fstr::Union{AbstractVector{Char},String},
     face::FTFont,
@@ -319,7 +318,7 @@ function renderstring!(
 
     y_min = y_max = sum_adv_x = 0  # y_min and y_max are w.r.t the baseline
     for (i, char) in enumerate(fstr)
-        bitmap, metricf = renderface(face, char, pixelsize; set_pix = false)
+        bitmap, metricf = render_face(face, char, pixelsize; set_pix = false)
         metric = FontExtent(x -> round.(Int, x), metricf)
         bitmaps[i] = bitmap
         metrics[i] = metric
