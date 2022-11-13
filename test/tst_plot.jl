@@ -183,3 +183,13 @@ end
         annotate!(p, 0, 0, "Origin"; halign = h, valign = v)
     end
 end
+
+@testset "mutability" begin
+    pl = lineplot(1:2)
+    pl.margin[] = pl.padding[] = 0
+    pl.title[] = "foo"
+    pl.xlabel[] = "x"
+    pl.ylabel[] = "y"
+    pl.zlabel[] = "z"
+    @test show(devnull, pl) == (20, 45)
+end
