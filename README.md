@@ -466,7 +466,7 @@ julia> Pkg.add("UnicodePlots")
   ```
 </details>
 
-##### Know Issues
+##### Known issues
 <details>
   <summary></a><b>...</b></summary><br>
 
@@ -630,7 +630,7 @@ The method `label!` is responsible for the setting all the textual decorations o
   
 </details>
 
-##### Low-level Interface
+##### Low-level interface
 <details>
   <summary></a><b>...</b></summary><br>
 
