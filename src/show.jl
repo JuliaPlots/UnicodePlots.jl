@@ -490,7 +490,7 @@ function png_image(
     for (r, (fchars, gchars, fcols, gcols)) in
         enumerate(zip(lfchars, lgchars, lfcols, lgcols))
         y = ceil(Int, y0 + (kr * pixelsize * row_fact) * (r - 1))
-        incy = renderstring!(
+        incy = render_string!(
             img,
             fchars,
             face,
