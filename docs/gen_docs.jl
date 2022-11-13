@@ -572,7 +572,10 @@ $(indent(examples.isosurface))
   For a more complex layout, use the [`grid`](https://fedeclaudi.github.io/Term.jl/dev/layout/grid) function from [`Term`](https://github.com/FedeClaudi/Term.jl):
   ```julia
   using UnicodePlots, Term
-  panel(p; kw...) = Panel(string(p; color=true); style="hidden", fit=true, kw...)
+  panel(p; kw...) = begin
+    p.margin[] = p.padding[] = 0  # make plots more compact
+    Panel(string(p; color=true); style="hidden", fit=true, kw...)
+  end
 
   (
     panel(lineplot(1:2)) *
