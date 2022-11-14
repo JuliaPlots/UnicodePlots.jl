@@ -20,6 +20,18 @@
     @test UnicodePlots.plotting_range_narrow(0.1, 2.0) ≡ (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 2) ≡ (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 5) ≡ (0.0, 5.0)
+
+    @test UnicodePlots.floor_base(15.0, 10.0) ≈ 10
+    @test UnicodePlots.ceil_base(15.0, 10.0) ≈ 10^2
+    @test UnicodePlots.floor_base(4.2, 2.0) ≈ 2^2
+    @test UnicodePlots.ceil_base(4.2, 2.0) ≈ 2^3
+    @test UnicodePlots.floor_base(1.5 * ℯ, ℯ) ≈ ℯ
+    @test UnicodePlots.ceil_base(1.5 * ℯ, ℯ) ≈ ℯ^2
+end
+
+@testset "unicode format" begin
+    @test UnicodePlots.unicode_format("1.0e-17") == "1e⁻¹⁷"
+    @test UnicodePlots.unicode_format("2.2e-9") == "2.2e⁻⁹"
 end
 
 @testset "limits" begin

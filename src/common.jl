@@ -326,6 +326,12 @@ else
     -round(-x, digits = ceil_neg_log10(m) + 1)
 end)
 
+floor_base(x, b) = round_base(x, b, RoundDown)
+ceil_base(x, b) = round_base(x, b, RoundUp)
+
+round_base(x::T, b, ::RoundingMode{:Down}) where {T} = T(b^floor(log(b, x)))
+round_base(x::T, b, ::RoundingMode{:Up}) where {T} = T(b^ceil(log(b, x)))
+
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
     show(io, unit(x))
@@ -341,6 +347,15 @@ number_unit(x::Number, args...) = x, nothing
 unit_label(label::AbstractString, unit::AbstractString) =
     (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
+
+function unicode_format(s::AbstractString)
+    parts = split(s, 'e')  # e.g. 1.0e-17 => 1e⁻¹⁷
+    if length(parts) == 2
+        left, right = parts
+        s = replace(left, r"\.0$" => "") * 'e' * superscript(right)
+    end
+    s
+end
 
 function superscript(s::AbstractString)
     v = collect(s)
