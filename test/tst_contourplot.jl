@@ -1,3 +1,18 @@
+@testset "padding" begin
+    x = y = -1:0.1:1
+    for padding ∈ 0:3
+        p = contourplot(
+            x,
+            y,
+            (x, y) -> 1e4 * √(x^2 + y^2);
+            labels = false,
+            margin = 0,
+            padding,
+        )
+        test_ref("contourplot/padding_$padding.txt", @show_col(p))
+    end
+end
+
 gaussian_2d(x = -3:0.01:3, y = -7:0.01:3; x₀ = 0, y₀ = -2, σx = 1, σy = 2) = begin
     g = (x, y) -> exp(-((x - x₀) / 2σx)^2 - ((y - y₀) / 2σy)^2)
     x, y, g.(x', y)

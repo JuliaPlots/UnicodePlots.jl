@@ -124,7 +124,8 @@ function __init__()
         faintcolors!()
     end
     Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
-        imageplot(img::AbstractArray{<:Colorant}; kw...) = Plot(ImageGraphics(img); kw...)
+        imageplot(img::AbstractArray{<:Colorant}; kw...) =
+            Plot(ImageGraphics(img); border = :corners, kw...)
     end
     nothing
 end

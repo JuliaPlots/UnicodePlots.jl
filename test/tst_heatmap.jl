@@ -3,7 +3,7 @@
     for i ∈ 1:minimum(T_SZ)
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
-    p = @hinf heatmap(collect(1:30) * collect(1:30)', fix_ar = true)
+    p = @hinf heatmap(collect(1:30) * collect(1:30)'; fix_ar = true)
     test_ref("heatmap/fix_aspect_ratio_30x30.txt", @show_col(p, :displaysize => T_SZ))
 end
 
@@ -36,7 +36,7 @@ end
         )
     end
 
-    p = @hinf heatmap(x, colormap = reverse(UnicodePlots.ColorSchemes.jet1.colors))
+    p = @hinf heatmap(x; colormap = reverse(UnicodePlots.ColorSchemes.jet1.colors))
     test_ref(
         "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_reverse_jet.txt",
         @show_col(p, :displaysize => T_SZ)
@@ -63,7 +63,7 @@ end
 end
 
 @testset "array display convention" begin
-    p = @hinf heatmap(collect(1:20) * collect(1:20)', array = true, fix_ar = true)
+    p = @hinf heatmap(collect(1:20) * collect(1:20)'; array = true, fix_ar = true)
     test_ref("heatmap/array_convention.txt", @show_col(p, :displaysize => T_SZ))
 end
 
@@ -94,7 +94,7 @@ end
         (2000, 2000),
     )
         seed!(RNG, 1337)
-        p = @hinf heatmap(randn(RNG, dims))
+        p = @hinf heatmap(randn(RNG, dims); labels = false)
         @test p isa Plot
         test_ref(
             "heatmap/default_$(dims[1])x$(dims[2]).txt",
@@ -134,7 +134,7 @@ end
         (; ylim = (50, 50)),
         (; ylim = (1, 50)),
         (; xlim = (10, 20)),
-        (; xlim = (50, 50)),
+        (; xlim = (50, 60)),
         (; xlim = (1, 50)),
         (; xlim = (10, 20), ylim = (10, 20)),
         (; xlim = (1, 50), ylim = (1, 50)),

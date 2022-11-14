@@ -55,7 +55,7 @@ end
 
     p = barplot(
         [:a, :b, :c, :d, :e],
-        [0, 1, 10, 100, 1000],
+        [0, 1, 10, 100, 1_000],
         title = "Logscale Plot",
         xlabel = "custom label",
         xscale = :log10,
@@ -104,7 +104,7 @@ end
     @test_throws ArgumentError barplot([:a, :b], [-1, 2])
     p = barplot([5, 4, 3, 2, 1], [0, 0, 0, 0, 0])
     test_ref("barplot/edgecase_zeros.txt", @print_col(p))
-    p = barplot([:a, :b, :c, :d], [1, 1, 1, 1000000])
+    p = barplot([:a, :b, :c, :d], [1, 1, 1, 1_000_000])
     test_ref("barplot/edgecase_onelarge.txt", @print_col(p))
     barplot("one", 1)
 end

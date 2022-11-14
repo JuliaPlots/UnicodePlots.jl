@@ -27,8 +27,13 @@ end
 end
 
 @testset "matrix" begin
-    p = surfaceplot(collect(1:10) * collect(0.1:0.1:1)', axes3d = false)
+    A = collect(1:10) * collect(0.1:0.1:1)'
+
+    p = surfaceplot(A, axes3d = false)
     test_ref("surfaceplot/matrix.txt", @show_col(p))
+
+    p = surfaceplot(A, padding = 0, margin = 0, axes3d = false)
+    test_ref("surfaceplot/matrix_compact.txt", @show_col(p))
 end
 
 @testset "color interpolation" begin

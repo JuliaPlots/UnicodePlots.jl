@@ -214,6 +214,8 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
+const DIGITS_SEPARATOR = Ref('_')
+
 colormode() =
     if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
         8
@@ -296,12 +298,24 @@ meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
 
-roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
+roundable(x::Number) = isinteger(x) && (typemin(Int32) ≤ x ≤ typemax(Int32))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-nice_repr(x::Integer, _::Bool = true)::String = string(x)
+function nice_repr(x::Integer, _::Bool = true)::String
+    (sep = DIGITS_SEPARATOR[]) == '\0' && return string(x)
+    xs = collect(reverse(string(abs(x))))
+    n = length(xs)
+    v = sizehint!(Char[], n + 10)
+    for (i, c) ∈ enumerate(xs)
+        push!(v, c)
+        (i < n && mod1(i, 3) == 3) && push!(v, sep)
+    end
+    reverse!(v)
+    (sign(x) ≥ 0 ? "" : "-") * String(v)
+end
 function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
-    str = compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+    xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
+    str = compact_repr(xr)
     if (parts = split(str, 'e')) |> length == 2  # e.g. 1.0e-17 => 1e⁻¹⁷
         left, right = parts
         str = *(
@@ -309,12 +323,16 @@ function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
             'e',
             unicode_exponent ? superscript(right) : right,
         )
+    elseif pseudo_int
+        str = nice_repr(xr)
     end
     str
 end
 
 ceil_neg_log10(x) =
-    roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+    let val = -log10(x)
+        roundable(val) ? ceil(Int, val) : floor(Int, val)
+    end
 
 round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
     ceil(x, digits = ceil_neg_log10(m) + 1)

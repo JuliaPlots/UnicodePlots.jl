@@ -1,20 +1,20 @@
 @testset "show" begin
     io = IOContext(PipeBuffer(), :color => false)
 
-    show(io, scatterplot(1:2, labels = false))
-    @test length.(eachline(io)) |> unique |> length == 1
+    # test padding (NOTE: @check_padidng embedded in @show_col)
+    @show_col scatterplot(1:2, labels = false)
 
-    show(io, scatterplot(1:2, labels = false, title = "scatterplot"))
-    @test length.(eachline(io)) |> unique |> length == 1
+    @show_col scatterplot(1:2, labels = false, title = "scatterplot")
 
-    show(io, scatterplot(1:2, title = "scatterplot", xlabel = "x"))
-    @test length.(eachline(io)) |> unique |> length == 1
+    @show_col scatterplot(1:2, title = "scatterplot", xlabel = "x")
 
-    show(io, scatterplot(1:2, title = "scatterplot", xlabel = "x", compact = true))
-    @test length.(eachline(io)) |> unique |> length == 1
+    @show_col scatterplot(1:2, title = "scatterplot", xlabel = "x", compact = true)
 
-    show(io, heatmap(repeat(collect(0:10)', outer = (11, 1)), title = "heatmap"))
-    @test length.(eachline(io)) |> unique |> length == 1
+    A = repeat(collect(0:10)', outer = (11, 1))
+    # complex right padding, with colorbar and limit labels
+    for zlabel in ("zlab", ""), n = 1:10
+        @show_col heatmap(A; margin = 0, title = "fancy", zlabel, zlim = (1, 10^n))
+    end
 end
 
 @testset "savefig" begin

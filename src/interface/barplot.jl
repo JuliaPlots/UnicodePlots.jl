@@ -45,7 +45,7 @@ julia> barplot(["Paris", "New York", "Madrid"],
    New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406   
      Madrid ┤■■■■■■■■■■■■ 3.165                        
             └                                        ┘ 
-                        population [in mil]
+                        population [in mil]            
 ```
 
 # See also

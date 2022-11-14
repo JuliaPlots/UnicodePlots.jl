@@ -249,6 +249,28 @@ end
     @test UnicodePlots.nice_repr(1.0, true) == "1"
     @test UnicodePlots.nice_repr(10, true) == "10"
     @test UnicodePlots.nice_repr(1 + 0.1eps(), true) == "1"
+
+    @test UnicodePlots.nice_repr(-1_000_000_000) == "-1_000_000_000"
+    @test UnicodePlots.nice_repr(-100_000_000) == "-100_000_000"
+    @test UnicodePlots.nice_repr(-10_000_000) == "-10_000_000"
+    @test UnicodePlots.nice_repr(-1_000_000) == "-1_000_000"
+    @test UnicodePlots.nice_repr(-100_000) == "-100_000"
+    @test UnicodePlots.nice_repr(-10_000) == "-10_000"
+    @test UnicodePlots.nice_repr(-1_000) == "-1_000"
+    @test UnicodePlots.nice_repr(-100) == "-100"
+    @test UnicodePlots.nice_repr(-10) == "-10"
+    @test UnicodePlots.nice_repr(-1) == "-1"
+    @test UnicodePlots.nice_repr(0) == "0"
+    @test UnicodePlots.nice_repr(+1) == "1"
+    @test UnicodePlots.nice_repr(+10) == "10"
+    @test UnicodePlots.nice_repr(+100) == "100"
+    @test UnicodePlots.nice_repr(+1_000) == "1_000"
+    @test UnicodePlots.nice_repr(+10_000) == "10_000"
+    @test UnicodePlots.nice_repr(+100_000) == "100_000"
+    @test UnicodePlots.nice_repr(+1_000_000) == "1_000_000"
+    @test UnicodePlots.nice_repr(+10_000_000) == "10_000_000"
+    @test UnicodePlots.nice_repr(+100_000_000) == "100_000_000"
+    @test UnicodePlots.nice_repr(+1_000_000_000) == "1_000_000_000"
 end
 
 @testset "docs coverage" begin

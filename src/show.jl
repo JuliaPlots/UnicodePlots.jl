@@ -1,52 +1,66 @@
+const WIDTH_CB = 4  # NOTE: 4 = 2border + 2gradient => colorbar width
+
 function print_colorbar_row(
     io::IO,
     print_nocol,
     print_color,
-    c::Canvas,
+    p::Plot,
     row::Integer,
-    cmap::ColorMap,
-    lim_str,
-    plot_padding,
-    zlabel,
-    max_len,
+    nr::Integer,
+    zlab,
+    bc,
+    max_len::Integer,
     blank::AbstractChar,
 )
+    lab = ""
+    cmap = p.cmap
     b = BORDERMAP[cmap.border]
-    bc = BORDER_COLOR[]
-    label = ""
-    if row == 1
-        label = lim_str[2]
-        # print top border and maximum z value
-        print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
-        print_nocol(io, plot_padding)
-        print_color(io, bc, label)
-    elseif row == nrows(c)
-        label = lim_str[1]
-        # print bottom border and minimum z value
-        print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
-        print_nocol(io, plot_padding)
-        print_color(io, bc, label)
+    if (first_r = row == 1) || row == nr
+        sym = first_r ? :t : :b
+        # print border and z value
+        print_color(io, bc, b[Symbol(sym, :l)], b[sym], b[sym], b[Symbol(sym, :r)])
     else
         # print gradient
         print_color(io, bc, b[:l])
-        if cmap.lim[1] == cmap.lim[2]  # if `zmin` and `zmax` are equal, single color
+        if cmap.lim[1] ≈ cmap.lim[2]  # if `zmin` and `zmax` are close, single color
             fgcol = bgcol = cmap.callback(1, 1, 1)
         else  # otherwise, blend from `zmin` to `zmax`
-            n = 2(nrows(c) - 2)
+            n = 2(nr - 2)
             r = row - 2
             fgcol = cmap.callback(n - 2r - 1, 1, n)
             bgcol = cmap.callback(n - 2r, 1, n)
         end
         print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol)
         print_color(io, bc, b[:r])
-        print_nocol(io, plot_padding)
-        # print `zlabel`
-        if row == div(nrows(c), 2) + 1
-            label = zlabel
-            print_nocol(io, label)
-        end
+        row == div(nr, 2) + 1 && (lab = zlab)
     end
-    print_nocol(io, blank^(max_len - length(label)))
+    lpad = isempty(zlab) ? 0 : p.padding[]
+    rpad = max_len - lpad - WIDTH_CB - length(lab)
+    print_nocol(io, blank^lpad * lab * blank^rpad)
+    nothing
+end
+
+function print_colorbar_lim(
+    io::IO,
+    print_nocol,
+    print_color,
+    p::Plot,
+    lab::AbstractString,
+    bc,
+    max_len::Integer,
+    blank::AbstractChar,
+    trail,
+)
+    lpad = p.padding[] + if (len = length(lab)) ≥ WIDTH_CB
+        -(len - WIDTH_CB) ÷ 2  # wide label mode (left shifted)
+    else
+        ((c = get(lab, 1, '_')) == '-' || c == '+') ? 0 : 1  # left colorbar border or sign
+    end
+    lpad = max(0, lpad)
+    rpad = max(0, max_len - (lpad - p.padding[]) - len)
+    print_nocol(io, blank^lpad)
+    print_color(io, bc, lab)
+    print_nocol(io, blank^rpad * trail)
     nothing
 end
 
@@ -95,8 +109,8 @@ function print_labels(
     io::IO,
     print_nocol,
     print_color,
-    mloc::Symbol,
     p::Plot,
+    mloc::Symbol,
     border_length,
     left_pad::AbstractString,
     right_pad::AbstractString,
@@ -143,6 +157,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     # 🗹 = Char(typeof(g) <: BrailleCanvas ? '⠿' : 'o')  # debug
     ############################################################
     postprocess! = preprocess!(io, g)
+    xlab, ylab, zlab = axes_labels = xlabel(p), ylabel(p), zlabel(p)
 
     nr = nrows(g)
     nc = ncols(g)
@@ -153,41 +168,52 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
 
     # get length of largest strings to the left and right
     max_len_l = if p.labels && !isempty(p.labels_left)
-        maximum(map(length ∘ no_ansi_escape, values(p.labels_left)))
+        maximum(length ∘ no_ansi_escape, values(p.labels_left))
     else
         0
     end
     max_len_r = if p.labels && !isempty(p.labels_right)
-        maximum(map(length ∘ no_ansi_escape, values(p.labels_right)))
+        maximum(length ∘ no_ansi_escape, values(p.labels_right))
     else
         0
     end
-    if !p.compact && p.labels && !isempty(ylabel(p))
-        max_len_l += length(ylabel(p)) + 1
+    max_len_a = p.labels ? maximum(length ∘ no_ansi_escape, axes_labels) : 0
+
+    has_labels =
+        p.labels &&
+        (max_len_l > 0 || max_len_r > 0 || max_len_a > 0 || length(p.decorations) > 0)
+    if !p.compact && p.labels && !isempty(ylab)
+        max_len_l += length(ylab) + 1
     end
 
-    # offset where the plot (including border) begins
-    plot_offset = max_len_l + p.margin[] + p.padding[]
-
-    # padding-string from left to border
-    plot_padding = 🗷^p.padding[]
+    plot_offset = max_len_l + p.margin[] + p.padding[]  # offset where the plot (including border) begins
+    border_left_pad = 🗷^plot_offset  # padding-string between labels and border
+    plot_padding = 🗷^p.padding[]  # base padding-string (e.g. left to border)
 
     cbar_pad = if p.cmap.bar
-        min_max_z_str = map(
+        x = p.cmap.lim[2]
+        min_z_str, max_z_str = map(
             x -> nice_repr(roundable(x) ? x : float_round_log10(x), p.unicode_exponent),
             p.cmap.lim,
         )
-        cbar_max_len = maximum(length, (min_max_z_str..., no_ansi_escape(zlabel(p))))
-        plot_padding * 🗹^4 * plot_padding * 🗷^cbar_max_len
+        len_z_lab = length(no_ansi_escape(zlabel(p)))
+        cbar_max_len = max(
+            length(min_z_str),
+            length(max_z_str),
+            WIDTH_CB + (len_z_lab > 0 ? p.padding[] + len_z_lab : 0),
+        )
+        🗷^cbar_max_len
     else
         ""
     end
 
-    # padding-string between labels and border
-    border_left_pad = 🗷^plot_offset
-
     # trailing
-    border_right_pad = 🗷^max_len_r * (p.labels ? plot_padding : "") * cbar_pad
+    border_right_pad = if p.cmap.bar
+        🗷^max_len_r  # colorbar labels can overlap padding
+    else
+        plot_padding * 🗷^max_len_r
+    end
+    border_right_cbar_pad = plot_padding * 🗷^max_len_r * cbar_pad
 
     # plot the title and the top border
     h_ttl, w_ttl = print_title(
@@ -196,7 +222,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         print_color,
         border_left_pad,
         title(p),
-        border_right_pad * '\n',
+        border_right_cbar_pad * '\n',
         🗹;
         p_width = p_width,
         color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
@@ -205,11 +231,11 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         io,
         print_nocol,
         print_color,
-        :t,
         p,
+        :t,
         nc - 2,
         border_left_pad * 🗹,
-        🗹 * border_right_pad * '\n',
+        🗹 * border_right_cbar_pad * '\n',
         🗹,
     )
     g.visible && print_border(
@@ -219,8 +245,19 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         :t,
         nc,
         border_left_pad,
-        border_right_pad * '\n',
+        border_right_pad * (p.cmap.bar ? "" : "\n"),
         bmap,
+    )
+    p.cmap.bar && print_colorbar_lim(
+        io,
+        print_nocol,
+        print_color,
+        p,
+        max_z_str,
+        bc,
+        cbar_max_len,
+        🗷,
+        '\n',
     )
 
     # compute position of ylabel
@@ -230,7 +267,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     for row ∈ 1:nr
         # print left annotations
         print_nocol(io, 🗷^p.margin[])
-        if p.labels
+        if has_labels
             # Current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")
             left_col   = get(p.colors_left, row, bc)
@@ -246,8 +283,8 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             end
             if !p.compact && row == y_lab_row
                 # print ylabel
-                print_color(io, :normal, ylabel(p))
-                print_nocol(io, 🗷^(max_len_l - length(ylabel(p)) - left_len))
+                print_color(io, :normal, ylab)
+                print_nocol(io, 🗷^(max_len_l - length(ylab) - left_len))
             else
                 # print padding to fill ylabel length
                 print_nocol(io, 🗷^(max_len_l - left_len))
@@ -267,35 +304,32 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 # $(offset)C: move cursor to the right by an amount of $offset columns
                 print_nocol(io, "\e[1F\e[$(offset)C")  # COV_EXCL_LINE
             end
-            # print right label and padding
+            # print right border (symmetry with left border and padding)
             print_color(io, bc, bmap[:r])
-        end
-        if p.labels
             print_nocol(io, plot_padding)
+        end
+        if has_labels
             print_color(io, right_col, right_str)
             print_nocol(io, 🗷^(max_len_r - right_len))
         end
-        # print colorbar
-        if p.cmap.bar
-            print_nocol(io, plot_padding)
-            print_colorbar_row(
-                io,
-                print_nocol,
-                print_color,
-                g,
-                row,
-                p.cmap,
-                min_max_z_str,
-                plot_padding,
-                zlabel(p),
-                cbar_max_len,
-                🗷,
-            )
-        end
-        row < nrows(g) && print_nocol(io, '\n')
+        # print a colorbar element
+        p.cmap.bar && print_colorbar_row(
+            io,
+            print_nocol,
+            print_color,
+            p,
+            row,
+            nr,
+            zlab,
+            bc,
+            cbar_max_len,
+            🗷,
+        )
+        row < nr && print_nocol(io, '\n')
     end
-
     postprocess!(g)
+
+    (g.visible || p.cmap.bar || has_labels) && print_nocol(io, '\n')
 
     # draw bottom border
     g.visible && print_border(
@@ -304,22 +338,34 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         print_color,
         :b,
         nc,
-        '\n' * border_left_pad,
+        border_left_pad,
         border_right_pad,
         bmap,
     )
+    p.cmap.bar && print_colorbar_lim(
+        io,
+        print_nocol,
+        print_color,
+        p,
+        min_z_str,
+        bc,
+        cbar_max_len,
+        🗷,
+        "",
+    )
+
     # print bottom labels
     w_lbl = 0
-    if p.labels
+    if has_labels
         h_lbl += print_labels(
             io,
             print_nocol,
             print_color,
-            :b,
             p,
+            :b,
             nc - 2,
             '\n' * border_left_pad * 🗹,
-            🗹 * border_right_pad,
+            🗹 * border_right_cbar_pad,
             🗹,
         )
         if !p.compact
@@ -328,8 +374,8 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 print_nocol,
                 print_color,
                 '\n' * border_left_pad,
-                xlabel(p),
-                border_right_pad,
+                xlab,
+                border_right_cbar_pad,
                 🗹;
                 p_width,
             )
@@ -344,7 +390,11 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     # return the approximate image size
     (
         h_ttl + 1 + nr + 1 + h_lbl,  # +1 for borders
-        max(w_ttl, w_lbl, length(border_left_pad) + p_width + length(border_right_pad)),
+        max(
+            w_ttl,
+            w_lbl,
+            length(border_left_pad) + p_width + length(border_right_cbar_pad),
+        ),
     )
 end
 
