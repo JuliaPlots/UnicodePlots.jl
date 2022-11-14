@@ -71,7 +71,8 @@ function boxplot(
     foreach(i -> addseries!(area, data[i]), 2:length(data))
     plot = Plot(area; border = :corners, pkw...)
 
-    min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
+    min_x_str, mean_x_str, max_x_str =
+        nice_repr.((min_x, (min_x + max_x) / 2, max_x), plot.unicode_exponent)
     label!(plot, :bl, min_x_str, color = BORDER_COLOR[])
     label!(plot, :b, mean_x_str, color = BORDER_COLOR[])
     label!(plot, :br, max_x_str, color = BORDER_COLOR[])
@@ -98,7 +99,8 @@ end
 
     min_x = plot.graphics.min_x[]
     max_x = plot.graphics.max_x[]
-    min_x_str, mean_x_str, max_x_str = nice_repr.((min_x, (min_x + max_x) / 2, max_x))
+    min_x_str, mean_x_str, max_x_str =
+        nice_repr.((min_x, (min_x + max_x) / 2, max_x), plot.unicode_exponent)
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)
     label!(plot, :br, max_x_str)

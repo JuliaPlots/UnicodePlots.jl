@@ -299,9 +299,19 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-nice_repr(x::Integer) = string(x)
-nice_repr(x::AbstractFloat) =
-    compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+nice_repr(x::Integer, _::Bool = true)::String = string(x)
+function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
+    str = compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+    if (parts = split(str, 'e')) |> length == 2  # e.g. 1.0e-17 => 1e⁻¹⁷
+        left, right = parts
+        str = *(
+            replace(left, r"\.0$" => ""),
+            'e',
+            unicode_exponent ? superscript(right) : right,
+        )
+    end
+    str
+end
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
@@ -348,16 +358,7 @@ unit_label(label::AbstractString, unit::AbstractString) =
     (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
-function unicode_format(s::AbstractString)
-    parts = split(s, 'e')  # e.g. 1.0e-17 => 1e⁻¹⁷
-    if length(parts) == 2
-        left, right = parts
-        s = replace(left, r"\.0$" => "") * 'e' * superscript(right)
-    end
-    s
-end
-
-function superscript(s::AbstractString)
+function superscript(s::AbstractString)::String
     v = collect(s)
     for (i, k) ∈ enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)

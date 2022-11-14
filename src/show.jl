@@ -1,6 +1,5 @@
 function print_colorbar_row(
     io::IO,
-    unicode_exponent,
     print_nocol,
     print_color,
     c::Canvas,
@@ -16,13 +15,13 @@ function print_colorbar_row(
     bc = BORDER_COLOR[]
     label = ""
     if row == 1
-        label = unicode_exponent ? unicode_format(lim_str[2]) : lim_str[2]
+        label = lim_str[2]
         # print top border and maximum z value
         print_color(io, bc, b[:tl], b[:t], b[:t], b[:tr])
         print_nocol(io, plot_padding)
         print_color(io, bc, label)
     elseif row == nrows(c)
-        label = unicode_exponent ? unicode_format(lim_str[1]) : lim_str[1]
+        label = lim_str[1]
         # print bottom border and minimum z value
         print_color(io, bc, b[:bl], b[:b], b[:b], b[:br])
         print_nocol(io, plot_padding)
@@ -174,8 +173,10 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     plot_padding = 🗷^p.padding[]
 
     cbar_pad = if p.cmap.bar
-        min_max_z_str =
-            map(x -> nice_repr(roundable(x) ? x : float_round_log10(x)), p.cmap.lim)
+        min_max_z_str = map(
+            x -> nice_repr(roundable(x) ? x : float_round_log10(x), p.unicode_exponent),
+            p.cmap.lim,
+        )
         cbar_max_len = maximum(length, (min_max_z_str..., no_ansi_escape(zlabel(p))))
         plot_padding * 🗹^4 * plot_padding * 🗷^cbar_max_len
     else
@@ -279,7 +280,6 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             print_nocol(io, plot_padding)
             print_colorbar_row(
                 io,
-                p.unicode_exponent,
                 print_nocol,
                 print_color,
                 g,

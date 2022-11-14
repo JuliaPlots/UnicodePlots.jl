@@ -29,11 +29,6 @@
     @test UnicodePlots.ceil_base(1.5 * ℯ, ℯ) ≈ ℯ^2
 end
 
-@testset "unicode format" begin
-    @test UnicodePlots.unicode_format("1.0e-17") == "1e⁻¹⁷"
-    @test UnicodePlots.unicode_format("2.2e-9") == "2.2e⁻⁹"
-end
-
 @testset "limits" begin
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) ≡ (0.1, 2.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) ≡ (0.0, 1.1)
@@ -248,10 +243,12 @@ end
     @test default_size!(width = 64) == (24, 64)
     @test default_size!() == (15, 40)
 
-    @test UnicodePlots.nice_repr(1e20) == "1.0e20"
-    @test UnicodePlots.nice_repr(1.0) == "1"
-    @test UnicodePlots.nice_repr(10) == "10"
-    @test UnicodePlots.nice_repr(1 + 0.1eps()) == "1"
+    @test UnicodePlots.nice_repr(2.1e-9, true) == "2.1e⁻⁹"
+    @test UnicodePlots.nice_repr(1e20, false) == "1e20"
+    @test UnicodePlots.nice_repr(1e20, true) == "1e²⁰"
+    @test UnicodePlots.nice_repr(1.0, true) == "1"
+    @test UnicodePlots.nice_repr(10, true) == "10"
+    @test UnicodePlots.nice_repr(1 + 0.1eps(), true) == "1"
 end
 
 @testset "docs coverage" begin
