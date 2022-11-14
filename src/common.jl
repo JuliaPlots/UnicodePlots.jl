@@ -299,9 +299,19 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-nice_repr(x::Integer) = string(x)
-nice_repr(x::AbstractFloat) =
-    compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+nice_repr(x::Integer, _::Bool = true)::String = string(x)
+function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
+    str = compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+    if (parts = split(str, 'e')) |> length == 2  # e.g. 1.0e-17 => 1e⁻¹⁷
+        left, right = parts
+        str = *(
+            replace(left, r"\.0$" => ""),
+            'e',
+            unicode_exponent ? superscript(right) : right,
+        )
+    end
+    str
+end
 
 ceil_neg_log10(x) =
     roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
@@ -326,6 +336,12 @@ else
     -round(-x, digits = ceil_neg_log10(m) + 1)
 end)
 
+floor_base(x, b) = round_base(x, b, RoundDown)
+ceil_base(x, b) = round_base(x, b, RoundUp)
+
+round_base(x::T, b, ::RoundingMode{:Down}) where {T} = T(b^floor(log(b, x)))
+round_base(x::T, b, ::RoundingMode{:Up}) where {T} = T(b^ceil(log(b, x)))
+
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
     show(io, unit(x))
@@ -342,7 +358,7 @@ unit_label(label::AbstractString, unit::AbstractString) =
     (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
-function superscript(s::AbstractString)
+function superscript(s::AbstractString)::String
     v = collect(s)
     for (i, k) ∈ enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)

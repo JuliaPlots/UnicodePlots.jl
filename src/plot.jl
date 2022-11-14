@@ -55,6 +55,7 @@ struct Plot{T<:GraphicsArea,E,F}
     zlabel::RefValue{String}
     margin::RefValue{Int}
     padding::RefValue{Int}
+    unicode_exponent::Bool
     border::Symbol
     compact::Bool
     labels::Bool
@@ -73,6 +74,7 @@ function Plot(
     xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
     ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
     zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
     border::Symbol = PLOT_KEYWORDS.border,
     compact::Bool = PLOT_KEYWORDS.compact,
     margin::Integer = PLOT_KEYWORDS.margin,
@@ -100,6 +102,7 @@ function Plot(
         Ref(string(zlabel)),
         Ref(Int(margin)),
         Ref(Int(padding)),
+        unicode_exponent,
         border,
         compact,
         labels && graphics.visible,
@@ -155,6 +158,7 @@ function Plot(
     xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
     ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
     zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
     xscale::Union{Symbol,Function} = PLOT_KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = PLOT_KEYWORDS.yscale,
     height::Union{Integer,Nothing,Symbol} = nothing,
@@ -167,7 +171,6 @@ function Plot(
     margin::Integer = PLOT_KEYWORDS.margin,
     padding::Integer = PLOT_KEYWORDS.padding,
     labels::Bool = PLOT_KEYWORDS.labels,
-    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
     colorbar::Bool = PLOT_KEYWORDS.colorbar,
     colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
     colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
@@ -255,10 +258,11 @@ function Plot(
         colorbar,
         colorbar_border,
         colorbar_lim,
+        unicode_exponent,
         projection = mvp,
     )
     if xticks || yticks
-        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My))
+        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My), unicode_exponent)
         if unicode_exponent
             m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
             m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))

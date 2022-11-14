@@ -20,6 +20,13 @@
     @test UnicodePlots.plotting_range_narrow(0.1, 2.0) ≡ (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 2) ≡ (0.0, 2.0)
     @test UnicodePlots.plotting_range_narrow(0, 5) ≡ (0.0, 5.0)
+
+    @test UnicodePlots.floor_base(15.0, 10.0) ≈ 10
+    @test UnicodePlots.ceil_base(15.0, 10.0) ≈ 10^2
+    @test UnicodePlots.floor_base(4.2, 2.0) ≈ 2^2
+    @test UnicodePlots.ceil_base(4.2, 2.0) ≈ 2^3
+    @test UnicodePlots.floor_base(1.5 * ℯ, ℯ) ≈ ℯ
+    @test UnicodePlots.ceil_base(1.5 * ℯ, ℯ) ≈ ℯ^2
 end
 
 @testset "limits" begin
@@ -236,10 +243,12 @@ end
     @test default_size!(width = 64) == (24, 64)
     @test default_size!() == (15, 40)
 
-    @test UnicodePlots.nice_repr(1e20) == "1.0e20"
-    @test UnicodePlots.nice_repr(1.0) == "1"
-    @test UnicodePlots.nice_repr(10) == "10"
-    @test UnicodePlots.nice_repr(1 + 0.1eps()) == "1"
+    @test UnicodePlots.nice_repr(2.1e-9, true) == "2.1e⁻⁹"
+    @test UnicodePlots.nice_repr(1e20, false) == "1e20"
+    @test UnicodePlots.nice_repr(1e20, true) == "1e²⁰"
+    @test UnicodePlots.nice_repr(1.0, true) == "1"
+    @test UnicodePlots.nice_repr(10, true) == "10"
+    @test UnicodePlots.nice_repr(1 + 0.1eps(), true) == "1"
 end
 
 @testset "docs coverage" begin

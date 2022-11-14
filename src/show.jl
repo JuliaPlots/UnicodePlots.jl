@@ -29,9 +29,9 @@ function print_colorbar_row(
     else
         # print gradient
         print_color(io, bc, b[:l])
-        if cmap.lim[1] == cmap.lim[2]  # if min and max are the same, single color
+        if cmap.lim[1] == cmap.lim[2]  # if `zmin` and `zmax` are equal, single color
             fgcol = bgcol = cmap.callback(1, 1, 1)
-        else  # otherwise, blend from min to max
+        else  # otherwise, blend from `zmin` to `zmax`
             n = 2(nrows(c) - 2)
             r = row - 2
             fgcol = cmap.callback(n - 2r - 1, 1, n)
@@ -40,7 +40,7 @@ function print_colorbar_row(
         print_color(io, fgcol, HALF_BLOCK, HALF_BLOCK; bgcol)
         print_color(io, bc, b[:r])
         print_nocol(io, plot_padding)
-        # print z label
+        # print `zlabel`
         if row == div(nrows(c), 2) + 1
             label = zlabel
             print_nocol(io, label)
@@ -63,7 +63,7 @@ function print_title(
 )
     isempty(title) && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
-    pre_pad = blank^(offset > 0 ? offset : 0)
+    pre_pad = blank^max(0, offset)
     print_nocol(io, left_pad, pre_pad)
     print_color(io, color, title)
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
@@ -173,8 +173,10 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     plot_padding = 🗷^p.padding[]
 
     cbar_pad = if p.cmap.bar
-        min_max_z_str =
-            map(x -> nice_repr(roundable(x) ? x : float_round_log10(x)), p.cmap.lim)
+        min_max_z_str = map(
+            x -> nice_repr(roundable(x) ? x : float_round_log10(x), p.unicode_exponent),
+            p.cmap.lim,
+        )
         cbar_max_len = maximum(length, (min_max_z_str..., no_ansi_escape(zlabel(p))))
         plot_padding * 🗹^4 * plot_padding * 🗷^cbar_max_len
     else
