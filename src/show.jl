@@ -522,8 +522,8 @@ function png_image(
     end
 
     if (face = get_font_face(font)) ≡ nothing
-        @warn "font=$font has not been found, or missing fallback font: no `png` image has been generated."
-        return
+        @warn "font=$font has not been found, or missing fallback font: no `png` image has been generated."  # COV_EXCL_LINE
+        return  # COV_EXCL_LINE
     end
 
     # render image
