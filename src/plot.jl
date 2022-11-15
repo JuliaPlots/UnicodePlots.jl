@@ -264,8 +264,8 @@ function Plot(
     if xticks || yticks
         m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My), unicode_exponent)
         if unicode_exponent
-            m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
-            m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
+            m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
+            m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
         end
         bc = BORDER_COLOR[]
         if xticks

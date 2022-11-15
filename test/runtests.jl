@@ -24,7 +24,7 @@ using Unitful
 include("fixes.jl")
 
 const TO = TimerOutput()
-const RNG = StableRNG(1337)
+const RNG = StableRNG(1_337)
 const T_SZ = (24, 80)  # default terminal size on unix
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
@@ -107,32 +107,32 @@ end
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
 
 withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
-    @timeit_include "tst_freetype.jl"
-    @timeit_include "tst_depwarn.jl"
-    @timeit_include "tst_issues.jl"
-    @timeit_include "tst_io.jl"
-    @timeit_include "tst_common.jl"
-    @timeit_include "tst_graphics.jl"
-    @timeit_include "tst_canvas.jl"
-    @timeit_include "tst_plot.jl"
-    @timeit_include "tst_scatterplot.jl"
-    @timeit_include "tst_lineplot.jl"
-    @timeit_include "tst_densityplot.jl"
-    @timeit_include "tst_histogram.jl"
-    @timeit_include "tst_barplot.jl"
-    @timeit_include "tst_spy.jl"
-    @timeit_include "tst_boxplot.jl"
-    @timeit_include "tst_contourplot.jl"
-    @timeit_include "tst_polarplot.jl"
-    @timeit_include "tst_heatmap.jl"
-    @timeit_include "tst_volume.jl"
-    @timeit_include "tst_surfaceplot.jl"
-    @timeit_include "tst_isosurface.jl"
-    @timeit_include "tst_imageplot.jl"
+    # @timeit_include "tst_freetype.jl"
+    # @timeit_include "tst_depwarn.jl"
+    # @timeit_include "tst_issues.jl"
+    # @timeit_include "tst_io.jl"
+    # @timeit_include "tst_common.jl"
+    # @timeit_include "tst_graphics.jl"
+    # @timeit_include "tst_canvas.jl"
+    # @timeit_include "tst_plot.jl"
+    # @timeit_include "tst_scatterplot.jl"
+    # @timeit_include "tst_lineplot.jl"
+    # @timeit_include "tst_densityplot.jl"
+    # @timeit_include "tst_histogram.jl"
+    # @timeit_include "tst_barplot.jl"
+    # @timeit_include "tst_spy.jl"
+    # @timeit_include "tst_boxplot.jl"
+    # @timeit_include "tst_contourplot.jl"
+    # @timeit_include "tst_polarplot.jl"
+    # @timeit_include "tst_heatmap.jl"
+    # @timeit_include "tst_volume.jl"
+    # @timeit_include "tst_surfaceplot.jl"
+    # @timeit_include "tst_isosurface.jl"
+    # @timeit_include "tst_imageplot.jl"
     @timeit_include "tst_quality.jl"
 end
 
-# ~ 166s & 15.0GiB on 1.7
+# ~ 190s & 13.0GiB on 1.8
 print_timer(TO; compact = true, sortby = :firstexec)
 
 println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

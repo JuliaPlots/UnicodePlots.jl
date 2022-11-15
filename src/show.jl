@@ -178,13 +178,13 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         0
     end
     max_len_a = p.labels ? maximum(length ∘ no_ansi_escape, axes_labels) : 0
-
-    has_labels =
-        p.labels &&
-        (max_len_l > 0 || max_len_r > 0 || max_len_a > 0 || length(p.decorations) > 0)
     if !p.compact && p.labels && !isempty(ylab)
         max_len_l += length(ylab) + 1
     end
+
+    has_labels =
+        max_len_l > 0 || max_len_r > 0 || max_len_a > 0 || length(p.decorations) > 0
+    has_labels &= p.labels
 
     plot_offset = max_len_l + p.margin[] + p.padding[]  # offset where the plot (including border) begins
     border_left_pad = 🗷^plot_offset  # padding-string between labels and border

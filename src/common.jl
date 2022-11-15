@@ -315,6 +315,7 @@ function nice_repr(x::Integer, _::Bool = true)::String
 end
 function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
     xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
+    iszero(xr) && return "0"
     str = compact_repr(xr)
     if (parts = split(str, 'e')) |> length == 2  # e.g. 1.0e-17 => 1e⁻¹⁷
         left, right = parts
@@ -537,12 +538,12 @@ function ansi_color(c::Crayons.ANSIColor)::ColorType
             USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
         end
     else  # 0-255 ansi stored in a UInt32
-        if c.style ≡ Crayons.COLORS_24BIT
-            THRESHOLD + Crayons.to_256_colors(c).r
+        THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
+            Crayons.to_256_colors(c).r
         elseif c.style ≡ Crayons.COLORS_256
-            THRESHOLD + c.r
+            c.r
         elseif c.style ≡ Crayons.COLORS_16
-            THRESHOLD + ansi_4bit_to_8bit(c.r)
+            ansi_4bit_to_8bit(c.r)
         end
     end
     ColorType(col)
@@ -566,10 +567,13 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
 
-multiple_series_defaults(y::AbstractMatrix, kw, start) = (
-    iterable(get(kw, :name, map(i -> "y$i", start:(start + size(y, 2))))),
-    iterable(get(kw, :color, :auto)),
-    iterable(get(kw, :marker, :pixel)),
+multiple_series_defaults(y::AbstractMatrix, kw, start) = map(
+    iterable,
+    (
+        get(kw, :name, map(i -> "y$i", start:(start + size(y, 2)))),
+        get(kw, :color, :auto),
+        get(kw, :marker, :pixel),
+    ),
 )
 
 function colormap_callback(cmap::Symbol)

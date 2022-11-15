@@ -47,7 +47,7 @@ end
 @testset "keyword arguments" begin
     p = barplot(
         [:a, :b, :c, :d, :e],
-        [0, 1, 10, 100, 1000],
+        [0, 1, 10, 100, 1_000],
         title = "Logscale Plot",
         xscale = :log10,
     )

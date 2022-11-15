@@ -1,4 +1,4 @@
-seed!(RNG, 1337)
+seed!(RNG, 1_337)
 x = randn(RNG, 10_000)
 
 @testset "default params" begin

@@ -84,7 +84,7 @@ end
 function preprocess!(::IO, c::BarplotGraphics)
     max_val, i = findmax(c.xscale.(c.bars))
     c.max_val[] = max(max_val, c.maximum)
-    c.max_len[] = length(string(c.bars[i]))
+    c.max_len[] = length(nice_repr(c.bars[i]))
     c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
@@ -102,7 +102,7 @@ function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::In
         print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
         bar_head += 1  # padding, we printed one more char
     end
-    bar_lbl = string(bar)
+    bar_lbl = nice_repr(bar)
     len = if bar ≥ 0
         print_color(io, nothing, ' ', bar_lbl)
         length(bar_lbl)

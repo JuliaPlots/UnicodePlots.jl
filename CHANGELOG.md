@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3] - 2022-11-15
+### Changed
+- Group digits on integer values (thousands) for readability (separator can be configured).
+- Consistent left and right padding (avoids duplicate label & cbar paddings, symmetry).
+- Colorbar limits labels moved to top and bottom, to save right space.
+- Change `imageplot` borders to default `:corners`.
+- Simplify floating point repr.
+
 ## [3.2] - 2022-11-04
 ### Changed
 - Removed labels in `3d` plots by default.
@@ -31,8 +39,8 @@
 - `spy` default title.
 
 ### Removed
-- All marked deprecated functions, keywords and tests.
-- All hard-coded colormap tables (replaced by `ColorSchemes`).
+- Marked deprecated functions, keywords and tests.
+- Hard-coded colormap tables (replaced by `ColorSchemes`).
 - Functor `scale` support.
 
 ## [2.12] - 2022-05-24

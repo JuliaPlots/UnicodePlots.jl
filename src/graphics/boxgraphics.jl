@@ -85,11 +85,10 @@ transform(c::BoxplotGraphics, value) = clamp(
 
 function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
     0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    idx = ceil(Int, row / 3)
-    series = c.data[idx]
+    I = ceil(Int, row / 3)
+    series = c.data[I]
 
-    series_row = (row - 1) % 3 + 1
-
+    series_row = mod1(row, 3)
     min_char = ('╷', '├', '╵')[series_row]
     line_char = (' ', '─', ' ')[series_row]
     left_box_char = ('┌', '┤', '└')[series_row]
@@ -100,7 +99,7 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
 
     chars = fill(' ', c.char_width)
 
-    # Draw shapes first - this is most important,
+    # draw shapes first - this is most important,
     # so they'll always be drawn even if there's not enough space
     chars[transform(c, series.minimum)] = min_char
     chars[transform(c, series.lower_quartile)] = left_box_char
@@ -122,6 +121,6 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
         chars[i] = line_char
     end
 
-    print_color(io, c.colors[idx], String(chars))
+    print_color(io, c.colors[I], String(chars))
     nothing
 end

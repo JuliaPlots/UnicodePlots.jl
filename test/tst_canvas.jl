@@ -42,7 +42,7 @@ end
 end
 
 @testset "print and show" begin
-    seed!(RNG, 1337)
+    seed!(RNG, 1_337)
     x1, y1 = rand(RNG, 20), rand(RNG, 20)
     x2, y2 = rand(RNG, 50), rand(RNG, 50)
     for (T, str) ∈ (

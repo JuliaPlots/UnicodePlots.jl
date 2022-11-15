@@ -1,5 +1,5 @@
 @testset "aspect ratio" begin
-    seed!(RNG, 1337)
+    seed!(RNG, 1_337)
     for i ∈ 1:minimum(T_SZ)
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
@@ -42,7 +42,7 @@ end
         @show_col(p, :displaysize => T_SZ)
     )
 
-    seed!(RNG, 1337)
+    seed!(RNG, 1_337)
     rgb = rand(RNG, 20, 20, 3)
     img = RGB.(rgb[:, :, 1], rgb[:, :, 2], rgb[:, :, 3])
     p = @hinf heatmap(img)  # RGB Matrix
@@ -50,7 +50,7 @@ end
 end
 
 @testset "squareness (aspect ratio)" begin
-    seed!(RNG, 1337)
+    seed!(RNG, 1_337)
     for m ∈ 1:minimum(T_SZ)
         p = @hinf heatmap(randn(RNG, m, m))
         @test size(p.graphics.grid) == (m, m)
@@ -89,11 +89,11 @@ end
         (10, 10),
         (10, 15),
         (15, 10),
-        (2000, 200),
-        (200, 2000),
-        (2000, 2000),
+        (2_000, 200),
+        (200, 2_000),
+        (2_000, 2_000),
     )
-        seed!(RNG, 1337)
+        seed!(RNG, 1_337)
         p = @hinf heatmap(randn(RNG, dims); labels = false)
         @test p isa Plot
         test_ref(
@@ -152,7 +152,7 @@ end
 end
 
 @testset "parameters" begin
-    seed!(RNG, 1337)
+    seed!(RNG, 1_337)
     x = randn(RNG, 200, 200)
     for kw ∈ (
         (; colorbar = false),
@@ -167,7 +167,7 @@ end
     end
 
     for sz ∈ ((10, 10), (10, 11))
-        seed!(RNG, 1337)
+        seed!(RNG, 1_337)
         x = randn(RNG, sz...)
         for kw ∈ ((; xfact = 0.1), (; yfact = 1))
             p = @hinf heatmap(x; kw...)
