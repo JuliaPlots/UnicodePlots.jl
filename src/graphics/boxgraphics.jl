@@ -16,13 +16,16 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
 
     function BoxplotGraphics(
         data::AbstractVector{R},
-        char_width::Integer,
-        visible::Bool,
-        color::Union{UserColorType,AbstractVector},
-        min_x::R,
-        max_x::R,
-    ) where {R}
+        char_width::Integer;
+        visible::Bool = KEYWORDS.visible,
+        color::Union{UserColorType,AbstractVector} = :green,
+        min_x::Union{Number,Nothing} = nothing,
+        max_x::Union{Number,Nothing} = nothing,
+    ) where {R<:Number}
         char_width = max(char_width, 10)
+        mi, ma = extrema(data)
+        min_x = R(something(min_x, mi))
+        max_x = R(something(max_x, ma))
         if min_x == max_x
             min_x -= 1
             max_x += 1
@@ -33,11 +36,11 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
             [ansi_color(color)]
         end
         summary = FiveNumberSummary(
-            minimum(data),
+            mi,
             percentile(data, 25),
             percentile(data, 50),
             percentile(data, 75),
-            maximum(data),
+            ma,
         )
         new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
     end
@@ -45,15 +48,6 @@ end
 
 @inline nrows(c::BoxplotGraphics) = 3length(c.data)
 @inline ncols(c::BoxplotGraphics) = c.char_width
-
-BoxplotGraphics(
-    data::AbstractVector{R},
-    char_width::Integer;
-    visible::Bool = KEYWORDS.visible,
-    color::Union{UserColorType,AbstractVector} = :green,
-    min_x::Number = minimum(data),
-    max_x::Number = maximum(data),
-) where {R<:Number} = BoxplotGraphics(data, char_width, visible, color, R(min_x), R(max_x))
 
 function addseries!(
     c::BoxplotGraphics,

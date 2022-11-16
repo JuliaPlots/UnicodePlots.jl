@@ -82,7 +82,7 @@ function preprocess!(::IO, c::BarplotGraphics)
 end
 
 function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Integer)
-    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row")) 
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     val = (bar = c.bars[row]) |> c.xscale
     nsyms = length(c.symbols)
     frac = c.max_val[] > 0 ? max(val, zero(val)) / c.max_val[] : 0.0
