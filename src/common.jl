@@ -510,7 +510,7 @@ end
         max(a, b)
     else
         INVALID_COLOR
-    end
+    end::UInt32
 
 ignored_color(color::Symbol) = color ≡ :normal || color ≡ :default || color ≡ :nothing
 ignored_color(::Nothing) = true
@@ -542,22 +542,22 @@ end
 ansi_color(c::Crayons.ANSIColor) =
     if COLORMODE[] ≡ Crayons.COLORS_24BIT
         if c.style ≡ Crayons.COLORS_24BIT
-            ColorType(r32(c.r) + g32(c.g) + b32(c.b))
+            r32(c.r) + g32(c.g) + b32(c.b)
         elseif c.style ≡ Crayons.COLORS_256
-            ColorType(USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r)
+            USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
         elseif c.style ≡ Crayons.COLORS_16
             c8 = ansi_4bit_to_8bit(c.r)
-            ColorType(USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8)
-        end
+            USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+        end::ColorType
     else  # 0-255 ansi stored in a UInt32
         THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
-            ColorType(Crayons.to_256_colors(c).r)
+            Crayons.to_256_colors(c).r
         elseif c.style ≡ Crayons.COLORS_256
-            ColorType(c.r)
+            c.r
         elseif c.style ≡ Crayons.COLORS_16
-            ColorType(ansi_4bit_to_8bit(c.r))
-        end
-    end
+            ansi_4bit_to_8bit(c.r)
+        end::UInt8
+    end::ColorType
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType =
@@ -567,7 +567,7 @@ complement(color::ColorType)::ColorType =
         r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
     elseif color ≢ INVALID_COLOR
         THRESHOLD + ~UInt8(color - THRESHOLD)
-    end
+    end::ColorType
 
 out_stream_size(out_stream::Nothing) = displaysize()
 out_stream_size(out_stream::IO) = displaysize(out_stream)

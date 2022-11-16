@@ -62,7 +62,7 @@ end
         color
     else
         blend_colors(col, color)
-    end
+    end::ColorType
     nothing
 end
 
@@ -139,6 +139,7 @@ function lines!(
     py, Py = min(py, Py), max(py, Py)
 
     if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb ≢ nothing
+        # color interpolation
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1))
         start_x, start_y = cur_x, cur_y
         iΔ = 1 / √(Δx^2 + Δy^2)
@@ -156,13 +157,14 @@ function lines!(
             )
         end
     else
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+        color = ansi_color(c_or_v1)
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
         for _ ∈ range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
             (cur_x < px || cur_x > Px) && continue
-            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1)
+            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color)
         end
     end
     c
