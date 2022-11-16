@@ -539,27 +539,25 @@ function ansi_color(color::CrayonColorType)::ColorType
     ansi_color(Crayons._parse_color(color))
 end
 
-function ansi_color(c::Crayons.ANSIColor)::ColorType
-    col = if COLORMODE[] ≡ Crayons.COLORS_24BIT
+ansi_color(c::Crayons.ANSIColor) =
+    if COLORMODE[] ≡ Crayons.COLORS_24BIT
         if c.style ≡ Crayons.COLORS_24BIT
-            r32(c.r) + g32(c.g) + b32(c.b)
+            ColorType(r32(c.r) + g32(c.g) + b32(c.b))
         elseif c.style ≡ Crayons.COLORS_256
-            USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
+            ColorType(USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r)
         elseif c.style ≡ Crayons.COLORS_16
             c8 = ansi_4bit_to_8bit(c.r)
-            USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+            ColorType(USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8)
         end
     else  # 0-255 ansi stored in a UInt32
         THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
-            Crayons.to_256_colors(c).r
+            ColorType(Crayons.to_256_colors(c).r)
         elseif c.style ≡ Crayons.COLORS_256
-            c.r
+            ColorType(c.r)
         elseif c.style ≡ Crayons.COLORS_16
-            ansi_4bit_to_8bit(c.r)
+            ColorType(ansi_4bit_to_8bit(c.r))
         end
     end
-    ColorType(col)
-end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType =
