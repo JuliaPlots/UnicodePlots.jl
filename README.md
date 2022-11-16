@@ -612,7 +612,7 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `grid::Bool = true`: draws grid-lines at the origin.
   - `compact::Bool = false`: compact plot labels.
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
-  - `thousands_separator::Char = '_'`: thousands separator character (use `Char(0)` to disable grouping digits).
+  - `thousands_separator::Char = ' '`: thousands separator character (use `Char(0)` to disable grouping digits).
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:ortho(graphic)`, `:persp(ective)`, or `Model-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`).
   - `elevation::Float = 35.26`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
