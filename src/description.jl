@@ -94,6 +94,7 @@ const DESCRIPTION = (
     grid = "draws grid-lines at the origin",
     compact = "compact plot labels",
     unicode_exponent = "use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`",
+    thousands_separator = "thousands separator character (use `Char(0)` to disable grouping digits)",
     projection = "projection for 3D plots (`:ortho(graphic)`, `:persp(ective)`, or `Model-View-Projection` (MVP) matrix)",
     axes3d = "draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`)",
     elevation = "elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`)",
