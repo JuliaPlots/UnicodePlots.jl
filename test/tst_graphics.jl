@@ -38,7 +38,7 @@
 
     @testset "Constructor parameter" begin
         @test_throws MethodError BarplotGraphics(0:2:10)
-        @test_throws MethodError BarplotGraphics(Int[], 20)
+        @test_throws Union{ArgumentError,MethodError} BarplotGraphics(Int[], 20)
         @test_throws ArgumentError BarplotGraphics(0:2:10, 30; symbols = ["--"])  # invalids symbols
         g = BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) ≡ 2

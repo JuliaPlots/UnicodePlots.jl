@@ -193,3 +193,16 @@ end
     pl.zlabel[] = "z"
     @test show(devnull, pl) == (20, 45)
 end
+
+@testset "formatter" begin
+    p = lineplot(1:4, 1:4; xscale = :log10, yscale = :ln, unicode_exponent = false)
+    test_ref("plot/no_unicode_exponent.txt", @show_col(p))
+
+    xlim = ylim = (1_000, 1_000_000)
+
+    p = lineplot(1:1; xlim, ylim, thousands_separator = '\0')
+    test_ref("plot/no_thousands_separator.txt", @show_col(p))
+
+    p = lineplot(1:1; xlim, ylim, thousands_separator = '_')
+    test_ref("plot/underscore_thousands_separator.txt", @show_col(p))
+end
