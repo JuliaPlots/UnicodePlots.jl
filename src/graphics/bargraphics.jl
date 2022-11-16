@@ -12,14 +12,14 @@ struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
 
     function BarplotGraphics(
         bars::AbstractVector{R},
-        char_width::Int,
-        visible::Bool,
-        color::Union{UserColorType,AbstractVector},
-        maximum::Union{Nothing,Number},
-        symbols::AbstractVector{S},
-        formatter::Function,
-        xscale,
-    ) where {R<:Number,S<:Union{AbstractChar,AbstractString}}
+        char_width::Int;
+        symbols::Union{AbstractVector,Tuple} = KEYWORDS.symbols,
+        color::Union{UserColorType,AbstractVector} = :green,
+        maximum::Union{Number,Nothing} = nothing,
+        formatter::Function = default_formatter((;)),
+        visible::Bool = KEYWORDS.visible,
+        xscale = KEYWORDS.xscale,
+    ) where {R<:Number}
         for s ∈ symbols
             length(s) == 1 ||
                 throw(ArgumentError("symbol has to be a single character, got \"$s\""))
@@ -48,17 +48,6 @@ end
 
 @inline nrows(c::BarplotGraphics) = length(c.bars)
 @inline ncols(c::BarplotGraphics) = c.char_width
-
-BarplotGraphics(
-    bars::AbstractVector{<:Number},
-    char_width::Integer,
-    xscale = KEYWORDS.xscale;
-    visible::Bool = KEYWORDS.visible,
-    color::Union{UserColorType,AbstractVector} = :green,
-    maximum::Union{Nothing,Number} = nothing,
-    symbols = KEYWORDS.symbols,
-    formatter = default_formatter((;)),
-) = BarplotGraphics(bars, char_width, visible, color, maximum, collect(symbols), formatter, xscale)
 
 function addrow!(
     c::BarplotGraphics{R},
@@ -93,9 +82,8 @@ function preprocess!(::IO, c::BarplotGraphics)
 end
 
 function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    bar = c.bars[row]
-    val = c.xscale(bar)
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row")) 
+    val = (bar = c.bars[row]) |> c.xscale
     nsyms = length(c.symbols)
     frac = c.max_val[] > 0 ? max(val, zero(val)) / c.max_val[] : 0.0
     max_bar_width = max(c.char_width - 2 - c.max_len[], 1)

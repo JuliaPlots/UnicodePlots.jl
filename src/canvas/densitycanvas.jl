@@ -87,7 +87,7 @@ function preprocess!(::IO, c::DensityCanvas)
 end
 
 function print_row(io::IO, _, print_color, c::DensityCanvas, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     signs = DEN_SIGNS[]
     fact = (length(signs) - 1) / c.max_density[]
     for col ∈ 1:ncols(c)

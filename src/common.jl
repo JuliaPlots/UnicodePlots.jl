@@ -321,7 +321,11 @@ function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
     reverse!(v)
     (sign(x) ≥ 0 ? "" : "-") * String(v)
 end
-function nice_repr(x::AbstractFloat, unicode_exponent::Bool, thousands_separator::Char)::String
+function nice_repr(
+    x::AbstractFloat,
+    unicode_exponent::Bool,
+    thousands_separator::Char,
+)::String
     xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
     iszero(xr) && return "0"
     str = compact_repr(xr)

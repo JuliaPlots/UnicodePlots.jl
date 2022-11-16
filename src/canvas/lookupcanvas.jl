@@ -61,7 +61,7 @@ function pixel!(c::LookupCanvas, pixel_x::Integer, pixel_y::Integer, color::User
 end
 
 function print_row(io::IO, _, print_color, c::LookupCanvas, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     for col ∈ 1:ncols(c)
         print_color(io, c.colors[row, col], lookup_decode(c)[c.grid[row, col] + 1])
     end

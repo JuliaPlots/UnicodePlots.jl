@@ -87,7 +87,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Integer, pixel_y::Integer, color::Use
 end
 
 function print_row(io::IO, _, print_color, c::BrailleCanvas, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     for col ∈ 1:ncols(c)
         print_color(io, c.colors[row, col], Char(c.grid[row, col]))
     end

@@ -86,11 +86,11 @@ function barplot(
 
     area = BarplotGraphics(
         heights,
-        something(width, DEFAULT_WIDTH[]),
-        xscale;
-        symbols = KEYWORDS.symbols,
+        something(width, DEFAULT_WIDTH[]);
         formatter = default_formatter(pkw),
+        symbols = KEYWORDS.symbols,
         maximum = nothing,
+        xscale,
         color,
         okw...,
     )

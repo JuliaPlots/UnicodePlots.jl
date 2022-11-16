@@ -84,7 +84,7 @@ transform(c::BoxplotGraphics, value) = clamp(
 )
 
 function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     I = ceil(Int, row / 3)
     series = c.data[I]
 

@@ -76,7 +76,7 @@ function preprocess!(io::IO, c::ImageGraphics)
 end
 
 function print_row(io::IO, print_nocol, print_color, c::ImageGraphics, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     if c.sixel[]  # encoded in a pass => row == 1
         row == 1 && print_nocol(io, String(c.chars[row]))  # COV_EXCL_LINE
     else
