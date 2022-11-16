@@ -16,18 +16,16 @@ grid_type(c::Canvas) = grid_type(typeof(c))
 @inline width(c::Canvas)::Float64 = c.width
 @inline blend(c::Canvas, _)::Bool = c.blend
 
-@inline y_to_pixel(c::Canvas, y::Number) =
-    if c.yflip
-        (y - origin_y(c)) / height(c) * pixel_height(c)
-    else
-        (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
-    end::Float64
-@inline x_to_pixel(c::Canvas, x::Number) =
-    if c.xflip
-        (1 - (x - origin_x(c)) / width(c)) * pixel_width(c)
-    else
-        (x - origin_x(c)) / width(c) * pixel_width(c)
-    end::Float64
+@inline y_to_pixel(c::Canvas, y::Number) = if c.yflip
+    (y - origin_y(c)) / height(c) * pixel_height(c)
+else
+    (1 - (y - origin_y(c)) / height(c)) * pixel_height(c)
+end::Float64
+@inline x_to_pixel(c::Canvas, x::Number) = if c.xflip
+    (1 - (x - origin_x(c)) / width(c)) * pixel_width(c)
+else
+    (x - origin_x(c)) / width(c) * pixel_width(c)
+end::Float64
 
 @inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
 @inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
@@ -78,8 +76,13 @@ pixel_size(c::Canvas) = (pixel_height(c), pixel_width(c))
 Base.size(c::Canvas) = (height(c), width(c))
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 
-points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) =
-    pixel!(c, floor(Int, scale_x_to_pixel(c, x)), floor(Int, scale_y_to_pixel(c, y)), color, blend)
+points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!(
+    c,
+    floor(Int, scale_x_to_pixel(c, x)),
+    floor(Int, scale_y_to_pixel(c, y)),
+    color,
+    blend,
+)
 
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, ansi_color(color), blend(c, color))
@@ -161,7 +164,7 @@ function lines!(
                 floor(Int, cur_x),
                 floor(Int, cur_y),
                 col_cb((1 - weight) * c_or_v1 + weight * c_or_v2),
-                bl
+                bl,
             )
         end
     else
@@ -314,12 +317,9 @@ end
 function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
     pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
     pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
-    (
-        floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
-        floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
-        floor(Int, pixel_x % x_pixel_per_char(C)) + 1,
-        floor(Int, pixel_y % y_pixel_per_char(C)) + 1,
-    )
+    qx, rx = divrem(pixel_x, x_pixel_per_char(C))
+    qy, ry = divrem(pixel_y, y_pixel_per_char(C))
+    (Int(qx) + 1, Int(qy) + 1, Int(rx) + 1, Int(ry) + 1)
 end
 
 function annotate!(

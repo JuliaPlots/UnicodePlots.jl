@@ -70,7 +70,13 @@ function DensityCanvas(
     )
 end
 
-function pixel!(c::DensityCanvas, pixel_x::Integer, pixel_y::Integer, color::ColorType, blend::Bool)
+function pixel!(
+    c::DensityCanvas,
+    pixel_x::Integer,
+    pixel_y::Integer,
+    color::ColorType,
+    blend::Bool,
+)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y = pixel_to_char_point(c, pixel_x, pixel_y)

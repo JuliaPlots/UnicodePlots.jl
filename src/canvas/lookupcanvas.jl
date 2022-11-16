@@ -49,7 +49,13 @@ end
 @inline blend(c::LookupCanvas, ::UserColorType) = false
 @inline blend(c::LookupCanvas, ::Symbol) = c.blend
 
-function pixel!(c::LookupCanvas, pixel_x::Integer, pixel_y::Integer, color::ColorType, blend::Bool)
+function pixel!(
+    c::LookupCanvas,
+    pixel_x::Integer,
+    pixel_y::Integer,
+    color::ColorType,
+    blend::Bool,
+)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)

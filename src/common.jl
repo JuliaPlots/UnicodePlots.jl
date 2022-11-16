@@ -494,23 +494,22 @@ end
 @inline grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
 @inline blu(c::UInt32)::UInt8 = c & 0xff
 
-@inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
-    if a ≡ b
-        a  # fastpath
-    elseif a < THRESHOLD && b < THRESHOLD  # 24bit
-        # physical average (UInt32 to prevent UInt8 overflow)
-        r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
-        # binary or
-        # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
-    elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
-        THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
-    elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
-        max(a, b)
-    else
-        INVALID_COLOR
-    end::UInt32
+@inline blend_colors(a::UInt32, b::UInt32)::UInt32 = if a ≡ b
+    a  # fastpath
+elseif a < THRESHOLD && b < THRESHOLD  # 24bit
+    # physical average (UInt32 to prevent UInt8 overflow)
+    r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
+    g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+    b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+    # binary or
+    # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
+elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
+    THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
+elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
+    max(a, b)
+else
+    INVALID_COLOR
+end::UInt32
 
 ignored_color(color::Symbol) = color ≡ :normal || color ≡ :default || color ≡ :nothing
 ignored_color(::Nothing) = true
@@ -539,35 +538,33 @@ function ansi_color(color::CrayonColorType)::ColorType
     ansi_color(Crayons._parse_color(color))
 end
 
-ansi_color(c::Crayons.ANSIColor) =
-    if COLORMODE[] ≡ Crayons.COLORS_24BIT
-        if c.style ≡ Crayons.COLORS_24BIT
-            r32(c.r) + g32(c.g) + b32(c.b)
-        elseif c.style ≡ Crayons.COLORS_256
-            USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
-        elseif c.style ≡ Crayons.COLORS_16
-            c8 = ansi_4bit_to_8bit(c.r)
-            USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
-        end::ColorType
-    else  # 0-255 ansi stored in a UInt32
-        THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
-            Crayons.to_256_colors(c).r
-        elseif c.style ≡ Crayons.COLORS_256
-            c.r
-        elseif c.style ≡ Crayons.COLORS_16
-            ansi_4bit_to_8bit(c.r)
-        end::UInt8
+ansi_color(c::Crayons.ANSIColor) = if COLORMODE[] ≡ Crayons.COLORS_24BIT
+    if c.style ≡ Crayons.COLORS_24BIT
+        r32(c.r) + g32(c.g) + b32(c.b)
+    elseif c.style ≡ Crayons.COLORS_256
+        USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
+    elseif c.style ≡ Crayons.COLORS_16
+        c8 = ansi_4bit_to_8bit(c.r)
+        USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
     end::ColorType
+else  # 0-255 ansi stored in a UInt32
+    THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
+        Crayons.to_256_colors(c).r
+    elseif c.style ≡ Crayons.COLORS_256
+        c.r
+    elseif c.style ≡ Crayons.COLORS_16
+        ansi_4bit_to_8bit(c.r)
+    end::UInt8
+end::ColorType
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
-complement(color::ColorType)::ColorType =
-    if color ≡ INVALID_COLOR
-        INVALID_COLOR
-    elseif color < THRESHOLD
-        r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
-    elseif color ≢ INVALID_COLOR
-        THRESHOLD + ~UInt8(color - THRESHOLD)
-    end::ColorType
+complement(color::ColorType)::ColorType = if color ≡ INVALID_COLOR
+    INVALID_COLOR
+elseif color < THRESHOLD
+    r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
+elseif color ≢ INVALID_COLOR
+    THRESHOLD + ~UInt8(color - THRESHOLD)
+end::ColorType
 
 out_stream_size(out_stream::Nothing) = displaysize()
 out_stream_size(out_stream::IO) = displaysize(out_stream)
