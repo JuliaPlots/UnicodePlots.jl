@@ -1,4 +1,4 @@
-struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
+struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}
     char_width::Int
@@ -7,6 +7,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
     max_val::RefValue{Float64}
     max_len::RefValue{Int}
     symbols::Vector{Char}
+    formatter::F
     xscale::XS
 
     function BarplotGraphics(
@@ -16,6 +17,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
         color::Union{UserColorType,AbstractVector},
         maximum::Union{Nothing,Number},
         symbols::AbstractVector{S},
+        formatter::Function,
         xscale,
     ) where {R<:Number,S<:Union{AbstractChar,AbstractString}}
         for s ∈ symbols
@@ -29,7 +31,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
         else
             fill(ansi_color(color), length(bars))
         end
-        new{R,typeof(xscale)}(
+        new{R,typeof(formatter),typeof(xscale)}(
             bars,
             colors,
             char_width,
@@ -38,6 +40,7 @@ struct BarplotGraphics{R<:Number,XS<:Function} <: GraphicsArea
             Ref(-Inf),
             Ref(0),
             collect(map(s -> first(s), symbols)),
+            formatter,
             xscale,
         )
     end
@@ -54,7 +57,8 @@ BarplotGraphics(
     color::Union{UserColorType,AbstractVector} = :green,
     maximum::Union{Nothing,Number} = nothing,
     symbols = KEYWORDS.symbols,
-) = BarplotGraphics(bars, char_width, visible, color, maximum, collect(symbols), xscale)
+    formatter = default_formatter((;)),
+) = BarplotGraphics(bars, char_width, visible, color, maximum, collect(symbols), formatter, xscale)
 
 function addrow!(
     c::BarplotGraphics{R},
@@ -84,7 +88,7 @@ end
 function preprocess!(::IO, c::BarplotGraphics)
     max_val, i = findmax(c.xscale.(c.bars))
     c.max_val[] = max(max_val, c.maximum)
-    c.max_len[] = length(nice_repr(c.bars[i]))
+    c.max_len[] = length(c.formatter(c.bars[i]))
     c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
@@ -102,8 +106,8 @@ function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::In
         print_color(io, c.colors[row], rem > 0 ? c.symbols[1 + round(Int, rem)] : ' ')
         bar_head += 1  # padding, we printed one more char
     end
-    bar_lbl = nice_repr(bar)
     len = if bar ≥ 0
+        bar_lbl = c.formatter(bar)
         print_color(io, nothing, ' ', bar_lbl)
         length(bar_lbl)
     else

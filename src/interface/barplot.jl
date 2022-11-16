@@ -89,6 +89,7 @@ function barplot(
         something(width, DEFAULT_WIDTH[]),
         xscale;
         symbols = KEYWORDS.symbols,
+        formatter = default_formatter(pkw),
         maximum = nothing,
         color,
         okw...,

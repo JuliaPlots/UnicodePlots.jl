@@ -214,8 +214,6 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
-const DIGITS_SEPARATOR = Ref('_')
-
 colormode() =
     if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
         8
@@ -301,19 +299,29 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int32) ≤ x ≤ typemax(Int32))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-function nice_repr(x::Integer, _::Bool = true)::String
-    (sep = DIGITS_SEPARATOR[]) == '\0' && return string(x)
+function default_formatter(kw)
+    unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
+    thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
+    x -> nice_repr(x, unicode_exponent, thousands_separator)
+end
+
+nice_repr(x::Number, plot) = nice_repr(x, plot.unicode_exponent, plot.thousands_separator)
+nice_repr(x::Number, _::Nothing) =
+    nice_repr(x, PLOT_KEYWORDS.unicode_exponent, PLOT_KEYWORDS.thousands_separator)
+
+function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
+    thousands_separator == '\0' && return string(x)
     xs = collect(reverse(string(abs(x))))
     n = length(xs)
     v = sizehint!(Char[], n + 10)
     for (i, c) ∈ enumerate(xs)
         push!(v, c)
-        (i < n && mod1(i, 3) == 3) && push!(v, sep)
+        (i < n && mod1(i, 3) == 3) && push!(v, thousands_separator)
     end
     reverse!(v)
     (sign(x) ≥ 0 ? "" : "-") * String(v)
 end
-function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
+function nice_repr(x::AbstractFloat, unicode_exponent::Bool, thousands_separator::Char)::String
     xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
     iszero(xr) && return "0"
     str = compact_repr(xr)
@@ -325,7 +333,7 @@ function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
             unicode_exponent ? superscript(right) : right,
         )
     elseif pseudo_int
-        str = nice_repr(xr)
+        str = nice_repr(xr, unicode_exponent, thousands_separator)
     end
     str
 end

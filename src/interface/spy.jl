@@ -119,9 +119,9 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
-    xlabel = nice_repr(length(vals)) * (show_zeros ? " ⩵ 0" : " ≠ 0")
+
     can = canvas(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
-    plot = Plot(can; margin, padding, xlabel, pkw...)
+    plot = Plot(can; margin, padding, pkw...)
 
     if color ≢ :auto
         points!(plot, cols, nrow + 1 .- rows, color)
@@ -145,9 +145,11 @@ function spy(
     end
     bc = BORDER_COLOR[]
     label!(plot, :l, 1, "1", bc)
-    label!(plot, :l, nrows(plot.graphics), nice_repr(nrow), bc)
+    label!(plot, :l, nrows(plot.graphics), nice_repr(nrow, plot), bc)
     label!(plot, :bl, "1", bc)
-    label!(plot, :br, nice_repr(ncol), bc)
+    label!(plot, :br, nice_repr(ncol, plot), bc)
+    isempty(xlabel(plot)) &&
+        xlabel!(plot, nice_repr(length(vals), plot) * (show_zeros ? " ⩵ 0" : " ≠ 0"))
     plot
 end
 

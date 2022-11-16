@@ -156,12 +156,15 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     # 🗷 = 'x'  # debug
     # 🗹 = Char(typeof(g) <: BrailleCanvas ? '⠿' : 'o')  # debug
     ############################################################
-    postprocess! = preprocess!(io, g)
     xlab, ylab, zlab = axes_labels = xlabel(p), ylabel(p), zlabel(p)
+    postprocess! = preprocess!(io, g)
+    nr, nc = nrows(g), ncols(g)
 
-    nr = nrows(g)
-    nc = ncols(g)
     p_width = nc + 2  # left corner + border length (number of graphics cols) + right corner
+    if p.compact
+        isempty(xlab) || label!(p, :b, xlab)
+        isempty(ylab) || label!(p, :l, round(Int, nr / 2), ylab)
+    end
 
     bmap = BORDERMAP[p.border ≡ :none && g isa BrailleCanvas ? :bnone : p.border]
     bc = BORDER_COLOR[]
@@ -193,7 +196,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     cbar_pad = if p.cmap.bar
         x = p.cmap.lim[2]
         min_z_str, max_z_str = map(
-            x -> nice_repr(roundable(x) ? x : float_round_log10(x), p.unicode_exponent),
+            x -> nice_repr(roundable(x) ? x : float_round_log10(x), p),
             p.cmap.lim,
         )
         len_z_lab = length(no_ansi_escape(zlabel(p)))
