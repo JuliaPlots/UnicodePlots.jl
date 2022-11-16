@@ -73,7 +73,7 @@ function BrailleCanvas(
     )
 end
 
-function pixel!(c::BrailleCanvas, pixel_x::Integer, pixel_y::Integer, color::UserColorType)
+function pixel!(c::BrailleCanvas, pixel_x::Integer, pixel_y::Integer, color::ColorType, blend::Bool)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
@@ -81,7 +81,7 @@ function pixel!(c::BrailleCanvas, pixel_x::Integer, pixel_y::Integer, color::Use
         if BLANK_BRAILLE ≤ (val = c.grid[char_y, char_x]) ≤ FULL_BRAILLE
             c.grid[char_y, char_x] = val | BRAILLE_SIGNS[char_y_off, char_x_off]
         end
-        set_color!(c, char_x, char_y, ansi_color(color))
+        set_color!(c, char_x, char_y, color, blend)
     end
     c
 end
