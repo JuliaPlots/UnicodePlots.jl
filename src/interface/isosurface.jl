@@ -60,7 +60,7 @@ function isosurface(
     canvas::Type = BrailleCanvas,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     V isa Function && (V = V.(x, y', reshape(z, 1, 1, length(z))))
 
     plot = Plot(
@@ -96,10 +96,10 @@ end
 
     ntri = length(mc.triangles)
     npts = centroid ? ntri : 3ntri
-    xs, ys, zs = map(_ -> sizehint!(F[], npts), 1:3)
-    cs = sizehint!(UserColorType[], npts)
+    X, Y, Z = map(_ -> sizehint!(F[], npts), 1:3)
+    C = sizehint!(ColorType[], npts)
 
-    color = color ≡ :auto ? next_color!(plot) : color
+    color = ansi_color(color ≡ :auto ? next_color!(plot) : color)
     @inbounds for (i1, i2, i3) ∈ mc.triangles
         (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
         back_face = (
@@ -114,17 +114,17 @@ end
         vc = back_face ? complement(color) : color
         if centroid
             c = @. (v1 + v2 + v3) / 3
-            push!(xs, c[1])
-            push!(ys, c[2])
-            push!(zs, c[3])
-            push!(cs, vc)
+            push!(X, c[1])
+            push!(Y, c[2])
+            push!(Z, c[3])
+            push!(C, vc)
         else
-            push!(xs, v1[1], v2[1], v3[1])
-            push!(ys, v1[2], v2[2], v3[2])
-            push!(zs, v1[3], v2[3], v3[3])
-            push!(cs, vc, vc, vc)
+            push!(X, v1[1], v2[1], v3[1])
+            push!(Y, v1[2], v2[2], v3[2])
+            push!(Z, v1[3], v2[3], v3[3])
+            push!(C, vc, vc, vc)
         end
     end
     # triangles vertices or centroid
-    points!(plot, xs, ys, zs, cs)
+    points!(plot, X, Y, Z, C, falses(length(X)))
 end

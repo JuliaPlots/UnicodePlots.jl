@@ -618,11 +618,11 @@ mutable struct ColorMap
     callback::Function
 end
 
-split_plot_kw(; kw...) =
+split_plot_kw(kw) =
     if isempty(kw)
-        (;), (;)  # avoids `filter` allocations
+        pairs((;)), pairs((;))  # avoids `filter` allocations
     else
         filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
     end
 
-warn_on_lost_kw(; kw...) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)
+warn_on_lost_kw(kw) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)

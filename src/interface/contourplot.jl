@@ -57,7 +57,7 @@ function contourplot(
     colormap = KEYWORDS.colormap,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     plot = Plot(
         extrema(x) |> collect,
         extrema(y) |> collect,

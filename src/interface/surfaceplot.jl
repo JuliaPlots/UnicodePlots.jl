@@ -57,12 +57,12 @@ function surfaceplot(
     x::AbstractVecOrMat,
     y::AbstractVecOrMat,
     A::Union{Function,AbstractVecOrMat};
-    canvas::Type = KEYWORDS.canvas,
     zscale::Union{Symbol,Function,NTuple} = KEYWORDS.zscale,
+    canvas::Type = KEYWORDS.canvas,
     colormap = KEYWORDS.colormap,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
         meshgrid(x, y)
     else
@@ -121,7 +121,7 @@ end
         throw(DimensionMismatch("`X`, `Y`, `Z` and `H` must have same length"))
 
     cmapped = color ≡ nothing
-    color = color ≡ :auto ? next_color!(plot) : color
+    color = ansi_color(color ≡ :auto ? next_color!(plot) : color)
 
     plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? NaNMath.extrema(as_float(H)) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
@@ -164,27 +164,27 @@ end
                     buf[1, 2],
                     buf[2, 2],
                     H[i1, j1],
+                    false,
                     H[i2, j2],
                     col_cb,
                 )
             end
-            (i == m || j == n) &&
-                points!(plot, X[i, j], Y[i, j], Z[i, j], cmapped ? col_cb(H[i, j]) : color)
+            (i == m || j == n) && points!(
+                plot,
+                X[i, j],
+                Y[i, j],
+                Z[i, j];
+                color = cmapped ? col_cb(H[i, j]) : color,
+            )
         end
     else
-        cmapped && (color = map(h -> callback(h, mh, Mh), H))
-        npts = length(Z)
-        buf = Array{F}(undef, 4, npts)
-        plot.projection(
-            vcat(reshape(X, 1, :), reshape(Y, 1, :), reshape(Z, 1, :), ones(1, npts)),
-            buf,
-        )
-        points!(
-            plot.graphics,
-            @view(buf[1, :]),
-            @view(buf[2, :]),
-            cmapped ? @view(color[:]) : color,
-        )
+        npts = length(H)
+        colors = if cmapped
+            map(h -> callback(h, mh, Mh), vec(H))
+        else
+            fill(color, npts)
+        end
+        points!(plot, vec(X), vec(Y), vec(Z), colors, falses(npts))
     end
     plot
 end

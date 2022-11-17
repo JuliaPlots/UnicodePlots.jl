@@ -46,8 +46,8 @@ function CreateLookupCanvas(
 end
 
 # don't attempt to blend colors if they have been explicitly specified
-@inline blend(c::LookupCanvas, ::UserColorType) = false
-@inline blend(c::LookupCanvas, ::Symbol) = c.blend
+@inline blend_colors(c::LookupCanvas, ::UserColorType) = false
+@inline blend_colors(c::LookupCanvas, ::Symbol) = c.blend
 
 function pixel!(
     c::LookupCanvas,

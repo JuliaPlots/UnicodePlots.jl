@@ -208,11 +208,11 @@ end
 end
 
 @testset "miscellaneous" begin
-    @test isempty(last(UnicodePlots.split_plot_kw(; width = 1, height = 2)))  # only plot keywords
-    @test isempty(first(UnicodePlots.split_plot_kw(; foo = 1, bar = 2)))  # only other keywords
+    @test UnicodePlots.split_plot_kw(pairs((width = 1, height = 2))) |> last |> isempty  # only plot keywords
+    @test UnicodePlots.split_plot_kw(pairs((foo = 1, bar = 2))) |> first |> isempty  # only other keywords
 
-    @test_logs (:warn, r".*will be lost") UnicodePlots.warn_on_lost_kw(; a = 1)
-    @test UnicodePlots.warn_on_lost_kw() ≡ nothing
+    @test_logs (:warn, r".*will be lost") UnicodePlots.warn_on_lost_kw(pairs((; a = 1)))
+    @test UnicodePlots.warn_on_lost_kw(pairs((;))) ≡ nothing
 
     @test UnicodePlots.char_marker('a') ≡ 'a'
     @test UnicodePlots.char_marker("a") ≡ 'a'

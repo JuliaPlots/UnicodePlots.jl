@@ -497,13 +497,13 @@ function annotate!(
     kw...,
 )
     color = color ≡ :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color, blend(plot.graphics, color); kw...)
+    annotate!(plot.graphics, x, y, text, color, blend_colors(plot.graphics, color); kw...)
     plot
 end
 
 transform(tr, args...) = args  # catch all
-transform(tr::MVP{Val{false}}, x, y, c::UserColorType) = (x, y, c)
-transform(tr::MVP{Val{false}}, x, y, ::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP{Val{false}}, x, y, args...) = (x, y, args...)
+transform(tr::MVP{Val{false}}, x, y, ::Nothing, args...) = (x, y, args...)  # drop z
 transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector,Number}, args...) =
     (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 

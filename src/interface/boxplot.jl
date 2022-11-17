@@ -60,7 +60,7 @@ function boxplot(
     xlim = KEYWORDS.xlim,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     length(xlim) == 2 ||
         throw(ArgumentError("`xlim` must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("wrong number of text"))

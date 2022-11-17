@@ -10,11 +10,11 @@ grid_type(c::Canvas) = grid_type(typeof(c))
 @inline lookup_offset(c::Canvas) = grid_type(c)(0)
 @inline pixel_height(c::Canvas)::Int = c.pixel_height
 @inline pixel_width(c::Canvas)::Int = c.pixel_width
+@inline blend_colors(c::Canvas, _)::Bool = c.blend
 @inline origin_y(c::Canvas)::Float64 = c.origin_y
 @inline origin_x(c::Canvas)::Float64 = c.origin_x
 @inline height(c::Canvas)::Float64 = c.height
 @inline width(c::Canvas)::Float64 = c.width
-@inline blend(c::Canvas, _)::Bool = c.blend
 
 @inline y_to_pixel(c::Canvas, y::Number) = if c.yflip
     (y - origin_y(c)) / height(c) * pixel_height(c)
@@ -76,6 +76,30 @@ pixel_size(c::Canvas) = (pixel_height(c), pixel_width(c))
 Base.size(c::Canvas) = (height(c), width(c))
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 
+# high level (color conversion)
+pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
+    pixel!(c, pixel_x, pixel_y, ansi_color(color), blend_colors(c, color))
+
+points!(
+    c::Canvas,
+    x::Union{Number,AbstractVector},
+    y::Union{Number,AbstractVector};
+    color::UserColorType = :normal,
+) = points!(c, x, y, ansi_color(color), blend_colors(c, color))
+
+lines!(
+    c::Canvas,
+    x1::Number,
+    y1::Number,
+    x2::Number,
+    y2::Number;
+    color::UserColorType = :normal,
+) = lines!(c, x1, y1, x2, y2, ansi_color(color), blend_colors(c, color))
+
+lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) =
+    lines!(c, X, Y, ansi_color(color), blend_colors(c, color))
+
+# low level (restricted types for faster loops)
 points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!(
     c,
     floor(Int, scale_x_to_pixel(c, x)),
@@ -84,41 +108,6 @@ points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!
     blend,
 )
 
-pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
-    pixel!(c, pixel_x, pixel_y, ansi_color(color), blend(c, color))
-
-points!(c::Canvas, x::Number, y::Number; color::UserColorType = :normal) =
-    points!(c, x, y, ansi_color(color), blend(c, color))
-
-points!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) =
-    points!(c, X, Y, color)
-
-function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
-    length(X) == length(Y) ||
-        throw(DimensionMismatch("`X` and `Y` must be the same length"))
-    bl = blend(c, color)
-    col = ansi_color(color)
-    @inbounds for i ∈ eachindex(X, Y)
-        points!(c, X[i], Y[i], col, bl)
-    end
-    c
-end
-
-function points!(
-    c::Canvas,
-    X::AbstractVector,
-    Y::AbstractVector,
-    color::AbstractVector{T},
-) where {T<:UserColorType}
-    length(X) == length(Y) == length(color) ||
-        throw(DimensionMismatch("`X`, `Y` and `color` must be the same length"))
-    @inbounds for i ∈ eachindex(X, Y, color)
-        col = color[i]
-        points!(c, X[i], Y[i], ansi_color(col), blend(c, col))  # slowish
-    end
-    c
-end
-
 # Implementation of the digital differential analyser (DDA)
 function lines!(
     c::Canvas,
@@ -126,8 +115,9 @@ function lines!(
     y1::Number,
     x2::Number,
     y2::Number,
-    c_or_v1::Union{AbstractFloat,UserColorType},  # either floating point values or colors
-    c_or_v2::Union{AbstractFloat,UserColorType} = nothing,
+    c_or_v1::Union{AbstractFloat,ColorType},  # either floating point values or colors
+    blend::Bool,
+    c_or_v2::Union{Nothing,AbstractFloat,ColorType} = nothing,
     col_cb::Union{Nothing,Function} = nothing,  # color callback (map values to colors)
 )
     (valid_x(c, x1) || valid_x(c, x2)) || return c
@@ -146,11 +136,10 @@ function lines!(
     py, Py = y_to_pixel(c, origin_y(c)), y_to_pixel(c, origin_y(c) + height(c))
     px, Px = min(px, Px), max(px, Px)
     py, Py = min(py, Py), max(py, Py)
-    bl = blend(c, c_or_v1)
 
     if c_or_v1 isa AbstractFloat && c_or_v2 isa AbstractFloat && col_cb ≢ nothing
         # color interpolation
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1), bl)
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1), blend)
         start_x, start_y = cur_x, cur_y
         iΔ = 1 / √(Δx^2 + Δy^2)
         for _ ∈ range(1, length = len)
@@ -164,33 +153,62 @@ function lines!(
                 floor(Int, cur_x),
                 floor(Int, cur_y),
                 col_cb((1 - weight) * c_or_v1 + weight * c_or_v2),
-                bl,
+                blend,
             )
         end
     else
-        color = ansi_color(c_or_v1)  # hoisted out of the loop for performance
-        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color, bl)
+        pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1, blend)
         for _ ∈ range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
             (cur_x < px || cur_x > Px) && continue
-            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), color, bl)
+            pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1, blend)
         end
     end
     c
 end
 
-lines!(
+# vector
+function points!(
     c::Canvas,
-    x1::Number,
-    y1::Number,
-    x2::Number,
-    y2::Number;
-    color::UserColorType = :normal,
-) = lines!(c, x1, y1, x2, y2, color)
+    X::AbstractVector,
+    Y::AbstractVector,
+    color::ColorType,
+    blend::Bool,
+)
+    @assert length(X) == length(Y)
+    @inbounds for i ∈ eachindex(X, Y)
+        (x = X[i]) |> isfinite || continue
+        (y = Y[i]) |> isfinite || continue
+        points!(c, x, y, color, blend)
+    end
+    c
+end
 
-function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
+function points!(
+    c::Canvas,
+    X::AbstractVector,
+    Y::AbstractVector,
+    color::AbstractVector{ColorType},
+    blend::AbstractVector{Bool},
+)
+    @assert length(X) == length(Y) == length(color) == length(blend)
+    @inbounds for i ∈ eachindex(X, Y, color, blend)
+        (x = X[i]) |> isfinite || continue
+        (y = Y[i]) |> isfinite || continue
+        points!(c, x, y, color[i], blend[i])
+    end
+    c
+end
+
+function lines!(
+    c::Canvas,
+    X::AbstractVector,
+    Y::AbstractVector,
+    color::ColorType,
+    blend::Bool,
+)
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
     @inbounds for i ∈ 2:length(X)
@@ -198,13 +216,10 @@ function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColo
         (y = Y[i]) |> isfinite || continue
         (xm1 = X[i - 1]) |> isfinite || continue
         (ym1 = Y[i - 1]) |> isfinite || continue
-        lines!(c, xm1, ym1, x, y, color)
+        lines!(c, xm1, ym1, x, y, color, blend)
     end
     c
 end
-
-lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) =
-    lines!(c, X, Y, color)
 
 function get_canvas_dimensions_for_matrix(
     canvas::Type{T},

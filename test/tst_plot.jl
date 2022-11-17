@@ -38,9 +38,9 @@ function _test_canvas(; kw...)
         width = 1.0,
         kw...,
     )
-    lines!(canvas, 0.0, 0.0, 1.0, 1.0, :blue)
-    lines!(canvas, 0.2, 0.7, 1.0, 0.0, :red)
-    lines!(canvas, 0.0, 2.0, 0.5, 0.0, :green)
+    lines!(canvas, 0.0, 0.0, 1.0, 1.0; color = :blue)
+    lines!(canvas, 0.2, 0.7, 1.0, 0.0; color = :red)
+    lines!(canvas, 0.0, 2.0, 0.5, 0.0; color = :green)
     points!(canvas, 0.5, 0.8)
     canvas
 end

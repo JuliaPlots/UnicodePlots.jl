@@ -67,8 +67,8 @@ function heatmap(
     array::Bool = false,
     kw...,
 ) where {T}
-    pkw, okw = split_plot_kw(; kw...)
-    warn_on_lost_kw(; okw...)
+    pkw, okw = split_plot_kw(kw)
+    warn_on_lost_kw(okw)
 
     nrows, ncols = size(A)
 
@@ -109,23 +109,23 @@ function heatmap(
 
     # allow A to be an array over which min and max is not defined,
     # e.g. an array of RGB color values
-    minz, maxz = (0, 0)
+    mi, ma = (0, 0)
     has_extrema = false
     try
-        minz, maxz = extrema(A)
+        mi, ma = extrema(A)
         has_extrema = true
     catch
     end
     if !is_auto(zlim)
         has_extrema ||
             throw(ArgumentError("`zlim` cannot be set when the element type is $T"))
-        minz, maxz = zlim
+        mi, ma = zlim
     end
 
     # if A is an rgb image, translate the colors directly to the terminal
     callback =
         if length(A) > 0 && isconcretetype(T) && all(x -> x ∈ fieldnames(T), (:r, :g, :b))
-            (A, minz, maxz) -> ansi_color(c256.((A.r, A.g, A.b)))
+            (A, mi, ma) -> ansi_color(c256.((A.r, A.g, A.b)))
         else
             colormap_callback(colormap)
         end
@@ -160,10 +160,10 @@ function heatmap(
 
     colorbar = has_extrema && if height < 7
         # for small plots, don't show colorbar by default
-        get(kw, :colorbar, false)
+        get(pkw, :colorbar, false)
     else
         # show colorbar by default, unless set to false, or labels == false
-        get(kw, :colorbar, labels)
+        get(pkw, :colorbar, labels)
     end
 
     xs = length(X) > 0 ? [first(X), last(X)] : zeros(2)
@@ -180,7 +180,7 @@ function heatmap(
         labels,
         height,
         width,
-        colorbar_lim = (minz, maxz),
+        colorbar_lim = (mi, ma),
         colormap = callback,
         min_height = 1,
         min_width = 1,
@@ -190,12 +190,9 @@ function heatmap(
     )
 
     for row ∈ eachindex(Y)
-        points!(
-            plot,
-            X,
-            fill(Y[row], length(X)),
-            UserColorType[callback(v, minz, maxz) for v ∈ A[row, :]],
-        )
+        color = ColorType[ansi_color(callback(x, mi, ma)) for x ∈ view(A, row, :)]
+        blend = blend_colors.(Ref(plot.graphics), color)
+        points!(plot, X, fill(Y[row], length(X)), color, blend)
     end
     plot
 end

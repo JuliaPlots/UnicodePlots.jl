@@ -61,7 +61,7 @@ function barplot(
     name::AbstractString = KEYWORDS.name,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     length(text) == length(heights) ||
         throw(DimensionMismatch("the given vectors must be of the same length"))
     minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))

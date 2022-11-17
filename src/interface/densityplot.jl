@@ -58,7 +58,7 @@ function densityplot(
     dscale::Union{Symbol,Function} = :identity,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     plot = Plot(
         x,
         y,

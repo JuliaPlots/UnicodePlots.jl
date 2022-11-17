@@ -127,7 +127,7 @@ main() = begin
       Plot(canvas)
       """),
     blending = ("Blending", """
-      import UnicodePlots: lines!, points!, pixel!
+      import UnicodePlots: lines!
       canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
       lines!(canvas, 0., 0., 1., 1., :cyan)
       lines!(canvas, .25, 1., .5, 0., :yellow)

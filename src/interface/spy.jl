@@ -101,8 +101,8 @@ function spy(
     show_zeros::Bool = false,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
-    warn_on_lost_kw(; okw...)
+    pkw, okw = split_plot_kw(kw)
+    warn_on_lost_kw(okw)
 
     height, width = get_canvas_dimensions_for_matrix(
         canvas,
@@ -124,11 +124,11 @@ function spy(
     plot = Plot(can; margin, padding, pkw...)
 
     if color ≢ :auto
-        points!(plot, cols, nrow + 1 .- rows, color)
+        points!(plot, cols, nrow + 1 .- rows; color)
         label!(plot, :r, 1, show_zeros ? "⩵ 0" : "≠ 0", color)
     else
         if show_zeros
-            points!(plot, cols, nrow + 1 .- rows, :green)
+            points!(plot, cols, nrow + 1 .- rows; color = :green)
             label!(plot, :r, 1, "⩵ 0", :green)
         else
             pos_idx = vals .> 0
@@ -137,8 +137,8 @@ function spy(
             pos_rows = rows[pos_idx]
             neg_cols = cols[neg_idx]
             neg_rows = rows[neg_idx]
-            points!(plot, pos_cols, nrow + 1 .- pos_rows, :red)
-            points!(plot, neg_cols, nrow + 1 .- neg_rows, :blue)
+            points!(plot, pos_cols, nrow + 1 .- pos_rows; color = :red)
+            points!(plot, neg_cols, nrow + 1 .- neg_rows; color = :blue)
             label!(plot, :r, 1, "> 0", :red)
             label!(plot, :r, 2, "< 0", :blue)
         end
