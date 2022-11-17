@@ -41,12 +41,12 @@ function char_point!(
     char_x::Integer,
     char_y::Integer,
     char::AbstractChar,
-    color::UserColorType,
+    color::ColorType,
     blend::Bool,
 )
     if checkbounds(Bool, c.grid, char_y, char_x)
         c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
-        set_color!(c, char_x, char_y, ansi_color(color), blend)
+        set_color!(c, char_x, char_y, color, blend)
     end
     c
 end
@@ -98,8 +98,8 @@ function points!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserCol
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
     bl = blend(c, color)
     col = ansi_color(color)
-    @inbounds for I ∈ eachindex(X, Y)
-        points!(c, X[I], Y[I], col, bl)
+    @inbounds for i ∈ eachindex(X, Y)
+        points!(c, X[i], Y[i], col, bl)
     end
     c
 end
@@ -112,9 +112,9 @@ function points!(
 ) where {T<:UserColorType}
     length(X) == length(Y) == length(color) ||
         throw(DimensionMismatch("`X`, `Y` and `color` must be the same length"))
-    @inbounds for I ∈ eachindex(X)
-        col = color[I]
-        points!(c, X[I], Y[I], ansi_color(col), blend(c, col))  # slowish
+    @inbounds for i ∈ eachindex(X, Y, color)
+        col = color[i]
+        points!(c, X[i], Y[i], ansi_color(col), blend(c, col))  # slowish
     end
     c
 end
@@ -193,7 +193,7 @@ lines!(
 function lines!(c::Canvas, X::AbstractVector, Y::AbstractVector, color::UserColorType)
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
-    for i ∈ 2:length(X)
+    @inbounds for i ∈ 2:length(X)
         (x = X[i]) |> isfinite || continue
         (y = Y[i]) |> isfinite || continue
         (xm1 = X[i - 1]) |> isfinite || continue
@@ -337,8 +337,9 @@ function annotate!(
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
+    col = ansi_color(color)
     for char ∈ text
-        char_point!(c, char_x, char_y, char, color, blend)
+        char_point!(c, char_x, char_y, char, col, blend)
         char_x += 1
     end
     c
@@ -356,6 +357,6 @@ function annotate!(
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
-    char_point!(c, char_x, char_y, text, color, blend)
+    char_point!(c, char_x, char_y, text, ansi_color(color), blend)
     c
 end
