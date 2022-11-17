@@ -644,10 +644,10 @@ The method `label!` is responsible for the setting all the textual decorations o
   canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
                          origin_y=0., origin_x=0.,  # position in virtual space
                          height=1., width=1.)       # size of the virtual space
-  lines!(canvas, 0., 0., 1., 1., :cyan)             # virtual space
-  points!(canvas, rand(50), rand(50), :red)         # virtual space
-  lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
-  pixel!(canvas, 5, 8, :red)                        # pixel space
+  lines!(canvas, 0., 0., 1., 1.; color=:cyan)       # virtual space
+  points!(canvas, rand(50), rand(50); color=:red)   # virtual space
+  lines!(canvas, 0., 1., .5, 0.; color=:yellow)     # virtual space
+  pixel!(canvas, 5, 8; color=:red)                  # pixel space
   Plot(canvas)
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/canvas.png" width="450"><br>
@@ -658,11 +658,11 @@ The method `label!` is responsible for the setting all the textual decorations o
   As you can see, one issue that arises when multiple pixel are represented by one character is that it is hard to assign color. That is because each of the "pixel" of a character could belong to a different color group (each character can only have a single color). This package deals with this using a color-blend for the whole group. You can disable canvas color blending / mixing by passing `blend=false` to any function.
   
   ```julia
-  import UnicodePlots: lines!, points!, pixel!
+  import UnicodePlots: lines!
   canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
-  lines!(canvas, 0., 0., 1., 1., :cyan)
-  lines!(canvas, .25, 1., .5, 0., :yellow)
-  lines!(canvas, .2, .8, 1., 0., :red)
+  lines!(canvas, 0., 0., 1., 1.; color=:cyan)
+  lines!(canvas, .25, 1., .5, 0.; color=:yellow)
+  lines!(canvas, .2, .8, 1., 0.; color=:red)
   Plot(canvas)
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/blending.png" width="450"><br>
@@ -715,10 +715,10 @@ The method `label!` is responsible for the setting all the textual decorations o
   hline!(p, 8, range(3, 8; length=20), head_tail=:head, color=:light_red, name="x-buffer (cols)")
   
   # mem layout
-  vline!(p, 4, [4, 7], color=:yellow, name="memory layout")
-  vline!(p, 7, [4, 7], color=:yellow)
-  hline!(p, [4, 7], [4, 7], color=:yellow)
-  hline!(p, [4.5, 5, 5.5, 6], [4.5, 6.5], color=:yellow)
+  vline!(p, 4, [4, 7]; color=:yellow, name="memory layout")
+  vline!(p, 7, [4, 7]; color=:yellow)
+  hline!(p, [4, 7], [4, 7]; color=:yellow)
+  hline!(p, [4.5, 5, 5.5, 6], [4.5, 6.5]; color=:yellow)
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/buffer_convention.png" width="450"><br>
   

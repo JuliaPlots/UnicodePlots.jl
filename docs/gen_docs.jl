@@ -120,18 +120,18 @@ main() = begin
       canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
                              origin_y=0., origin_x=0.,  # position in virtual space
                              height=1., width=1.)       # size of the virtual space
-      lines!(canvas, 0., 0., 1., 1., :cyan)             # virtual space
-      points!(canvas, rand(50), rand(50), :red)         # virtual space
-      lines!(canvas, 0., 1., .5, 0., :yellow)           # virtual space
-      pixel!(canvas, 5, 8, :red)                        # pixel space
+      lines!(canvas, 0., 0., 1., 1.; color=:cyan)       # virtual space
+      points!(canvas, rand(50), rand(50); color=:red)   # virtual space
+      lines!(canvas, 0., 1., .5, 0.; color=:yellow)     # virtual space
+      pixel!(canvas, 5, 8; color=:red)                  # pixel space
       Plot(canvas)
       """),
     blending = ("Blending", """
       import UnicodePlots: lines!
       canvas = BrailleCanvas(15, 40; origin_y=0., origin_x=0., height=1., width=1.)
-      lines!(canvas, 0., 0., 1., 1., :cyan)
-      lines!(canvas, .25, 1., .5, 0., :yellow)
-      lines!(canvas, .2, .8, 1., 0., :red)
+      lines!(canvas, 0., 0., 1., 1.; color=:cyan)
+      lines!(canvas, .25, 1., .5, 0.; color=:yellow)
+      lines!(canvas, .2, .8, 1., 0.; color=:red)
       Plot(canvas)
       """),
     buffer_convention = ("Axes", """
@@ -151,10 +151,10 @@ main() = begin
       hline!(p, 8, range(3, 8; length=20), head_tail=:head, color=:light_red, name="x-buffer (cols)")
 
       # mem layout
-      vline!(p, 4, [4, 7], color=:yellow, name="memory layout")
-      vline!(p, 7, [4, 7], color=:yellow)
-      hline!(p, [4, 7], [4, 7], color=:yellow)
-      hline!(p, [4.5, 5, 5.5, 6], [4.5, 6.5], color=:yellow)
+      vline!(p, 4, [4, 7]; color=:yellow, name="memory layout")
+      vline!(p, 7, [4, 7]; color=:yellow)
+      hline!(p, [4, 7], [4, 7]; color=:yellow)
+      hline!(p, [4.5, 5, 5.5, 6], [4.5, 6.5]; color=:yellow)
       """),
   )
 
