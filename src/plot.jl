@@ -497,7 +497,15 @@ function annotate!(
     kw...,
 )
     color = color ≡ :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color, blend_colors(plot.graphics, color); kw...)
+    annotate!(
+        plot.graphics,
+        x,
+        y,
+        text,
+        ansi_color(color),
+        blend_colors(plot.graphics, color);
+        kw...,
+    )
     plot
 end
 

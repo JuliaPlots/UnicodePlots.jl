@@ -113,10 +113,9 @@ end
         v3 = mc.vertices[i3]
         vc = back_face ? complement(color) : color
         if centroid
-            c = @. (v1 + v2 + v3) / 3
-            push!(X, c[1])
-            push!(Y, c[2])
-            push!(Z, c[3])
+            push!(X, (v1[1] + v2[1] + v3[1]) / 3)
+            push!(Y, (v1[2] + v2[2] + v3[2]) / 3)
+            push!(Z, (v1[3] + v2[3] + v3[3]) / 3)
             push!(C, vc)
         else
             push!(X, v1[1], v2[1], v3[1])

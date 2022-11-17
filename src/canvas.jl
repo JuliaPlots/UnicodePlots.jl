@@ -1,6 +1,6 @@
 abstract type Canvas <: GraphicsArea end
 
-grid_type(T::Type{<:Canvas}) = fieldtypes(T) |> first |> eltype
+grid_type(T::Type{<:Canvas}) = fieldtype(T, 1) |> eltype
 grid_type(c::Canvas) = grid_type(typeof(c))
 
 # we store the grid as the transpose of an array of (w, h) => (height, width) = (nrows, ncols)
@@ -36,37 +36,6 @@ end::Float64
 @inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound [ref(1)]
 @inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)
 
-function char_point!(
-    c::Canvas,
-    char_x::Integer,
-    char_y::Integer,
-    char::AbstractChar,
-    color::ColorType,
-    blend::Bool,
-)
-    if checkbounds(Bool, c.grid, char_y, char_x)
-        c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
-        set_color!(c, char_x, char_y, color, blend)
-    end
-    c
-end
-
-@inline function set_color!(
-    c::Canvas,
-    x::Integer,
-    y::Integer,
-    color::ColorType,
-    blend::Bool,
-)
-    col::ColorType = c.colors[y, x]
-    c.colors[y, x] = if col ≡ INVALID_COLOR || !blend
-        color
-    else
-        blend_colors(col, color)
-    end::ColorType
-    nothing
-end
-
 """
     pixel_size(c::Canvas)
 
@@ -76,7 +45,8 @@ pixel_size(c::Canvas) = (pixel_height(c), pixel_width(c))
 Base.size(c::Canvas) = (height(c), width(c))
 origin(c::Canvas) = (origin_x(c), origin_y(c))
 
-# high level (color conversion)
+############################################################
+# high-level (color conversion)
 pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :normal) =
     pixel!(c, pixel_x, pixel_y, ansi_color(color), blend_colors(c, color))
 
@@ -99,7 +69,8 @@ lines!(
 lines!(c::Canvas, X::AbstractVector, Y::AbstractVector; color::UserColorType = :normal) =
     lines!(c, X, Y, ansi_color(color), blend_colors(c, color))
 
-# low level (restricted types for faster loops)
+############################################################
+# low-level (restricted types for faster loops)
 points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!(
     c,
     floor(Int, scale_x_to_pixel(c, x)),
@@ -108,7 +79,7 @@ points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!
     blend,
 )
 
-# Implementation of the digital differential analyser (DDA)
+# implementation of the digital differential analyser (DDA)
 function lines!(
     c::Canvas,
     x1::Number,
@@ -169,7 +140,7 @@ function lines!(
     c
 end
 
-# vector
+# low-level (vectors)
 function points!(
     c::Canvas,
     X::AbstractVector,
@@ -221,6 +192,7 @@ function lines!(
     c
 end
 
+############################################################
 function get_canvas_dimensions_for_matrix(
     canvas::Type{T},
     nrow::Integer,
@@ -342,7 +314,7 @@ function annotate!(
     x::Number,
     y::Number,
     text::AbstractString,
-    color::UserColorType,
+    color::ColorType,
     blend::Bool;
     halign::Symbol = :center,
     valign::Symbol = :center,
@@ -352,9 +324,8 @@ function annotate!(
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
-    col = ansi_color(color)
     for char ∈ text
-        char_point!(c, char_x, char_y, char, col, blend)
+        char_point!(c, char_x, char_y, char, color, blend)
         char_x += 1
     end
     c
@@ -365,13 +336,44 @@ function annotate!(
     x::Number,
     y::Number,
     text::AbstractChar,
-    color::UserColorType,
+    color::ColorType,
     blend::Bool,
 )
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
-    char_point!(c, char_x, char_y, text, ansi_color(color), blend)
+    char_point!(c, char_x, char_y, text, color, blend)
     c
+end
+
+@inline function char_point!(
+    c::Canvas,
+    char_x::Integer,
+    char_y::Integer,
+    char::AbstractChar,
+    color::ColorType,
+    blend::Bool,
+)
+    if checkbounds(Bool, c.grid, char_y, char_x)
+        c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
+        set_color!(c, char_x, char_y, color, blend)
+    end
+    nothing
+end
+
+@inline function set_color!(
+    c::Canvas,
+    x::Integer,
+    y::Integer,
+    color::ColorType,
+    blend::Bool,
+)
+    col::ColorType = c.colors[y, x]
+    c.colors[y, x] = if col ≡ INVALID_COLOR || !blend
+        color
+    else
+        blend_colors(col, color)
+    end::ColorType
+    nothing
 end
