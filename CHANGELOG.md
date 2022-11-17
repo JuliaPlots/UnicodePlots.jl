@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.3] - 2022-11-16
+## [3.3] - 2022-11-17
 ### Added
 - Group digits on integer values (thousands) for readability (configured using `thounsands_separator`).
 
