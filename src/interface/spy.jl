@@ -40,23 +40,22 @@ $(arguments(
 ```julia-repl
 julia> using SparseArrays
 julia> spy(sprandn(50, 120, .05))
-      ┌────────────────────────────────────────────────────────────┐
-    1 │⢀⠀⠒⠀⢄⠂⠀⡀⠀⠀⠀⠰⠀⠐⠀⠀⠀⠀⠂⠀⠀⠀⠠⠰⠀⠀⠀⡀⠄⠀⠠⠀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠐⠀⠐⠀⠀⡀⠀⠀⠀⠀⠀⠀⠂⡀⠀⡀⠠⠀⠀│ > 0
-      │⠀⠀⠀⠀⠀⢀⢀⠀⠀⠀⠀⠐⠄⠀⢀⠂⠀⠠⠀⠉⠀⠀⠀⠀⢐⠀⠀⠀⠀⠀⠠⠐⠄⠄⠀⠀⠀⠐⠐⠈⢁⠀⠀⠀⠀⠀⠀⠀⠠⠀⠐⡐⠀⠄⠀⠀⠈⠀⠀⠠│ < 0
-      │⡀⠀⠀⠀⡀⠊⠀⠀⠀⢀⢀⠀⠄⠀⠂⡠⠂⠐⠐⠀⠀⠄⠀⠀⠀⠄⠀⠀⠀⠀⡀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠠⠀⠂⠀⠠⠀⠀⠀⠆⠄⠈⠀⢀⠀⠀⠀⠐⠄⠀⠀│
-      │⠀⠀⠀⠀⠀⠀⠀⢠⠀⢀⠀⠀⠀⢀⠀⠄⠀⠀⠀⠂⠀⠀⠀⠇⠀⢀⠀⠀⠁⠁⠀⠄⠄⠀⠀⠁⠁⠀⡈⠀⠁⠄⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀│
-      │⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⢀⠀⠀⠀⠐⠂⠁⢀⠠⠀⠀⠀⠀⠀⠁⠀⠀⠀⠠⠀⠀⠀⠀⢀⠀⢄⠀⠀⠀⠐⠀⠀⠈⠀⠀⠐⠀⠄⠂⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-      │⠠⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠠⠈⠀⠀⠀⠀⢀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│
-      │⠐⠀⠉⠐⠀⠀⠁⠀⠀⠀⠀⠀⠀⠌⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠌⠀⠀⠄⠀⠀⡀⠀⠀⠀⠀⠀⢀⠈⠄⠀⡀⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀│
-      │⠂⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⡨⠀⠠⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠈⡠⠀⡀⠀⠀⠁⠀⠁⠠⠀⠀⠀⠀⠀⠀⠀⠄⡀⠀⠄⡠⠀⠀⠀⠀│
-      │⠐⠀⠀⠀⠀⠀⠀⠃⠀⠀⠀⠀⠁⠀⡀⠁⠀⢂⠂⠀⠀⠀⠈⠁⠀⠀⠁⠁⠄⠀⠀⠀⠀⠀⡀⠀⠀⠀⠂⠀⠀⠀⠀⠐⠀⠂⠀⠂⠁⠀⠆⠈⠀⠀⠄⠄⠀⠀⠀⠀│
-      │⠀⠀⠀⠠⠀⠁⠀⠀⠀⠀⠂⠀⠠⠀⠀⠌⠀⠀⠂⠄⠀⡀⠂⠀⠀⡀⠠⠁⠄⠀⠀⠀⠀⠀⠄⠈⠀⢂⠐⠀⢀⠀⠠⠀⠄⠁⡀⠀⠀⠐⠀⠀⡐⠀⠀⠀⠁⠀⠀⠔│
-      │⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠁⠃⡀⡁⠀⠀⠀⢀⠀⠀⠂⠀⠀⠠⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠬⠀⡀│
-      │⠐⠀⠀⠀⠀⠀⠀⠀⠢⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠈⠁⠁⠀⠀⠄⠀⠀⠐⠀⠄⠀⠠⠀⠁⡀⠁⠀⠀⠠⠡⠀⠀⠀⠀⠀⠀⠀⠐⠄⠀⠀⠀⠀⡀│
-   50 │⠀⠀⠀⠀⠁⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠂⠀⠀⠀⠀⠀⠀⠐⠀⠈⠂⠀⠀⠀⠀⠀⠀⠀⠀⠠⠈⠀⠀⠀⠀⠀⠀⠂⠀⠄⠀⠀⠀⠂⠁⠀⠀⠀⠂⠀│
-      └────────────────────────────────────────────────────────────┘
-      1                                                          120
-                               nz = 275
+      ┌────────────────────────────────────────────────────────────┐    
+    1 │⡀⠨⠂⠀⠠⠀⠠⠀⠀⠀⠂⠀⡀⠂⠀⠀⠰⠈⠈⠂⡀⠀⠀⠀⠀⠐⠀⡀⡀⠀⠀⢄⡀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢄⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠐⠴⠄│ > 0
+      │⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠠⠄⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⢀⠀⡀⠀⠄⠘⠀⠀⡀⠀⠀⠀⠂⠠⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀│ < 0
+      │⠂⠀⠀⠀⠐⠐⠀⠂⠀⡀⠐⢀⠀⠀⠀⠀⡀⠀⠈⠀⠄⠀⠀⠨⠀⠀⠀⠀⠀⠠⠀⢀⠀⠀⠉⠐⠄⠄⠀⠔⠀⠀⠂⠀⢐⠀⠀⠀⡀⠘⢀⠀⠁⠄⠀⠠⠀⠄⠀⠄│    
+      │⠀⢀⠀⠀⠀⠀⠀⠠⠀⠂⠀⠄⠀⠘⠈⠌⢀⠀⠀⠀⠐⠀⠁⠀⠀⠀⢀⠀⠀⠠⠀⠁⠄⠀⠀⠀⠂⢀⠀⠀⠀⠀⢀⡁⠀⠀⠂⠠⠀⠀⠀⠀⠀⠊⠁⠀⠀⠀⠀⠄│    
+      │⠀⠅⠀⠀⠀⠀⢄⠈⠄⠠⠈⠀⠀⠀⠀⡀⠀⢀⠠⠀⠀⠀⠁⠀⠀⡀⠃⠀⠀⠈⠈⠁⠀⠁⠠⢀⠀⢁⠀⠀⢀⠀⠀⠀⢀⠀⠠⠂⠀⠁⢁⠀⠂⠀⠀⠆⠌⠀⠀⠀│    
+      │⠀⠀⠔⠀⠀⠀⠀⢀⠀⠁⢀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⡀⠀⠀⠀⡀⠀⠈⠀⠀⠀⡁⠁⠀⠀⠀⠠⠀⠀⠀⠄⡀⠀⠀⠀⠊⠀⠀⠄⠀⠀⠀⠀⠀⠀⠠⠀⠀⠄⠀│    
+      │⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠅⠄⡀⠀⠀⢂⠂⠄⠑⠀⠀⠀⢄⠀⠀⠠⠂⠁⡀⠀⢠⠈⠀⠂⠀⠀⠄⠀⠀⠀⠄⠀⠀⠃⠂⠀⠄⢀⠀⠀⠀⠀⠀⠀⠀│    
+      │⠀⠐⠀⠀⠂⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠀⠂⠀⠀⠀⠀⡀⢁⠁⠨⠀⠀⠀⠂⠀⠀⠨⠀⠁⠀⠀⠀⠀⠀⠊⠀⠄⠀⠀⠁⠐⠠⠀⢀⠀⠀⠀⠈⠀⠀⠁⠐⠄⠄│    
+      │⢉⠀⢀⠁⠀⠀⠀⠀⠈⠀⠀⠀⠀⠁⠀⠠⠀⠀⠁⠀⠀⠀⡠⠁⠀⠀⠀⠀⠉⠠⡀⠀⠀⠀⢀⡀⠄⠀⠀⠀⠄⠀⠀⠈⠄⠀⠑⠀⠀⠀⠀⠀⠀⠠⠀⡀⡀⠀⠀⠀│    
+      │⠅⠈⠈⠀⠀⠀⠀⠄⠀⠀⠀⠀⠀⠀⠀⠂⠀⠀⡄⠀⠀⠄⠀⠀⠠⠀⠀⠠⠈⠀⠂⠢⠈⠀⠀⠀⠄⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⢀⠤⠀⠀⠀⠀│    
+      │⠀⠀⠀⠂⠁⠀⠀⠀⠀⠁⠀⠘⠀⠂⢠⠀⠀⠀⠀⠀⢃⠀⠐⠈⠄⠐⠀⠀⠀⢀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠄⠀⠀⠀⠀⡀⠀⡀⠀⠀⠁⠀⠁⠀⠁⠠⠔⠀⢁⡀│    
+   50 │⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠈⠀⠂⠠⠀⠀⠀⠖⠀⠀⠀⠈⠀⠀⠀⠀⠀⡀⠠⠀⢀⠀⠅⠀⠀⠐⠀⠀⠀⠀⠠⠀⠠⠀⠀⢀⠀│    
+      └────────────────────────────────────────────────────────────┘    
+      ⠀1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀120⠀    
+      ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀315 ≠ 0⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀    
 ```
 
 # See also
@@ -102,8 +101,8 @@ function spy(
     show_zeros::Bool = false,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
-    warn_on_lost_kw(; okw...)
+    pkw, okw = split_plot_kw(kw)
+    warn_on_lost_kw(okw)
 
     height, width = get_canvas_dimensions_for_matrix(
         canvas,
@@ -120,16 +119,17 @@ function spy(
         extra_rows = 9,
         extra_cols = 6,
     )
+
     can = canvas(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
     plot = Plot(can; margin, padding, pkw...)
 
     if color ≢ :auto
-        points!(plot, cols, nrow + 1 .- rows, color)
-        label!(plot, :r, 1, show_zeros ? "= 0" : "≠ 0", color)
+        points!(plot, cols, nrow + 1 .- rows; color)
+        label!(plot, :r, 1, show_zeros ? "⩵ 0" : "≠ 0", color)
     else
         if show_zeros
-            points!(plot, cols, nrow + 1 .- rows, :green)
-            label!(plot, :r, 1, "= 0", :green)
+            points!(plot, cols, nrow + 1 .- rows; color = :green)
+            label!(plot, :r, 1, "⩵ 0", :green)
         else
             pos_idx = vals .> 0
             neg_idx = (!).(pos_idx)
@@ -137,18 +137,19 @@ function spy(
             pos_rows = rows[pos_idx]
             neg_cols = cols[neg_idx]
             neg_rows = rows[neg_idx]
-            points!(plot, pos_cols, nrow + 1 .- pos_rows, :red)
-            points!(plot, neg_cols, nrow + 1 .- neg_rows, :blue)
+            points!(plot, pos_cols, nrow + 1 .- pos_rows; color = :red)
+            points!(plot, neg_cols, nrow + 1 .- neg_rows; color = :blue)
             label!(plot, :r, 1, "> 0", :red)
             label!(plot, :r, 2, "< 0", :blue)
         end
     end
-    label!(plot, :l, 1, "1", BORDER_COLOR[])
-    label!(plot, :l, nrows(plot.graphics), string(nrow), BORDER_COLOR[])
-    label!(plot, :bl, "1", BORDER_COLOR[])
-    label!(plot, :br, string(ncol), BORDER_COLOR[])
+    bc = BORDER_COLOR[]
+    label!(plot, :l, 1, "1", bc)
+    label!(plot, :l, nrows(plot.graphics), nice_repr(nrow, plot), bc)
+    label!(plot, :bl, "1", bc)
+    label!(plot, :br, nice_repr(ncol, plot), bc)
     isempty(xlabel(plot)) &&
-        xlabel!(plot, string(length(vals), show_zeros ? " zeros" : " nonzeros"))
+        xlabel!(plot, nice_repr(length(vals), plot) * (show_zeros ? " ⩵ 0" : " ≠ 0"))
     plot
 end
 

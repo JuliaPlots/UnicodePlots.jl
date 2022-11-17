@@ -45,13 +45,13 @@ function preprocess!(io::IO, c::ImageGraphics)
         nothing
     end
     img_h, img_w = size(c.img)
-    if c.sixel[]
+    c.encoded_size .= if c.sixel[]
         # COV_EXCL_START
-        for r ∈ 1:char_h:img_h
-            ImageInTerminal.sixel_encode(ctx, c.img[r:min(r + char_h - 1, img_h), :])
-            push!(c.chars, read(ctx, String) |> collect)
-        end
-        nc = ceil(Int, img_w / char_w)
+        # it is better to encode the whole image in a single pass
+        # otherwise, issues with the last line (see previous implementation)
+        ImageInTerminal.sixel_encode(ctx, c.img)
+        push!(c.chars, read(ctx, String) |> collect)
+        length(1:char_h:img_h), ceil(Int, img_w / char_w)
         # COV_EXCL_STOP
     else
         callback(I, fgcol, bgcol, chars...) = begin
@@ -69,21 +69,25 @@ function preprocess!(io::IO, c::ImageGraphics)
             end
             nothing
         end
-        ImageInTerminal.imshow(ctx, c.img; callback = callback)
-        nc = length(c.chars |> first)
+        ImageInTerminal.imshow(ctx, c.img; callback)
+        length(c.chars), length(c.chars |> first)
     end
-    c.encoded_size .= length(c.chars), nc
     postprocess
 end
 
-function print_row(io::IO, _, print_color, c::ImageGraphics, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    if c.sixel[]
-        print_color(io, INVALID_COLOR, String(c.chars[row]))  # color already encoded - COV_EXCL_LINE
+function print_row(io::IO, print_nocol, print_color, c::ImageGraphics, row::Integer)
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    if c.sixel[]  # encoded in a pass => row == 1
+        row == 1 && print_nocol(io, String(c.chars[row]))  # COV_EXCL_LINE
     else
+        bgcols = c.bgcols[row]
+        fgcols = c.fgcols[row]
+        chars = c.chars[row]
         for col ∈ 1:ncols(c)
-            bgcol = (bgcol = c.bgcols[row][col]) == INVALID_COLOR ? missing : bgcol
-            print_color(io, c.fgcols[row][col], c.chars[row][col]; bgcol)
+            # NOTE: the last row can be hidden (only the upper pixel colored)
+            # see XTermColors.jl/src/ascii.jl - SmallBlocks encoder
+            bgcol = (bgcol = bgcols[col]) == INVALID_COLOR ? missing : bgcol
+            print_color(io, fgcols[col], chars[col]; bgcol)
         end
     end
     nothing

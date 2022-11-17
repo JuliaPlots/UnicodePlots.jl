@@ -296,12 +296,39 @@ meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
 
-roundable(x::Number) = isinteger(x) && (typemin(Int) ≤ x ≤ typemax(Int))
+roundable(x::Number) = isinteger(x) && (typemin(Int32) ≤ x ≤ typemax(Int32))
 compact_repr(x::Number) = repr(x, context = :compact => true)
 
-nice_repr(x::Integer, _::Bool = true)::String = string(x)
-function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
-    str = compact_repr(roundable(x) ? round(Int, x, RoundNearestTiesUp) : x)
+function default_formatter(kw)
+    unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
+    thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
+    x -> nice_repr(x, unicode_exponent, thousands_separator)
+end
+
+nice_repr(x::Number, plot) = nice_repr(x, plot.unicode_exponent, plot.thousands_separator)
+nice_repr(x::Number, _::Nothing) =
+    nice_repr(x, PLOT_KEYWORDS.unicode_exponent, PLOT_KEYWORDS.thousands_separator)
+
+function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
+    thousands_separator == '\0' && return string(x)
+    xs = collect(reverse(string(abs(x))))
+    n = length(xs)
+    v = sizehint!(Char[], n + 10)
+    for (i, c) ∈ enumerate(xs)
+        push!(v, c)
+        (i < n && mod1(i, 3) == 3) && push!(v, thousands_separator)
+    end
+    reverse!(v)
+    (sign(x) ≥ 0 ? "" : "-") * String(v)
+end
+function nice_repr(
+    x::AbstractFloat,
+    unicode_exponent::Bool,
+    thousands_separator::Char,
+)::String
+    xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
+    iszero(xr) && return "0"
+    str = compact_repr(xr)
     if (parts = split(str, 'e')) |> length == 2  # e.g. 1.0e-17 => 1e⁻¹⁷
         left, right = parts
         str = *(
@@ -309,12 +336,16 @@ function nice_repr(x::AbstractFloat, unicode_exponent::Bool = true)::String
             'e',
             unicode_exponent ? superscript(right) : right,
         )
+    elseif pseudo_int
+        str = nice_repr(xr, unicode_exponent, thousands_separator)
     end
     str
 end
 
 ceil_neg_log10(x) =
-    roundable(-log10(x)) ? ceil(Integer, -log10(x)) : floor(Integer, -log10(x))
+    let val = -log10(x)
+        roundable(val) ? ceil(Int, val) : floor(Int, val)
+    end
 
 round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
     ceil(x, digits = ceil_neg_log10(m) + 1)
@@ -463,23 +494,22 @@ end
 @inline grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
 @inline blu(c::UInt32)::UInt8 = c & 0xff
 
-@inline blend_colors(a::UInt32, b::UInt32)::UInt32 =
-    if a ≡ b
-        a  # fastpath
-    elseif a < THRESHOLD && b < THRESHOLD  # 24bit
-        # physical average (UInt32 to prevent UInt8 overflow)
-        r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
-        # binary or
-        # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
-    elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
-        THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
-    elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
-        max(a, b)
-    else
-        INVALID_COLOR
-    end
+@inline blend_colors(a::UInt32, b::UInt32)::UInt32 = if a ≡ b
+    a  # fastpath
+elseif a < THRESHOLD && b < THRESHOLD  # 24bit
+    # physical average (UInt32 to prevent UInt8 overflow)
+    r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
+    g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+    b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+    # binary or
+    # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
+elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
+    THRESHOLD + (UInt8(a - THRESHOLD) | UInt8(b - THRESHOLD))
+elseif a ≢ INVALID_COLOR && b ≢ INVALID_COLOR
+    max(a, b)
+else
+    INVALID_COLOR
+end::UInt32
 
 ignored_color(color::Symbol) = color ≡ :normal || color ≡ :default || color ≡ :nothing
 ignored_color(::Nothing) = true
@@ -508,37 +538,33 @@ function ansi_color(color::CrayonColorType)::ColorType
     ansi_color(Crayons._parse_color(color))
 end
 
-function ansi_color(c::Crayons.ANSIColor)::ColorType
-    col = if COLORMODE[] ≡ Crayons.COLORS_24BIT
-        if c.style ≡ Crayons.COLORS_24BIT
-            r32(c.r) + g32(c.g) + b32(c.b)
-        elseif c.style ≡ Crayons.COLORS_256
-            USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
-        elseif c.style ≡ Crayons.COLORS_16
-            c8 = ansi_4bit_to_8bit(c.r)
-            USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
-        end
-    else  # 0-255 ansi stored in a UInt32
-        if c.style ≡ Crayons.COLORS_24BIT
-            THRESHOLD + Crayons.to_256_colors(c).r
-        elseif c.style ≡ Crayons.COLORS_256
-            THRESHOLD + c.r
-        elseif c.style ≡ Crayons.COLORS_16
-            THRESHOLD + ansi_4bit_to_8bit(c.r)
-        end
-    end
-    ColorType(col)
-end
+ansi_color(c::Crayons.ANSIColor) = if COLORMODE[] ≡ Crayons.COLORS_24BIT
+    if c.style ≡ Crayons.COLORS_24BIT
+        r32(c.r) + g32(c.g) + b32(c.b)
+    elseif c.style ≡ Crayons.COLORS_256
+        USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
+    elseif c.style ≡ Crayons.COLORS_16
+        c8 = ansi_4bit_to_8bit(c.r)
+        USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+    end::ColorType
+else  # 0-255 ansi stored in a UInt32
+    THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
+        Crayons.to_256_colors(c).r
+    elseif c.style ≡ Crayons.COLORS_256
+        c.r
+    elseif c.style ≡ Crayons.COLORS_16
+        ansi_4bit_to_8bit(c.r)
+    end::UInt8
+end::ColorType
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
-complement(color::ColorType)::ColorType =
-    if color ≡ INVALID_COLOR
-        INVALID_COLOR
-    elseif color < THRESHOLD
-        r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
-    elseif color ≢ INVALID_COLOR
-        THRESHOLD + ~UInt8(color - THRESHOLD)
-    end
+complement(color::ColorType)::ColorType = if color ≡ INVALID_COLOR
+    INVALID_COLOR
+elseif color < THRESHOLD
+    r32(~red(color)) + g32(~grn(color)) + b32(~blu(color))
+elseif color ≢ INVALID_COLOR
+    THRESHOLD + ~UInt8(color - THRESHOLD)
+end::ColorType
 
 out_stream_size(out_stream::Nothing) = displaysize()
 out_stream_size(out_stream::IO) = displaysize(out_stream)
@@ -548,10 +574,13 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
 
-multiple_series_defaults(y::AbstractMatrix, kw, start) = (
-    iterable(get(kw, :name, map(i -> "y$i", start:(start + size(y, 2))))),
-    iterable(get(kw, :color, :auto)),
-    iterable(get(kw, :marker, :pixel)),
+multiple_series_defaults(y::AbstractMatrix, kw, start) = map(
+    iterable,
+    (
+        get(kw, :name, map(i -> "y$i", start:(start + size(y, 2)))),
+        get(kw, :color, :auto),
+        get(kw, :marker, :pixel),
+    ),
 )
 
 function colormap_callback(cmap::Symbol)
@@ -589,11 +618,11 @@ mutable struct ColorMap
     callback::Function
 end
 
-split_plot_kw(; kw...) =
+split_plot_kw(kw) =
     if isempty(kw)
-        (;), (;)  # avoids `filter` allocations
+        pairs((;)), pairs((;))  # avoids `filter` allocations
     else
         filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
     end
 
-warn_on_lost_kw(; kw...) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)
+warn_on_lost_kw(kw) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)

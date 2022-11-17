@@ -61,7 +61,7 @@ function polarplot(
     rlim = (0, 0),
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
 
     r = r isa Function ? r.(θ) : r
     max_r = last(is_auto(rlim) ? extrema(r) : rlim)

@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.3] - 2022-11-16
+### Added
+- Group digits on integer values (thousands) for readability (configured using `thounsands_separator`).
+
+### Changed
+- Consistent left and right padding (avoids duplicate label & cbar paddings, symmetry).
+- Colorbar limits labels moved to top and bottom, to save right space.
+- Change `imageplot` borders to default `:corners`.
+- Fix `sixel` encoding in `imageplot`.
+- Simplify floating point repr.
+
 ## [3.2] - 2022-11-04
 ### Changed
 - Removed labels in `3d` plots by default.
@@ -20,7 +31,6 @@
 - Add `ColorSchemes.jl` dependency following colormaps removal.
 - Add `xflip` and `yflip` for reversing/flipping the axes.
 - Add `head_tail_frac` for `lineplot` using `head_tail`.
-- Reduce number of exported symbols (canvas related).
 - Support `vline!` and `hline!`.
 - Buffering `i/o` (performance).
 - Add `CHANGELOG.md` file.
@@ -28,11 +38,12 @@
 ### Changed
 - Swap `width` and `height` of internal `grid` and `colors` buffer.
 - Rename `printrow` to `print_row`.
-- `spy` default title.
+- Change `spy` default title.
 
 ### Removed
-- All marked deprecated functions, keywords and tests.
-- All hard-coded colormap tables (replaced by `ColorSchemes`).
+- Reduce number of exported symbols (canvas related).
+- Marked deprecated functions, keywords and tests.
+- Hard-coded colormap tables (replaced by `ColorSchemes`).
 - Functor `scale` support.
 
 ## [2.12] - 2022-05-24
@@ -61,11 +72,11 @@
 
 ### Changed
 - Support vector of colors `barplot`, `boxplot`.
-- `surfaceplot` interpolation & performance.
+- Enhance `surfaceplot` interpolation & performance.
 
 ## [2.7] - 2022-01-23
 ### Changed
-- Crayons `4.1`
+- Crayons `4.1`.
 
 ### Removed
 - Support for julia `1.0`.
@@ -76,11 +87,11 @@
 
 ### Changed
 - Rework documentation, automate generation of docstrings and `README.md`.
-- `heatmap` and `spy` aspect ratios.
+- Fix `heatmap` and `spy` aspect ratios.
 
 ## [2.5] - 2021-11-28
 ### Add
-- `spy`: allow showing zero pattern.
+- Allow showing zero pattern in `spy`.
 
 ### Changed
 - Defaults to unicode exponent on non-identity scales.
@@ -97,7 +108,7 @@
 
 ## [2.2] - 2021-09-06
 ### Added
-- Support `x` and `y` axes scaling (e.g. log-log plots).
+- Support `x` and `y` axes scaling (e.g. `log-log` plots).
 
 ### Changed
 - Enhance resolution of histogram.
@@ -115,7 +126,7 @@
 - Bring back CI and support julia `1.6`.
 - Avoid drawing pixels out of canvas bounds.
 - Switch to `compact` repr for floats.
-- `spy` for `coo`.
+- Support `coo` in `spy`.
 
 ### Removed
 - Travis CI.

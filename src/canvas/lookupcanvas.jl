@@ -45,7 +45,17 @@ function CreateLookupCanvas(
     )
 end
 
-function pixel!(c::LookupCanvas, pixel_x::Integer, pixel_y::Integer, color::UserColorType)
+# don't attempt to blend colors if they have been explicitly specified
+@inline blend_colors(c::LookupCanvas, ::UserColorType) = false
+@inline blend_colors(c::LookupCanvas, ::Symbol) = c.blend
+
+function pixel!(
+    c::LookupCanvas,
+    pixel_x::Integer,
+    pixel_y::Integer,
+    color::ColorType,
+    blend::Bool,
+)
     valid_x_pixel(c, pixel_x) || return c
     valid_y_pixel(c, pixel_y) || return c
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
@@ -54,14 +64,13 @@ function pixel!(c::LookupCanvas, pixel_x::Integer, pixel_y::Integer, color::User
            c.min_max[1] ≤ val ≤ c.min_max[2]
             c.grid[char_y, char_x] |= lookup_encode(c)[char_y_off, char_x_off]
         end
-        blend = color isa Symbol && c.blend  # don't attempt to blend colors if they have been explicitly specified
-        set_color!(c, char_x, char_y, ansi_color(color), blend)
+        set_color!(c, char_x, char_y, color, blend)
     end
     c
 end
 
 function print_row(io::IO, _, print_color, c::LookupCanvas, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
     for col ∈ 1:ncols(c)
         print_color(io, c.colors[row, col], lookup_decode(c)[c.grid[row, col] + 1])
     end

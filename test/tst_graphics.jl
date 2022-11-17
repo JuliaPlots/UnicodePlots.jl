@@ -39,7 +39,7 @@
     @testset "Constructor parameter" begin
         @test_throws MethodError BarplotGraphics(0:2:10)
         @test_throws Union{ArgumentError,MethodError} BarplotGraphics(Int[], 20)
-        @test_throws ArgumentError BarplotGraphics(0:2:10, 30, symbols = ["--"])
+        @test_throws ArgumentError BarplotGraphics(0:2:10, 30; symbols = ["--"])  # invalids symbols
         g = BarplotGraphics([0, 0], 20)
         @test @inferred(nrows(g)) ≡ 2
         @test @inferred(ncols(g)) ≡ 20
@@ -48,11 +48,11 @@
         @test @inferred(nrows(g)) ≡ 2
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_blue.txt", @show_col(g))
-        g = BarplotGraphics([0, 1, 10, 100, 1000], 20, log10)
+        g = BarplotGraphics([0, 1, 10, 100, 1_000], 20; xscale = log10)
         @test @inferred(nrows(g)) ≡ 5
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_log10.txt", @show_col(g))
-        g = BarplotGraphics([0, 1, 10], 20, symbols = ["#"])
+        g = BarplotGraphics([0, 1, 10], 20; symbols = ["#"])
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 20
         test_ref("graphics/bar_symb.txt", @show_col(g))
@@ -60,9 +60,9 @@
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 10
         test_ref("graphics/bar_short.txt", @show_col(g))
-        g = BarplotGraphics([0, 1, 10000000], 1)
+        g = BarplotGraphics([0, 1, 100_000], 1)
         @test @inferred(nrows(g)) ≡ 3
-        @test @inferred(ncols(g)) ≡ 15
+        @test @inferred(ncols(g)) ≡ 13
         test_ref("graphics/bar_short2.txt", @show_col(g))
     end
 end
@@ -120,6 +120,6 @@ end
         @test @inferred(nrows(g)) ≡ 3
         @test @inferred(ncols(g)) ≡ 30
         test_ref("graphics/box_minmax2.txt", @show_col(g))
-        # FIXME: boxplot breaks if `max_x` or `min_x` doesn't cover the data
+        # FIXME: boxplot breaks if `max_x` or `min_x` doesn't cover data span
     end
 end

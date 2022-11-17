@@ -16,13 +16,16 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
 
     function BoxplotGraphics(
         data::AbstractVector{R},
-        char_width::Integer,
-        visible::Bool,
-        color::Union{UserColorType,AbstractVector},
-        min_x::R,
-        max_x::R,
-    ) where {R}
+        char_width::Integer;
+        visible::Bool = KEYWORDS.visible,
+        color::Union{UserColorType,AbstractVector} = :green,
+        min_x::Union{Number,Nothing} = nothing,
+        max_x::Union{Number,Nothing} = nothing,
+    ) where {R<:Number}
         char_width = max(char_width, 10)
+        mi, ma = extrema(data)
+        min_x = R(something(min_x, mi))
+        max_x = R(something(max_x, ma))
         if min_x == max_x
             min_x -= 1
             max_x += 1
@@ -33,11 +36,11 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
             [ansi_color(color)]
         end
         summary = FiveNumberSummary(
-            minimum(data),
+            mi,
             percentile(data, 25),
             percentile(data, 50),
             percentile(data, 75),
-            maximum(data),
+            ma,
         )
         new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
     end
@@ -45,15 +48,6 @@ end
 
 @inline nrows(c::BoxplotGraphics) = 3length(c.data)
 @inline ncols(c::BoxplotGraphics) = c.char_width
-
-BoxplotGraphics(
-    data::AbstractVector{R},
-    char_width::Integer;
-    visible::Bool = KEYWORDS.visible,
-    color::Union{UserColorType,AbstractVector} = :green,
-    min_x::Number = minimum(data),
-    max_x::Number = maximum(data),
-) where {R<:Number} = BoxplotGraphics(data, char_width, visible, color, R(min_x), R(max_x))
 
 function addseries!(
     c::BoxplotGraphics,
@@ -84,12 +78,11 @@ transform(c::BoxplotGraphics, value) = clamp(
 )
 
 function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
-    0 < row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    idx = ceil(Int, row / 3)
-    series = c.data[idx]
+    1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
+    I = ceil(Int, row / 3)
+    series = c.data[I]
 
-    series_row = (row - 1) % 3 + 1
-
+    series_row = mod1(row, 3)
     min_char = ('╷', '├', '╵')[series_row]
     line_char = (' ', '─', ' ')[series_row]
     left_box_char = ('┌', '┤', '└')[series_row]
@@ -100,7 +93,7 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
 
     chars = fill(' ', c.char_width)
 
-    # Draw shapes first - this is most important,
+    # draw shapes first - this is most important,
     # so they'll always be drawn even if there's not enough space
     chars[transform(c, series.minimum)] = min_char
     chars[transform(c, series.lower_quartile)] = left_box_char
@@ -122,6 +115,6 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
         chars[i] = line_char
     end
 
-    print_color(io, c.colors[idx], String(chars))
+    print_color(io, c.colors[I], String(chars))
     nothing
 end

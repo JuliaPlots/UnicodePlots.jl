@@ -48,11 +48,11 @@ end
 
     p = @binf lineplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
     test_ref("lineplot/scale2.txt", @show_col(p))
-    tx = [-1.0, 2, 3, 700000]
-    ty = [1.0, 2, 9, 4000000]
+    tx = [-1.0, 2, 3, 700_000]
+    ty = [1.0, 2, 9, 4_000_000]
     p = @binf lineplot(tx, ty)
     test_ref("lineplot/scale3.txt", @show_col(p))
-    p = @binf lineplot(tx, ty, height = 5, width = 5)
+    p = @binf lineplot(tx, ty, height = 5, width = 18)
     test_ref("lineplot/scale3_small.txt", @show_col(p))
 end
 
@@ -195,10 +195,10 @@ end
     test_ref("lineplot/stairs_parameters2_nocolor.txt", @show_nocol(p))
 
     # special weird case
-    p = stairs(sx, [1, 3, 4, 2, 7000])
+    p = stairs(sx, [1, 3, 4, 2, 7_000])
     test_ref("lineplot/stairs_edgecase.txt", @show_col(p))
 
-    p = stairs(sx, sy, width = 10, padding = 3)
+    p = stairs(sx, sy, width = 20)
     label!(p, :tl, "Hello")
     label!(p, :t, "how are")
     label!(p, :tr, "you?")
@@ -208,13 +208,13 @@ end
     lineplot!(p, 1, 0.5)
     test_ref("lineplot/squeeze_annotations.txt", @show_col(p))
 
-    dx = [Date(2020, 8, i) for i ∈ 1:10]
+    dx = map(i -> Date(2020, 8, i), 1:10)
     p = stairs(dx, 1:10, xlim = (Date(2020, 8, 1), Date(2020, 8, 15)))
     test_ref("lineplot/stairs_date.txt", @show_col(p))
 end
 
 @testset "scales" begin
-    x = y = collect(10:10:1000)
+    x = y = collect(10:10:1_000)
     tmp = tempname()
     for s ∈ (:ln, :log2, :log10)
         fscale = UnicodePlots.FSCALES[s]

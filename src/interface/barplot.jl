@@ -45,7 +45,7 @@ julia> barplot(["Paris", "New York", "Madrid"],
    New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406   
      Madrid ┤■■■■■■■■■■■■ 3.165                        
             └                                        ┘ 
-                        population [in mil]
+                        population [in mil]            
 ```
 
 # See also
@@ -61,7 +61,7 @@ function barplot(
     name::AbstractString = KEYWORDS.name,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     length(text) == length(heights) ||
         throw(DimensionMismatch("the given vectors must be of the same length"))
     minimum(heights) ≥ 0 || throw(ArgumentError("all values have to be ≥ 0"))
@@ -86,10 +86,11 @@ function barplot(
 
     area = BarplotGraphics(
         heights,
-        something(width, DEFAULT_WIDTH[]),
-        xscale;
+        something(width, DEFAULT_WIDTH[]);
+        formatter = default_formatter(pkw),
         symbols = KEYWORDS.symbols,
         maximum = nothing,
+        xscale,
         color,
         okw...,
     )

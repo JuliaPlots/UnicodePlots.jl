@@ -24,7 +24,7 @@ using Unitful
 include("fixes.jl")
 
 const TO = TimerOutput()
-const RNG = StableRNG(1337)
+const RNG = StableRNG(1_337)
 const T_SZ = (24, 80)  # default terminal size on unix
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
@@ -38,45 +38,52 @@ test_ref(reference, actual) = @test_reference(
 is_ci() = get(ENV, "CI", "false") == "true"
 
 # helpers
+
+"a plot must be square"
+macro check_padding(x)
+    tmp = gensym()
+    quote
+        $tmp = UnicodePlots.no_ansi_escape($x)
+        if length.(split($tmp, '\n')) |> unique |> length == 1
+            @test true
+        else
+            println($x)
+            @test false
+        end
+    end |> esc
+end
+
 macro show_col(p, kv...)
-    :(@io2str(
-        $(Expr(
-            :call,
-            :show,
-            Expr(:call, :IOContext, :(::IO), :color => true, kv...),
-            esc(p),
-        ))
-    ))
+    tmp = gensym()
+    quote
+        $tmp = @io2str $(:(show(IOContext(::IO, :color => true, $(kv...)), $p)))
+        @check_padding $tmp
+        $tmp
+    end |> esc
 end
 macro show_nocol(p, kv...)
-    :(@io2str(
-        $(Expr(
-            :call,
-            :show,
-            Expr(:call, :IOContext, :(::IO), :color => false, kv...),
-            esc(p),
-        ))
-    ))
+    tmp = gensym()
+    quote
+        $tmp = @io2str $(:(show(IOContext(::IO, :color => false, $(kv...)), $p)))
+        @check_padding $tmp
+        $tmp
+    end |> esc
 end
 macro print_col(p, kv...)
-    :(@io2str(
-        $(Expr(
-            :call,
-            :print,
-            Expr(:call, :IOContext, :(::IO), :color => true, kv...),
-            esc(p),
-        ))
-    ))
+    tmp = gensym()
+    quote
+        $tmp = @io2str $(:(print(IOContext(::IO, :color => true, $(kv...)), $p)))
+        @check_padding $tmp
+        $tmp
+    end |> esc
 end
 macro print_nocol(p, kv...)
-    :(@io2str(
-        $(Expr(
-            :call,
-            :print,
-            Expr(:call, :IOContext, :(::IO), :color => false, kv...),
-            esc(p),
-        ))
-    ))
+    tmp = gensym()
+    quote
+        $tmp = @io2str $(:(print(IOContext(::IO, :color => false, $(kv...)), $p)))
+        @check_padding $tmp
+        $tmp
+    end |> esc
 end
 
 # return type Plot{BrailleCanvas{typeof(identity), typeof(identity)}} does not match
@@ -125,7 +132,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_quality.jl"
 end
 
-# ~ 166s & 15.0GiB on 1.7
+# ~ 186s & 12.0GiB on 1.8
 print_timer(TO; compact = true, sortby = :firstexec)
 
 println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

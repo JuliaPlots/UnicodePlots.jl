@@ -39,13 +39,13 @@ $(arguments(
 
 ```julia-repl
 julia> boxplot([1, 2, 3, 7], title = "Test")
-                      Test
-    ┌                                        ┐
-     ╷   ┌────┬─────────┐                   ╷
-     ├───┤    │         ├───────────────────┤
-     ╵   └────┴─────────┘                   ╵
-    └                                        ┘
-    1                   4                    7
+                       Test                    
+    ┌                                        ┐ 
+     ╷   ┌────┬─────────┐                   ╷  
+     ├───┤    │         ├───────────────────┤  
+     ╵   └────┴─────────┘                   ╵  
+    └                                        ┘ 
+     1                  4                   7  
 ```
 
 # See also
@@ -60,7 +60,7 @@ function boxplot(
     xlim = KEYWORDS.xlim,
     kw...,
 )
-    pkw, okw = split_plot_kw(; kw...)
+    pkw, okw = split_plot_kw(kw)
     length(xlim) == 2 ||
         throw(ArgumentError("`xlim` must be a tuple or a vector of length 2"))
     length(text) == length(data) || throw(DimensionMismatch("wrong number of text"))
@@ -72,7 +72,7 @@ function boxplot(
     plot = Plot(area; border = :corners, pkw...)
 
     min_x_str, mean_x_str, max_x_str =
-        nice_repr.((min_x, (min_x + max_x) / 2, max_x), plot.unicode_exponent)
+        nice_repr.((min_x, (min_x + max_x) / 2, max_x), Ref(plot))
     label!(plot, :bl, min_x_str, color = BORDER_COLOR[])
     label!(plot, :b, mean_x_str, color = BORDER_COLOR[])
     label!(plot, :br, max_x_str, color = BORDER_COLOR[])
@@ -100,7 +100,7 @@ end
     min_x = plot.graphics.min_x[]
     max_x = plot.graphics.max_x[]
     min_x_str, mean_x_str, max_x_str =
-        nice_repr.((min_x, (min_x + max_x) / 2, max_x), plot.unicode_exponent)
+        nice_repr.((min_x, (min_x + max_x) / 2, max_x), Ref(plot))
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)
     label!(plot, :br, max_x_str)

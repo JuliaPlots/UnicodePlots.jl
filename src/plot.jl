@@ -56,6 +56,7 @@ struct Plot{T<:GraphicsArea,E,F}
     margin::RefValue{Int}
     padding::RefValue{Int}
     unicode_exponent::Bool
+    thousands_separator::Char
     border::Symbol
     compact::Bool
     labels::Bool
@@ -75,6 +76,7 @@ function Plot(
     ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
     zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
     unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
+    thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
     border::Symbol = PLOT_KEYWORDS.border,
     compact::Bool = PLOT_KEYWORDS.compact,
     margin::Integer = PLOT_KEYWORDS.margin,
@@ -91,7 +93,7 @@ function Plot(
     projection = something(projection, MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
-    p = Plot{T,E,F}(
+    Plot{T,E,F}(
         graphics,
         projection,
         Ref(0),
@@ -103,6 +105,7 @@ function Plot(
         Ref(Int(margin)),
         Ref(Int(padding)),
         unicode_exponent,
+        thousands_separator,
         border,
         compact,
         labels && graphics.visible,
@@ -114,11 +117,6 @@ function Plot(
         Dict{Symbol,ColorType}(),
         ColorMap(colorbar_border, colorbar, colorbar_lim, colormap_callback(colormap)),
     )
-    if compact
-        isempty(xlabel) || label!(p, :b, xlabel)
-        isempty(ylabel) || label!(p, :l, round(Int, nrows(graphics) / 2), ylabel)
-    end
-    p
 end
 
 """
@@ -159,6 +157,7 @@ function Plot(
     ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
     zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
     unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
+    thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
     xscale::Union{Symbol,Function} = PLOT_KEYWORDS.xscale,
     yscale::Union{Symbol,Function} = PLOT_KEYWORDS.yscale,
     height::Union{Integer,Nothing,Symbol} = nothing,
@@ -259,13 +258,14 @@ function Plot(
         colorbar_border,
         colorbar_lim,
         unicode_exponent,
+        thousands_separator,
         projection = mvp,
     )
     if xticks || yticks
-        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My), unicode_exponent)
+        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My), Ref(plot))
         if unicode_exponent
-            m_x, M_x = map(v -> base_x ≢ nothing ? superscript(v) : v, (m_x, M_x))
-            m_y, M_y = map(v -> base_y ≢ nothing ? superscript(v) : v, (m_y, M_y))
+            m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
+            m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
         end
         bc = BORDER_COLOR[]
         if xticks
@@ -460,7 +460,6 @@ $(arguments((; text = "a string of text"); default = (), add = (:x, :y, :color))
 
 ```julia-repl
 julia> plt = lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot");
-
 julia> annotate!(plt, 5, 5, "My text")
        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My Lineplot⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
        ┌────────────────────────────────────────┐ 
@@ -498,13 +497,21 @@ function annotate!(
     kw...,
 )
     color = color ≡ :auto ? next_color!(plot) : color
-    annotate!(plot.graphics, x, y, text, color; kw...)
+    annotate!(
+        plot.graphics,
+        x,
+        y,
+        text,
+        ansi_color(color),
+        blend_colors(plot.graphics, color);
+        kw...,
+    )
     plot
 end
 
 transform(tr, args...) = args  # catch all
-transform(tr::MVP{Val{false}}, x, y, c::UserColorType) = (x, y, c)
-transform(tr::MVP{Val{false}}, x, y, ::Nothing, c::UserColorType) = (x, y, c)  # drop z
+transform(tr::MVP{Val{false}}, x, y, args...) = (x, y, args...)
+transform(tr::MVP{Val{false}}, x, y, ::Nothing, args...) = (x, y, args...)  # drop z
 transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector,Number}, args...) =
     (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 

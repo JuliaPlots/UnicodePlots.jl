@@ -44,6 +44,6 @@ print_row(io::IO, c::GraphicsArea, row::Integer) = print_row(io, print, print_co
     preprocess!(c::GraphicsArea)
 
 Optional step: pre-process canvas before printing rows (e.g. for costly computations).
-Returns a cleanup callback for optional cleanup after printing.
+Returns a callback for optional cleanup after printing.
 """
 preprocess!(::IO, c::GraphicsArea) = c -> nothing

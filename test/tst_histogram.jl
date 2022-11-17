@@ -1,4 +1,4 @@
-seed!(RNG, 1337)
+seed!(RNG, 1_337)
 x = randn(RNG, 10_000)
 
 @testset "default params" begin
@@ -85,11 +85,9 @@ end
 end
 
 @testset "vertical" begin
-    n = 10
+    n = 30
     dat = Float64[]
-    for i ∈ 1:n
-        append!(dat, repeat([i], i))
-    end
+    foreach(i -> append!(dat, repeat([i], i)), 1:n)
     p = histogram(dat; vertical = true, nbins = n)
     test_ref("histogram/vert2.txt", @print_col(p))
 end
