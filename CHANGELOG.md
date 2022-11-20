@@ -2,7 +2,7 @@
 
 ## [3.3] - 2022-11-17
 ### Added
-- Group digits on integer values (thousands) for readability (configured using `thounsands_separator`).
+- Group digits on integer values (thousands) for readability (configured using `thousands_separator`).
 
 ### Changed
 - Consistent left and right padding (avoids duplicate label & cbar paddings, symmetry).
