@@ -30,8 +30,10 @@ end::Float64
 @inline scale_y_to_pixel(c::Canvas, y::Number) = y_to_pixel(c, c.yscale(y))
 @inline scale_x_to_pixel(c::Canvas, x::Number) = x_to_pixel(c, c.xscale(x))
 
-@inline valid_y(c::Canvas, y::Number) = origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c)
-@inline valid_x(c::Canvas, x::Number) = origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c)
+@inline valid_y(c::Canvas, y::Number) =
+    isfinite(y) && (origin_y(c) ≤ c.yscale(y) ≤ origin_y(c) + height(c))
+@inline valid_x(c::Canvas, x::Number) =
+    isfinite(x) && (origin_x(c) ≤ c.xscale(x) ≤ origin_x(c) + width(c))
 
 @inline valid_y_pixel(c::Canvas, pixel_y::Integer) = 0 ≤ pixel_y ≤ pixel_height(c)  # NOTE: relaxed upper bound [ref(1)]
 @inline valid_x_pixel(c::Canvas, pixel_x::Integer) = 0 ≤ pixel_x ≤ pixel_width(c)
@@ -95,7 +97,10 @@ function lines!(
     (valid_y(c, y1) || valid_y(c, y2)) || return c
 
     Δx = scale_x_to_pixel(c, x2) - (cur_x = scale_x_to_pixel(c, x1))
+    isfinite(Δx) || return c
+
     Δy = scale_y_to_pixel(c, y2) - (cur_y = scale_y_to_pixel(c, y1))
+    isfinite(Δy) || return c
 
     nsteps = min(max(abs(Δx), abs(Δy)), typemax(Int32))  # hard limit
     len = min(floor(Int, nsteps), typemax(Int16))  # performance limit

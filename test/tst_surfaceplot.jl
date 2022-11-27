@@ -36,6 +36,19 @@ end
     test_ref("surfaceplot/matrix_compact.txt", @show_col(p))
 end
 
+@testset "masking values using `NaN`s" begin
+    x = y = -4:4
+
+    z = 1 ./ sin.(x' .* y)  # produce data with `Inf` values
+    z[.~isfinite.(z)] .= NaN  # mask infinite values (quite common scenario)
+
+    p = surfaceplot(x, y, z)
+    test_ref("surfaceplot/masked_values_points.txt", @show_col(p))
+
+    p = surfaceplot(x, y, z; lines = true)
+    test_ref("surfaceplot/masked_values_lines.txt", @show_col(p))
+end
+
 @testset "color interpolation" begin
     p = surfaceplot(
         -2:2,
