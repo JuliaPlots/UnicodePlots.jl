@@ -529,9 +529,9 @@ c256(c::Integer) = c
 ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
 ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
 
-ansi_color(color::Missing) = INVALID_COLOR
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
+ansi_color(::Missing) = INVALID_COLOR  # not a CrayonColorType
 
 function ansi_color(color::CrayonColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
@@ -586,17 +586,17 @@ multiple_series_defaults(y::AbstractMatrix, kw, start) = map(
 function colormap_callback(cmap::Symbol)
     cdata = ColorSchemes.colorschemes[cmap]
     (z, minz, maxz) -> begin
-        isfinite(z) || return
+        isfinite(z) || return INVALID_COLOR
         get(
             cdata,
             minz == maxz ? zero(z) : (max(minz, min(z, maxz)) - minz) / (maxz - minz),
         ) |> ansi_color
-    end
+    end::ColorType
 end
 
 function colormap_callback(cmap::AbstractVector)
     (z, minz, maxz) -> begin
-        isfinite(z) || return
+        isfinite(z) || return INVALID_COLOR
         i = if minz == maxz || z < minz
             1
         elseif z > maxz
@@ -605,7 +605,7 @@ function colormap_callback(cmap::AbstractVector)
             1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
         end
         ansi_color(cmap[i])
-    end
+    end::ColorType
 end
 
 colormap_callback(cmap::Nothing) = x -> nothing
