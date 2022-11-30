@@ -40,7 +40,7 @@ end
     x = y = -4:4
 
     z = 1 ./ sin.(x' .* y)  # produce data with `Inf` values
-    z[.~isfinite.(z)] .= NaN  # mask infinite values (quite common scenario)
+    z[isinf.(z)] .= NaN  # mask infinite values (quite common scenario)
 
     p = surfaceplot(x, y, z)
     test_ref("surfaceplot/masked_values_points.txt", @show_col(p))
