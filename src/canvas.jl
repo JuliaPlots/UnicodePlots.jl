@@ -117,7 +117,7 @@ function lines!(
         # color interpolation
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1), blend)
         start_x, start_y = cur_x, cur_y
-        iΔ = 1 / √(Δx^2 + Δy^2)
+        iΔ = inv(√(Δx^2 + Δy^2))
         for _ ∈ range(1, length = len)
             cur_x += δx
             cur_y += δy
