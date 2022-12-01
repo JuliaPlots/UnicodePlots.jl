@@ -62,13 +62,10 @@ function polarplot(
     kw...,
 )
     pkw, okw = split_plot_kw(kw)
-
-    r = r isa Function ? r.(θ) : r
-    max_r = last(is_auto(rlim) ? extrema(r) : rlim)
-    lims = x = y = [-max_r, +max_r]
+    r, lims = polar_lims(θ, r, rlim)
     plot = Plot(
-        x,
-        y;
+        lims,
+        lims;
         xlim = lims,
         ylim = lims,
         grid = false,
@@ -92,16 +89,7 @@ end
     scatter = false,
     kw...,
 )
-    polar_grid!(plot, collect(is_auto(rlim) ? extrema(r) : rlim))
-
-    # user data
-    (scatter ? scatterplot! : lineplot!)(plot, r .* cos.(θ), r .* sin.(θ); kw...)
-
-    plot
-end
-
-function polar_grid!(plot, rlim)
-    mr, Mr = rlim
+    mr, Mr = rlim = collect(rlim)
 
     # grid
     theta = range(0, 2π, length = 360)
@@ -128,4 +116,16 @@ function polar_grid!(plot, rlim)
             color,
         )
     end
+
+    # user data
+    (scatter ? scatterplot! : lineplot!)(plot, r .* cos.(θ), r .* sin.(θ); kw...)
+
+    plot
+end
+
+function polar_lims(θ::AbstractVector, r::Union{Function,AbstractVector}, rlim)
+    r = r isa Function ? r.(θ) : r
+    r_max = last(is_auto(rlim) ? extrema(r) : rlim)
+    lims = x = y = [-r_max, +r_max]
+    r, lims
 end

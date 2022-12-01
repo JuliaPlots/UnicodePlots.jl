@@ -73,7 +73,7 @@ export scatterplot!,
     stairs
 
 # methods without mutating variants
-export horizontal_histogram, vertical_histogram, histogram, heatmap, spy, imageplot
+export horizontal_histogram, vertical_histogram, histogram, polarheatmap, heatmap, spy, imageplot
 
 include("common.jl")
 include("lut.jl")
@@ -113,6 +113,7 @@ include("interface/heatmap.jl")
 include("interface/spy.jl")
 include("interface/boxplot.jl")
 include("interface/polarplot.jl")
+include("interface/polarheatmap.jl")
 include("interface/imageplot.jl")
 
 function __init__()
