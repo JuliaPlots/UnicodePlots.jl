@@ -342,10 +342,11 @@ function nice_repr(
     str
 end
 
-ceil_neg_log10(x) =
-    let val = -log10(x)
-        roundable(val) ? ceil(Int, val) : floor(Int, val)
-    end
+function ceil_neg_log10(x)
+    val = -log10(x)
+    isfinite(val) || return typemin(Int)
+    roundable(val) ? ceil(Int, val) : floor(Int, val)
+end
 
 round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
     ceil(x, digits = ceil_neg_log10(m) + 1)
