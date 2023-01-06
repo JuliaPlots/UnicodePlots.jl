@@ -298,8 +298,8 @@ end
 
 function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
     # when hitting boundaries with canvases capable of encoding more than 1 pixel per char (see ref(1))
-    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
-    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
+    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
+    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
     (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
@@ -307,8 +307,8 @@ function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:C
 end
 
 function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
-    pixel_x ≥ pixel_width(c) && (pixel_x += c.xflip ? 1 : -1)
-    pixel_y ≥ pixel_height(c) && (pixel_y += c.yflip ? 1 : -1)
+    pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
+    pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
     qx, rx = divrem(pixel_x, x_pixel_per_char(C))
     qy, ry = divrem(pixel_y, y_pixel_per_char(C))
     (Int(qx) + 1, Int(qy) + 1, Int(rx) + 1, Int(ry) + 1)

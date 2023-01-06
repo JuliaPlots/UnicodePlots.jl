@@ -342,6 +342,9 @@ function nice_repr(
     str
 end
 
+# workaround for github.com/JuliaMath/NaNMath.jl/issues/26
+nanless_extrema(x) = any(isnan, x) ? NaNMath.extrema(x) : extrema(x)
+
 function ceil_neg_log10(x)
     val = -log10(x)
     isfinite(val) || return typemin(Int)
@@ -450,7 +453,9 @@ end
 
 crayon_color(::Union{Missing,Nothing}) = Crayons.ANSIColor()
 crayon_color(color::ColorType) =
-    if color < THRESHOLD  # 24bit
+    if color ≡ INVALID_COLOR
+        Crayons.ANSIColor()
+    elseif color < THRESHOLD  # 24bit
         Crayons.ANSIColor(red(color), grn(color), blu(color), Crayons.COLORS_24BIT)
     else  # 8bit
         Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
@@ -475,14 +480,14 @@ print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
 
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
-    if color ≡ INVALID_COLOR || !get(io, :color, false)
-        print(io, args...)
-    else
+    if get(io, :color, false)
         print_crayons(
             io,
             Crayon(crayon_color(color), crayon_color(bgcol), CRAYONS_EMPTY_STYLES...),
             args...,
         )
+    else
+        print(io, args...)
     end
     nothing
 end

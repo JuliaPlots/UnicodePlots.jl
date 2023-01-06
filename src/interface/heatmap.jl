@@ -112,7 +112,7 @@ function heatmap(
     mi, ma = (0, 0)
     has_extrema = false
     try
-        mi, ma = extrema(A)
+        mi, ma = nanless_extrema(A)
         has_extrema = true
     catch
     end

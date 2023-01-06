@@ -194,7 +194,6 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     plot_padding = 🗷^p.padding[]  # base padding-string (e.g. left to border)
 
     cbar_pad = if p.cmap.bar
-        x = p.cmap.lim[2]
         min_z_str, max_z_str =
             map(x -> nice_repr(roundable(x) ? x : float_round_log10(x), p), p.cmap.lim)
         len_z_lab = length(no_ansi_escape(zlabel(p)))
