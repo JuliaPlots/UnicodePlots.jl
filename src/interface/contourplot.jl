@@ -85,7 +85,7 @@ end
 )
     isempty(name) || label!(plot, :r, string(name))
 
-    mA, MA = NaNMath.extrema(as_float(A))
+    mA, MA = nanless_extrema(A)
     plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? (mA, MA) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
 

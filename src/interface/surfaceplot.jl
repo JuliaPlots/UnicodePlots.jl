@@ -71,7 +71,7 @@ function surfaceplot(
     H = A isa Function ? A.(X, Y) : A
 
     ex, ey = map(collect ∘ extrema, (x, y))
-    eh = (collect ∘ NaNMath.extrema)(as_float(H))
+    eh = collect(nanless_extrema(H))
 
     if (aspect = zscale ≡ :aspect) || zscale isa NTuple
         mh, Mh = eh
@@ -123,7 +123,7 @@ end
     cmapped = color ≡ nothing
     color = ansi_color(color ≡ :auto ? next_color!(plot) : color)
 
-    plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? NaNMath.extrema(as_float(H)) : zlim
+    plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? nanless_extrema(H) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
     plot.cmap.bar |= cmapped
 

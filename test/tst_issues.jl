@@ -65,4 +65,22 @@
         @test lineplot([nextfloat(-Inf32), prevfloat(+Inf32)]) isa Plot
         @test lineplot([nextfloat(-Inf16), prevfloat(+Inf16)]) isa Plot
     end
+
+    @testset "NaNs in heatmap (#321)" begin
+        A = Array(1.0 * I, 5, 5)
+        A[begin, begin] = A[end, end] = NaN
+        p = heatmap(A; colorbar = true)
+        test_ref("issues/heatmap_nans.txt", @show_col(p))
+
+        p = heatmap(fill(NaN, 5, 5); colorbar = true)
+        test_ref("issues/heatmap_all_nans.txt", @show_col(p))
+
+        # while resolving #321, a bug in printing the last row was observed
+        A = Array(1.0 * I, 4, 4)
+        p = heatmap(A; array = true)
+        test_ref("issues/heatmap_identity_array.txt", @show_col(p))
+
+        p = heatmap(A)
+        test_ref("issues/heatmap_identity.txt", @show_col(p))
+    end
 end

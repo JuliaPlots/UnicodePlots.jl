@@ -141,9 +141,9 @@ ortho(l, r, b, t, n, f) = *(
 Computes data center, minimum and maximum points, and cube diagonal.
 """
 function ctr_len_diag(x, y, z)
-    mx, Mx = NaNMath.extrema(as_float(x))
-    my, My = NaNMath.extrema(as_float(y))
-    mz, Mz = NaNMath.extrema(as_float(z))
+    mx, Mx = nanless_extrema(x)
+    my, My = nanless_extrema(y)
+    mz, Mz = nanless_extrema(z)
 
     lx = Mx - mx
     ly = My - my

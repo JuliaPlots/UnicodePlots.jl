@@ -55,7 +55,7 @@ function print_row(io::IO, _, print_color, c::HeatmapCanvas, row::Integer)
     for col ∈ 1:ncols(c)
         # for odd numbers of rows, only print the foreground for the top row
         bgcol = row > 1 ? c.colors[row - 1, col] : missing
-        print_color(io, c.colors[row, col], HALF_BLOCK; bgcol = bgcol)
+        print_color(io, c.colors[row, col], HALF_BLOCK; bgcol)
     end
 
     nothing
