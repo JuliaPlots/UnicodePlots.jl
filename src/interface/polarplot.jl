@@ -62,13 +62,10 @@ function polarplot(
     kw...,
 )
     pkw, okw = split_plot_kw(kw)
-
-    r = r isa Function ? r.(θ) : r
-    max_r = last(is_auto(rlim) ? extrema(r) : rlim)
-    lims = x = y = [-max_r, +max_r]
+    r, lims = polar_lims(θ, r, rlim)
     plot = Plot(
-        x,
-        y;
+        lims,
+        lims;
         xlim = lims,
         ylim = lims,
         grid = false,
@@ -92,26 +89,23 @@ end
     scatter = false,
     kw...,
 )
-    mr, Mr = is_auto(rlim) ? extrema(r) : rlim
+    mr, Mr = rlim = collect(rlim)
 
     # grid
     theta = range(0, 2π, length = 360)
-    grid_color = BORDER_COLOR[]
-    lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta), color = grid_color)
+    color = BORDER_COLOR[]
+    lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta); color)
 
     for theta ∈ 0:(π / 4):(2π)
-        lineplot!(plot, [mr, Mr] .* cos(theta), [mr, Mr] .* sin(theta); color = grid_color)
+        lineplot!(plot, rlim .* cos(theta), rlim .* sin(theta); color)
     end
-
-    # user data
-    (scatter ? scatterplot! : lineplot!)(plot, r .* cos.(θ), r .* sin.(θ); kw...)
 
     # labels
     row = ceil(Int, nrows(plot.graphics) / 2)
-    label!(plot, :r, row, degrees ? "0°" : "0", color = grid_color)
-    label!(plot, :t, degrees ? "90°" : "π / 2", color = grid_color)
-    label!(plot, :l, row, degrees ? "180°" : "π", color = grid_color)
-    label!(plot, :b, degrees ? "270°" : "3π / 4", color = grid_color)
+    label!(plot, :r, row, degrees ? "0°" : "0"; color)
+    label!(plot, :t, degrees ? "90°" : "π / 2"; color)
+    label!(plot, :l, row, degrees ? "180°" : "π"; color)
+    label!(plot, :b, degrees ? "270°" : "3π / 4"; color)
 
     for r ∈ range(mr, Mr, length = num_rad_lab)
         annotate!(
@@ -119,8 +113,19 @@ end
             r * cos(ang_rad_lab),
             r * sin(ang_rad_lab),
             isinteger(r) ? string(round(Int, r)) : @sprintf("%.1f", r);
-            color = grid_color,
+            color,
         )
     end
+
+    # user data
+    (scatter ? scatterplot! : lineplot!)(plot, r .* cos.(θ), r .* sin.(θ); kw...)
+
     plot
+end
+
+function polar_lims(θ::AbstractVector, r::Union{Function,AbstractVector}, rlim)
+    r = r isa Function ? r.(θ) : r
+    r_max = last(is_auto(rlim) ? extrema(r) : rlim)
+    lims = x = y = [-r_max, +r_max]
+    r, lims
 end

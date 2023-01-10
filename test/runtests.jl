@@ -124,6 +124,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_boxplot.jl"
     @timeit_include "tst_contourplot.jl"
     @timeit_include "tst_polarplot.jl"
+    @timeit_include "tst_polarheatmap.jl"
     @timeit_include "tst_heatmap.jl"
     @timeit_include "tst_volume.jl"
     @timeit_include "tst_surfaceplot.jl"
