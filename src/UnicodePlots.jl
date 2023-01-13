@@ -131,46 +131,50 @@ function __init__()
 end
 
 # COV_EXCL_START
+function precompile_workload(ctx)
+    surf(x, y) = sinc(√(x^2 + y^2))
+    for T in (  # most common types
+        Float64,
+        Int,
+    )
+        I = one(T)
+        plots = (
+            lineplot(I:2),
+            lineplot(I:2, I:2),
+            lineplot(sin, -I, I),
+            lineplot(sin, (-I):I),
+            lineplot([sin, cos], -I, I),
+            lineplot([sin, cos], (-I):I),
+            lineplot(I:2, T[0:1 2:3]),
+            lineplot(I:2, I:2; xscale = :ln, yscale = :log10),
+            lineplot([Date(2020), Date(2021)], I:2),
+            scatterplot(I:2),
+            scatterplot(I:2, I:2),
+            scatterplot(I:2, T[0:1 2:3]),
+            stairs(T[1, 2, 4], T[1, 3, 4]),
+            barplot(["Paris", "New York"], T[2, 8]),
+            boxplot(T[1, 2, 3]),
+            boxplot(["one", "two"], [collect(I:3), collect(I:4)]),
+            histogram(T[1, 2, 3]),
+            histogram(T[1, 2, 3]; vertical = true),
+            polarplot(0:(π / 4):π, I:5),
+            densityplot(T[1, 2], T[3, 4]; dscale = x -> log(1 + x)),
+            heatmap(repeat(collect(T, 0:4)'; outer = (5, 1))),
+            spy(T[1 -1 0; -1 2 1; 0 -1 1]),
+            contourplot(surf.(meshgrid((-I):I, (-2I):(2I))...)),
+            contourplot((-I):I, (-2I):(2I), surf),
+            surfaceplot((-I):I, (-2I):(2I), surf; lines = true),
+            surfaceplot((-I):I, (-2I):(2I), surf.(meshgrid((-I):I, (-2I):(2I))...)),
+            isosurface((-I):4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
+        )
+        foreach(p -> show(ctx, p), plots)
+    end
+end
+
 @precompile_setup begin
     ctx = IOContext(devnull, :color => Base.get_have_color())
-    surf(x, y) = sinc(√(x^2 + y^2))
     @precompile_all_calls begin
-        for T in (  # most common types
-            Float64,
-            Int,
-        )
-            I = one(T)
-            plots = (
-                lineplot(I:2),
-                lineplot(I:2, I:2),
-                lineplot(sin, -I, I),
-                lineplot(sin, (-I):I),
-                lineplot([sin, cos], -I, I),
-                lineplot([sin, cos], (-I):I),
-                lineplot(I:2, T[0:1 2:3]),
-                lineplot(I:2, I:2; xscale = :ln, yscale = :log10),
-                lineplot([Date(2020), Date(2021)], I:2),
-                scatterplot(I:2),
-                scatterplot(I:2, I:2),
-                scatterplot(I:2, T[0:1 2:3]),
-                stairs(T[1, 2, 4], T[1, 3, 4]),
-                barplot(["Paris", "New York"], T[2, 8]),
-                boxplot(T[1, 2, 3]),
-                boxplot(["one", "two"], [collect(I:3), collect(I:4)]),
-                histogram(T[1, 2, 3]),
-                histogram(T[1, 2, 3]; vertical = true),
-                polarplot(0:(π / 4):π, I:5),
-                densityplot(T[1, 2], T[3, 4]; dscale = x -> log(1 + x)),
-                heatmap(repeat(collect(T, 0:4)'; outer = (5, 1))),
-                spy(T[1 -1 0; -1 2 1; 0 -1 1]),
-                contourplot(surf.(meshgrid((-I):I, (-2I):(2I))...)),
-                contourplot((-I):I, (-2I):(2I), surf),
-                surfaceplot((-I):I, (-2I):(2I), surf; lines = true),
-                surfaceplot((-I):I, (-2I):(2I), surf.(meshgrid((-I):I, (-2I):(2I))...)),
-                isosurface((-I):4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
-            )
-            foreach(p -> show(ctx, p), plots)
-        end
+        precompile_workload(ctx)
     end
 end
 # COV_EXCL_STOP
