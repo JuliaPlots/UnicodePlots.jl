@@ -283,7 +283,7 @@ function Plot(
         mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
-    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
+    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * mx, 0.8 * my, nothing)
 
     plot
 end

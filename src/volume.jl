@@ -350,29 +350,27 @@ function axis_line(tr, proj, start::AbstractVector{T}, l, d) where {T}
 end
 
 """
-    draw_axes!(plot; p = [0, 0, 0])
+    draw_axes!(plot, x, y, z, scale = 0.25)
 
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
 If `p = (x, y)` is given, draws at screen coordinates.
 """
-function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
-    T = plot.projection
+function draw_axes!(plot, x::T, y::T, z::T, scale = 0.25) where {T<:AbstractFloat}
+    tr = plot.projection
     # constant apparent size, independent of zoom level
-    len = scale .* SVector{3}(T.dist, T.dist, T.dist)
+    len = scale .* SVector{3}(tr.dist, tr.dist, tr.dist)
+    pos = SVector{3,T}(x, y, z)
 
-    proj = :ortho  # force orthographic axes projection
-
-    pos = if length(p) == 2
-        (transform_matrix(T, proj) \ SVector{4}(p..., 0, 1))[1:3]
-    else
-        float(p)
-    end |> SVector{3}
-
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 1)..., color = :red)
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 2)..., color = :green)
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 3)..., color = :blue)
+    lines!(plot.graphics, axis_line(tr, :ortho, pos, len, 1)..., color = :red)
+    lines!(plot.graphics, axis_line(tr, :ortho, pos, len, 2)..., color = :green)
+    lines!(plot.graphics, axis_line(tr, :ortho, pos, len, 3)..., color = :blue)
 
     plot
 end
+draw_axes!(plot, x, y, z::Nothing, args...) =
+    let (x, y, z) =
+            transform_matrix(plot.projection, :ortho) \ SVector{4}(float(x), float(y), 0, 1)
+        draw_axes!(plot, x, y, z, args...)
+    end
