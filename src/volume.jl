@@ -166,7 +166,7 @@ cube_corners(mx, Mx, my, My, mz, Mz) = [
 
 function view_matrix(center, distance, elevation, azimuth, up)
     up_str = string(up)
-    shift = if (up_axis = Symbol(up_str[end])) ≡ :x
+    shift::Int = if (up_axis = Symbol(up_str[end])) ≡ :x
         0
     elseif up_axis ≡ :y
         1
@@ -275,14 +275,14 @@ end
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 
-@inline transform_matrix(t::MVP, n::Symbol) =
+@inline transform_matrix(t::MVP{E,T}, n::Symbol) where {E,T} =
     if n ≡ :user
         t.mvp_mat
     elseif n ∈ (:ortho, :orthographic)
         t.mvp_ortho_mat
     elseif n ∈ (:persp, :perspective)
         t.mvp_persp_mat
-    end
+    end::SMatrix{4,4,T}
 
 @inline is_ortho(t::MVP, n::Symbol) =
     if n ≡ :user
@@ -291,7 +291,7 @@ end
         true
     elseif n ∈ (:persp, :perspective)
         false
-    end
+    end::Bool
 
 "transform a matrix of points, with allocation"
 function (tr::MVP{E,T})(p::AbstractMatrix, n::Symbol = :user) where {E,T}
@@ -335,8 +335,8 @@ function (tr::MVP{E,T})(v::SVector{4}, n::Symbol = :user) where {E,T}
     is_ortho(tr, n) ? (x, y) : (x / z, y / z)
 end
 
-(tr::MVP)(v::AbstractVector, n::Symbol = :user) =
-    tr(length(v) == 4 ? SVector{4}(v) : SVector{4}(v..., 1), n)
+(tr::MVP)(v::AbstractVector{T}, n::Symbol = :user) where {T} =
+    tr(length(v) == 4 ? SVector{4,T}(v) : SVector{4,T}(v[1], v[2], v[3], T(1)), n)
 
 function axis_line(tr, proj, start::AbstractVector{T}, l, d) where {T}
     stop = collect(start)
@@ -369,8 +369,8 @@ function draw_axes!(plot, x::T, y::T, z::T, scale = 0.25) where {T<:AbstractFloa
 
     plot
 end
-draw_axes!(plot, x, y, z::Nothing, args...) =
+draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T<:AbstractFloat} =
     let (x, y, z) =
-            transform_matrix(plot.projection, :ortho) \ SVector{4}(float(x), float(y), 0, 1)
+            transform_matrix(plot.projection, :ortho) \ SVector{4}(x, y, T(0), T(1))
         draw_axes!(plot, x, y, z, args...)
     end
