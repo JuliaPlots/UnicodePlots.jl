@@ -334,7 +334,7 @@ function nice_repr(
         str = *(
             replace(left, r"\.0$" => ""),
             'e',
-            unicode_exponent ? superscript(right) : right,
+            unicode_exponent ? superscript(right) : String(right),
         )
     elseif pseudo_int
         str = nice_repr(xr, unicode_exponent, thousands_separator)
