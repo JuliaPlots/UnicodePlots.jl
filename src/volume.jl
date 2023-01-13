@@ -346,7 +346,7 @@ function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
 end
 
 (tr::MVP{Val{true}})(v::AbstractVector{T}, n::Symbol = :user) where {T} =
-    tr(SVector(v[1], v[2], v[3], get(v, (4,), T(1))), n)
+    tr(SVector(v[1], v[2], v[3], length(v) == 4 ? v[4] : T(1)), n)
 
 axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} =
     tr(@SMatrix([

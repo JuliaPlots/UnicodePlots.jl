@@ -291,7 +291,7 @@ function transform_name(tr, basename = "")
     string(basename, " [", name, "]")
 end
 
-meshgrid(x, y) = repeat(x, 1, length(y)), repeat(reshape(y, 1, :), length(x), 1)
+meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
 
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
@@ -393,8 +393,7 @@ unit_label(label::AbstractString, unit::AbstractString) =
     (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
-superscript(s::AbstractString) = superscript(String(s))
-function superscript(s::String)::String
+function superscript(s::AbstractString)::String
     v = collect(s)
     for (i, k) ∈ enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)

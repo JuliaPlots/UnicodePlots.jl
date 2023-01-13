@@ -160,8 +160,8 @@ end
 # ---------------------------------------------------------------------------- #
 # date time
 
-format_datetime(dt, ::Nothing) = string(dt)
-format_datetime(dt, format::AbstractString) = Dates.format(dt, format)
+format_date(dt, ::Nothing) = string(dt)
+format_date(dt, format::AbstractString) = Dates.format(dt, format)
 
 function lineplot(
     x::AbstractVector{D},
@@ -174,8 +174,8 @@ function lineplot(
     dlim = Dates.value.(D.(xlim))
     plot = lineplot(Dates.value.(x), y; xlim = dlim, xticks = xticks, kw...)
     if xticks
-        label!(plot, :bl, format_datetime(xlim[1], format), color = BORDER_COLOR[])
-        label!(plot, :br, format_datetime(xlim[2], format), color = BORDER_COLOR[])
+        label!(plot, :bl, format_date(xlim[1], format), color = BORDER_COLOR[])
+        label!(plot, :br, format_date(xlim[2], format), color = BORDER_COLOR[])
     end
     plot
 end
