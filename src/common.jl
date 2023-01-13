@@ -291,7 +291,7 @@ function transform_name(tr, basename = "")
     string(basename, " [", name, "]")
 end
 
-meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
+meshgrid(x, y) = repeat(x, 1, length(y)), repeat(reshape(y, 1, :), length(x), 1)
 
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
@@ -393,7 +393,8 @@ unit_label(label::AbstractString, unit::AbstractString) =
     (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
-function superscript(s::AbstractString)::String
+superscript(s::AbstractString) = superscript(String(s))
+function superscript(s::String)::String
     v = collect(s)
     for (i, k) ∈ enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)
@@ -416,8 +417,11 @@ end
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
-is_auto(lims::AbstractVector) = lims == [0, 0]
-is_auto(lims::Tuple) = lims == (0, 0)
+is_auto(lims) = all(iszero, lims)
+
+autolims(lims) = is_auto(lims) ? SVector{2}(-1.0, 1.0) : SVector{2}(as_float(lims))
+autolims(lims, vec::AbstractVector) =
+    is_auto(lims) && length(vec) > 0 ? SVector{2}(extrema(vec)) : SVector{2}(as_float(lims))
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 

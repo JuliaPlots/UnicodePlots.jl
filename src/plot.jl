@@ -216,7 +216,6 @@ function Plot(
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
         # should be close to using `zoom = 2`
-        autolims(lims) = is_auto(lims) ? (-1.0, 1.0) : as_float(lims)
         mx, Mx = autolims(xlim)
         my, My = autolims(ylim)
 
