@@ -131,7 +131,7 @@ function __init__()
 end
 
 # COV_EXCL_START
-function precompile_workload(ctx)
+function precompile_workload(io::IO = IOContext(devnull, :color => Base.get_have_color()))
     surf(x, y) = sinc(√(x^2 + y^2))
     for T in (  # most common types
         Float64,
@@ -167,15 +167,12 @@ function precompile_workload(ctx)
             surfaceplot((-I):I, (-2I):(2I), surf.(meshgrid((-I):I, (-2I):(2I))...)),
             isosurface((-I):4, I:2, I:3, (x, y, z) -> float(x^2 + y^2 - z^2 - 1)),
         )
-        foreach(p -> show(ctx, p), plots)
+        foreach(p -> show(io, p), plots)
     end
 end
 
-@precompile_setup begin
-    ctx = IOContext(devnull, :color => Base.get_have_color())
-    @precompile_all_calls begin
-        precompile_workload(ctx)
-    end
+@precompile_all_calls begin
+    precompile_workload()
 end
 # COV_EXCL_STOP
 
