@@ -228,9 +228,9 @@ function kerning(face::FTFont, glyphspecs...)
     kerning2d = Ref{FT_Vector}()
     err = FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
     # can error if font has no kerning! Since that's somewhat expected, we just return 0
-    err == 0 || return SVector{2}(0, 0)
+    err == 0 || return SVector(0.0, 0.0)
     divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
-    SVector{2}(kerning2d[].x / divisor, kerning2d[].y / divisor)
+    SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
 end
 
 function load_glyph(face::FTFont, glyph)
