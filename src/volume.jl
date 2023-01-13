@@ -272,6 +272,10 @@ struct MVP{E,T}
     end
 end
 
+get_MVP(::Nothing, args...; kw...) = MVP()
+get_MVP(projection::Symbol, args...; kw...) = MVP(args...; projection, kw...)
+get_MVP(projection::MVP, args...; kw...) = projection
+
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 

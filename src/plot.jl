@@ -203,27 +203,20 @@ function Plot(
     xscale = scale_callback(xscale)
     yscale = scale_callback(yscale)
 
-    if projection ≢ nothing  # 3D
+    mvp = get_MVP(projection, x, y, z; kw...)
+    if is_enabled(mvp)
         (xscale ≢ identity || yscale ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
+        grid = blend = false
+    end
 
-        mvp = if projection isa Symbol
-            MVP(x, y, z; projection, kw...)
-        else
-            projection
-        end
-
+    (mx, Mx), (my, My) = if is_enabled(mvp)
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
         # should be close to using `zoom = 2`
-        mx, Mx = autolims(xlim)
-        my, My = autolims(ylim)
-
-        grid = blend = false
-    else  # 2D
-        mvp = MVP()
-        mx, Mx = extend_limits(x, xlim, xscale)
-        my, My = extend_limits(y, ylim, yscale)
+        autolims(xlim), autolims(ylim)
+    else
+        extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
     end
 
     can = canvas(
