@@ -724,6 +724,41 @@ The method `label!` is responsible for the setting all the textual decorations o
   
 </details>
 
+##### Invalidations check
+<details>
+  <summary></a><b>...</b></summary><br>
+
+  Run the folowing snippet to analyze invalidations:
+  ```julia
+  using SnoopCompileCore
+  
+  invalidations = @snoopr using UnicodePlots
+  tinf = @snoopi_deep UnicodePlots.precompile_workload()
+  
+  using SnoopCompile, AbstractTrees, PrettyTables  # must occur after `invalidations`
+  
+  print_tree(tinf; maxdepth = typemax(Int))
+  
+  trees = invalidation_trees(invalidations)
+  trees = filtermod(UnicodePlots, trees; recursive = true)
+  
+  @show length(uinvalidated(invalidations))  # all invalidations
+  
+  # only from `UnicodePlots`
+  @show length(staleinstances(tinf))
+  @show length(trees)
+  
+  SnoopCompile.report_invalidations(;
+     invalidations,
+     process_filename = x -> last(split(x, ".julia/packages/")),
+     n_rows = 0,
+  )
+  ```
+  
+  
+</details>
+
+
 ##### Documentation update
 <details>
   <summary></a><b>...</b></summary><br>

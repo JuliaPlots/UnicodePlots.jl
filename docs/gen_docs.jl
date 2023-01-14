@@ -284,6 +284,35 @@ The following types of `Canvas` are implemented:
   will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
   """)
 
+  invalidations = plain_md_par("""
+  Run the folowing snippet to analyze invalidations:
+  ```julia
+  using SnoopCompileCore
+
+  invalidations = @snoopr using UnicodePlots
+  tinf = @snoopi_deep UnicodePlots.precompile_workload()
+
+  using SnoopCompile, AbstractTrees, PrettyTables  # must occur after `invalidations`
+
+  print_tree(tinf; maxdepth = typemax(Int))
+
+  trees = invalidation_trees(invalidations)
+  trees = filtermod(UnicodePlots, trees; recursive = true)
+
+  @show length(uinvalidated(invalidations))  # all invalidations
+
+  # only from `UnicodePlots`
+  @show length(staleinstances(tinf))
+  @show length(trees)
+
+  SnoopCompile.report_invalidations(;
+     invalidations,
+     process_filename = x -> last(split(x, ".julia/packages/")),
+     n_rows = 0,
+  )
+  ```
+  """)
+
   readme = plain_md_par("""
 # UnicodePlots
 
@@ -636,6 +665,14 @@ $(indent(low_level_interface))
 
 $(indent(examples.buffer_convention))
 </details>
+
+##### Invalidations check
+<details>
+  $(summary(nothing))
+
+$(indent(invalidations))
+</details>
+
 
 ##### Documentation update
 <details>
