@@ -86,7 +86,6 @@ function heatmap(
     end .+ xoffset
 
     # set the axis limits automatically
-    autolims(lims, vec) = is_auto(lims) && length(vec) > 0 ? extrema(vec) : lims
 
     ylim = autolims(ylim, Y)
     xlim = autolims(xlim, X)
@@ -94,7 +93,7 @@ function heatmap(
     # select a subset of A based on the supplied limits
     subset(lims, vec) = begin
         first = findfirst(x -> x ≥ lims[1], vec)
-        last = findlast(x -> x ≤ lims[2], vec)
+        last  = findlast(x -> x ≤ lims[2], vec)
         (first ≡ nothing || last ≡ nothing) ? (1:0) : (first:last)
     end
 

@@ -203,28 +203,19 @@ function Plot(
     xscale = scale_callback(xscale)
     yscale = scale_callback(yscale)
 
-    if projection ≢ nothing  # 3D
+    mvp = create_MVP(projection, x, y, z; kw...)
+
+    (mx, Mx), (my, My) = if is_enabled(mvp)
         (xscale ≢ identity || yscale ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
-
-        mvp = if projection isa Symbol
-            MVP(x, y, z; projection, kw...)
-        else
-            projection
-        end
+        grid = blend = false
 
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
-        # should be close to using `zoom = 2`
-        autolims(lims) = is_auto(lims) ? (-1.0, 1.0) : as_float(lims)
-        mx, Mx = autolims(xlim)
-        my, My = autolims(ylim)
-
-        grid = blend = false
-    else  # 2D
-        mvp = MVP()
-        mx, Mx = extend_limits(x, xlim, xscale)
-        my, My = extend_limits(y, ylim, yscale)
+        # should be close to using `zoom = 2`.
+        autolims(xlim), autolims(ylim)
+    else
+        extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
     end
 
     can = canvas(
@@ -270,13 +261,13 @@ function Plot(
         bc = BORDER_COLOR[]
         if xticks
             base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x), color = bc)
-            label!(plot, :br, base_x_str * (xflip ? m_x : M_x), color = bc)
+            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x); color = bc)
+            label!(plot, :br, base_x_str * (xflip ? m_x : M_x); color = bc)
         end
         if yticks
             base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y), color = bc)
-            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y), color = bc)
+            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y); color = bc)
+            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y); color = bc)
         end
     end
     if grid && (xscale ≡ identity && yscale ≡ identity)
@@ -284,7 +275,7 @@ function Plot(
         mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
-    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 .* [mx, my])
+    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * mx, 0.8 * my, nothing)
 
     plot
 end

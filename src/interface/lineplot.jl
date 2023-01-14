@@ -36,7 +36,7 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> lineplot([1, 2, 7], [9, -6, 8], title = "My Lineplot")
+julia> lineplot([1, 2, 7], [9, -6, 8]; title = "My Lineplot")
        ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀My Lineplot⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ 
        ┌────────────────────────────────────────┐ 
     10 │⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀│ 
@@ -159,6 +159,10 @@ end
 
 # ---------------------------------------------------------------------------- #
 # date time
+
+format_date(dt, ::Nothing) = string(dt)
+format_date(dt, format::AbstractString) = Dates.format(dt, format)
+
 function lineplot(
     x::AbstractVector{D},
     y::AbstractVector;
@@ -170,9 +174,8 @@ function lineplot(
     dlim = Dates.value.(D.(xlim))
     plot = lineplot(Dates.value.(x), y; xlim = dlim, xticks = xticks, kw...)
     if xticks
-        fmt(dt) = format ≡ nothing ? string(dt) : Dates.format(dt, format)
-        label!(plot, :bl, fmt(xlim[1]), color = BORDER_COLOR[])
-        label!(plot, :br, fmt(xlim[2]), color = BORDER_COLOR[])
+        label!(plot, :bl, format_date(xlim[1], format); color = BORDER_COLOR[])
+        label!(plot, :br, format_date(xlim[2], format); color = BORDER_COLOR[])
     end
     plot
 end

@@ -150,10 +150,10 @@ function ctr_len_diag(x, y, z)
     lz = Mz - mz
 
     (
-        SVector{3}(mx + 0.5lx, my + 0.5ly, mz + 0.5lz),
-        SVector{3}(mx, my, mz),
-        SVector{3}(Mx, My, Mz),
-        SVector{3}(lx, ly, lz),
+        SVector(mx + 0.5lx, my + 0.5ly, mz + 0.5lz),
+        SVector(mx, my, mz),
+        SVector(Mx, My, Mz),
+        SVector(lx, ly, lz),
         √(lx^2 + ly^2 + lz^2),
     )
 end
@@ -166,7 +166,7 @@ cube_corners(mx, Mx, my, My, mz, Mz) = [
 
 function view_matrix(center, distance, elevation, azimuth, up)
     up_str = string(up)
-    shift = if (up_axis = Symbol(up_str[end])) ≡ :x
+    shift::Int = if (up_axis = Symbol(up_str[end])) ≡ :x
         0
     elseif up_axis ≡ :y
         1
@@ -272,36 +272,42 @@ struct MVP{E,T}
     end
 end
 
+create_MVP(::Nothing, args...; kw...) = (warn_on_lost_kw(kw); MVP())
+create_MVP(projection::Symbol, args...; kw...) = MVP(args...; projection, kw...)
+create_MVP(projection::MVP, args...; kw...) = (warn_on_lost_kw(kw); projection)
+
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 
-@inline transform_matrix(t::MVP, n::Symbol) =
-    if n ≡ :user
-        t.mvp_mat
-    elseif n ∈ (:ortho, :orthographic)
-        t.mvp_ortho_mat
-    elseif n ∈ (:persp, :perspective)
-        t.mvp_persp_mat
-    end
+@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} = if n ≡ :user
+    t.mvp_mat
+elseif n ∈ (:ortho, :orthographic)
+    t.mvp_ortho_mat
+elseif n ∈ (:persp, :perspective)
+    t.mvp_persp_mat
+end::SMatrix{4,4,T}
 
-@inline is_ortho(t::MVP, n::Symbol) =
-    if n ≡ :user
-        t.ortho
-    elseif n ∈ (:ortho, :orthographic)
-        true
-    elseif n ∈ (:persp, :perspective)
-        false
-    end
+@inline is_ortho(t::MVP, n::Symbol) = if n ≡ :user
+    t.ortho
+elseif n ∈ (:ortho, :orthographic)
+    true
+elseif n ∈ (:persp, :perspective)
+    false
+end::Bool
 
 "transform a matrix of points, with allocation"
-function (tr::MVP{E,T})(p::AbstractMatrix, n::Symbol = :user) where {E,T}
+function (tr::MVP{Val{true},T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     o = Array{T}(undef, 4, size(p, 2))
     tr(p, o, n)
     @view(o[1, :]), @view(o[2, :])
 end
 
 "inplace transform"
-function (tr::MVP{E,T})(p::AbstractMatrix, o::AbstractMatrix, n::Symbol = :user) where {E,T}
+function (tr::MVP{Val{true},T})(
+    p::AbstractMatrix,
+    o::AbstractMatrix,
+    n::Symbol = :user,
+) where {T}
     mul!(o, transform_matrix(tr, n), p)
     persp = !is_ortho(tr, n)
     # homogeneous coordinates
@@ -324,7 +330,7 @@ function (tr::MVP{E,T})(p::AbstractMatrix, o::AbstractMatrix, n::Symbol = :user)
 end
 
 "transform a vector"
-function (tr::MVP{E,T})(v::SVector{4}, n::Symbol = :user) where {E,T}
+function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
     if abs(w) > eps(T)
@@ -332,47 +338,57 @@ function (tr::MVP{E,T})(v::SVector{4}, n::Symbol = :user) where {E,T}
         y /= w
         z /= w
     end
-    is_ortho(tr, n) ? (x, y) : (x / z, y / z)
+    if !is_ortho(tr, n)
+        x /= z
+        y /= z
+    end
+    (x, y)
 end
 
-(tr::MVP)(v::AbstractVector, n::Symbol = :user) =
-    tr(length(v) == 4 ? SVector{4}(v) : SVector{4}(v..., 1), n)
+(tr::MVP{Val{true}})(v::AbstractVector{T}, n::Symbol = :user) where {T} =
+    tr(SVector(v[1], v[2], v[3], length(v) == 4 ? v[4] : T(1)), n)
 
-function axis_line(tr, proj, start::AbstractVector{T}, l, d) where {T}
-    stop = collect(start)
-    stop[d] += l[d]
+axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} =
     tr(@SMatrix([
         start[1] stop[1]
         start[2] stop[2]
         start[3] stop[3]
         T(1) T(1)
     ]), proj)
-end
 
 """
-    draw_axes!(plot; p = [0, 0, 0])
+    draw_axes!(plot, x, y, z, scale = 0.25)
 
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
 If `p = (x, y)` is given, draws at screen coordinates.
 """
-function draw_axes!(plot, p = [0, 0, 0], scale = 0.25)
-    T = plot.projection
+function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractFloat}
+    tr = plot.projection
     # constant apparent size, independent of zoom level
-    len = scale .* SVector{3}(T.dist, T.dist, T.dist)
+    len = T(scale * tr.dist)
+    start = SVector(x, y, z)
 
-    proj = :ortho  # force orthographic axes projection
-
-    pos = if length(p) == 2
-        (transform_matrix(T, proj) \ SVector{4}(p..., 0, 1))[1:3]
-    else
-        float(p)
-    end |> SVector{3}
-
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 1)..., color = :red)
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 2)..., color = :green)
-    lines!(plot.graphics, axis_line(T, proj, pos, len, 3)..., color = :blue)
+    lines!(
+        plot.graphics,
+        axis_line(tr, :ortho, start, SVector(x + len, y, z))...,
+        color = :red,
+    )
+    lines!(
+        plot.graphics,
+        axis_line(tr, :ortho, start, SVector(x, y + len, z))...,
+        color = :green,
+    )
+    lines!(
+        plot.graphics,
+        axis_line(tr, :ortho, start, SVector(x, y, z + len))...,
+        color = :blue,
+    )
 
     plot
 end
+draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T<:AbstractFloat} =
+    let (x, y, z) = transform_matrix(plot.projection, :ortho) \ SVector(x, y, T(0), T(1))
+        draw_axes!(plot, x, y, z, args...)
+    end

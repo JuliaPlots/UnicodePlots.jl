@@ -39,11 +39,13 @@
     @test UnicodePlots.rotd_z(0) ≈ I
 
     T = MVP([-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0])
-    @test length(T([1, 2, 3])) == 2
+    @test length(T([1, 2, 3], :user)) == 2
+    @test length(T([1, 2, 3], :ortho)) == 2
+    @test length(T([1, 2, 3], :persp)) == 2
 
-    @test UnicodePlots.transform_matrix(T, :user) isa AbstractMatrix
-    @test UnicodePlots.transform_matrix(T, :orthographic) isa AbstractMatrix
-    @test UnicodePlots.transform_matrix(T, :perspective) isa AbstractMatrix
+    @test UnicodePlots.transform_matrix(T, :user) |> size == (4, 4)
+    @test UnicodePlots.transform_matrix(T, :orthographic) |> size == (4, 4)
+    @test UnicodePlots.transform_matrix(T, :perspective) |> size == (4, 4)
 
     @test UnicodePlots.is_ortho(T, :user)
     @test UnicodePlots.is_ortho(T, :orthographic)
@@ -129,7 +131,7 @@ end
 
 @testset "zoom" begin
     for zoom ∈ (0.5, 1, 2)
-        T = MVP([-1, 1], [-1, 1], [-1, 1]; zoom = zoom)
+        T = MVP([-1, 1], [-1, 1], [-1, 1]; zoom)
 
         tetrahedron = (
             # 1st triangle
