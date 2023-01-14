@@ -86,7 +86,6 @@ function heatmap(
     end .+ xoffset
 
     # set the axis limits automatically
-
     ylim = autolims(ylim, Y)
     xlim = autolims(xlim, X)
 
