@@ -297,7 +297,7 @@ as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
 
 roundable(x::Number) = isinteger(x) && (typemin(Int32) ≤ x ≤ typemax(Int32))
-compact_repr(x::Number) = repr(x, context = :compact => true)
+compact_repr(x::Number) = repr(x; context = :compact => true)
 
 function default_formatter(kw)
     unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
@@ -352,23 +352,23 @@ function ceil_neg_log10(x)
 end
 
 round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
-    ceil(x, digits = ceil_neg_log10(m) + 1)
+    ceil(x; digits = ceil_neg_log10(m) + 1)
 else
-    -floor(-x, digits = ceil_neg_log10(m) + 1)
+    -floor(-x; digits = ceil_neg_log10(m) + 1)
 end)
 
 round_down_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
-    floor(x, digits = ceil_neg_log10(m) + 1)
+    floor(x; digits = ceil_neg_log10(m) + 1)
 else
-    -ceil(-x, digits = ceil_neg_log10(m) + 1)
+    -ceil(-x; digits = ceil_neg_log10(m) + 1)
 end)
 
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
 float_round_log10(x::T, m) where {T<:AbstractFloat} = T(x == 0 ? 0 : if x > 0
-    +round(+x, digits = ceil_neg_log10(m) + 1)
+    +round(+x; digits = ceil_neg_log10(m) + 1)
 else
-    -round(-x, digits = ceil_neg_log10(m) + 1)
+    -round(-x; digits = ceil_neg_log10(m) + 1)
 end)
 
 floor_base(x, b) = round_base(x, b, RoundDown)

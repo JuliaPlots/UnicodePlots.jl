@@ -29,7 +29,7 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> polarplot(range(0, 2π, length = 20), range(0, 2, length = 20))
+julia> polarplot(range(0, 2π; length = 20), range(0, 2; length = 20))
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀90°⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀   
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀   
         ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡤⠤⠒⠒⠉⠉⠉⠉⠉⡏⠉⠉⠉⠉⠓⠒⠦⠤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀   
@@ -95,9 +95,9 @@ end
     mr, Mr = is_auto(rlim) ? extrema(r) : rlim
 
     # grid
-    theta = range(0, 2π, length = 360)
+    theta = range(0, 2π; length = 360)
     grid_color = BORDER_COLOR[]
-    lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta), color = grid_color)
+    lineplot!(plot, Mr * cos.(theta), Mr * sin.(theta); color = grid_color)
 
     for theta ∈ 0:(π / 4):(2π)
         lineplot!(plot, [mr, Mr] .* cos(theta), [mr, Mr] .* sin(theta); color = grid_color)
@@ -108,12 +108,12 @@ end
 
     # labels
     row = ceil(Int, nrows(plot.graphics) / 2)
-    label!(plot, :r, row, degrees ? "0°" : "0", color = grid_color)
-    label!(plot, :t, degrees ? "90°" : "π / 2", color = grid_color)
-    label!(plot, :l, row, degrees ? "180°" : "π", color = grid_color)
-    label!(plot, :b, degrees ? "270°" : "3π / 4", color = grid_color)
+    label!(plot, :r, row, degrees ? "0°" : "0"; color = grid_color)
+    label!(plot, :t, degrees ? "90°" : "π / 2"; color = grid_color)
+    label!(plot, :l, row, degrees ? "180°" : "π"; color = grid_color)
+    label!(plot, :b, degrees ? "270°" : "3π / 4"; color = grid_color)
 
-    for r ∈ range(mr, Mr, length = num_rad_lab)
+    for r ∈ range(mr, Mr; length = num_rad_lab)
         annotate!(
             plot,
             r * cos(ang_rad_lab),

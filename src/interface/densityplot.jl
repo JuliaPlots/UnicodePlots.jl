@@ -26,7 +26,7 @@ $(arguments((; dscale = "density scale function"); add = (:x, :y), remove = (:gr
 # Examples
 
 ```julia-repl
-julia> densityplot(randn(1_000), randn(1_000), title = "Density Plot")
+julia> densityplot(randn(1_000), randn(1_000); title = "Density Plot")
                      Density Plot                
       ┌────────────────────────────────────────┐ 
     4 │                                        │ 

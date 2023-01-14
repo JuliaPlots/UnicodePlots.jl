@@ -38,7 +38,7 @@ $(arguments(
 # Examples
 
 ```julia-repl
-julia> boxplot([1, 2, 3, 7], title = "Test")
+julia> boxplot([1, 2, 3, 7]; title = "Test")
                        Test                    
     ┌                                        ┐ 
      ╷   ┌────┬─────────┐                   ╷  
@@ -73,9 +73,9 @@ function boxplot(
 
     min_x_str, mean_x_str, max_x_str =
         nice_repr.((min_x, (min_x + max_x) / 2, max_x), Ref(plot))
-    label!(plot, :bl, min_x_str, color = BORDER_COLOR[])
-    label!(plot, :b, mean_x_str, color = BORDER_COLOR[])
-    label!(plot, :br, max_x_str, color = BORDER_COLOR[])
+    label!(plot, :bl, min_x_str; color = BORDER_COLOR[])
+    label!(plot, :b, mean_x_str; color = BORDER_COLOR[])
+    label!(plot, :br, max_x_str; color = BORDER_COLOR[])
 
     for (i, name) ∈ enumerate(text)
         # Find end of last 3-line region, then add 2 for center of current
