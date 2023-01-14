@@ -415,9 +415,10 @@ end
 
 is_auto(lims) = all(iszero, lims)
 
-autolims(lims) = is_auto(lims) ? SVector(-1.0, 1.0) : SVector(as_float(lims))
+# NOTE: we need `SVector{2}(v)` for compiler inferrability, not `Svector(v)` !
+autolims(lims) = is_auto(lims) ? SVector(-1.0, 1.0) : SVector{2}(as_float(lims))
 autolims(lims, vec::AbstractVector) =
-    is_auto(lims) && length(vec) > 0 ? SVector(extrema(vec)) : SVector(as_float(lims))
+    is_auto(lims) && length(vec) > 0 ? SVector{2}(extrema(vec)) : SVector{2}(as_float(lims))
 
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale

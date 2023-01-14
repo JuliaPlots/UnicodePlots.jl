@@ -40,6 +40,11 @@ end
     @test UnicodePlots.is_auto([0, 0])
     @test !UnicodePlots.is_auto((-1, 1))
     @test !UnicodePlots.is_auto([-1, 1])
+
+    # `SVector` inferrability
+    @test UnicodePlots.autolims([-3, 2]) == [-3, 2]
+    @test UnicodePlots.autolims([-3, 2], 1:10) == [-3, 2]
+    @test UnicodePlots.autolims([0, 0], 1:10) == [1, 10]
 end
 
 @testset "bordermap" begin
