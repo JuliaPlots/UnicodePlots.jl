@@ -203,17 +203,16 @@ function Plot(
     xscale = scale_callback(xscale)
     yscale = scale_callback(yscale)
 
-    mvp = get_MVP(projection, x, y, z; kw...)
-    if is_enabled(mvp)
+    mvp = create_MVP(projection, x, y, z; kw...)
+
+    (mx, Mx), (my, My) = if is_enabled(mvp)
         (xscale ≢ identity || yscale ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
         grid = blend = false
-    end
 
-    (mx, Mx), (my, My) = if is_enabled(mvp)
         # normalized coordinates, but allow override (artifact for zooming):
         # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
-        # should be close to using `zoom = 2`
+        # should be close to using `zoom = 2`.
         autolims(xlim), autolims(ylim)
     else
         extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
@@ -262,13 +261,13 @@ function Plot(
         bc = BORDER_COLOR[]
         if xticks
             base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x), color = bc)
-            label!(plot, :br, base_x_str * (xflip ? m_x : M_x), color = bc)
+            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x); color = bc)
+            label!(plot, :br, base_x_str * (xflip ? m_x : M_x); color = bc)
         end
         if yticks
             base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y), color = bc)
-            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y), color = bc)
+            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y); color = bc)
+            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y); color = bc)
         end
     end
     if grid && (xscale ≡ identity && yscale ≡ identity)

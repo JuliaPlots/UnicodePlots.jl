@@ -413,17 +413,16 @@ function plotting_range_narrow(xmin, xmax)
     float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
+is_auto(lims) = all(iszero, lims)
+
+autolims(lims) = is_auto(lims) ? SVector(-1.0, 1.0) : SVector(as_float(lims))
+autolims(lims, vec::AbstractVector) =
+    is_auto(lims) && length(vec) > 0 ? SVector(extrema(vec)) : SVector(as_float(lims))
+
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
-is_auto(lims) = all(iszero, lims)
-
-autolims(lims) = is_auto(lims) ? SVector{2}(-1.0, 1.0) : SVector{2}(as_float(lims))
-autolims(lims, vec::AbstractVector) =
-    is_auto(lims) && length(vec) > 0 ? SVector{2}(extrema(vec)) : SVector{2}(as_float(lims))
-
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
-
 function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
@@ -441,7 +440,7 @@ function extend_limits(vec, lims, scale::Union{Symbol,Function})
     end
 end
 
-sort_by_keys(dict::Dict) = sort!(collect(dict), by = x -> first(x))
+sort_by_keys(dict::Dict) = sort!(collect(dict), by = first)
 
 function sorted_keys_values(dict::Dict; k2s = true)
     if k2s  # check and force key type to be of AbstractString type if necessary
@@ -612,7 +611,7 @@ function colormap_callback(cmap::AbstractVector)
             length(cmap)
         else
             1 + round(Int, ((z - minz) / (maxz - minz)) * (length(cmap) - 1))
-        end
+        end::Int
         ansi_color(cmap[i])
     end::ColorType
 end

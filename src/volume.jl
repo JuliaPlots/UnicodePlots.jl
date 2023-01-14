@@ -272,9 +272,9 @@ struct MVP{E,T}
     end
 end
 
-get_MVP(::Nothing, args...; kw...) = MVP()
-get_MVP(projection::Symbol, args...; kw...) = MVP(args...; projection, kw...)
-get_MVP(projection::MVP, args...; kw...) = projection
+create_MVP(::Nothing, args...; kw...) = (warn_on_lost_kw(kw); MVP())
+create_MVP(projection::Symbol, args...; kw...) = MVP(args...; projection, kw...)
+create_MVP(projection::MVP, args...; kw...) = (warn_on_lost_kw(kw); projection)
 
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
