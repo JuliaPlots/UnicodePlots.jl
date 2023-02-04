@@ -122,7 +122,7 @@ function __init__()
         colors256!()
         faintcolors!()
     end
-    @static if !isdefined(Base, :get_extension)
+    @static if !isdefined(Base, :get_extension)  # COV_EXCL_LINE
         Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
             "../ext/ImageInTerminalExt.jl",
         )

@@ -24,7 +24,7 @@ end
 @inline nrows(c::ImageGraphics) = first(c.encoded_size)
 @inline ncols(c::ImageGraphics) = last(c.encoded_size)
 
-# `ImageInTerminalExt` placeholders
+# # generic functions for  `ImageInTerminalExt`
 function terminal_specs end
 function sixel_encode end
 function imshow end

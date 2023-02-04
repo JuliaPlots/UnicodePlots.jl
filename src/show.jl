@@ -398,10 +398,10 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     )
 end
 
-# `FreeTypeExt` placeholders
+# generic functions for `FreeTypeExt`
 function get_font_face end
 function render_string! end
-function save_png end
+function save_image end
 
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
@@ -597,7 +597,7 @@ function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
     elseif ext == ".png"
         # `png_image` can fail if fonts are not found: a warning has already been
         # thrown there, so just bail out at this stage
-        (img = png_image(p; kw...)) ≢ nothing && save_png(filename, img)
+        (img = png_image(p; kw...)) ≢ nothing && save_image(filename, img)
     else
         "extension \"$ext\" is unsupported: `savefig` only supports writing to `txt` or `png` files" |>
         ArgumentError |>

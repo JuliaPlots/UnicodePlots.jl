@@ -103,7 +103,7 @@ function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
     face
 end
 
-UnicodePlots.save_png(args...; kw...) = FileIO.save(args...; kw...)
+UnicodePlots.save_image(args...; kw...) = FileIO.save(args...; kw...)
 
 """
 Match a font using the user-specified search string. Each part of the search string
