@@ -24,19 +24,14 @@ end
 @inline nrows(c::ImageGraphics) = first(c.encoded_size)
 @inline ncols(c::ImageGraphics) = last(c.encoded_size)
 
+# `ImageInTerminalExt` placeholders
+function terminal_specs end
+function sixel_encode end
+function imshow end
+
 function preprocess!(io::IO, c::ImageGraphics)
     ctx = IOContext(PipeBuffer(), :displaysize => displaysize(io))
-    c.sixel[] = false
-    char_h = char_w = nothing  # determine the terminal caret size, in pixels
-    # COV_EXCL_START
-    if ImageInTerminal.choose_sixel(c.img)
-        ans = ImageInTerminal.Sixel.TerminalTools.query_terminal("\e[16t", stdout)
-        if ans isa String && (m = match(r"\e\[6;(\d+);(\d+)t", ans)) ≢ nothing
-            char_h, char_w = tryparse.(Int, m.captures)
-            c.sixel[] = char_h ≢ nothing && char_w ≢ nothing
-        end
-    end
-    # COV_EXCL_STOP
+    c.sixel[], char_h, char_w = terminal_specs(c.img)
     postprocess = c -> begin
         c.encoded_size .= (0, 0)
         empty!(c.chars)
@@ -49,7 +44,7 @@ function preprocess!(io::IO, c::ImageGraphics)
         # COV_EXCL_START
         # it is better to encode the whole image in a single pass
         # otherwise, issues with the last line (see previous implementation)
-        ImageInTerminal.sixel_encode(ctx, c.img)
+        sixel_encode(ctx, c.img)
         push!(c.chars, read(ctx, String) |> collect)
         length(1:char_h:img_h), ceil(Int, img_w / char_w)
         # COV_EXCL_STOP
@@ -69,7 +64,7 @@ function preprocess!(io::IO, c::ImageGraphics)
             end
             nothing
         end
-        ImageInTerminal.imshow(ctx, c.img; callback)
+        imshow(ctx, c.img; callback)
         length(c.chars), length(c.chars |> first)
     end
     postprocess

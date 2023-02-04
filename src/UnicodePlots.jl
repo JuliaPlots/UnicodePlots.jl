@@ -95,8 +95,6 @@ include("canvas/heatmapcanvas.jl")
 include("description.jl")
 include("volume.jl")
 
-include("freetype.jl")
-using .FreeTypeRendering
 include("plot.jl")
 include("show.jl")
 
@@ -115,6 +113,8 @@ include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 include("interface/imageplot.jl")
 
+isdefined(Base, :get_extension) || import Requires
+
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
         truecolors!()
@@ -123,9 +123,13 @@ function __init__()
         colors256!()
         faintcolors!()
     end
-    Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" begin
-        imageplot(img::AbstractArray{<:Colorant}; kw...) =
-            Plot(ImageGraphics(img); border = :corners, kw...)
+    @static if !isdefined(Base, :get_extension)
+        Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
+            "../ext/ImageInTerminalExt.jl",
+        )
+        Requires.@require FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43" include(
+            "../ext/FreeTypeExt.jl",
+        )
     end
     nothing
 end

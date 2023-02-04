@@ -398,6 +398,10 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     )
 end
 
+# `FreeTypeExt` placeholders
+function get_font_face end
+function render_string! end
+
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 
