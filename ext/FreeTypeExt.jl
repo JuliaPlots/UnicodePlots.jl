@@ -4,7 +4,11 @@
 module FreeTypeExt
 
 import UnicodePlots
-isdefined(Base, :get_extension) ? (using FreeType) : (using ..FreeType)    
+@static if isdefined(Base, :get_extension)
+    using FreeType, FileIO
+else
+    using ..FreeType, ..FileIO
+end
 using StaticArrays
 using ColorTypes
 
@@ -98,6 +102,8 @@ function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
     end
     face
 end
+
+UnicodePlots.save_png(args...; kw...) = FileIO.save(args...; kw...)
 
 """
 Match a font using the user-specified search string. Each part of the search string
