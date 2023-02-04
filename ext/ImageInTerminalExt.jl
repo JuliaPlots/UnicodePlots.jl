@@ -1,7 +1,11 @@
 module ImageInTerminalExt
 
 import UnicodePlots
-isdefined(Base, :get_extension) ? (import ImageInTerminal) : (import ..ImageInTerminal)
+@static if isdefined(Base, :get_extension)
+    import ImageInTerminal
+else
+    import ..ImageInTerminal
+end
 using ColorTypes
 
 UnicodePlots.sixel_encode(args...; kw...) = ImageInTerminal.sixel_encode(args...; kw...)
