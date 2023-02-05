@@ -1,11 +1,7 @@
 module ImageInTerminalExt
 
 import UnicodePlots
-@static if isdefined(Base, :get_extension)
-    import ImageInTerminal
-else
-    import ..ImageInTerminal
-end
+UnicodePlots.@ext_imp_use :import ImageInTerminal
 using ColorTypes
 
 UnicodePlots.sixel_encode(args...; kw...) = ImageInTerminal.sixel_encode(args...; kw...)  # COV_EXCL_LINE

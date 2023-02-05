@@ -2,11 +2,7 @@ module UnitfulExt
 
 import UnicodePlots
 import UnicodePlots: KEYWORDS, Plot, Canvas
-@static if isdefined(Base, :get_extension)
-    import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
-else
-    import ..Unitful: Quantity, RealOrRealQuantity, ustrip, unit
-end
+UnicodePlots.@ext_imp_use :import Unitful Quantity RealOrRealQuantity ustrip unit
 
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)

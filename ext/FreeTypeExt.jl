@@ -4,11 +4,8 @@
 module FreeTypeExt
 
 import UnicodePlots
-@static if isdefined(Base, :get_extension)
-    using FreeType, FileIO
-else
-    using ..FreeType, ..FileIO
-end
+UnicodePlots.@ext_imp_use :using FreeType
+UnicodePlots.@ext_imp_use :import FileIO
 using StaticArrays
 using ColorTypes
 

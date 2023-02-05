@@ -198,6 +198,29 @@ const BORDER_COLOR = Ref(:dark_gray)
 
 ############################################################################################
 # misc
+
+"""
+    @ext_imp_use :import Unitful Quantity RealOrRealQuantity
+
+Equivalent to the following, for `Requires` or weak deps:
+```
+@static if isdefined(Base, :get_extension)
+    import Unitful: Quantity, RealOrRealQuantity
+else
+    import ..Unitful: Quantity, RealOrRealQuantity
+end
+```
+"""
+macro ext_imp_use(imp_use::QuoteNode, mod::Symbol, args...)
+    dots = ntuple(_ -> :., isdefined(Base, :get_extension) ? 1 : 3)
+    ex = if length(args) > 0
+        Expr(:(:), Expr(dots..., mod), Expr.(:., args)...)
+    else
+        Expr(dots..., mod)
+    end
+    Expr(imp_use.value, ex) |> esc
+end
+
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
