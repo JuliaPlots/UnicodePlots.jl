@@ -363,7 +363,7 @@ $(indent(examples.lineplot2))
 
 $(indent(examples.lineplot3))
 
-  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)).
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
@@ -559,7 +559,7 @@ $(indent(examples.isosurface))
 <details>
   $(summary(nothing))
 
-  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `using FreeType, FileIO` before loading `UnicodePlots`).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>
