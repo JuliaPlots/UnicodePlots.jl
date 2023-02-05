@@ -20,7 +20,6 @@ SnoopPrecompile = "66db9d55-30c0-4569-8b51-7e840670fc0c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 ColorSchemes = "^3.19"
@@ -43,10 +42,12 @@ julia = "1.6"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [extensions]
 FreeTypeExt = ["FileIO", "FreeType"]
 ImageInTerminalExt = "ImageInTerminal"
+UnitfulExt = "Unitful"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
@@ -61,6 +62,7 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [targets]
-test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs"]
+test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs", "Unitful"]

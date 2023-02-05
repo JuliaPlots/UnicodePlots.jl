@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0] - 2023-02-xx
+### Changed
+- Rework conditional dependencies (`Unitful`, `FreeType`, `FileIO`) through weak deps to improve latency
+
 ## [3.3] - 2022-11-17
 ### Added
 - Group digits on integer values (thousands) for readability (configured using `thousands_separator`).

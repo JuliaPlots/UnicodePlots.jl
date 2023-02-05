@@ -377,22 +377,6 @@ ceil_base(x, b) = round_base(x, b, RoundUp)
 round_base(x::T, b, ::RoundingMode{:Down}) where {T} = T(b^floor(log(b, x)))
 round_base(x::T, b, ::RoundingMode{:Up}) where {T} = T(b^ceil(log(b, x)))
 
-function unit_str(x, fancy)
-    io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
-    show(io, unit(x))
-    read(io, String)
-end
-
-number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
-    ustrip.(x), unit_str(first(x), fancy)
-number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
-number_unit(x::AbstractVector, args...) = x, nothing
-number_unit(x::Number, args...) = x, nothing
-
-unit_label(label::AbstractString, unit::AbstractString) =
-    (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
-unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
-
 function superscript(s::AbstractString)::String
     v = collect(s)
     for (i, k) ∈ enumerate(v)

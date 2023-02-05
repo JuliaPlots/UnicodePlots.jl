@@ -27,4 +27,4 @@ end
 UnicodePlots.imageplot(img::AbstractArray{<:Colorant}; kw...) =
     UnicodePlots.Plot(UnicodePlots.ImageGraphics(img); border = :corners, kw...)
 
-end
+end  # module

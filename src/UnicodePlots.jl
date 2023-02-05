@@ -8,14 +8,12 @@ using Crayons
 using Printf
 using Dates
 
-import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
 import StatsBase: Histogram, fit, percentile, sturges
 import SparseArrays: AbstractSparseMatrix, findnz
 import Base: RefValue
 
 import MarchingCubes
 import ColorSchemes
-import Requires
 import NaNMath
 import Contour
 
@@ -112,7 +110,7 @@ include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 include("interface/imageplot.jl")
 
-isdefined(Base, :get_extension) || import Requires
+isdefined(Base, :get_extension) || import Requires: @require
 
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
@@ -123,14 +121,17 @@ function __init__()
         faintcolors!()
     end
     @static if !isdefined(Base, :get_extension)  # COV_EXCL_LINE
-        Requires.@require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
-            "../ext/ImageInTerminalExt.jl",
+        @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
+            normpath(@__DIR__, "..", "ext", "ImageInTerminalExt.jl"),
         )
-        Requires.@require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
-            Requires.@require FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43" begin
-                include("../ext/FreeTypeExt.jl")
+        @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
+            @require FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43" begin
+                include(normpath(@__DIR__, "..", "ext", "FreeTypeExt.jl"))
             end
         end
+        @require Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d" include(
+            normpath(@__DIR__, "..", "ext", "UnitfulExt.jl"),
+        )
     end
     nothing
 end

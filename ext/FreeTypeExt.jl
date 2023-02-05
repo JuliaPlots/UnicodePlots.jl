@@ -88,23 +88,6 @@ fallback_fonts() =
 
 const FT_FONTS = Dict{String,FTFont}()
 
-function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
-    face = nothing
-    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
-        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
-            if (ft = find_font(name)) ≢ nothing
-                face = FT_FONTS[name] = ft
-                break  # found new font, cache and return it
-            end
-        else
-            break  # found in cache
-        end
-    end
-    face
-end
-
-UnicodePlots.save_image(args...; kw...) = FileIO.save(args...; kw...)
-
 """
 Match a font using the user-specified search string. Each part of the search string
 is searched in the family name first which has to match once to include the font
@@ -492,4 +475,21 @@ function __init__()
     nothing
 end
 
+function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
+    face = nothing
+    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
+        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
+            if (ft = find_font(name)) ≢ nothing
+                face = FT_FONTS[name] = ft
+                break  # found new font, cache and return it
+            end
+        else
+            break  # found in cache
+        end
+    end
+    face
 end
+
+UnicodePlots.save_image(args...; kw...) = FileIO.save(args...; kw...)
+
+end  # module
