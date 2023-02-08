@@ -1,8 +1,8 @@
 # Changelog
 
-## [3.4] - 2023-02-xx
+## [3.4] - 2023-02-08
 ### Changed
-- Rework conditional glue dependencies (`Unitful`, `FreeType`, `FileIO`) through weak deps to improve latency
+- Rework conditional glue dependencies (`Unitful`, `FreeType`, `FileIO`) through weak deps to improve latency.
 
 ## [3.3] - 2022-11-17
 ### Added

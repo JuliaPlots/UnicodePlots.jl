@@ -73,7 +73,7 @@ main() = begin
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     imageplot1 = ("ImagePlot", """
-      using ImageInTerminal  # mandatory
+      import ImageInTerminal  # mandatory (triggers glue code loading)
       using TestImages
       imageplot(testimage("monarch_color_256"), title="monarch")
       """),
@@ -516,7 +516,7 @@ $(indent(examples.heatmap2))
 <details open>
   $(summary("Image Plot"))
 
-  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be imported before `UnicodePlots`).
 
 $(indent(examples.imageplot1))
 </details>
@@ -559,7 +559,7 @@ $(indent(examples.isosurface))
 <details>
   $(summary(nothing))
 
-  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `using FreeType, FileIO` before loading `UnicodePlots`).
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `import FreeType, FileIO` before loading `UnicodePlots`).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>

@@ -333,10 +333,10 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   <summary><a name=image-plot></a><b>Image Plot</b></summary><br>
 
-  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be imported before `UnicodePlots`).
 
   ```julia
-  using ImageInTerminal  # mandatory
+  import ImageInTerminal  # mandatory (triggers glue code loading)
   using TestImages
   imageplot(testimage("monarch_color_256"), title="monarch")
   ```
@@ -405,7 +405,7 @@ julia> Pkg.add("UnicodePlots")
 <details>
   <summary></a><b>...</b></summary><br>
 
-  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `using FreeType, FileIO` before loading `UnicodePlots`).
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `import FreeType, FileIO` before loading `UnicodePlots`).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>
