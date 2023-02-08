@@ -487,6 +487,11 @@ function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
     face
 end
 
-UnicodePlots.save_image(args...; kw...) = FileIO.save(args...; kw...)
+UnicodePlots.save_image(fn::AbstractString, args...; kw...) =
+    FileIO.save(fn, args...; kw...)
+
+# compat for Plots
+UnicodePlots.save_image(io::IO, args...; kw...) =
+    FileIO.save(FileIO.Stream{FileIO.format"PNG"}(io), args...; kw...)
 
 end  # module

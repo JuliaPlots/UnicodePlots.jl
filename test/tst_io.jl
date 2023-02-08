@@ -44,6 +44,16 @@ end
 
         @test_throws ArgumentError savefig(p, tempname() * ".jpg")
     end
+
+    # for Plots
+    if font_found
+        p = lineplot(1:2)
+        tmp = tempname() * ".png"
+        open(tmp, "w") do io
+            UnicodePlots.save_image(io, UnicodePlots.png_image(p))
+        end
+        @test filesize(tmp) > 1_000
+    end
 end
 
 @testset "stringify plot - performance regression" begin
