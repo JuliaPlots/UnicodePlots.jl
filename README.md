@@ -62,7 +62,7 @@ Here is a list of the main high-level functions for common scenarios:
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/2.10/lineplot3.png" width="450"><br>
   
 
-  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)).
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
@@ -333,10 +333,10 @@ Here is a list of the main high-level functions for common scenarios:
 <details open>
   <summary><a name=image-plot></a><b>Image Plot</b></summary><br>
 
-  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be imported before `UnicodePlots`).
 
   ```julia
-  using ImageInTerminal  # mandatory
+  import ImageInTerminal  # mandatory (triggers glue code loading)
   using TestImages
   imageplot(testimage("monarch_color_256"), title="monarch")
   ```
@@ -405,7 +405,7 @@ julia> Pkg.add("UnicodePlots")
 <details>
   <summary></a><b>...</b></summary><br>
 
-  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `import FreeType, FileIO` before loading `UnicodePlots`).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>

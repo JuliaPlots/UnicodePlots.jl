@@ -1,13 +1,13 @@
 # adapted from github.com/JuliaGraphics/FreeTypeAbstraction.jl/blob/master/src/rendering.jl
 # credits to the `FreeTypeAbstraction` authors
 
-module FreeTypeRendering
+module FreeTypeExt
 
-using ..StaticArrays
-using ..ColorTypes
-using FreeType
-
-export get_font_face, render_string!
+import UnicodePlots
+UnicodePlots.@ext_imp_use :using FreeType
+UnicodePlots.@ext_imp_use :import FileIO
+using StaticArrays
+using ColorTypes
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]
@@ -84,21 +84,6 @@ fallback_fonts() =
 # COV_EXCL_STOP
 
 const FT_FONTS = Dict{String,FTFont}()
-
-function get_font_face(font = nothing, fallback = fallback_fonts())
-    face = nothing
-    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
-        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
-            if (ft = find_font(name)) ≢ nothing
-                face = FT_FONTS[name] = ft
-                break  # found new font, cache and return it
-            end
-        else
-            break  # found in cache
-        end
-    end
-    face
-end
 
 """
 Match a font using the user-specified search string. Each part of the search string
@@ -287,7 +272,7 @@ Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 * `gstr`: background string or array of chars (for background sizing)
 * `incx`: extra x spacing
 """
-function render_string!(
+function UnicodePlots.render_string!(
     img::AbstractMatrix{T},
     fstr::Union{AbstractVector{Char},String},
     face::FTFont,
@@ -487,4 +472,26 @@ function __init__()
     nothing
 end
 
+function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
+    face = nothing
+    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
+        if (face = get(FT_FONTS, name, nothing)) ≡ nothing
+            if (ft = find_font(name)) ≢ nothing
+                face = FT_FONTS[name] = ft
+                break  # found new font, cache and return it
+            end
+        else
+            break  # found in cache
+        end
+    end
+    face
 end
+
+UnicodePlots.save_image(fn::AbstractString, args...; kw...) =
+    FileIO.save(fn, args...; kw...)
+
+# compat for Plots
+UnicodePlots.save_image(io::IO, args...; kw...) =
+    FileIO.save(FileIO.Stream{FileIO.format"PNG"}(io), args...; kw...)
+
+end  # module

@@ -184,35 +184,6 @@ lineplot!(plot::Plot{<:Canvas}, x::AbstractVector{<:TimeType}, y::AbstractVector
     lineplot!(plot, Dates.value.(x), y; kw...)
 
 # ---------------------------------------------------------------------------- #
-# Unitful
-function lineplot(
-    x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
-    unicode_exponent::Bool = KEYWORDS.unicode_exponent,
-    xlabel = KEYWORDS.xlabel,
-    ylabel = KEYWORDS.ylabel,
-    kw...,
-)
-    x, ux = number_unit(x, unicode_exponent)
-    y, uy = number_unit(y, unicode_exponent)
-    lineplot(
-        ustrip.(x),
-        ustrip.(y);
-        xlabel = unit_label(xlabel, ux),
-        ylabel = unit_label(ylabel, uy),
-        unicode_exponent,
-        kw...,
-    )
-end
-
-lineplot!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
-    kw...,
-) = lineplot!(plot, ustrip.(x), ustrip.(y); kw...)
-
-# ---------------------------------------------------------------------------- #
 # slope and intercept
 function lineplot!(plot::Plot{<:Canvas}, intercept::Number, slope::Number; kw...)
     xmin = origin_x(plot.graphics)

@@ -73,7 +73,7 @@ main() = begin
     heatmap1 = ("Heatmap", "heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel=\"z\")"),
     heatmap2 = ("Heatmap", "heatmap(collect(0:30) * collect(0:30)', xfact=.1, yfact=.1, xoffset=-1.5, colormap=:inferno)"),
     imageplot1 = ("ImagePlot", """
-      using ImageInTerminal  # mandatory
+      import ImageInTerminal  # mandatory (triggers glue code loading)
       using TestImages
       imageplot(testimage("monarch_color_256"), title="monarch")
       """),
@@ -363,7 +363,7 @@ $(indent(examples.lineplot2))
 
 $(indent(examples.lineplot3))
 
-  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods.
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)).
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
@@ -516,7 +516,7 @@ $(indent(examples.heatmap2))
 <details open>
   $(summary("Image Plot"))
 
-  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be loaded before `UnicodePlots`).
+  Draws an image, surround it with decorations. `Sixel` are supported (experimental) under a compatible terminal through [`ImageInTerminal`](https://github.com/JuliaImages/ImageInTerminal.jl) (which must be imported before `UnicodePlots`).
 
 $(indent(examples.imageplot1))
 </details>
@@ -559,7 +559,7 @@ $(indent(examples.isosurface))
 <details>
   $(summary(nothing))
 
-  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and resulting images might slightly change without warnings).
+  Saving plots as `png` or `txt` files using the `savefig` command is supported (saving as `png` is experimental and requires `import FreeType, FileIO` before loading `UnicodePlots`).
 
   To recover the plot as a string with ansi color codes use `string(p; color=true)`.
 </details>

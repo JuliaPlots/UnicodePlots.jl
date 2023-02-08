@@ -1,4 +1,4 @@
-using ImageInTerminal
+using ImageInTerminal, FreeType, FileIO, Unitful  # weak deps, or @require
 using UnicodePlots, Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols

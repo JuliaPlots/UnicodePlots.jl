@@ -198,6 +198,29 @@ const BORDER_COLOR = Ref(:dark_gray)
 
 ############################################################################################
 # misc
+
+"""
+    @ext_imp_use :import Unitful Quantity RealOrRealQuantity
+
+Equivalent to the following, for `Requires` or weak deps:
+```
+@static if isdefined(Base, :get_extension)
+    import Unitful: Quantity, RealOrRealQuantity
+else
+    import ..Unitful: Quantity, RealOrRealQuantity
+end
+```
+"""
+macro ext_imp_use(imp_use::QuoteNode, mod::Symbol, args...)
+    dots = ntuple(_ -> :., isdefined(Base, :get_extension) ? 1 : 3)
+    ex = if length(args) > 0
+        Expr(:(:), Expr(dots..., mod), Expr.(:., args)...)
+    else
+        Expr(dots..., mod)
+    end
+    Expr(imp_use.value, ex) |> esc
+end
+
 const FSCALES = (identity = identity, ln = log, log2 = log2, log10 = log10)  # forward
 const ISCALES = (identity = identity, ln = exp, log2 = exp2, log10 = exp10)  # inverse
 const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
@@ -376,22 +399,6 @@ ceil_base(x, b) = round_base(x, b, RoundUp)
 
 round_base(x::T, b, ::RoundingMode{:Down}) where {T} = T(b^floor(log(b, x)))
 round_base(x::T, b, ::RoundingMode{:Up}) where {T} = T(b^ceil(log(b, x)))
-
-function unit_str(x, fancy)
-    io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
-    show(io, unit(x))
-    read(io, String)
-end
-
-number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
-    ustrip.(x), unit_str(first(x), fancy)
-number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
-number_unit(x::AbstractVector, args...) = x, nothing
-number_unit(x::Number, args...) = x, nothing
-
-unit_label(label::AbstractString, unit::AbstractString) =
-    (lab_strip = rstrip(label)) |> isempty ? unit : "$lab_strip ($unit)"
-unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 function superscript(s::AbstractString)::String
     v = collect(s)

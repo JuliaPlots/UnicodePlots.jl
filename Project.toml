@@ -11,8 +11,6 @@ ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 Contour = "d38c429a-6771-53c6-b99e-75d170b6e991"
 Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MarchingCubes = "299715c1-40a9-479a-aaf9-4a633d36f717"
 NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
@@ -22,7 +20,6 @@ SnoopPrecompile = "66db9d55-30c0-4569-8b51-7e840670fc0c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 ColorSchemes = "^3.19"
@@ -31,6 +28,7 @@ Contour = "0.5 - 0.6"
 Crayons = "^4.1"
 FileIO = "1"
 FreeType = "4"
+ImageInTerminal = "0.5"
 MarchingCubes = "0.1"
 NaNMath = "0.3, 1"
 Requires = "1"
@@ -40,9 +38,22 @@ StatsBase = "0.33"
 Unitful = "1"
 julia = "1.6"
 
+[weakdeps]
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
+ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[extensions]
+FreeTypeExt = ["FileIO", "FreeType"]
+ImageInTerminalExt = "ImageInTerminal"
+UnitfulExt = "Unitful"
+
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
 ImageMagick = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -51,6 +62,7 @@ StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [targets]
-test = ["Aqua", "DataFrames", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs"]
+test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs", "Unitful"]
