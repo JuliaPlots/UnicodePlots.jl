@@ -600,8 +600,8 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `xlim::Tuple = (0, 0)`: plotting range for the `x` axis (`(0, 0)` stands for automatic).
   - `ylim::Tuple = (0, 0)`: plotting range for the `y` axis.
   - `zlim::Tuple = (0, 0)`: colormap scaled data range.
-  - `xticks::Bool = true`: set `false` to disable ticks on `x`-axis.
-  - `yticks::Bool = true`: set `false` to disable ticks on `y`-axis.
+  - `xticks::Bool = true`: set `false` to disable ticks (labels) on `x`-axis.
+  - `yticks::Bool = true`: set `false` to disable ticks (labels) on `y`-axis.
   - `xflip::Bool = false`: set `true` to flip the `x` axis.
   - `yflip::Bool = false`: set `true` to flip the `y` axis.
   - `colorbar::Bool = false`: toggle the colorbar.
