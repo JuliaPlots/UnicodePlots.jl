@@ -185,10 +185,10 @@ topinkbound(ext::FontExtent) = hbearing_ori_to_top(ext)
 
 FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloat} =
     FontExtent(
-        [fontmetric.vertBearingX, fontmetric.vertBearingY] ./ scale,
-        [fontmetric.horiBearingX, fontmetric.horiBearingY] ./ scale,
-        [fontmetric.horiAdvance, fontmetric.vertAdvance] ./ scale,
-        [fontmetric.width, fontmetric.height] ./ scale,
+        [fontmetric.vertBearingX / scale, fontmetric.vertBearingY / scale],
+        [fontmetric.horiBearingX / scale, fontmetric.horiBearingY / scale],
+        [fontmetric.horiAdvance / scale, fontmetric.vertAdvance / scale],
+        [fontmetric.width / scale, fontmetric.height / scale],
     )
 
 FontExtent(func::Function, ext::FontExtent) = FontExtent(
