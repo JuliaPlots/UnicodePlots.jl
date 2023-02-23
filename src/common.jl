@@ -424,7 +424,7 @@ is_auto(lims) = all(iszero, lims)
 
 autolims(lims) = is_auto(lims) ? [-1.0, 1.0] : as_float(lims)
 autolims(lims, vec::AbstractVector) =
-    is_auto(lims) && length(vec) > 0 ? extrema(vec) : as_float(lims)
+    is_auto(lims) && length(vec) > 0 ? collect(extrema(vec)) : as_float(lims)
 
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
