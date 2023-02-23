@@ -1,37 +1,37 @@
-translate_4x4(v) = @SMatrix([
+translate_4x4(v) = [
     1 0 0 v[1]
     0 1 0 v[2]
     0 0 1 v[3]
     0 0 0 1
-])
+]
 
-scale_4x4(v) = @SMatrix([
+scale_4x4(v) = [
     v[1] 0 0 0
     0 v[2] 0 0
     0 0 v[3] 0
     0 0 0 1
-])
+]
 
-rotd_x(θ) = @SMatrix([
+rotd_x(θ) = [
     1 0 0 0
     0 cosd(θ) -sind(θ) 0
     0 sind(θ) +cosd(θ) 0
     0 0 0 1
-])
+]
 
-rotd_y(θ) = @SMatrix([
+rotd_y(θ) = [
     +cosd(θ) 0 sind(θ) 0
     0 1 0 0
     -sind(θ) 0 cosd(θ) 0
     0 0 0 1
-])
+]
 
-rotd_z(θ) = @SMatrix([
+rotd_z(θ) = [
     cosd(θ) -sind(θ) 0 0
     sind(θ) +cosd(θ) 0 0
     0 0 1 0
     0 0 0 1
-])
+]
 
 """
     lookat(eye, target, up_vector)
@@ -51,15 +51,13 @@ function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     l = normalize(cross(up_vector, f))  # left vector
     u = cross(f, l)  # up vector
 
-    @SMatrix(
-        [
-            l[1] l[2] l[3] -dot(l, eye)
-            u[1] u[2] u[3] -dot(u, eye)
-            f[1] f[2] f[3] -dot(f, eye)
-            0 0 0 1
-        ]
-    ),
-    f
+    
+    [
+        l[1] l[2] l[3] -dot(l, eye)
+        u[1] u[2] u[3] -dot(u, eye)
+        f[1] f[2] f[3] -dot(f, eye)
+        0 0 0 1
+    ], f
 end
 
 """
@@ -80,26 +78,22 @@ Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionma
 """
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
-    *(
-        @SMatrix([  # scale
+    [  # scale
             2n/(r - l) 0 0 0
             0 2n/(t - b) 0 0
             0 0 1 0
             0 0 0 1
-        ]),
-        @SMatrix([  # translate
+    ] * [  # translate
             1 0 0 (l + r)/2n
             0 1 0 (b + t)/2n
             0 0 1 0
             0 0 0 1
-        ]),
-        @SMatrix([  # perspective
-            -1 0 0 0  # flip x
-            0 -1 0 0  # flip y
-            0 0 (f + n)/(f - n) -2f * n/(f - n)
-            0 0 1 0
-        ]),
-    )
+    ] * [  # perspective
+        -1 0 0 0  # flip x
+        0 -1 0 0  # flip y
+        0 0 (f + n)/(f - n) -2f * n/(f - n)
+        0 0 1 0
+    ]
 end
 
 """
@@ -118,20 +112,18 @@ Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionm
     - `n`: distance to the near depth clipping plane.
     - `f`: distance to the far depth clipping plane.
 """
-ortho(l, r, b, t, n, f) = *(
-    @SMatrix([  # scale
+ortho(l, r, b, t, n, f) =
+    [  # scale
         2/(r - l) 0 0 0
         0 2/(t - b) 0 0
         0 0 2/(f - n) 0
         0 0 0 1
-    ]),
-    @SMatrix([  # translate
+    ] * [  # translate
         1 0 0 -(l + r)/2
         0 1 0 -(b + t)/2
         0 0 1 -(n + f)/2
         0 0 0 1
-    ]),
-)
+    ]
 
 """
     ctr_len_diag(x, y, z)
@@ -150,10 +142,10 @@ function ctr_len_diag(x, y, z)
     lz = Mz - mz
 
     (
-        SVector(mx + 0.5lx, my + 0.5ly, mz + 0.5lz),
-        SVector(mx, my, mz),
-        SVector(Mx, My, Mz),
-        SVector(lx, ly, lz),
+        [mx + 0.5lx, my + 0.5ly, mz + 0.5lz],
+        [mx, my, mz],
+        [Mx, My, Mz],
+        [lx, ly, lz],
         √(lx^2 + ly^2 + lz^2),
     )
 end
@@ -206,10 +198,10 @@ This is typically used to adjust how 3D plot is viewed, see also
 the `projection` keyword in [`surfaceplot`](@ref), [`isosurface`](@ref).
 """
 struct MVP{E,T}
-    mvp_mat::SMatrix{4,4,T}
-    mvp_ortho_mat::SMatrix{4,4,T}
-    mvp_persp_mat::SMatrix{4,4,T}
-    view_dir::SVector{3,T}
+    mvp_mat::Matrix{T}
+    mvp_ortho_mat::Matrix{T}
+    mvp_persp_mat::Matrix{T}
+    view_dir::Vector{T}
     ortho::Bool
     dist::T
 
@@ -247,7 +239,7 @@ struct MVP{E,T}
         elev = clamp(elevation, -90 + δ, 90 - δ)
 
         # Model Matrix
-        M = SMatrix{4,4,F}(I)  # we don't scale, nor translate, nor rotate input data
+        M = Matrix(one(F) * I, 4, 4)  # we don't scale, nor translate, nor rotate input data
 
         # View Matrix
         V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)
@@ -285,7 +277,7 @@ elseif n ∈ (:ortho, :orthographic)
     t.mvp_ortho_mat
 elseif n ∈ (:persp, :perspective)
     t.mvp_persp_mat
-end::SMatrix{4,4,T}
+end
 
 @inline is_ortho(t::MVP, n::Symbol) = if n ≡ :user
     t.ortho
@@ -330,7 +322,8 @@ function (tr::MVP{Val{true},T})(
 end
 
 "transform a vector"
-function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
+function (tr::MVP{Val{true},T})(v::AbstractVector{T}, n::Symbol = :user) where {T}
+    length(v) == 4 || (v = vcat(v, T(1)))
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
     if abs(w) > eps(T)
@@ -345,16 +338,13 @@ function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
     (x, y)
 end
 
-(tr::MVP{Val{true}})(v::AbstractVector{T}, n::Symbol = :user) where {T} =
-    tr(SVector(v[1], v[2], v[3], length(v) == 4 ? v[4] : T(1)), n)
-
 axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} =
-    tr(@SMatrix([
+    tr([
         start[1] stop[1]
         start[2] stop[2]
         start[3] stop[3]
         T(1) T(1)
-    ]), proj)
+    ], proj)
 
 """
     draw_axes!(plot, x, y, z, scale = 0.25)
@@ -368,27 +358,27 @@ function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractF
     tr = plot.projection
     # constant apparent size, independent of zoom level
     len = T(scale * tr.dist)
-    start = SVector(x, y, z)
+    start =[x, y, z]
 
     lines!(
         plot.graphics,
-        axis_line(tr, :ortho, start, SVector(x + len, y, z))...,
+        axis_line(tr, :ortho, start, [x + len, y, z])...,
         color = :red,
     )
     lines!(
         plot.graphics,
-        axis_line(tr, :ortho, start, SVector(x, y + len, z))...,
+        axis_line(tr, :ortho, start, [x, y + len, z])...,
         color = :green,
     )
     lines!(
         plot.graphics,
-        axis_line(tr, :ortho, start, SVector(x, y, z + len))...,
+        axis_line(tr, :ortho, start, [x, y, z + len])...,
         color = :blue,
     )
 
     plot
 end
 draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T<:AbstractFloat} =
-    let (x, y, z) = transform_matrix(plot.projection, :ortho) \ SVector(x, y, T(0), T(1))
+    let (x, y, z) = transform_matrix(plot.projection, :ortho) \ [x, y, T(0), T(1)]
         draw_axes!(plot, x, y, z, args...)
     end
