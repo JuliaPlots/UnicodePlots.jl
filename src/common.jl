@@ -422,9 +422,13 @@ end
 
 is_auto(lims) = all(iszero, lims)
 
-autolims(lims) = is_auto(lims) ? [-1.0, 1.0] : as_float(lims)
+_autolims(::Val{false}, lims, _...) = as_float(lims)
+_autolims(::Val{true}, _, vec::AbstractVector) = collect(extrema(vec))
+_autolims(::Val{true}, lims) = [-1.0, 1.0]
+
+autolims(lims) = _autolims(Val(is_auto(lims)), lims)
 autolims(lims, vec::AbstractVector) =
-    is_auto(lims) && length(vec) > 0 ? collect(extrema(vec)) : as_float(lims)
+    _autolims(Val(is_auto(lims) && length(vec) > 0), lims, vec)
 
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale

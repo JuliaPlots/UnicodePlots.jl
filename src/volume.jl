@@ -325,7 +325,7 @@ function (tr::MVP{Val{true},T})(
 end
 
 "transform a vector"
-function (tr::MVP{Val{true},T})(v::AbstractVector{T}, n::Symbol = :user) where {T}
+function (tr::MVP{Val{true},T})(v::AbstractVector, n::Symbol = :user) where {T}
     length(v) == 4 || (v = vcat(v, T(1)))
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
