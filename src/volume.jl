@@ -273,14 +273,13 @@ create_MVP(::Nothing, args...; _...) = MVP()  # NOTE: kw are expected to be lost
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 
-@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} =
-    if n ≡ :user
-        t.mvp_mat
-    elseif n ∈ (:ortho, :orthographic)
-        t.mvp_ortho_mat
-    elseif n ∈ (:persp, :perspective)
-        t.mvp_persp_mat
-    end
+@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} = if n ≡ :user
+    t.mvp_mat
+elseif n ∈ (:ortho, :orthographic)
+    t.mvp_ortho_mat
+elseif n ∈ (:persp, :perspective)
+    t.mvp_persp_mat
+end::Matrix{T}
 
 @inline is_ortho(t::MVP, n::Symbol) = if n ≡ :user
     t.ortho
