@@ -51,13 +51,13 @@ function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     l = normalize(cross(up_vector, f))  # left vector
     u = cross(f, l)  # up vector
 
-    
     [
         l[1] l[2] l[3] -dot(l, eye)
         u[1] u[2] u[3] -dot(u, eye)
         f[1] f[2] f[3] -dot(f, eye)
         0 0 0 1
-    ], f
+    ],
+    f
 end
 
 """
@@ -79,16 +79,18 @@ Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionma
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
     [  # scale
-            2n/(r - l) 0 0 0
-            0 2n/(t - b) 0 0
-            0 0 1 0
-            0 0 0 1
-    ] * [  # translate
-            1 0 0 (l + r)/2n
-            0 1 0 (b + t)/2n
-            0 0 1 0
-            0 0 0 1
-    ] * [  # perspective
+        2n/(r - l) 0 0 0
+        0 2n/(t - b) 0 0
+        0 0 1 0
+        0 0 0 1
+    ] *
+    [  # translate
+        1 0 0 (l + r)/2n
+        0 1 0 (b + t)/2n
+        0 0 1 0
+        0 0 0 1
+    ] *
+    [  # perspective
         -1 0 0 0  # flip x
         0 -1 0 0  # flip y
         0 0 (f + n)/(f - n) -2f * n/(f - n)
@@ -271,13 +273,14 @@ create_MVP(::Nothing, args...; _...) = MVP()  # NOTE: kw are expected to be lost
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 
-@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} = if n ≡ :user
-    t.mvp_mat
-elseif n ∈ (:ortho, :orthographic)
-    t.mvp_ortho_mat
-elseif n ∈ (:persp, :perspective)
-    t.mvp_persp_mat
-end
+@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} =
+    if n ≡ :user
+        t.mvp_mat
+    elseif n ∈ (:ortho, :orthographic)
+        t.mvp_ortho_mat
+    elseif n ∈ (:persp, :perspective)
+        t.mvp_persp_mat
+    end
 
 @inline is_ortho(t::MVP, n::Symbol) = if n ≡ :user
     t.ortho
@@ -338,13 +341,15 @@ function (tr::MVP{Val{true},T})(v::AbstractVector{T}, n::Symbol = :user) where {
     (x, y)
 end
 
-axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} =
-    tr([
+axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} = tr(
+    [
         start[1] stop[1]
         start[2] stop[2]
         start[3] stop[3]
         T(1) T(1)
-    ], proj)
+    ],
+    proj,
+)
 
 """
     draw_axes!(plot, x, y, z, scale = 0.25)
@@ -358,23 +363,11 @@ function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractF
     tr = plot.projection
     # constant apparent size, independent of zoom level
     len = T(scale * tr.dist)
-    start =[x, y, z]
+    start = [x, y, z]
 
-    lines!(
-        plot.graphics,
-        axis_line(tr, :ortho, start, [x + len, y, z])...,
-        color = :red,
-    )
-    lines!(
-        plot.graphics,
-        axis_line(tr, :ortho, start, [x, y + len, z])...,
-        color = :green,
-    )
-    lines!(
-        plot.graphics,
-        axis_line(tr, :ortho, start, [x, y, z + len])...,
-        color = :blue,
-    )
+    lines!(plot.graphics, axis_line(tr, :ortho, start, [x + len, y, z])..., color = :red)
+    lines!(plot.graphics, axis_line(tr, :ortho, start, [x, y + len, z])..., color = :green)
+    lines!(plot.graphics, axis_line(tr, :ortho, start, [x, y, z + len])..., color = :blue)
 
     plot
 end
