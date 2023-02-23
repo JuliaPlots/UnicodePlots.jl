@@ -6,7 +6,6 @@ module FreeTypeExt
 import UnicodePlots
 UnicodePlots.@ext_imp_use :using FreeType
 UnicodePlots.@ext_imp_use :import FileIO
-using StaticArrays
 using ColorTypes
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
@@ -14,10 +13,10 @@ const FT_LIB = FT_Library[C_NULL]
 const VALID_FONTPATHS = String[]
 
 struct FontExtent{T}
-    vertical_bearing::SVector{2,T}
-    horizontal_bearing::SVector{2,T}
-    advance::SVector{2,T}
-    scale::SVector{2,T}
+    vertical_bearing::Vector{T}
+    horizontal_bearing::Vector{T}
+    advance::Vector{T}
+    scale::Vector{T}
 end
 
 mutable struct FTFont
@@ -186,10 +185,10 @@ topinkbound(ext::FontExtent) = hbearing_ori_to_top(ext)
 
 FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloat} =
     FontExtent(
-        SVector{2,T}(fontmetric.vertBearingX, fontmetric.vertBearingY) ./ scale,
-        SVector{2,T}(fontmetric.horiBearingX, fontmetric.horiBearingY) ./ scale,
-        SVector{2,T}(fontmetric.horiAdvance, fontmetric.vertAdvance) ./ scale,
-        SVector{2,T}(fontmetric.width, fontmetric.height) ./ scale,
+        [fontmetric.vertBearingX, fontmetric.vertBearingY] ./ scale,
+        [fontmetric.horiBearingX, fontmetric.horiBearingY] ./ scale,
+        [fontmetric.horiAdvance, fontmetric.vertAdvance] ./ scale,
+        [fontmetric.width, fontmetric.height] ./ scale,
     )
 
 FontExtent(func::Function, ext::FontExtent) = FontExtent(
@@ -213,9 +212,9 @@ function kerning(face::FTFont, glyphspecs...)
     kerning2d = Ref{FT_Vector}()
     err = FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
     # can error if font has no kerning! Since that's somewhat expected, we just return 0
-    err == 0 || return SVector(0.0, 0.0)
+    err == 0 || return [0.0, 0.0]
     divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
-    SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
+    [kerning2d[].x / divisor, kerning2d[].y / divisor]
 end
 
 function load_glyph(face::FTFont, glyph)
