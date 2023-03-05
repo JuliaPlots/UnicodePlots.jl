@@ -322,13 +322,8 @@ as_float(x) = float.(x)
 roundable(x::Number) = isinteger(x) && (typemin(Int32) ≤ x ≤ typemax(Int32))
 compact_repr(x::Number) = repr(x; context = :compact => true)
 
-function default_formatter(kw)
-    unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
-    thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
-    x -> nice_repr(x, unicode_exponent, thousands_separator)
-end
-
-nice_repr(x::Number, plot) = nice_repr(x, plot.unicode_exponent, plot.thousands_separator)
+nice_repr(x::Number, plot) =
+    nice_repr(x, plot.unicode_exponent[], plot.thousands_separator[])
 nice_repr(x::Number, _::Nothing) =
     nice_repr(x, PLOT_KEYWORDS.unicode_exponent, PLOT_KEYWORDS.thousands_separator)
 
@@ -344,6 +339,7 @@ function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
     reverse!(v)
     (sign(x) ≥ 0 ? "" : "-") * String(v)
 end
+
 function nice_repr(
     x::AbstractFloat,
     unicode_exponent::Bool,
@@ -365,6 +361,12 @@ function nice_repr(
     str
 end
 
+function default_formatter(kw)
+    unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
+    thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
+    x -> nice_repr(x, unicode_exponent, thousands_separator)
+end
+
 # workaround for github.com/JuliaMath/NaNMath.jl/issues/26
 nanless_extrema(x) = any(isnan, x) ? NaNMath.extrema(x) : extrema(x)
 
@@ -374,21 +376,21 @@ function ceil_neg_log10(x)
     roundable(val) ? ceil(Int, val) : floor(Int, val)
 end
 
-round_up_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
-    ceil(x; digits = ceil_neg_log10(m) + 1)
+round_up_subtick(x::T, m) where {T} = T(iszero(x) ? x : if x > 0
+    +ceil(+x; digits = ceil_neg_log10(m) + 1)
 else
     -floor(-x; digits = ceil_neg_log10(m) + 1)
 end)
 
-round_down_subtick(x::T, m) where {T} = T(x == 0 ? 0 : if x > 0
-    floor(x; digits = ceil_neg_log10(m) + 1)
+round_down_subtick(x::T, m) where {T} = T(iszero(x) ? x : if x > 0
+    floor(+x; digits = ceil_neg_log10(m) + 1)
 else
     -ceil(-x; digits = ceil_neg_log10(m) + 1)
 end)
 
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
-float_round_log10(x::T, m) where {T<:AbstractFloat} = T(x == 0 ? 0 : if x > 0
+float_round_log10(x::T, m) where {T<:AbstractFloat} = T(iszero(x) ? x : if x > 0
     +round(+x; digits = ceil_neg_log10(m) + 1)
 else
     -round(-x; digits = ceil_neg_log10(m) + 1)
@@ -431,17 +433,18 @@ scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
+
 function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
-    if mi == ma == 0
+    if iszero(mi) && iszero(ma)
         mi, ma = as_float(extrema(vec))
     end
     if mi == ma
         mi -= 1
         ma += 1
     end
-    if scale == identity
+    if scale ≡ identity
         all(iszero.(lims)) ? plotting_range_narrow(mi, ma) : (mi, ma)
     else
         scale(mi), scale(ma)
@@ -451,11 +454,9 @@ end
 sort_by_keys(dict::Dict) = sort!(collect(dict), by = first)
 
 function sorted_keys_values(dict::Dict; k2s = true)
-    if k2s  # check and force key type to be of AbstractString type if necessary
-        kt, vt = eltype(dict).types
-        if !(kt <: AbstractString)
-            dict = Dict(string(k) => v for (k, v) ∈ pairs(dict))
-        end
+    # check and force key type to <: AbstractString if necessary
+    if k2s && !(first(eltype(dict).types) <: AbstractString)
+        dict = Dict(string(k) => v for (k, v) ∈ pairs(dict))
     end
     keys_vals = sort_by_keys(dict)
     first.(keys_vals), last.(keys_vals)

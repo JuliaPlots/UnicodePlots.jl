@@ -116,7 +116,7 @@ function print_labels(
     right_pad::AbstractString,
     blank::AbstractChar,
 )
-    p.labels || return 0
+    p.labels[] || return 0
     bc        = BORDER_COLOR[]
     lloc      = Symbol(mloc, :l)
     rloc      = Symbol(mloc, :r)
@@ -161,33 +161,33 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     nr, nc = nrows(g), ncols(g)
 
     p_width = nc + 2  # left corner + border length (number of graphics cols) + right corner
-    if p.compact
+    if p.compact[]
         isempty(xlab) || label!(p, :b, xlab)
         isempty(ylab) || label!(p, :l, round(Int, nr / 2), ylab)
     end
 
-    bmap = BORDERMAP[p.border ≡ :none && g isa BrailleCanvas ? :bnone : p.border]
+    bmap = BORDERMAP[p.border[] ≡ :none && g isa BrailleCanvas ? :bnone : p.border[]]
     bc = BORDER_COLOR[]
 
     # get length of largest strings to the left and right
-    max_len_l = if p.labels && !isempty(p.labels_left)
+    max_len_l = if p.labels[] && !isempty(p.labels_left)
         maximum(length ∘ no_ansi_escape, values(p.labels_left))
     else
         0
     end
-    max_len_r = if p.labels && !isempty(p.labels_right)
+    max_len_r = if p.labels[] && !isempty(p.labels_right)
         maximum(length ∘ no_ansi_escape, values(p.labels_right))
     else
         0
     end
-    max_len_a = p.labels ? maximum(length ∘ no_ansi_escape, axes_labels) : 0
-    if !p.compact && p.labels && !isempty(ylab)
+    max_len_a = p.labels[] ? maximum(length ∘ no_ansi_escape, axes_labels) : 0
+    if !p.compact[] && p.labels[] && !isempty(ylab)
         max_len_l += length(ylab) + 1
     end
 
     has_labels =
         max_len_l > 0 || max_len_r > 0 || max_len_a > 0 || length(p.decorations) > 0
-    has_labels &= p.labels
+    has_labels &= p.labels[]
 
     plot_offset = max_len_l + p.margin[] + p.padding[]  # offset where the plot (including border) begins
     border_left_pad = 🗷^plot_offset  # padding-string between labels and border
@@ -281,7 +281,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 left_str  = left_str_
                 right_str = right_str_
             end
-            if !p.compact && row == y_lab_row
+            if !p.compact[] && row == y_lab_row
                 # print ylabel
                 print_color(io, :normal, ylab)
                 print_nocol(io, 🗷^(max_len_l - length(ylab) - left_len))
@@ -368,7 +368,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             🗹 * border_right_cbar_pad,
             🗹,
         )
-        if !p.compact
+        if !p.compact[]
             h_w = print_title(
                 io,
                 print_nocol,
