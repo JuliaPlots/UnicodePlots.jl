@@ -55,11 +55,11 @@ struct Plot{T<:GraphicsArea,E,F}
     zlabel::RefValue{String}
     margin::RefValue{Int}
     padding::RefValue{Int}
-    unicode_exponent::Bool
-    thousands_separator::Char
-    border::Symbol
-    compact::Bool
-    labels::Bool
+    unicode_exponent::RefValue{Bool}
+    thousands_separator::RefValue{Char}
+    border::RefValue{Symbol}
+    compact::RefValue{Bool}
+    labels::RefValue{Bool}
     labels_left::Dict{Int,String}
     labels_right::Dict{Int,String}
     colors_left::Dict{Int,ColorType}
@@ -104,11 +104,11 @@ function Plot(
         Ref(string(zlabel)),
         Ref(Int(margin)),
         Ref(Int(padding)),
-        unicode_exponent,
-        thousands_separator,
-        border,
-        compact,
-        labels && graphics.visible,
+        Ref(unicode_exponent),
+        Ref(thousands_separator),
+        Ref(border),
+        Ref(compact),
+        Ref(labels && graphics.visible),
         Dict{Int,String}(),
         Dict{Int,String}(),
         Dict{Int,ColorType}(),
