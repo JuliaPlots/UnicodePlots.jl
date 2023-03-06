@@ -445,7 +445,7 @@ function extend_limits(vec, lims, scale::Union{Symbol,Function})
         ma += 1
     end
     if scale ≡ identity
-        all(iszero.(lims)) ? plotting_range_narrow(mi, ma) : (mi, ma)
+        is_auto(lims) ? plotting_range_narrow(mi, ma) : (mi, ma)
     else
         scale(mi), scale(ma)
     end
