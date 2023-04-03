@@ -122,15 +122,15 @@ function __init__()
     end
     @static if !isdefined(Base, :get_extension)  # COV_EXCL_LINE
         @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
-            normpath(@__DIR__, "..", "ext", "ImageInTerminalExt.jl"),
+            joinpath("..", "ext", "ImageInTerminalExt.jl"),
         )
         @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
             @require FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43" begin
-                include(normpath(@__DIR__, "..", "ext", "FreeTypeExt.jl"))
+                include(joinpath("..", "ext", "FreeTypeExt.jl"))
             end
         end
         @require Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d" include(
-            normpath(@__DIR__, "..", "ext", "UnitfulExt.jl"),
+            joinpath("..", "ext", "UnitfulExt.jl"),
         )
     end
     nothing
