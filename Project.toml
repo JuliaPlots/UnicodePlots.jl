@@ -3,7 +3,7 @@ uuid = "b8865327-cd53-5732-bb35-84acbb429228"
 license = "MIT"
 desc = "Unicode-based scientific plotting for working in the terminal"
 authors = ["Christof Stocker <stocker.christof@gmail.com>", "T Bltg <tf.bltg@gmail.com>"]
-version = "3.4.1"
+version = "3.4.2"
 
 [deps]
 ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
