@@ -314,3 +314,12 @@ end
     vline!(p, 1)
     test_ref("lineplot/hvline.txt", @show_col(p))
 end
+
+@testset "IntervalSets" begin
+    p = lineplot(identity, 0 .. 2)
+    lineplot!(p, sqrt, 0 .. 2; length = 50)
+    test_ref("lineplot/intervalsets1.txt", @show_col(p))
+
+    p = lineplot([sqrt, cbrt], 0 .. 1, step = 0.01)
+    test_ref("lineplot/intervalsets2.txt", @show_col(p))
+end

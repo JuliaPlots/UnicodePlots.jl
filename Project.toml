@@ -42,11 +42,13 @@ julia = "1.6"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [extensions]
 FreeTypeExt = ["FileIO", "FreeType"]
 ImageInTerminalExt = "ImageInTerminal"
+IntervalSetsExt = "IntervalSets"
 UnitfulExt = "Unitful"
 
 [extras]
@@ -56,6 +58,7 @@ FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
 ImageMagick = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
+IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ReferenceTests = "324d217c-45ce-50fc-942e-d289b448e8cf"
 StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
@@ -65,4 +68,4 @@ TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [targets]
-test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs", "Unitful"]
+test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "IntervalSets", "Random", "ReferenceTests", "StableRNGs", "Test", "TestImages", "TimerOutputs", "Unitful"]

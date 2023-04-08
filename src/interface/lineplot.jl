@@ -171,7 +171,7 @@ function lineplot(
     xticks = true,
     kw...,
 ) where {D<:TimeType}
-    dlim = Dates.value.(D.(xlim))
+    dlim = (Dates.value ∘ D).(xlim)
     plot = lineplot(Dates.value.(x), y; xlim = dlim, xticks = xticks, kw...)
     if xticks
         label!(plot, :bl, format_date(xlim[1], format); color = BORDER_COLOR[])
@@ -200,18 +200,14 @@ end
 
 # ---------------------------------------------------------------------------- #
 # functions
-function lineplot(
+lineplot(
     f::Function,
     x::AbstractVector;
     name = KEYWORDS.name,
     xlabel = "x",
     ylabel = "f(x)",
     kw...,
-)
-    y = float.(f.(x))
-    name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot(x, y; name, xlabel, ylabel, kw...)
-end
+) = lineplot(x, (float ∘ f).(x); name = function_name(f, name), xlabel, ylabel, kw...)
 
 function lineplot(
     f::Function,
@@ -228,17 +224,13 @@ end
 
 lineplot(f::Function; kw...) = lineplot(f, -10, 10; kw...)
 
-function lineplot!(
+lineplot!(
     plot::Plot{<:Canvas},
     f::Function,
     x::AbstractVector;
     name = KEYWORDS.name,
     kw...,
-)
-    y = float.(f.(x))
-    name = isempty(name) ? string(nameof(f), "(x)") : name
-    lineplot!(plot, x, y; name, kw...)
-end
+) = lineplot!(plot, x, (float ∘ f).(x); name = function_name(f, name), kw...)
 
 function lineplot!(
     plot::Plot{<:Canvas},

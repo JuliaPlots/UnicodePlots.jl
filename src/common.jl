@@ -361,6 +361,8 @@ function nice_repr(
     str
 end
 
+function_name(f::Function, default) = isempty(default) ? string(nameof(f), "(x)") : default
+
 function default_formatter(kw)
     unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
     thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
