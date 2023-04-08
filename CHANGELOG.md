@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5] - 2023-04-09
+### Changed
+- Swap `Function` order in `lineplot`.
+
+### Added
+- Support `IntervalSets` through weak dependencies (package extensions).
+
 ## [3.4] - 2023-02-08
 ### Changed
 - Rework conditional glue dependencies (`Unitful`, `FreeType`, `FileIO`) through weak deps to improve latency.
