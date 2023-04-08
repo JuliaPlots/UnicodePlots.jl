@@ -1,7 +1,6 @@
 module UnitfulExt
 
-import UnicodePlots
-import UnicodePlots: KEYWORDS, Plot, Canvas
+import UnicodePlots: UnicodePlots, KEYWORDS, Plot, Canvas
 UnicodePlots.@ext_imp_use :import Unitful Quantity RealOrRealQuantity ustrip unit
 
 function unit_str(x, fancy)
