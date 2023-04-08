@@ -3,8 +3,8 @@ y = [2, 0, -5, 2, -5]
 
 @test_throws MethodError lineplot()
 @test_throws MethodError lineplot(sin, x, y)
-@test_throws ArgumentError lineplot(Function[], 0, 3)
-@test_throws ArgumentError lineplot(Function[], x)
+@test_throws ArgumentError lineplot(0, 3, Function[])
+@test_throws ArgumentError lineplot(x, Function[])
 @test_throws ArgumentError lineplot(Function[])
 @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2], [1, 2, 3])
 @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], [1, 2])
@@ -86,14 +86,14 @@ end
 
 @testset "functions" begin
     @test_throws ArgumentError lineplot(
-        sin,
         1:0.5:12,
+        sin,
         color = :blue,
         ylim = (-1.0, 1.0, 2.0),
     )
     @test_throws ArgumentError lineplot(
-        sin,
         1:0.5:12,
+        sin,
         color = (0, 0, 255),
         ylim = [-1.0, 1.0, 2.0],
     )
@@ -104,31 +104,31 @@ end
     p = @binf lineplot([sin, cos])
     test_ref("lineplot/sincos.txt", @show_col(p))
 
-    p = @binf lineplot(sin, -0.5, 6)
+    p = @binf lineplot(-0.5, 6, sin)
     test_ref("lineplot/sin2.txt", @show_col(p))
     @test @binf(lineplot!(p, cos)) ≡ p
     test_ref("lineplot/sincos2.txt", @show_col(p))
-    @test @binf(lineplot!(p, tan, 2.5, 3.5)) ≡ p
+    @test @binf(lineplot!(p, 2.5, 3.5, tan)) ≡ p
     test_ref("lineplot/sincostan2.txt", @show_col(p))
 
-    p = @binf lineplot([sin, cos], -0.5, 3)
+    p = @binf lineplot(-0.5, 3, [sin, cos])
     test_ref("lineplot/sincos3.txt", @show_col(p))
 
     tmp = [-0.5, 0.6, 1.4, 2.5]
-    p = @binf lineplot(sin, tmp)
+    p = @binf lineplot(tmp, sin)
     test_ref("lineplot/sin4.txt", @show_col(p))
-    @test @binf(lineplot!(p, cos, tmp)) ≡ p
+    @test @binf(lineplot!(p, tmp, cos)) ≡ p
     test_ref("lineplot/sincos4.txt", @show_col(p))
-    p = @binf lineplot([sin, cos], tmp)
+    p = @binf lineplot(tmp, [sin, cos])
     test_ref("lineplot/sincos4.txt", @show_col(p))
 
-    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3; name = ["s", "c", "d"])
-    @test_throws DimensionMismatch lineplot([sin, cos], -0.5, 3; color = [:red])
+    @test_throws DimensionMismatch lineplot(-0.5, 3, [sin, cos]; name = ["s", "c", "d"])
+    @test_throws DimensionMismatch lineplot(-0.5, 3, [sin, cos]; color = [:red])
     for (xlim, ylim) ∈ zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
         p = @binf lineplot(
-            [sin, cos],
             -0.5,
             3,
+            [sin, cos],
             name = ["s", "c"],
             color = [:red, :yellow],
             title = "Funs",
@@ -316,10 +316,10 @@ end
 end
 
 @testset "IntervalSets" begin
-    p = lineplot(identity, 0 .. 2)
-    lineplot!(p, sqrt, 0 .. 2; length = 50)
+    p = lineplot(0 .. 2, identity)
+    lineplot!(p, 0 .. 2, sqrt; length = 50)
     test_ref("lineplot/intervalsets1.txt", @show_col(p))
 
-    p = lineplot([sqrt, cbrt], 0 .. 1, step = 0.01)
+    p = lineplot(0 .. 1, [sqrt, cbrt], step = 0.01)
     test_ref("lineplot/intervalsets2.txt", @show_col(p))
 end

@@ -20,7 +20,7 @@ end
 @testset "savefig" begin
     font_found = UnicodePlots.get_font_face() ≢ nothing  # `PkgEval` can fail
     for p ∈ (
-        lineplot([cos, sin, x -> 0.5, x -> -0.5], -π / 2, 2π, title = "fancy title"),
+        lineplot(-π / 2, 2π, [cos, sin, x -> 0.5, x -> -0.5], title = "fancy title"),
         barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
     )
         for bbox ∈ (nothing, :red), tr ∈ (true, false)

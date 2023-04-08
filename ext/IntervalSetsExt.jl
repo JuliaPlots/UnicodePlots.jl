@@ -4,28 +4,28 @@ import UnicodePlots: UnicodePlots, Plot, Canvas
 UnicodePlots.@ext_imp_use :import IntervalSets
 
 UnicodePlots.lineplot(
-    f::Function,
-    x::IntervalSets.AbstractInterval;
+    x::IntervalSets.AbstractInterval,
+    f::Function;
     length = nothing,
     step = nothing,
     kw...,
-) = UnicodePlots.lineplot(f, range(x; length, step); kw...)
+) = UnicodePlots.lineplot(range(x; length, step), f; kw...)
 
 UnicodePlots.lineplot!(
     plot::Plot{<:Canvas},
-    f::Function,
-    x::IntervalSets.AbstractInterval;
+    x::IntervalSets.AbstractInterval,
+    f::Function;
     length = nothing,
     step = nothing,
     kw...,
-) = UnicodePlots.lineplot!(plot, f, range(x; length, step); kw...)
+) = UnicodePlots.lineplot!(plot, range(x; length, step), f; kw...)
 
 UnicodePlots.lineplot(
-    F::AbstractVector{<:Function},
-    x::IntervalSets.AbstractInterval;
+    x::IntervalSets.AbstractInterval,
+    F::AbstractVector{<:Function};
     length = nothing,
     step = nothing,
     kw...,
-) = UnicodePlots.lineplot(F, range(x; length, step); kw...)
+) = UnicodePlots.lineplot(range(x; length, step), F; kw...)
 
 end  # module

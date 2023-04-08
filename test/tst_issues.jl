@@ -8,7 +8,7 @@
     end
 
     @testset "plot hang (tan → ∞) (#129)" begin
-        p = lineplot([cos, sin, tan], -π / 2, 2π)
+        p = lineplot(-π / 2, 2π, [cos, sin, tan])
         test_ref("issues/cos_sin_tan.txt", @show_col(p))
     end
 
