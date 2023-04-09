@@ -67,6 +67,8 @@ Here is a list of the main high-level functions for common scenarios:
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
+
+  Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported on a limited set of functions.
 </details>
 
 <details open>
