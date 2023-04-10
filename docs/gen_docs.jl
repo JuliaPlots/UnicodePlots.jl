@@ -6,7 +6,7 @@ import Markdown: MD, Paragraph, plain
 main() = begin
   warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/gen_docs.jl instead"
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
-  ver = "2.10"
+  ver = "3.x"
 
   exs = (
     lineplot1 = ("Basic Canvas", """
