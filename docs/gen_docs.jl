@@ -18,10 +18,6 @@ main() = begin
                      xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
     lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:cyan, name=\"other line\")"),
-    lineplot4 = ("Intervals", """
-      using IntervalSets
-      lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
-      """),
     scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\")"),
     scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10)"),
     scatterplot3 = ("Scatterplot", "scatterplot(1:4, 1:4, xscale=:log10, yscale=:ln, unicode_exponent=false, height=6)"),
@@ -29,14 +25,18 @@ main() = begin
       scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '', "∫"],
                   color=[:cyan, nothing, :yellow], height=2)
       """),
-    lineplot5 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
-    lineplot6 = ("Lineplot", "plt = lineplot(-π/2, 2π, [cos, sin])"),
-    lineplot7 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
-    lineplot8 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
-    lineplot9 = ("Lineplot", """
+    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
+    lineplot5 = ("Lineplot", "plt = lineplot(-π/2, 2π, [cos, sin])"),
+    lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
+    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
+    lineplot8 = ("Lineplot", """
       using Unitful
       a, t = 1u"m/s^2", (0:100) * u"s"
       lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
+      """),
+    lineplot9 = ("Lineplot", """
+      using IntervalSets
+      lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
       """),
     lineplot10 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
     lineplot11 = ("Lineplot", """
@@ -335,8 +335,8 @@ Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library des
 
 Here is a list of the main high-level functions for common scenarios:
 
-  - [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
   - [`lineplot`](https://github.com/JuliaPlots/UnicodePlots.jl#lineplot) (Line Plot)
+  - [`scatterplot`](https://github.com/JuliaPlots/UnicodePlots.jl#scatterplot) (Scatter Plot)
   - [`stairs`](https://github.com/JuliaPlots/UnicodePlots.jl#staircase-plot) (Staircase Plot)
   - [`barplot`](https://github.com/JuliaPlots/UnicodePlots.jl#barplot) (Bar Plot - horizontal)
   - [`histogram`](https://github.com/JuliaPlots/UnicodePlots.jl#histogram) (Histogram - horizontal / vertical)
@@ -367,15 +367,44 @@ $(indent(examples.lineplot2))
 
 $(indent(examples.lineplot3))
 
-  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions))).
-
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 
-  Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported on some functions such as `lineplot`:
+</details>
+
+<details open>
+  $(summary("Lineplot"))
 
 $(indent(examples.lineplot4))
+
+  It's also possible to specify a function and a range:
+
+$(indent(examples.lineplot5))
+
+  You can also plot lines by specifying an intercept and slope:
+
+$(indent(examples.lineplot6))
+
+  Plotting multiple series is supported by providing a `Matrix` (`<: AbstractMatrix`) for the `y` argument, with the individual series corresponding to its columns. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
+
+$(indent(examples.lineplot7))
+
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)):
+
+$(indent(examples.lineplot8))
+
+  Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported:
+
+$(indent(examples.lineplot9))
+
+  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
+
+$(indent(examples.lineplot10))
+
+  `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
+
+$(indent(examples.lineplot11))
 
 </details>
 
@@ -398,37 +427,6 @@ $(indent(examples.scatterplot3))
 $(indent(examples.scatterplot4))
 
   As with `lineplot`, `scatterplot` supports plotting physical `Unitful` quantities, or plotting multiple series (`Matrix` argument).
-</details>
-
-<details open>
-  $(summary("Lineplot"))
-
-$(indent(examples.lineplot5))
-
-  It's also possible to specify a function and a range:
-
-$(indent(examples.lineplot6))
-
-  You can also plot lines by specifying an intercept and slope:
-
-$(indent(examples.lineplot7))
-
-  Plotting multiple series is supported by providing a `Matrix` (`<: AbstractMatrix`) for the `y` argument, with the individual series corresponding to its columns. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
-
-$(indent(examples.lineplot8))
-
-  Physical units are supported through `Unitful`:
-
-$(indent(examples.lineplot9))
-
-  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
-
-$(indent(examples.lineplot10))
-
-  `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
-
-$(indent(examples.lineplot11))
-
 </details>
 
 <details open>
