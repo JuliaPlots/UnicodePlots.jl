@@ -317,9 +317,9 @@ end
 
 @testset "IntervalSets" begin
     p = lineplot(0 .. 2, identity)
-    lineplot!(p, 0 .. 2, sqrt; length = 50)
+    lineplot!(p, 0 .. 2, sqrt)
     test_ref("lineplot/intervalsets1.txt", @show_col(p))
 
-    p = lineplot(0 .. 1, [sqrt, cbrt], step = 0.01)
+    p = lineplot(0 .. 1, [sqrt, cbrt])
     test_ref("lineplot/intervalsets2.txt", @show_col(p))
 end
