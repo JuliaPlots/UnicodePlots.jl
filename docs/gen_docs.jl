@@ -18,6 +18,10 @@ main() = begin
                      xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
     lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:cyan, name=\"other line\")"),
+    lineplot4 = ("Intervals", """
+      using IntervalSets
+      lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
+      """),
     scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\")"),
     scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10)"),
     scatterplot3 = ("Scatterplot", "scatterplot(1:4, 1:4, xscale=:log10, yscale=:ln, unicode_exponent=false, height=6)"),
@@ -25,17 +29,17 @@ main() = begin
       scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '', "∫"],
                   color=[:cyan, nothing, :yellow], height=2)
       """),
-    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
-    lineplot5 = ("Lineplot", "plt = lineplot([cos, sin], -π/2, 2π)"),
-    lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
-    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
-    lineplot8 = ("Lineplot", """
+    lineplot5 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
+    lineplot6 = ("Lineplot", "plt = lineplot(-π/2, 2π, [cos, sin])"),
+    lineplot7 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
+    lineplot8 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
+    lineplot9 = ("Lineplot", """
       using Unitful
       a, t = 1u"m/s^2", (0:100) * u"s"
       lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
       """),
-    lineplot9 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
-    lineplot10 = ("Lineplot", """
+    lineplot10 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
+    lineplot11 = ("Lineplot", """
       p = Plot([NaN], [NaN]; xlim=(0, 8), ylim=(0, 8))
       vline!(p, [2, 6], [2, 6], color=:red)
       hline!(p, [2, 6], [2, 6], color=:white)
@@ -91,9 +95,9 @@ main() = begin
       torus(x, y, z, r=0.2, R=0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
       isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, cull=true, zoom=2, elevation=50)
       """),
-    width = ("Width", "lineplot(sin, 1:.5:20, width=60)"),
-    height = ("Height", "lineplot(sin, 1:.5:20, height=18)"),
-    labels = ("Labels", "lineplot(sin, 1:.5:20, labels=false)"),
+    width = ("Width", "lineplot(1:.5:20, sin, width=60)"),
+    height = ("Height", "lineplot(1:.5:20, sin, height=18)"),
+    labels = ("Labels", "lineplot(1:.5:20, sin, labels=false)"),
     border_dashed = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"),
     border_ascii = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)"),
     border_bold = ("Border", "lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"),
@@ -363,13 +367,16 @@ $(indent(examples.lineplot2))
 
 $(indent(examples.lineplot3))
 
-  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)).
+  Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported on a subset of plotting methods (supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions))).
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 
-  Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported on a limited set of functions.
+  Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported on some functions such as `lineplot`:
+
+$(indent(examples.lineplot4))
+
 </details>
 
 <details open>
@@ -396,31 +403,31 @@ $(indent(examples.scatterplot4))
 <details open>
   $(summary("Lineplot"))
 
-$(indent(examples.lineplot4))
+$(indent(examples.lineplot5))
 
   It's also possible to specify a function and a range:
 
-$(indent(examples.lineplot5))
+$(indent(examples.lineplot6))
 
   You can also plot lines by specifying an intercept and slope:
 
-$(indent(examples.lineplot6))
-
-  Plotting multiple series is supported by providing an `AbstractMatrix` for the `y` argument, with the individual series corresponding to the columns of the `Matrix`. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
-
 $(indent(examples.lineplot7))
 
-  Physical units are supported through `Unitful`:
+  Plotting multiple series is supported by providing a `Matrix` (`<: AbstractMatrix`) for the `y` argument, with the individual series corresponding to its columns. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
 
 $(indent(examples.lineplot8))
 
-  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
+  Physical units are supported through `Unitful`:
 
 $(indent(examples.lineplot9))
 
-  `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
+  Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
 
 $(indent(examples.lineplot10))
+
+  `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
+
+$(indent(examples.lineplot11))
 
 </details>
 
@@ -702,7 +709,16 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       rng = StableRNG(1337)
       default_size!(height=10)
 
-      panel(x; kw...) = Panel(x isa Plot ? string(x, color=true) : x; fit=true, style="(180, 180, 180)", kw...)
+      panel(x; kw...) = begin
+        xs = if x isa Plot
+          # x.margin[] = p.padding[] = 0  # make plots more compact
+          # x.compact[] = true
+          string(x, color=true)
+        else
+          x
+        end
+        Panel(xs; fit=true, style="(180, 180, 180)", kw...)
+      end
 
       panels = (
         line = panel(lineplot(t -> exp(-.15t) * sinpi(.5t), xlabel="t", ylabel="y(t)", name = "decay"); title="lineplot"),
@@ -751,8 +767,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
 
     println(io, """
       # $warn
-      using ImageInTerminal, TestImages
-      using UnicodePlots, StableRNGs, SparseArrays, Unitful, Term
+      using ImageInTerminal, TestImages, FreeType, FileIO, Unitful, IntervalSets
+      using UnicodePlots, StableRNGs, SparseArrays, Term
       import UnicodePlots: lines!, points!, pixel!
 
       # UnicodePlots.brightcolors!()
