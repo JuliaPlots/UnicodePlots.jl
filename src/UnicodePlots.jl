@@ -1,6 +1,6 @@
 module UnicodePlots
 
-using SnoopPrecompile
+using PrecompileTools
 using LinearAlgebra
 using StaticArrays
 using ColorTypes
@@ -180,7 +180,7 @@ function precompile_workload(io::IO = IOContext(devnull, :color => Base.get_have
     end
 end
 
-@precompile_all_calls begin
+@compile_workload begin
     precompile_workload()
 end
 # COV_EXCL_STOP
