@@ -436,6 +436,8 @@ scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 
+strip_units(x) = x
+
 function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))

@@ -18,6 +18,11 @@ number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
     ustrip.(x), unit_str(first(x), fancy)
 number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
 
+maybe_ustrip(x::Quantity) = ustrip(x)
+maybe_ustrip(x) = x
+
+UnicodePlots.strip_units(x) = maybe_ustrip(x)
+
 # ---------------------------------------------------------------------------- #
 # lineplot
 function UnicodePlots.lineplot(
@@ -31,8 +36,8 @@ function UnicodePlots.lineplot(
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
     UnicodePlots.lineplot(
-        ustrip.(x),
-        ustrip.(y);
+        maybe_ustrip.(x),
+        maybe_ustrip.(y);
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
@@ -45,7 +50,7 @@ UnicodePlots.lineplot!(
     x::AbstractVector{<:RealOrRealQuantity},
     y::AbstractVector{<:Quantity};
     kw...,
-) = UnicodePlots.lineplot!(plot, ustrip.(x), ustrip.(y); kw...)
+) = UnicodePlots.lineplot!(plot, maybe_ustrip.(x), maybe_ustrip.(y); kw...)
 
 # ---------------------------------------------------------------------------- #
 # scatterplot
@@ -60,8 +65,8 @@ function UnicodePlots.scatterplot(
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
     UnicodePlots.scatterplot(
-        ustrip.(x),
-        ustrip.(y);
+        maybe_ustrip.(x),
+        maybe_ustrip.(y);
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
@@ -74,6 +79,6 @@ UnicodePlots.scatterplot!(
     x::AbstractVector{<:RealOrRealQuantity},
     y::AbstractVector{<:Quantity};
     kw...,
-) = UnicodePlots.scatterplot!(plot, ustrip.(x), ustrip.(y); kw...)
+) = UnicodePlots.scatterplot!(plot, maybe_ustrip.(x), maybe_ustrip.(y); kw...)
 
 end  # module
