@@ -1,6 +1,6 @@
 module UnitfulExt
 
-import UnicodePlots: UnicodePlots, KEYWORDS, Plot, Canvas
+import UnicodePlots: UnicodePlots, KEYWORDS, Plot, Canvas, unitless
 UnicodePlots.@ext_imp_use :import Unitful Quantity RealOrRealQuantity ustrip unit
 
 function unit_str(x, fancy)
@@ -18,10 +18,7 @@ number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
     ustrip.(x), unit_str(first(x), fancy)
 number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
 
-maybe_ustrip(x::Quantity) = ustrip(x)
-maybe_ustrip(x) = x
-
-UnicodePlots.strip_units(x) = maybe_ustrip(x)
+unitless(x::Quantity) = ustrip(x)  # NOTE: keep in sync with src/common.jl
 
 # ---------------------------------------------------------------------------- #
 # lineplot
@@ -36,8 +33,8 @@ function UnicodePlots.lineplot(
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
     UnicodePlots.lineplot(
-        maybe_ustrip.(x),
-        maybe_ustrip.(y);
+        unitless.(x),
+        unitless.(y);
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
@@ -50,7 +47,7 @@ UnicodePlots.lineplot!(
     x::AbstractVector{<:RealOrRealQuantity},
     y::AbstractVector{<:Quantity};
     kw...,
-) = UnicodePlots.lineplot!(plot, maybe_ustrip.(x), maybe_ustrip.(y); kw...)
+) = UnicodePlots.lineplot!(plot, unitless.(x), unitless.(y); kw...)
 
 # ---------------------------------------------------------------------------- #
 # scatterplot
@@ -65,8 +62,8 @@ function UnicodePlots.scatterplot(
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
     UnicodePlots.scatterplot(
-        maybe_ustrip.(x),
-        maybe_ustrip.(y);
+        unitless.(x),
+        unitless.(y);
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
@@ -79,6 +76,6 @@ UnicodePlots.scatterplot!(
     x::AbstractVector{<:RealOrRealQuantity},
     y::AbstractVector{<:Quantity};
     kw...,
-) = UnicodePlots.scatterplot!(plot, maybe_ustrip.(x), maybe_ustrip.(y); kw...)
+) = UnicodePlots.scatterplot!(plot, unitless.(x), unitless.(y); kw...)
 
 end  # module

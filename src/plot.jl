@@ -205,7 +205,7 @@ function Plot(
 
     mvp = create_MVP(projection, x, y, z; kw...)
 
-    xlim, ylim = strip_units.(xlim), strip_units.(ylim)
+    xlim, ylim = unitless.(xlim), unitless.(ylim)
 
     (mx, Mx), (my, My) = if is_enabled(mvp)
         (xscale ≢ identity || yscale ≢ identity) &&
