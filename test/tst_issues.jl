@@ -83,4 +83,16 @@
         p = heatmap(A)
         test_ref("issues/heatmap_identity.txt", @show_col(p))
     end
+
+    @testset "Unitful mix units, lims (#321)" begin
+        x = 1:3
+        y = @. 2x * u"s"
+        ylim = (0u"s", 8u"s")
+
+        p = lineplot(x, y; ylim)
+        show(devnull, p)
+
+        p = scatterplot(x, y; ylim)
+        show(devnull, p)
+    end
 end

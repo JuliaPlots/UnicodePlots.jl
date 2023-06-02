@@ -436,6 +436,8 @@ scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 
+unitless(x) = x  # noop when Unitful is not loaded
+
 function extend_limits(vec, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
