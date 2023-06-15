@@ -13,7 +13,7 @@ This means that the two vectors must be of the same length and ordering.
 # Usage
 
     lineplot([x], y; $(keywords((; head_tail = nothing, head_tail_frac = 5 / 100); add = (:canvas,))))
-    lineplot(fun, [start], [stop]; kw...)
+    lineplot([start], [stop], fun; kw...)
 
 # Arguments
 
