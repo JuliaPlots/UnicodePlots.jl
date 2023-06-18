@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.6] - 2023-06-18
+### Added
+- Support `Term` extension, export `gridplot`.
+
 ## [3.5] - 2023-04-09
 ### Changed
 - Swap `Function` order in `lineplot`.
