@@ -605,25 +605,21 @@ $(indent(examples.isosurface))
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
-  For a more complex layout, use the [`grid`](https://fedeclaudi.github.io/Term.jl/dev/layout/grid) function from [`Term`](https://github.com/FedeClaudi/Term.jl):
+  For a more complex layout, use the [`gridplot`] function (requires loading [`Term`](https://github.com/FedeClaudi/Term.jl)).
   ```julia
   using UnicodePlots, Term
-  panel(p; kw...) = begin
-    p.margin[] = p.padding[] = 0  # make plots more compact
-    Panel(string(p; color=true); style="hidden", fit=true, kw...)
-  end
 
   (
-    panel(lineplot(1:2)) *
-    panel(scatterplot(rand(100)))
+    UnicodePlots.panel(lineplot(1:2)) *
+    UnicodePlots.panel(scatterplot(rand(100)))
   ) / (
-    panel(lineplot(2:-1:1)) * 
-    panel(densityplot(randn(1_000), randn(1_000)))
-  ) |> print
+    UnicodePlots.panel(lineplot(2:-1:1)) * 
+    UnicodePlots.panel(densityplot(randn(1_000), randn(1_000)))
+  ) |> display
 
-  grid(map(i -> panel(lineplot(-i:i)), 1:5); show_placeholder=true) |> print
-  grid(map(i -> panel(lineplot(-i:i)), 1:3); layout=(2, nothing)) |> print
-  grid(map(i -> panel(lineplot(-i:i)), 1:3); layout=(nothing, 1)) |> print
+  gridplot(map(i -> lineplot(-i:i), 1:5); show_placeholder=true) |> display
+  gridplot(map(i -> lineplot(-i:i), 1:3); layout=(2, nothing)) |> display
+  gridplot(map(i -> lineplot(-i:i), 1:3); layout=(nothing, 1)) |> display
   ```
 </details>
 

@@ -45,7 +45,8 @@ export default_size!,
     zlabel,
     vline!,
     hline!,
-    savefig
+    savefig,
+    gridplot
 
 # methods with mutating variants
 export scatterplot!,

@@ -647,3 +647,7 @@ split_plot_kw(kw) =
     end
 
 warn_on_lost_kw(kw) = (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)
+
+# TermExt
+function panel end
+function gridplot end
