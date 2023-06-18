@@ -133,6 +133,9 @@ function __init__()
         @require IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953" include(
             joinpath("..", "ext", "IntervalSetsExt.jl"),
         )
+        @require Term = "22787eb5-b846-44ae-b979-8e399b8463ab" include(
+            joinpath("..", "ext", "TermExt.jl"),
+        )
         @require Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d" include(
             joinpath("..", "ext", "UnitfulExt.jl"),
         )
