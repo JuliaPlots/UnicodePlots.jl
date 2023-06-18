@@ -605,7 +605,7 @@ $(indent(examples.isosurface))
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
-  For a more complex layout, use the [`gridplot`] function (requires loading [`Term`](https://github.com/FedeClaudi/Term.jl) as extension).
+  For a more complex layout, use the `gridplot` function (requires loading [`Term`](https://github.com/FedeClaudi/Term.jl) as extension).
   ```julia
   using UnicodePlots, Term
 
