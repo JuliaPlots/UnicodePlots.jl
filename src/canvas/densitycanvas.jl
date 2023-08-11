@@ -1,5 +1,3 @@
-const DEN_SIGNS = Ref((' ', '░', '▒', '▓', '█'))
-
 """
 Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set.
 Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character.
@@ -23,6 +21,8 @@ struct DensityCanvas{YS<:Function,XS<:Function,DS<:Function} <: Canvas
     xscale::XS
     dscale::DS
 end
+
+const DEN_DECODE = Ref((' ', '░', '▒', '▓', '█'))
 
 @inline y_pixel_per_char(::Type{<:DensityCanvas}) = 2
 @inline x_pixel_per_char(::Type{<:DensityCanvas}) = 1
@@ -94,11 +94,11 @@ end
 
 function print_row(io::IO, _, print_color, c::DensityCanvas, row::Integer)
     1 ≤ row ≤ nrows(c) || throw(ArgumentError("`row` out of bounds: $row"))
-    signs = DEN_SIGNS[]
-    fact = (length(signs) - 1) / c.max_density[]
+    decoder = DEN_DECODE[]
+    fact = (length(decoder) - 1) / c.max_density[]
     for col ∈ 1:ncols(c)
         val = fact * c.dscale(c.grid[row, col])
-        print_color(io, c.colors[row, col], signs[round(Int, val, RoundNearestTiesUp) + 1])
+        print_color(io, c.colors[row, col], decoder[round(Int, val, RoundNearestTiesUp) + 1])
     end
     nothing
 end

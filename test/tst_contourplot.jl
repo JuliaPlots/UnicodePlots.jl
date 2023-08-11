@@ -30,6 +30,11 @@ end
     test_ref("contourplot/gauss_$(levels)levels.txt", @show_col(p))
 end
 
+@testset "custom levels" begin
+    p = @binf contourplot(gaussian_2d()...; levels = [0.2, 0.5, 0.6, 0.8])
+    test_ref("contourplot/gauss_customlevels.txt", @show_col(p))
+end
+
 @testset "update contourplot" begin
     p = @binf contourplot(gaussian_2d()...; levels = 2)
     # mutate the colormap & number of levels
@@ -52,4 +57,11 @@ end
     z = (x, y) -> 10x * exp(-x^2 - y^2)
     p = contourplot(x, y, z; levels = 10)
     test_ref("contourplot/consistency.txt", @show_col(p))
+end
+
+@testset "filled `contourplot`" begin
+    himmelblau(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2
+    x = y = range(-5, 5; length = 25)
+    p = contourplot(x, y, himmelblau; levels = [30, 80, 150, 400], canvas = FilledCanvas)
+    test_ref("contourplot/filled_himmelblau.txt", @show_col(p))
 end

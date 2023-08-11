@@ -26,8 +26,9 @@ struct DotCanvas{YS<:Function,XS<:Function} <: LookupCanvas
 end
 
 const N_DOT = grid_type(DotCanvas)(4)
-const DOT_SIGNS = [0b10; 0b01]
+const DOT_ENCODE = [0b10; 0b01]
 const DOT_DECODE = Array{Char}(undef, typemax(N_DOT))
+
 DOT_DECODE[1] = ' '
 DOT_DECODE[2] = '.'
 DOT_DECODE[3] = '\''
@@ -37,7 +38,7 @@ DOT_DECODE[(N_DOT + 1):typemax(N_DOT)] = UNICODE_TABLE[1:(typemax(N_DOT) - N_DOT
 @inline y_pixel_per_char(::Type{<:DotCanvas}) = 2
 @inline x_pixel_per_char(::Type{<:DotCanvas}) = 1
 
-@inline lookup_encode(::DotCanvas) = DOT_SIGNS
+@inline lookup_encode(::DotCanvas) = DOT_ENCODE
 @inline lookup_decode(::DotCanvas) = DOT_DECODE
 @inline lookup_offset(::DotCanvas) = N_DOT
 
