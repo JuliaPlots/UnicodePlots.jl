@@ -88,8 +88,6 @@ let n = 0
         FILLED_DECODE[(n += 1)+2] = v
     end
 end
-FILLED_DECODE[(N_FILLED + 1):typemax(N_FILLED)] =
-    UNICODE_TABLE[1:(typemax(N_FILLED) - N_FILLED)]
 
 @inline x_pixel_per_char(::Type{<:FilledCanvas}) = 1
 @inline y_pixel_per_char(::Type{<:FilledCanvas}) = 1
