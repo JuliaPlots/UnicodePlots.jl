@@ -365,7 +365,7 @@ Here is a list of the main high-level functions for common scenarios:
   
 
   Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
-  By default, `surfaceplot` scales heights to adjust aspect the other axes with `zscale=:aspect`.
+  By default, `surfaceplot` scales heights to adjust aspect wrt the remaining axes with `zscale=:aspect`.
   To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
   ```julia
@@ -452,7 +452,7 @@ julia> Pkg.add("UnicodePlots")
 
   `UnicodePlots` is integrated in [`Plots`](https://github.com/JuliaPlots/Plots.jl) as a backend, with support for [basic layout](https://docs.juliaplots.org/stable/gallery/unicodeplots/generated/unicodeplots-ref17).
 
-  For a more complex layout, use the `gridplot` function (requires loading [`Term`](https://github.com/FedeClaudi/Term.jl)).
+  For a more complex layout, use the `gridplot` function (requires loading [`Term`](https://github.com/FedeClaudi/Term.jl) as extension).
   ```julia
   using UnicodePlots, Term
 
@@ -687,7 +687,7 @@ The method `label!` is responsible for the setting all the textual decorations o
     These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
   
   - **DensityCanvas**:
-    Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+    Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of data-points.
   
   - **BarplotGraphics**:
     This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
@@ -732,7 +732,7 @@ The method `label!` is responsible for the setting all the textual decorations o
 <details>
   <summary></a><b>...</b></summary><br>
 
-  Run the folowing snippet to analyze invalidations:
+  Run the following snippet to analyze invalidations:
   ```julia
   using SnoopCompileCore
   
