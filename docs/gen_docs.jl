@@ -251,7 +251,7 @@ The following types of `Canvas` are implemented:
   These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
 - **DensityCanvas**:
-  Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
+  Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of data-points.
 
 - **BarplotGraphics**:
   This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.
@@ -289,7 +289,7 @@ The following types of `Canvas` are implemented:
   """)
 
   invalidations = plain_md_par("""
-  Run the folowing snippet to analyze invalidations:
+  Run the following snippet to analyze invalidations:
   ```julia
   using SnoopCompileCore
 
@@ -536,7 +536,7 @@ $(indent(examples.imageplot1))
 $(indent(examples.surfaceplot1))
 
   Use `lines=true` to increase the density (underlying call to `lineplot` instead of `scatterplot`, with color interpolation).
-  By default, `surfaceplot` scales heights to adjust aspect the other axes with `zscale=:aspect`.
+  By default, `surfaceplot` scales heights to adjust aspect wrt the remaining axes with `zscale=:aspect`.
   To plot a slice in 3D, use an anonymous function which maps to a constant value: `zscale=z -> a_constant`:
 
 $(indent(examples.surfaceplot2))
