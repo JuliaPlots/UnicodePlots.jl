@@ -19,7 +19,7 @@ jobs:
         version:
           - '1.6'  # latest LTS
           - '1'
-          - 'nightly'
+          - '~1.10.0-0'  # upcoming julia version, next `rc`
         os: [ubuntu-latest]
         arch: [x64]
         include:  # spare windows/macos CI credits
@@ -29,6 +29,11 @@ jobs:
           - os: macOS-latest
             version: '1'
             arch: x64
+          - os: ubuntu-latest
+            version: 'nightly'
+            arch: x64
+            allow_failure: true  # `nightly` often breaks
+
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@latest
