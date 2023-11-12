@@ -21,19 +21,22 @@ jobs:
           - '1.6'  # latest LTS
           - '1'
           - '~1.10.0-0'  # upcoming julia version, next `rc`
-        experimental: [false]
+        experimental:
+          - false
         os: [ubuntu-latest]
         arch: [x64]
         include:  # spare windows/macos CI credits
           - os: windows-latest
+            experimental: false
             version: '1'
             arch: x64
           - os: macOS-latest
+            experimental: false
             version: '1'
             arch: x64
           - os: ubuntu-latest
-            version: 'nightly'
             experimental: true
+            version: 'nightly'
             arch: x64
 
     steps:
