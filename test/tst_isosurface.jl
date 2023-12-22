@@ -17,7 +17,7 @@ end
 @testset "torus" begin
     torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
     x = y = z = -1:0.1:1
-    p = isosurface(x, y, z, torus;  cull = true, zoom = 2)
+    p = isosurface(x, y, z, torus; cull = true, zoom = 2)
     test_ref("isosurface/torus.txt", @show_col(p))
 end
 
