@@ -3,7 +3,7 @@
     Aqua.test_all(
         UnicodePlots;
         ambiguities = false,
-        project_toml_formatting = false,  # issues since weak deps
+        deps_compat = false,
         stale_deps = !isdefined(Base, :get_extension),  # issue with `Requires` not used when weak deps are enabled
     )
     Aqua.test_ambiguities(UnicodePlots)
