@@ -36,6 +36,8 @@ end
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) ≡ (1.0, 4.0)
     @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) ≡ (0.0, 2.0)
 
+    @test UnicodePlots.extend_limits([], (-1, 2)) ≡ (-1, 2)
+
     @test UnicodePlots.is_auto((0, 0))
     @test UnicodePlots.is_auto([0, 0])
     @test !UnicodePlots.is_auto((-1, 1))

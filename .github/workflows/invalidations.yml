@@ -3,7 +3,7 @@ name: invalidations
 on:
   pull_request:
   push:
-   branches: [master]
+   branches: [main]
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -23,19 +23,19 @@ jobs:
 
     - uses: actions/checkout@v3
       with:
-        ref: 'master'
+        ref: 'main'
     - uses: julia-actions/julia-buildpkg@latest
     - uses: julia-actions/julia-invalidations@v1
-      id: invs_master
+      id: invs_main
 
     - name: Report invalidation counts
       run: |
-        echo "Invalidations on master: ${{ steps.invs_master.outputs.total }} (${{ steps.invs_master.outputs.deps }} via deps)"
+        echo "Invalidations on main: ${{ steps.invs_main.outputs.total }} (${{ steps.invs_main.outputs.deps }} via deps)"
         echo "This branch: ${{ steps.invs_pr.outputs.total }} (${{ steps.invs_pr.outputs.deps }} via deps)"
       shell: bash
     - name: PR doesn't increase number of invalidations
       run: |
-        if (( ${{ steps.invs_pr.outputs.total }} > ${{ steps.invs_master.outputs.total }} )); then
+        if (( ${{ steps.invs_pr.outputs.total }} > ${{ steps.invs_main.outputs.total }} )); then
             exit 1
         fi
       shell: bash
