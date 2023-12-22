@@ -12,6 +12,7 @@ concurrency:
 jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -20,19 +21,23 @@ jobs:
           - '1.6'  # latest LTS
           - '1'
           - '~1.10.0-0'  # upcoming julia version, next `rc`
+        experimental:
+          - false
         os: [ubuntu-latest]
         arch: [x64]
         include:  # spare windows/macos CI credits
           - os: windows-latest
+            experimental: false
             version: '1'
             arch: x64
           - os: macOS-latest
+            experimental: false
             version: '1'
             arch: x64
           - os: ubuntu-latest
+            experimental: true
             version: 'nightly'
             arch: x64
-            allow_failure: true  # `nightly` often breaks
 
     steps:
       - uses: actions/checkout@v3
