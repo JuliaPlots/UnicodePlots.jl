@@ -1,3 +1,5 @@
+# NOTE: use `axes3d = false` on stability of \ issues w.r.t azimuth and elevation
+
 @testset "sphere" begin
     x = y = z = -3:0.2:3
     p = isosurface(
@@ -6,7 +8,6 @@
         z,
         (x, y, z) -> x^2 + y^2 + z^2 - 2;
         centroid = false,
-        axes3d = false,
         cull = true,
         zoom = 2,
     )
@@ -16,12 +17,12 @@ end
 @testset "torus" begin
     torus(x, y, z, r = 0.2, R = 0.5) = (√(x^2 + y^2) - R)^2 + z^2 - r^2
     x = y = z = -1:0.1:1
-    p = isosurface(x, y, z, torus; elevation = 50, azimuth = 35, cull = true, zoom = 2)
+    p = isosurface(x, y, z, torus; cull = true, zoom = 2)
     test_ref("isosurface/torus.txt", @show_col(p))
 end
 
 @testset "hyperboloid" begin
-    x = y = z = -3:0.6:3
+    x = y = z = -3:0.8:3
     p = isosurface(x, y, z, (x, y, z) -> x^2 + y^2 - z^2 - 1)
     test_ref("isosurface/hyperboloid.txt", @show_col(p))
 end

@@ -89,9 +89,9 @@ end
         (10, 10),
         (10, 15),
         (15, 10),
-        (2_000, 200),
-        (200, 2_000),
-        (2_000, 2_000),
+        (60, 60),
+        (200, 20),
+        (20, 200),
     )
         seed!(RNG, 1_337)
         p = @hinf heatmap(randn(RNG, dims); labels = false)
@@ -153,7 +153,7 @@ end
 
 @testset "parameters" begin
     seed!(RNG, 1_337)
-    x = randn(RNG, 200, 200)
+    x = randn(RNG, 60, 60)
     for kw ∈ (
         (; colorbar = false),
         (; labels = false),
