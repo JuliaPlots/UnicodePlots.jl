@@ -82,7 +82,7 @@ end
 end
 
 @testset "Term extension" begin
-    gridplot(map(i -> lineplot((-i):i), 1:5); show_placeholder = true) |> display
-    gridplot(map(i -> lineplot((-i):i), 1:3); layout = (2, nothing)) |> display
-    gridplot(map(i -> lineplot((-i):i), 1:3); layout = (nothing, 1)) |> display
+    show(devnull, gridplot(map(i -> lineplot((-i):i), 1:5); show_placeholder = true))
+    show(devnull, gridplot(map(i -> lineplot((-i):i), 1:3); layout = (2, nothing)))
+    show(devnull, gridplot(map(i -> lineplot((-i):i), 1:3); layout = (nothing, 1)))
 end

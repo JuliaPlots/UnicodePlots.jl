@@ -439,11 +439,10 @@ extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 unitless(x) = x  # noop when Unitful is not loaded
 
 function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol,Function})
-    isempty(vec) && return is_auto(lims) ? autolims(lims) : lims
-
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
     if iszero(mi) && iszero(ma)
+        isempty(vec) && return is_auto(lims) ? autolims(lims) : lims
         mi, ma = as_float(extrema(vec))
     end
     if mi == ma
