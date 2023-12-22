@@ -1,5 +1,5 @@
 seed!(RNG, 1_337)
-x, y = randn(RNG, 10_000), randn(RNG, 10_000)
+x, y = randn(RNG, 4_000), randn(RNG, 4_000)
 
 @testset "densityplot" begin
     p = @inferred Plot densityplot(x, y)

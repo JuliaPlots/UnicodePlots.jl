@@ -1,5 +1,5 @@
 seed!(RNG, 1_337)
-x = randn(RNG, 10_000)
+x = randn(RNG, 4_000)
 
 @testset "default params" begin
     p = histogram(x)
