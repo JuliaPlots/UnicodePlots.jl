@@ -1,15 +1,15 @@
-# NOTE: use `axes3d = false` on stability of \ issues
+# NOTE: use `axes3d = false` on stability of \ issues w.r.t azimuth and elevation
 
 @testset "zscale" begin
     sombrero(x, y) = 50sinc(√(x^2 + y^2) / π)
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
     test_ref("surfaceplot/sombrero_aspect.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false, zscale = :identity)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :identity)
     test_ref("surfaceplot/sombrero_identity.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false, zscale = h -> h / 2)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = h -> h / 2)
     test_ref("surfaceplot/sombrero_zscale.txt", @show_col(p))
 
     @test_throws ArgumentError surfaceplot([1 2; 3 4]; zscale = :not_supported)
@@ -18,7 +18,7 @@ end
 @testset "single color - no colormap" begin
     f = (x, y) -> sin(x) + cos(y)
     x, y = 0:0.5:(2π), 0:0.5:(2π)
-    p = surfaceplot(x, y, f, color = :cyan, axes3d = false)
+    p = surfaceplot(x, y, f, color = :cyan)
     test_ref("surfaceplot/single_color.txt", @show_col(p))
 
     x, y = 0:π, π:(2π)
@@ -31,10 +31,10 @@ end
 @testset "matrix" begin
     A = collect(1:10) * collect(0.1:0.1:1)'
 
-    p = surfaceplot(A; axes3d = false)
+    p = surfaceplot(A)
     test_ref("surfaceplot/matrix.txt", @show_col(p))
 
-    p = surfaceplot(A; padding = 0, margin = 0, axes3d = false)
+    p = surfaceplot(A; padding = 0, margin = 0)
     test_ref("surfaceplot/matrix_compact.txt", @show_col(p))
 end
 
@@ -44,7 +44,7 @@ end
     z = 1 ./ sin.(x' .* y)  # produce data with `Inf` values
     z[isinf.(z)] .= NaN  # mask infinite values (quite common scenario)
 
-    p = surfaceplot(x, y, z; axes3d = false)
+    p = surfaceplot(x, y, z)
     test_ref("surfaceplot/masked_values_points.txt", @show_col(p))
 
     p = surfaceplot(x, y, z; lines = true)
@@ -90,6 +90,6 @@ end
     x = -2:0.2:2
     y = -3:0.2:1
     z = (x, y) -> 10x * exp(-x^2 - y^2)
-    p = surfaceplot(x, y, z; axes3d = false)
+    p = surfaceplot(x, y, z)
     test_ref("surfaceplot/consistency.txt", @show_col(p))
 end

@@ -34,7 +34,7 @@ const PLOT_KEYWORDS = (  # intercepted by `split_plot_kw`
     yflip = false,
     xflip = false,
     projection = :orthographic,
-    elevation = round(√2 |> inv |> atand; digits = 4),
+    elevation = √2 |> inv |> atand,
     azimuth = 45.0,
     axes3d = true,
     near = 1.0,
