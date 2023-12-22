@@ -3,7 +3,7 @@ y = [2, 0, -5, 2, -5]
 
 @test_throws MethodError scatterplot()
 @test_throws MethodError scatterplot(sin, x)
-@test_throws MethodError scatterplot([sin], x)
+@test_throws DimensionMismatch scatterplot([sin], x)
 @test_throws DimensionMismatch scatterplot([1, 2], [1, 2, 3])
 @test_throws DimensionMismatch scatterplot([1, 2, 3], [1, 2])
 @test_throws DimensionMismatch scatterplot([1, 2, 3], 1:2)

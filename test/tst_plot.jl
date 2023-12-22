@@ -8,6 +8,15 @@
         BrailleCanvas(5, 30; origin_y = 0.0, origin_x = 0.0, height = 1.0, width = 1.0),
     )
     test_ref("plot/empty_small.txt", @show_col(p))
+
+    # empty plot ctor
+    p = Plot([], [])
+    @test p isa Plot
+    p = Plot([], [], [])
+    @test p isa Plot
+
+    p = Plot([], []; xlim = (-3, 5), ylim = (-10, 2))
+    test_ref("plot/empty_xylim.txt", @show_col(p))
 end
 
 @testset "invisible" begin

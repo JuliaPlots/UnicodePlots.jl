@@ -126,31 +126,33 @@ end
 
 Check for invalid input (length) and selects only finite input data.
 """
-function validate_input(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::AbstractVector{<:Number},
-)
-    length(x) == length(y) == length(z) ||
+function validate_input(x::AbstractVector, y::AbstractVector, z::AbstractVector)
+    (nx = length(x)) == (ny = length(y)) == (nz = length(z)) ||
         throw(DimensionMismatch("`x`, `y` and `z` must have same length"))
-    idx = BitVector(map((i, j, k) -> isfinite(i) && isfinite(j) && isfinite(k), x, y, z))
-    x[idx], y[idx], z[idx]
+    if nx == ny == nz == 0
+        x, y, z
+    else
+        idx =
+            BitVector(map((i, j, k) -> isfinite(i) && isfinite(j) && isfinite(k), x, y, z))
+        x[idx], y[idx], z[idx]
+    end
 end
 
-function validate_input(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::Nothing,
-)
-    length(x) == length(y) || throw(DimensionMismatch("`x` and `y` must have same length"))
-    idx = BitVector(map((i, j) -> isfinite(i) && isfinite(j), x, y))
-    x[idx], y[idx], z
+function validate_input(x::AbstractVector, y::AbstractVector, z::Nothing)
+    (nx = length(x)) == (ny = length(y)) ||
+        throw(DimensionMismatch("`x` and `y` must have same length"))
+    if nx == ny == 0
+        x, y, z
+    else
+        idx = BitVector(map((i, j) -> isfinite(i) && isfinite(j), x, y))
+        x[idx], y[idx], z
+    end
 end
 
 function Plot(
-    x::AbstractVector{<:Number},
-    y::AbstractVector{<:Number},
-    z::Union{AbstractVector{<:Number},Nothing} = nothing,
+    x::AbstractVector,
+    y::AbstractVector,
+    z::Union{AbstractVector,Nothing} = nothing,
     canvas::Type{<:Canvas} = BrailleCanvas;
     title::AbstractString = PLOT_KEYWORDS.title,
     xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
