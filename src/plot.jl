@@ -149,6 +149,8 @@ function validate_input(x::AbstractVector, y::AbstractVector, z::Nothing)
     end
 end
 
+Plot(; kw...) = Plot([], []; kw...)
+
 function Plot(
     x::AbstractVector,
     y::AbstractVector,

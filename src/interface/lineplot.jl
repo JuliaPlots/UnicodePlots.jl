@@ -1,4 +1,6 @@
 """
+    lineplot(; kw...)
+    lineplot(y; kw...)
     lineplot(x, y; kw...)
     lineplot!(p, args...; kw...)
 
@@ -75,6 +77,7 @@ function lineplot(
     lineplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
 end
 
+lineplot(; kw...) = lineplot([]; kw...)
 lineplot(y::AbstractVector; kw...) = lineplot(axes(y, 1), y; kw...)
 
 @doc (@doc lineplot) function lineplot!(

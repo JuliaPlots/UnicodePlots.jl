@@ -10,6 +10,8 @@
     test_ref("plot/empty_small.txt", @show_col(p))
 
     # empty plot ctor
+    p = Plot()
+    @test p isa Plot
     p = Plot([], [])
     @test p isa Plot
     p = Plot([], [], [])

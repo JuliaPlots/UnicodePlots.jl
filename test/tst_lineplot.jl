@@ -1,16 +1,18 @@
 x = [-1, 1, 3, 3, -1]
 y = [2, 0, -5, 2, -5]
 
-@test_throws MethodError lineplot()
-@test_throws MethodError lineplot(sin, x, y)
-@test_throws ArgumentError lineplot(0, 3, Function[])
-@test_throws ArgumentError lineplot(x, Function[])
-@test_throws ArgumentError lineplot(Function[])
-@test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2], [1, 2, 3])
-@test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], [1, 2])
-@test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], 1:2)
-@test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, [1, 2])
-@test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, 1:2)
+@testset "input" begin
+    @test lineplot() isa Plot
+    @test_throws MethodError lineplot(sin, x, y)
+    @test_throws ArgumentError lineplot(0, 3, Function[])
+    @test_throws ArgumentError lineplot(x, Function[])
+    @test_throws ArgumentError lineplot(Function[])
+    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2], [1, 2, 3])
+    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], [1, 2])
+    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], 1:2)
+    @test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, [1, 2])
+    @test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, 1:2)
+end
 
 @testset "Nan / Inf" begin
     @test lineplot([0, NaN], [0, 0]) isa Plot

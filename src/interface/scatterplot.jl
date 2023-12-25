@@ -1,4 +1,6 @@
 """
+    scatterplot(; kw...)
+    scatterplot(y; kw...)
     scatterplot(x, y; kw...)
     scatterplot!(p, args...; kw...)
 
@@ -69,6 +71,7 @@ function scatterplot(
     scatterplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
 end
 
+scatterplot(; kw...) = lineplot([]; kw...)
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 @doc (@doc scatterplot) function scatterplot!(
