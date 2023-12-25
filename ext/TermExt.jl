@@ -14,4 +14,4 @@ UnicodePlots.gridplot(plots::Union{AbstractVector,Tuple}; kw...) =
 UnicodePlots.gridplot(plots::Plot...; kw...) =
     Term.grid(map(UnicodePlots.panel, plots); kw...)
 
-end
+end  # module
