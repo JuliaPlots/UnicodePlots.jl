@@ -3,13 +3,13 @@
 @testset "zscale" begin
     sombrero(x, y) = 50sinc(√(x^2 + y^2) / π)
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
     test_ref("surfaceplot/sombrero_aspect.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = :identity)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false, zscale = :identity)
     test_ref("surfaceplot/sombrero_identity.txt", @show_col(p))
 
-    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; zscale = h -> h / 2)
+    p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false, zscale = h -> h / 2)
     test_ref("surfaceplot/sombrero_zscale.txt", @show_col(p))
 
     @test_throws ArgumentError surfaceplot([1 2; 3 4]; zscale = :not_supported)

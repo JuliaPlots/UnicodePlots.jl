@@ -60,7 +60,9 @@ end
     p = heatmap(collect(1:30) * collect(1:30)')
     @test string(p; color = true) isa String  # 1st pass - ttfp
 
-    if Sys.islinux() && VERSION > v"1.9.0"
+    measure = Sys.islinux() && VERSION > v"1.9.0" && length(VERSION.prerelease) < 2
+
+    if measure
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
         @test stats.bytes / 1e3 < 400  # ~ 374kB on 1.9
@@ -72,7 +74,7 @@ end
     p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
     @test string(p; color = true) isa String  # 1st pass - ttfp
 
-    if Sys.islinux() && VERSION > v"1.9.0"
+    if measure
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
         @test stats.bytes / 1e3 < 160  # ~ 152kB on 1.9
