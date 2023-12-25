@@ -63,8 +63,8 @@ end
     if Sys.islinux()
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 600  # ~ 550kB on 1.7
-        @test stats.time * 1e3 < 2  # ~ 1.17ms on 1.7
+        @test stats.bytes / 1e3 < 400  # ~ 374kB on 1.9
+        @test stats.time * 1e3 < 1  # ~ 0.3ms on 1.9
         GC.enable(true)
     end
 
@@ -75,8 +75,8 @@ end
     if Sys.islinux()
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 250  # ~ 155kB on 1.7
-        @test stats.time * 1e3 < 1  # ~ 0.42ms on 1.7
+        @test stats.bytes / 1e3 < 200  # ~ 152kB on 1.9
+        @test stats.time * 1e3 < 1  # ~ 0.16ms on 1.9
         GC.enable(true)
     end
 end
