@@ -18,33 +18,37 @@ main() = begin
                      xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
       """),
     lineplot3 = ("Basic Canvas", "lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:cyan, name=\"other line\")"),
+    lineplot4 = ("Basic Canvas", """
+      p = Plot(; xlim=(-1, 3), ylim=(-1, 3))
+      lineplot!(p, 1:2)
+      """),
+    lineplot5 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
+    lineplot6 = ("Lineplot", "plt = lineplot(-π/2, 2π, [cos, sin])"),
+    lineplot7 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
+    lineplot8 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
+    lineplot9 = ("Lineplot", """
+      using Unitful
+      a, t = 1u"m/s^2", (0:100) * u"s"
+      lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
+      """),
+    lineplot10 = ("Lineplot", """
+      using IntervalSets
+      lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
+      """),
+    lineplot11 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
+    lineplot12 = ("Lineplot", """
+      p = Plot([NaN], [NaN]; xlim=(0, 8), ylim=(0, 8))
+      vline!(p, [2, 6], [2, 6], color=:red)
+      hline!(p, [2, 6], [2, 6], color=:white)
+      hline!(p, 7, color=:cyan)
+      vline!(p, 1, color=:yellow)
+      """),
     scatterplot1 = ("Scatterplot", "scatterplot(randn(50), randn(50), title=\"My Scatterplot\")"),
     scatterplot2 = ("Scatterplot", "scatterplot(1:10, 1:10, xscale=:log10, yscale=:log10)"),
     scatterplot3 = ("Scatterplot", "scatterplot(1:4, 1:4, xscale=:log10, yscale=:ln, unicode_exponent=false, height=6)"),
     scatterplot4 = ("Scatterplot", """
       scatterplot([1, 2, 3], [3, 4, 1], marker=[:circle, '', "∫"],
                   color=[:cyan, nothing, :yellow], height=2)
-      """),
-    lineplot4 = ("Lineplot", "lineplot([1, 2, 7], [9, -6, 8], title=\"My Lineplot\")"),
-    lineplot5 = ("Lineplot", "plt = lineplot(-π/2, 2π, [cos, sin])"),
-    lineplot6 = ("Lineplot", "lineplot!(plt, -.5, .2, name=\"line\")"),
-    lineplot7 = ("Lineplot", "lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])"),
-    lineplot8 = ("Lineplot", """
-      using Unitful
-      a, t = 1u"m/s^2", (0:100) * u"s"
-      lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
-      """),
-    lineplot9 = ("Lineplot", """
-      using IntervalSets
-      lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
-      """),
-    lineplot10 = ("Lineplot", "lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)"),
-    lineplot11 = ("Lineplot", """
-      p = Plot([NaN], [NaN]; xlim=(0, 8), ylim=(0, 8))
-      vline!(p, [2, 6], [2, 6], color=:red)
-      hline!(p, [2, 6], [2, 6], color=:white)
-      hline!(p, 7, color=:cyan)
-      vline!(p, 1, color=:yellow)
       """),
     stairs1 = ("Staircase", """
       stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 7],
@@ -367,6 +371,10 @@ $(indent(examples.lineplot2))
 
 $(indent(examples.lineplot3))
 
+  These mutating methods cannot update the limits of the axes as plots are drawn onto a fixed canvas. The limits must be set beforehand by the plotting function that creates the figure or by creating an empty `Plot`:
+
+$(indent(examples.lineplot4))
+
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
@@ -376,35 +384,35 @@ $(indent(examples.lineplot3))
 <details open>
   $(summary("Lineplot"))
 
-$(indent(examples.lineplot4))
+$(indent(examples.lineplot5))
 
   It's also possible to specify a function and a range:
 
-$(indent(examples.lineplot5))
+$(indent(examples.lineplot6))
 
   You can also plot lines by specifying an intercept and slope:
 
-$(indent(examples.lineplot6))
+$(indent(examples.lineplot7))
 
   Plotting multiple series is supported by providing a `Matrix` (`<: AbstractMatrix`) for the `y` argument, with the individual series corresponding to its columns. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
 
-$(indent(examples.lineplot7))
+$(indent(examples.lineplot8))
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)):
 
-$(indent(examples.lineplot8))
+$(indent(examples.lineplot9))
 
   Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported:
 
-$(indent(examples.lineplot9))
+$(indent(examples.lineplot10))
 
   Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
 
-$(indent(examples.lineplot10))
+$(indent(examples.lineplot11))
 
   `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
 
-$(indent(examples.lineplot11))
+$(indent(examples.lineplot12))
 
 </details>
 
@@ -738,13 +746,14 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       if true
         cursor_hide(stdout)
         run(`clear`)
-        print(stdout, g)
+        println(stdout, g)
         win = if "WINDOWID" ∈ keys(ENV)
           ENV["WINDOWID"]
         else
           readchomp(`xdotool getactivewindow`)
         end
         tmp = tempname()
+        sleep(1)
         # XX%x100% => remove the right scrollbar (run in a big terminal window)
         run(`import -window \$win -gravity West -crop 70%x100%+0+0 -trim -quality 100 \$tmp.miff`)
         # FIXME: export to `jpg` format, since we have an issue with rendering this `png` on github
