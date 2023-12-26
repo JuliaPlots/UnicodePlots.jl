@@ -746,13 +746,14 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       if true
         cursor_hide(stdout)
         run(`clear`)
-        print(stdout, g)
+        println(stdout, g)
         win = if "WINDOWID" ∈ keys(ENV)
           ENV["WINDOWID"]
         else
           readchomp(`xdotool getactivewindow`)
         end
         tmp = tempname()
+        sleep(1)
         # XX%x100% => remove the right scrollbar (run in a big terminal window)
         run(`import -window \$win -gravity West -crop 70%x100%+0+0 -trim -quality 100 \$tmp.miff`)
         # FIXME: export to `jpg` format, since we have an issue with rendering this `png` on github
