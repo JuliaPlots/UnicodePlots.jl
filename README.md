@@ -61,7 +61,10 @@ Here is a list of the main high-level functions for common scenarios:
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot3.png" width="450"><br>
   
-  These mutating methods cannot update the limits of the axes (xlims & ylims) as plots are drawn onto a fixed canvas. The limits must be set by the plotting function that crestes the figure. 
+  These mutating methods cannot update the limits of the axes (xlims & ylims) as plots are drawn onto a fixed canvas. The limits must be set by the plotting function that creates the figure or by creating an empty `Plot`:
+  ```julia
+  p = Plot(; xlim=(-1, 3), ylim=(-1, 3))
+  lineplot!(p, 1:2)
   
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
