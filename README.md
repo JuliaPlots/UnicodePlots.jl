@@ -61,11 +61,16 @@ Here is a list of the main high-level functions for common scenarios:
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot3.png" width="450"><br>
   
-  These mutating methods cannot update the limits of the axes (xlims & ylims) as plots are drawn onto a fixed canvas. The limits must be set by the plotting function that creates the figure or by creating an empty `Plot`:
+
+  These mutating methods cannot update the limits of the axes as plots are drawn onto a fixed canvas. The limits must be set beforehand by the plotting function that creates the figure or by creating an empty `Plot`:
+
   ```julia
   p = Plot(; xlim=(-1, 3), ylim=(-1, 3))
   lineplot!(p, 1:2)
+  ```
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot4.png" width="450"><br>
   
+
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
@@ -78,7 +83,7 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   lineplot([1, 2, 7], [9, -6, 8], title="My Lineplot")
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot4.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot5.png" width="450"><br>
   
 
   It's also possible to specify a function and a range:
@@ -86,7 +91,7 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   plt = lineplot(-π/2, 2π, [cos, sin])
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot5.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot6.png" width="450"><br>
   
 
   You can also plot lines by specifying an intercept and slope:
@@ -94,7 +99,7 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   lineplot!(plt, -.5, .2, name="line")
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot6.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot7.png" width="450"><br>
   
 
   Plotting multiple series is supported by providing a `Matrix` (`<: AbstractMatrix`) for the `y` argument, with the individual series corresponding to its columns. Auto-labeling is by default, but you can also label each series by providing a `Vector` or a `1xn` `Matrix` such as `["series 1" "series2" ...]`:
@@ -102,7 +107,7 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   lineplot(1:10, [0:9 3:12 reverse(5:14) fill(4, 10)], color=[:green :red :yellow :cyan])
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot7.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot8.png" width="450"><br>
   
 
   Physical quantities of [`Unitful.jl`](https://github.com/PainterQubits/Unitful.jl) are supported through [package extensions - weak dependencies](https://pkgdocs.julialang.org/dev/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)):
@@ -112,7 +117,7 @@ Here is a list of the main high-level functions for common scenarios:
   a, t = 1u"m/s^2", (0:100) * u"s"
   lineplot(a / 2 * t .^ 2, a * t, xlabel="position", ylabel="speed", height=10)
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot8.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot9.png" width="450"><br>
   
 
   Intervals from [`IntervalSets.jl`](https://github.com/JuliaMath/IntervalSets.jl) are supported:
@@ -121,7 +126,7 @@ Here is a list of the main high-level functions for common scenarios:
   using IntervalSets
   lineplot(-1..3, x -> x^5 - 5x^4 + 5x^3 + 5x^2 - 6x - 1; name="quintic")
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot9.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot10.png" width="450"><br>
   
 
   Use `head_tail` to mimic plotting arrows (`:head`, `:tail` or `:both`) where the length of the "arrow" head or tail is controlled using `head_tail_frac` where e.g. giving a value of `0.1` means `10%` of the segment length:
@@ -129,7 +134,7 @@ Here is a list of the main high-level functions for common scenarios:
   ```julia
   lineplot(1:10, 1:10, head_tail=:head, head_tail_frac=.1, height=4)
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot10.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot11.png" width="450"><br>
   
 
   `UnicodePlots` exports `hline!` and `vline!` for drawing vertical and horizontal lines on a plot:
@@ -141,7 +146,7 @@ Here is a list of the main high-level functions for common scenarios:
   hline!(p, 7, color=:cyan)
   vline!(p, 1, color=:yellow)
   ```
-  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot11.png" width="450"><br>
+  <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot12.png" width="450"><br>
   
 
 </details>
@@ -623,7 +628,7 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `thousands_separator::Char = ' '`: thousands separator character (use `Char(0)` to disable grouping digits).
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:ortho(graphic)`, `:persp(ective)`, or `Model-View-Projection` (MVP) matrix).
   - `axes3d::Bool = true`: draw 3d axes (`x -> :red`, `y -> :green`, `z -> :blue`).
-  - `elevation::Float = 35.26`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
+  - `elevation::Float = 35.264389682754654`: elevation angle above or below the `floor` plane (`-90 ≤ θ ≤ 90`).
   - `azimuth::Float = 45.0`: azimutal angle around the `up` vector (`-180° ≤ φ ≤ 180°`).
   - `zoom::Float = 1.0`: zooming factor in 3D.
   - `up::Symbol = :z`: up vector (`:x`, `:y` or `:z`), prefix with `m -> -` or `p -> +` to change the sign e.g. `:mz` for `-z` axis pointing upwards.
