@@ -61,7 +61,8 @@ Here is a list of the main high-level functions for common scenarios:
   ```
   <img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/lineplot3.png" width="450"><br>
   
-
+  These mutating methods cannot update the limits of the axes (xlims & ylims) as plots are drawn onto a fixed canvas. The limits must be set by the plotting function that crestes the figure. 
+  
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
