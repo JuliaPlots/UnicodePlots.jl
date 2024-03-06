@@ -82,6 +82,13 @@ _strict_non_zeros(rows, cols, vals) =
         rows[I], cols[I], vals[I]
     end
 
+_findnz(A::AbstractMatrix) =
+    let I = findall(!iszero, A)
+        getindex.(I, 1), getindex.(I, 2), A[I]
+    end
+
+_findnz(A::AbstractSparseMatrix) = findnz(A)
+
 function spy(
     nrow::Integer,
     ncol::Integer,
@@ -99,6 +106,8 @@ function spy(
     canvas::Type{<:Canvas} = KEYWORDS.canvas,
     fix_ar::Bool = KEYWORDS.fix_ar,
     show_zeros::Bool = false,
+    xflip::Bool = false,
+    yflip::Bool = true,
     kw...,
 )
     pkw, okw = split_plot_kw(kw)
@@ -120,15 +129,33 @@ function spy(
         extra_cols = 6,
     )
 
-    can = canvas(height, width; height = 1.0 + nrow, width = 1.0 + ncol)
-    plot = Plot(can; margin, padding, pkw...)
+    ylim = [1, nrow]
+    xlim = [1, ncol]
+
+    plot = Plot(
+        xlim,
+        ylim,
+        nothing,
+        canvas;
+        ylim,
+        xlim,
+        yflip,
+        xflip,
+        height,
+        width,
+        margin,
+        padding,
+        grid = false,
+        canvas_kw = (; height = 1.0 + nrow, width = 1.0 + ncol),
+        pkw...,
+    )
 
     if color ≢ :auto
-        points!(plot, cols, nrow + 1 .- rows; color)
+        points!(plot, cols, rows; color)
         label!(plot, :r, 1, show_zeros ? "⩵ 0" : "≠ 0", color)
     else
         if show_zeros
-            points!(plot, cols, nrow + 1 .- rows; color = :green)
+            points!(plot, cols, rows; color = :green)
             label!(plot, :r, 1, "⩵ 0", :green)
         else
             pos_idx = vals .> 0
@@ -137,25 +164,13 @@ function spy(
             pos_rows = rows[pos_idx]
             neg_cols = cols[neg_idx]
             neg_rows = rows[neg_idx]
-            points!(plot, pos_cols, nrow + 1 .- pos_rows; color = :red)
-            points!(plot, neg_cols, nrow + 1 .- neg_rows; color = :blue)
+            points!(plot, pos_cols, pos_rows; color = :red)
+            points!(plot, neg_cols, neg_rows; color = :blue)
             label!(plot, :r, 1, "> 0", :red)
             label!(plot, :r, 2, "< 0", :blue)
         end
     end
-    bc = BORDER_COLOR[]
-    label!(plot, :l, 1, "1", bc)
-    label!(plot, :l, nrows(plot.graphics), nice_repr(nrow, plot), bc)
-    label!(plot, :bl, "1", bc)
-    label!(plot, :br, nice_repr(ncol, plot), bc)
     isempty(xlabel(plot)) &&
         xlabel!(plot, nice_repr(length(vals), plot) * (show_zeros ? " ⩵ 0" : " ≠ 0"))
     plot
 end
-
-_findnz(A::AbstractMatrix) =
-    let I = findall(!iszero, A)
-        getindex.(I, 1), getindex.(I, 2), A[I]
-    end
-
-_findnz(A::AbstractSparseMatrix) = findnz(A)

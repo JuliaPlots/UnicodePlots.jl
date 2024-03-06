@@ -60,13 +60,13 @@ end
     p = heatmap(collect(1:30) * collect(1:30)')
     @test string(p; color = true) isa String  # 1st pass - ttfp
 
-    measure = Sys.islinux() && VERSION > v"1.9.0" && length(VERSION.prerelease) < 2
+    measure = Sys.islinux() && VERSION > v"1.10.0" && length(VERSION.prerelease) < 2
 
     if measure
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 400  # ~ 374kB on 1.9
-        @test stats.time * 1e3 < 1  # ~ 0.3ms on 1.9
+        @test stats.bytes / 1e3 < 400  # ~ 356kB on 1.10
+        @test stats.time * 1e3 < 0.5  # ~ 0.3ms on 1.10
         GC.enable(true)
     end
 
@@ -77,8 +77,8 @@ end
     if measure
         GC.enable(false)
         stats = @timed string(p; color = true)  # repeated !
-        @test stats.bytes / 1e3 < 160  # ~ 152kB on 1.9
-        @test stats.time * 1e3 < 0.5  # ~ 0.16ms on 1.9
+        @test stats.bytes / 1e3 < 160  # ~ 152kB on 1.10
+        @test stats.time * 1e3 < 0.5  # ~ 0.26ms on 1.10
         GC.enable(true)
     end
 end

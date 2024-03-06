@@ -22,7 +22,7 @@
 end
 
 @testset "invisible" begin
-    p = Plot([0], [0], width = 0)
+    p = Plot([0], [0], width = -1)
     @test !p.graphics.visible
 end
 

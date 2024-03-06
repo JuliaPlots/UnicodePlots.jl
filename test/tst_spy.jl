@@ -68,3 +68,16 @@ end
     p = spy(_stable_sprand(RNG, 200, 200, 0.99), show_zeros = true, compact = true)
     test_ref("spy/parameters_200x200_zeros.txt", @show_col(p, :displaysize => T_SZ))
 end
+
+@testset "flip" begin
+    I = [1, 4, 3, 5]
+    J = [4, 7, 18, 9]
+    V = [1, 2, -5, 3]
+    A = sparse(I, J, V)
+    for xflip ∈ (true, false), yflip ∈ (true, false)
+        test_ref(
+            "spy/flip_xflip-$(xflip)_yflip-$(yflip).txt",
+            @show_col(spy(A; xflip, yflip), :displaysize => T_SZ)
+        )
+    end
+end
