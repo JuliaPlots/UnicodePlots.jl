@@ -24,7 +24,7 @@
             [0],
             colorbar = true,
             colormap = :cividis,
-            width = 0,
+            width = -1,
             margin = 0,
             padding = 0,
         )

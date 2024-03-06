@@ -178,6 +178,7 @@ function heatmap(
         labels,
         height,
         width,
+        margin,
         colorbar_lim = (mi, ma),
         colormap = callback,
         min_height = 1,
