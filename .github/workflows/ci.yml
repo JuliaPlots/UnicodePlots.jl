@@ -20,7 +20,7 @@ jobs:
         version:
           - '1.6'  # latest LTS
           - '1'
-          - '~1.10.0-0'  # upcoming julia version, next `rc`
+          - '~1.11.0-0'  # upcoming julia version, next `rc`
         experimental:
           - false
         os: [ubuntu-latest]
