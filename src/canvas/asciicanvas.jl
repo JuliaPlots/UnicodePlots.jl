@@ -26,7 +26,7 @@ struct AsciiCanvas{YS<:Function,XS<:Function} <: LookupCanvas
 end
 
 const N_ASCII = grid_type(AsciiCanvas)(512)
-const ASCII_SIGNS = [
+const ASCII_ENCODE = [
     0b100_000_000 0b010_000_000 0b001_000_000
     0b000_100_000 0b000_010_000 0b000_001_000
     0b000_000_100 0b000_000_010 0b000_000_001
@@ -123,7 +123,7 @@ ASCII_DECODE[(N_ASCII + 1):typemax(N_ASCII)] = UNICODE_TABLE[1:(typemax(N_ASCII)
 @inline y_pixel_per_char(::Type{<:AsciiCanvas}) = 3
 @inline x_pixel_per_char(::Type{<:AsciiCanvas}) = 3
 
-@inline lookup_encode(::AsciiCanvas) = ASCII_SIGNS
+@inline lookup_encode(::AsciiCanvas) = ASCII_ENCODE
 @inline lookup_decode(::AsciiCanvas) = ASCII_DECODE
 @inline lookup_offset(::AsciiCanvas) = N_ASCII
 
