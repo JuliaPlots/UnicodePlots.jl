@@ -1,9 +1,6 @@
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
 using Test
 
-import UnicodePlots: lines!, points!, pixel!, nrows, ncols
-import UnicodePlots: print_row, preprocess!, addrow!
-
 import Dates: DateTime, Date, Day
 import DataFrames: DataFrame
 import Random: seed!
@@ -21,11 +18,13 @@ using StatsBase
 using Crayons
 using Unitful
 
-# load the package being tested last because when coverage is enabled using native code from pkgimages is disabled 
-# after any coverage-tracked code is loaded
-using UnicodePlots 
-
 include("fixes.jl")
+
+# load the package being tested last because when coverage is enabled using native code from pkgimages is disabled
+# after any coverage-tracked code is loaded
+using UnicodePlots
+import UnicodePlots: lines!, points!, pixel!, nrows, ncols
+import UnicodePlots: print_row, preprocess!, addrow!
 
 const TO = TimerOutput()
 const RNG = StableRNG(1_337)
