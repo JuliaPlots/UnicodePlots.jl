@@ -1,5 +1,5 @@
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
-using UnicodePlots, Test
+using Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
 import UnicodePlots: print_row, preprocess!, addrow!
@@ -20,6 +20,10 @@ using StableRNGs
 using StatsBase
 using Crayons
 using Unitful
+
+# load the package being tested last because when coverage is enabled using native code from pkgimages is disabled 
+# after any coverage-tracked code is loaded
+using UnicodePlots 
 
 include("fixes.jl")
 
