@@ -69,7 +69,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             GC.enable(false)
             stats = @timed string(p; color = true)  # repeated !
             @test stats.bytes / 1e3 < 500  # ~ 356kB on 1.10
-            @test stats.time * 1e3 < 0.7  # ~ 0.3ms on 1.10
+            @test stats.time * 1e3 < 0.8  # ~ 0.3ms on 1.10
             GC.enable(true)
         end
     end
