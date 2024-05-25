@@ -21,6 +21,21 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
+[weakdeps]
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
+ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+Term = "22787eb5-b846-44ae-b979-8e399b8463ab"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+
+[extensions]
+FreeTypeExt = ["FileIO", "FreeType"]
+ImageInTerminalExt = "ImageInTerminal"
+IntervalSetsExt = "IntervalSets"
+TermExt = "Term"
+UnitfulExt = "Unitful"
+
 [compat]
 ColorSchemes = "^3.19"
 ColorTypes = "0.11"
@@ -40,15 +55,9 @@ Requires = "1"
 SparseArrays = "1"
 StaticArrays = "1"
 StatsBase = "0.33, 0.34"
+Term = "2"
 Unitful = "1"
 julia = "1.6"
-
-[extensions]
-FreeTypeExt = ["FileIO", "FreeType"]
-ImageInTerminalExt = "ImageInTerminal"
-IntervalSetsExt = "IntervalSets"
-TermExt = "Term"
-UnitfulExt = "Unitful"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
@@ -69,11 +78,3 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [targets]
 test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "IntervalSets", "Random", "ReferenceTests", "StableRNGs", "Term", "Test", "TestImages", "TimerOutputs", "Unitful"]
-
-[weakdeps]
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
-ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
-IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
-Term = "22787eb5-b846-44ae-b979-8e399b8463ab"
-Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
