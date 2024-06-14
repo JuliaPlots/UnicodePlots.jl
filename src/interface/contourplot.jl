@@ -13,7 +13,7 @@ Draws a contour plot on a new canvas.
 $(arguments(
     (
         A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
-        levels = "the number of contour levels",
+        levels = "the number of contour levels or a vector of levels",
     ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
 ))
 
@@ -70,7 +70,22 @@ function contourplot(
         pkw...,
     )
     A isa Function && (A = A.(x', y))
-    contourplot!(plot, x, y, A; colormap, okw...)
+    if canvas === FilledCanvas
+        # TODO: process levels, and fill the canvas
+
+       # Note that displaying the characters is not done here (delayed to using `show`, `display` or `savefig` on the plot)
+       # and that is handled in `src/show.jl`: https://github.com/JuliaPlots/UnicodePlots.jl/blob/master/src/show.jl#L301
+
+       # There, each canvas row is printed: since `FilledCanvas` is a subtype of the abstract type `LookupCanvas`,
+       # `lookup_decode` must be implemented such that decoding can occur in here:
+       # https://github.com/JuliaPlots/UnicodePlots.jl/blob/master/src/canvas/lookupcanvas.jl#L75
+
+       # I would suggest taking inspiration from `src/interface/heatmap.jl` for filling the grid and colors:
+       # https://github.com/JuliaPlots/UnicodePlots.jl/blob/master/src/interface/heatmap.jl#L192-L196
+        println("unimplemented")
+    else
+        contourplot!(plot, x, y, A; colormap, okw...)
+    end
 end
 
 @doc (@doc contourplot) function contourplot!(
@@ -81,11 +96,11 @@ end
     name::AbstractString = KEYWORDS.name,
     colormap = KEYWORDS.colormap,
     zlim = KEYWORDS.zlim,
-    levels::Integer = 3,
+    levels::Union{Integer,AbstractVector{<:Real}} = 3,
 )
     isempty(name) || label!(plot, :r, string(name))
 
-    mA, MA = nanless_extrema(A)
+    mA, MA = nanless_extrema(levels isa Integer ? A : levels)
     plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? (mA, MA) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
 
