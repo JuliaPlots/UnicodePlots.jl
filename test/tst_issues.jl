@@ -95,4 +95,16 @@
         p = scatterplot(x, y; ylim)
         show(devnull, p)
     end
+
+    @testset "Unitful dispatch (#383)" begin
+        p = lineplot(rand(1), rand(1) * u"m")
+        show(devnull, p)
+        p = lineplot(rand(1) * u"m", rand(1))
+        show(devnull, p)
+
+        p = scatterplot(rand(1), rand(1) * u"m")
+        show(devnull, p)
+        p = scatterplot(rand(1) * u"m", rand(1))
+        show(devnull, p)
+    end
 end
