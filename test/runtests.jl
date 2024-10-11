@@ -132,7 +132,7 @@ withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
     @timeit_include "tst_quality.jl"
 end
 
-# ~ 90s & 8.26GiB on 1.9
+# ~ 94s & 9.88GiB on 1.11
 print_timer(TO; compact = true, sortby = :firstexec)
 
 println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

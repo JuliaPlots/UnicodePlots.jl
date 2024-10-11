@@ -68,8 +68,8 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         if measure
             GC.enable(false)
             stats = @timed string(p; color = true)  # repeated !
-            @test stats.bytes / 1e3 < 500  # ~ 356kB on 1.10
-            @test stats.time * 1e3 < 0.8  # ~ 0.3ms on 1.10
+            @test stats.bytes / 1e3 < 500  # ~ 292kB on 1.11
+            @test stats.time * 1e3 < 0.8  # ~ 0.3ms on 1.11
             GC.enable(true)
         end
     end
@@ -80,8 +80,8 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         if measure
             GC.enable(false)
             stats = @timed string(p; color = true)  # repeated !
-            @test stats.bytes / 1e3 < 160  # ~ 152kB on 1.10
-            @test stats.time * 1e3 < 0.5  # ~ 0.26ms on 1.10
+            @test stats.bytes / 1e3 < 160  # ~ 123kB on 1.11
+            @test stats.time * 1e3 < 0.5  # ~ 0.2ms on 1.11
             GC.enable(true)
         end
     end
