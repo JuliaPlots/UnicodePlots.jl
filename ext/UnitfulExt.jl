@@ -24,22 +24,28 @@ unitless(x::Quantity) = ustrip(x)  # NOTE: keep in sync with src/common.jl
 # lineplot
 function UnicodePlots.lineplot(
     x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
+    y::AbstractVector{<:RealOrRealQuantity};
     unicode_exponent::Bool = KEYWORDS.unicode_exponent,
+    canvas::Type = KEYWORDS.canvas,
     xlabel = KEYWORDS.xlabel,
     ylabel = KEYWORDS.ylabel,
     kw...,
 )
+    pkw, okw = UnicodePlots.split_plot_kw(kw)
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
-    UnicodePlots.lineplot(
-        unitless.(x),
-        unitless.(y);
+    x_, y_ = unitless.(x), unitless.(y)
+    plot = Plot(
+        x_,
+        y_,
+        nothing,
+        canvas;
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
-        kw...,
+        pkw...,
     )
+    UnicodePlots.lineplot!(plot, x_, y_; okw...)
 end
 
 UnicodePlots.lineplot!(
@@ -53,22 +59,28 @@ UnicodePlots.lineplot!(
 # scatterplot
 function UnicodePlots.scatterplot(
     x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
+    y::AbstractVector{<:RealOrRealQuantity};
     unicode_exponent::Bool = KEYWORDS.unicode_exponent,
+    canvas::Type = KEYWORDS.canvas,
     xlabel = KEYWORDS.xlabel,
     ylabel = KEYWORDS.ylabel,
     kw...,
 )
+    pkw, okw = UnicodePlots.split_plot_kw(kw)
     x, ux = number_unit(x, unicode_exponent)
     y, uy = number_unit(y, unicode_exponent)
-    UnicodePlots.scatterplot(
-        unitless.(x),
-        unitless.(y);
+    x_, y_ = unitless.(x), unitless.(y)
+    plot = Plot(
+        x_,
+        y_,
+        nothing,
+        canvas;
         xlabel = unit_label(xlabel, ux),
         ylabel = unit_label(ylabel, uy),
         unicode_exponent,
-        kw...,
+        pkw...,
     )
+    UnicodePlots.scatterplot!(plot, x_, y_; okw...)
 end
 
 UnicodePlots.scatterplot!(
