@@ -609,10 +609,11 @@ function colormap_callback(cmap::Symbol)
     cdata = ColorSchemes.colorschemes[cmap]
     (z, minz, maxz) -> begin
         isfinite(z) || return INVALID_COLOR
-        get(
-            cdata,
-            minz == maxz ? zero(z) : (max(minz, min(z, maxz)) - minz) / (maxz - minz),
-        ) |> ansi_color
+        z01 =
+            minz == maxz ? zero(z) :
+            (max(minz, min(z, maxz)) - minz) / (maxz - minz)
+        isfinite(z01) || return INVALID_COLOR
+        ansi_color(get(cdata, z01))
     end::ColorType
 end
 
