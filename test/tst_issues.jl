@@ -107,4 +107,13 @@
         p = scatterplot(rand(1) * u"m", rand(1))
         show(devnull, p)
     end
+
+    @testset "Heatmap ±Inf (#378)" begin
+        p = heatmap([1 2; 3 -Inf])
+        show(devnull, p)
+        p = heatmap([-Inf;;])
+        show(devnull, p)
+        p = heatmap([1 2; 3 Inf])
+        show(devnull, p)
+    end
 end
