@@ -89,31 +89,21 @@
         y = @. 2x * u"s"
         ylim = (0u"s", 8u"s")
 
-        p = lineplot(x, y; ylim)
-        show(devnull, p)
-
-        p = scatterplot(x, y; ylim)
-        show(devnull, p)
+        @test lineplot(x, y; ylim) isa Plot
+        @test scatterplot(x, y; ylim) isa Plot
     end
 
     @testset "Unitful dispatch (#383)" begin
-        p = lineplot(rand(1), rand(1) * u"m")
-        show(devnull, p)
-        p = lineplot(rand(1) * u"m", rand(1))
-        show(devnull, p)
+        @test lineplot(rand(1), rand(1) * u"m") isa Plot
+        @test lineplot(rand(1) * u"m", rand(1)) isa Plot
 
-        p = scatterplot(rand(1), rand(1) * u"m")
-        show(devnull, p)
-        p = scatterplot(rand(1) * u"m", rand(1))
-        show(devnull, p)
+        @test scatterplot(rand(1), rand(1) * u"m") isa Plot
+        @test scatterplot(rand(1) * u"m", rand(1)) isa Plot
     end
 
     @testset "Heatmap ±Inf (#378)" begin
-        p = heatmap([1 2; 3 -Inf])
-        show(devnull, p)
-        p = heatmap([-Inf;;])
-        show(devnull, p)
-        p = heatmap([1 2; 3 Inf])
-        show(devnull, p)
+        @test heatmap([1 2; 3 -Inf]) isa Plot
+        @test heatmap([-Inf]') isa Plot
+        @test heatmap([1 2; 3 Inf]) isa Plot
     end
 end
