@@ -10,7 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
+  evaluate:
+    if: github.base_ref == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
     - uses: julia-actions/setup-julia@latest
@@ -23,19 +24,15 @@ jobs:
 
     - uses: actions/checkout@v4
       with:
-        ref: 'main'
+        ref: ${{ github.event.repository.default_branch }}
     - uses: julia-actions/julia-buildpkg@latest
     - uses: julia-actions/julia-invalidations@v1
-      id: invs_main
+      id: invs_default
 
     - name: Report invalidation counts
       run: |
-        echo "Invalidations on main: ${{ steps.invs_main.outputs.total }} (${{ steps.invs_main.outputs.deps }} via deps)"
-        echo "This branch: ${{ steps.invs_pr.outputs.total }} (${{ steps.invs_pr.outputs.deps }} via deps)"
-      shell: bash
+        echo "Invalidations on default branch: ${{ steps.invs_default.outputs.total }} (${{ steps.invs_default.outputs.deps }} via deps)" >> $GITHUB_STEP_SUMMARY
+        echo "This branch: ${{ steps.invs_pr.outputs.total }} (${{ steps.invs_pr.outputs.deps }} via deps)" >> $GITHUB_STEP_SUMMARY
     - name: PR doesn't increase number of invalidations
-      run: |
-        if (( ${{ steps.invs_pr.outputs.total }} > ${{ steps.invs_main.outputs.total }} )); then
-            exit 1
-        fi
-      shell: bash
+      if: steps.invs_pr.outputs.total > steps.invs_default.outputs.total
+      run: exit 1
