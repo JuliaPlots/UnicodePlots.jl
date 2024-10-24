@@ -1,7 +1,7 @@
 module IntervalSetsExt
 
-import UnicodePlots: UnicodePlots, Plot, Canvas
-UnicodePlots.@ext_imp_use :import IntervalSets
+import UnicodePlots
+import IntervalSets
 
 function interval_range(x::IntervalSets.AbstractInterval, length, step)
     if length ≡ nothing && step ≡ nothing
@@ -19,7 +19,7 @@ UnicodePlots.lineplot(
 ) = UnicodePlots.lineplot(interval_range(x, length, step), f; kw...)
 
 UnicodePlots.lineplot!(
-    plot::Plot{<:Canvas},
+    plot::UnicodePlots.Plot{<:UnicodePlots.Canvas},
     x::IntervalSets.AbstractInterval,
     f::Function;
     length = nothing,
