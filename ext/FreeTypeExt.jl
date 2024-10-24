@@ -4,10 +4,11 @@
 module FreeTypeExt
 
 import UnicodePlots
-UnicodePlots.@ext_imp_use :using FreeType
-UnicodePlots.@ext_imp_use :import FileIO
+import FileIO
+
 using StaticArrays
 using ColorTypes
+using FreeType
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]

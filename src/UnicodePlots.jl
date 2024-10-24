@@ -111,8 +111,6 @@ include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 include("interface/imageplot.jl")
 
-isdefined(Base, :get_extension) || import Requires: @require
-
 function __init__()
     if (terminal_24bit() || forced_24bit()) && !forced_8bit()
         truecolors!()
@@ -120,25 +118,6 @@ function __init__()
     else
         colors256!()
         faintcolors!()
-    end
-    @static if !isdefined(Base, :get_extension)  # COV_EXCL_LINE
-        @require ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254" include(
-            joinpath("..", "ext", "ImageInTerminalExt.jl"),
-        )
-        @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
-            @require FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43" begin
-                include(joinpath("..", "ext", "FreeTypeExt.jl"))
-            end
-        end
-        @require IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953" include(
-            joinpath("..", "ext", "IntervalSetsExt.jl"),
-        )
-        @require Term = "22787eb5-b846-44ae-b979-8e399b8463ab" include(
-            joinpath("..", "ext", "TermExt.jl"),
-        )
-        @require Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d" include(
-            joinpath("..", "ext", "UnitfulExt.jl"),
-        )
     end
     nothing
 end

@@ -1,7 +1,7 @@
 module TermExt
 
-import UnicodePlots: UnicodePlots, Plot
-UnicodePlots.@ext_imp_use :import Term
+import UnicodePlots
+import Term
 
 function UnicodePlots.panel(p; kw...)
     p.margin[] = p.padding[] = 0  # make plots more compact
@@ -11,7 +11,7 @@ end
 
 UnicodePlots.gridplot(plots::Union{AbstractVector,Tuple}; kw...) =
     UnicodePlots.gridplot(plots...; kw...)
-UnicodePlots.gridplot(plots::Plot...; kw...) =
+UnicodePlots.gridplot(plots::UnicodePlots.Plot...; kw...) =
     Term.grid(map(UnicodePlots.panel, plots); kw...)
 
 end  # module

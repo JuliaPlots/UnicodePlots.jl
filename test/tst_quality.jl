@@ -4,7 +4,7 @@
         UnicodePlots;
         ambiguities = false,
         deps_compat = false,
-        stale_deps = !isdefined(Base, :get_extension),  # issue with `Requires` not used when weak deps are enabled
+        stale_deps = false,
     )
     Aqua.test_ambiguities(UnicodePlots)
 end
