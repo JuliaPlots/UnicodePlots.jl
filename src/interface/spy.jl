@@ -3,14 +3,14 @@
 
 # Description
 
-Plots the sparsity pattern for the given matrix `A`. This means
-that a scatterplot that resembles the matrix is drawn, in which
-only the pixel for non-zero elements of the matrix are set.
+Plots the sparsity pattern for the given matrix `A`.
+This means that a scatterplot that resembles the matrix is drawn,
+in which only the pixel for non-zero elements of the matrix are set.
 
-If the parameters `width` and `height` are not explicitly
-specified, then the function will attempt to preserve the aspect
-ratio of the matrix, while also attempting to fit the resulting
-plot withing the bounding box specified by `maxwidth` and `maxheight`.
+If the parameters `width` and `height` are not explicitly specified,
+then the function will attempt to preserve the aspect ratio of the matrix,
+while also attempting to fit the resulting plot within the bounding box
+specified by `maxwidth` and `maxheight`.
 
 # Usage
 

@@ -61,7 +61,7 @@ end
     @test FTE.glyph_index(face, "A") == i
 end
 
-@testset "alignements" begin
+@testset "alignments" begin
     a = UnicodePlots.render_string!(
         zeros(UInt8, 20, 100),
         "helgo",
