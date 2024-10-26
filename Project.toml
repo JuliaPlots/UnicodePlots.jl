@@ -23,7 +23,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 ColorSchemes = "^3.19"
-ColorTypes = "0.11"
+ColorTypes = "0.11 - 0.12"
 Contour = "0.5 - 0.6"
 Crayons = "^4.1"
 Dates = "1"
