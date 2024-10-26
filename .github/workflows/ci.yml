@@ -18,8 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'  # older supported LTS
-          - '1.10'  # latest LTS
+          - '1.10'  # oldest supported LTS (declared in Project.toml)
           - '1'
         experimental:
           - false
