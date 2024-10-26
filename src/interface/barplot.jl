@@ -23,7 +23,7 @@ $(arguments(
     (
         text = "the labels / captions of the bars",
         heights = "the values / heights of the bars",
-        dict = "a dictonary in which the keys will be used as `text` and the values will be used as `heights`",
+        dict = "a dictionary in which the keys will be used as `text` and the values will be used as `heights`",
         xscale = "`Function` or `Symbol` to transform the bar length before plotting: this effectively scales the `x`-axis without influencing the captions of the individual bars (use `xscale = :log10` for logscale)",
         color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
         maximum = "optional maximal height"

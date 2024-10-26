@@ -413,13 +413,13 @@ function UnicodePlots.render_string!(
 end
 
 function ft_init()
-    FT_LIB[1] != C_NULL && error("Freetype already initalized. init() called two times?")
+    FT_LIB[1] != C_NULL && error("Freetype already initialized. init() called two times ?")
     FT_Init_FreeType(FT_LIB) == 0
 end
 
 function ft_done()
     FT_LIB[1] == C_NULL &&
-        error("Library == CNULL. done() called before init(), or done called two times?")
+        error("Library == CNULL. done() called before init(), or done called two times ?")
     err = FT_Done_FreeType(FT_LIB[1])
     FT_LIB[1] = C_NULL
     err == 0

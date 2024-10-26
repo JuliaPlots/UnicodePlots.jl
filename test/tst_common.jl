@@ -91,7 +91,7 @@ end
     @test_throws ArgumentError UnicodePlots.colormode!(123456789)
 
     _color_mode = UnicodePlots.colormode()
-    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only suport 8bit or 24bit, not 4bit (terminal dependent)
+    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only support 8bit or 24bit, not 4bit (terminal dependent)
     @test_throws ArgumentError UnicodePlots.colormode()
 
     UnicodePlots.colors256!()
