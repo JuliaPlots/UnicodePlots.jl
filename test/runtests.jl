@@ -10,6 +10,7 @@ import Random: seed!
 import ColorSchemes
 import FileIO
 import Aqua
+import Pkg
 
 using ReferenceTests
 using LinearAlgebra
@@ -20,6 +21,8 @@ using StableRNGs
 using StatsBase
 using Crayons
 using Unitful
+
+Pkg.status(; outdated = true)
 
 include("fixes.jl")
 
