@@ -4,10 +4,11 @@
 module FreeTypeExt
 
 import UnicodePlots
-UnicodePlots.@ext_imp_use :using FreeType
-UnicodePlots.@ext_imp_use :import FileIO
+import FileIO
+
 using StaticArrays
 using ColorTypes
+using FreeType
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]
@@ -413,13 +414,13 @@ function UnicodePlots.render_string!(
 end
 
 function ft_init()
-    FT_LIB[1] != C_NULL && error("Freetype already initalized. init() called two times?")
+    FT_LIB[1] != C_NULL && error("Freetype already initialized. init() called two times ?")
     FT_Init_FreeType(FT_LIB) == 0
 end
 
 function ft_done()
     FT_LIB[1] == C_NULL &&
-        error("Library == CNULL. done() called before init(), or done called two times?")
+        error("Library == CNULL. done() called before init(), or done called two times ?")
     err = FT_Done_FreeType(FT_LIB[1])
     FT_LIB[1] = C_NULL
     err == 0
