@@ -93,11 +93,12 @@ fallback_fonts() =
 const FT_FONTS = Dict{String,FTFont}()
 
 """
-Match a font using the user-specified search string. Each part of the search string
-is searched in the family name first which has to match once to include the font
-in the candidate list. For fonts with a family match the style
-name is matched next. For fonts with the same family and style name scores, regular
-fonts are preferred (any font that is "regular", "normal", "medium", "standard" or "roman")
+Match a font using the user-specified search string.
+Each part of the search string is searched in the family name first,
+which has to match once to include the font in the candidate list.
+For fonts with a family match the style name is matched next.
+For fonts with the same family and style name scores, regular fonts are preferred
+(any font that is "regular", "normal", "medium", "standard" or "roman"),
 and as a last tie-breaker, shorter overall font names are preferred.
 
 Example:
@@ -224,7 +225,7 @@ function kerning(face::FTFont, glyphspecs...)
     i1, i2 = glyph_index.(Ref(face), glyphspecs)
     kerning2d = Ref{FT_Vector}()
     err = @lock face.lock FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
-    # can error if font has no kerning! Since that's somewhat expected, we just return 0
+    # can error if font has no kerning ! Since that's somewhat expected, we just return 0
     err == 0 || return SVector(0.0, 0.0)
     divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
     SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
@@ -269,7 +270,7 @@ one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
 
 """
     render_string!(img::AbstractMatrix, str::String, face, pixelsize, y0, x0;
-    fcolor=one_or_typemax(T), bcolor=zero(T), halign=:hleft, valign=:vbaseline) -> Matrix
+                   fcolor=one_or_typemax(T), bcolor=zero(T), halign=:hleft, valign=:vbaseline) -> Matrix
 Render `str` into `img` using the font `face` of size `pixelsize` at coordinates `y0,x0`.
 Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 # Arguments
@@ -458,11 +459,11 @@ function __init__()
     # so we supply a way to help it with an environment variable.
     font_paths = if Sys.isapple()  # COV_EXCL_LINE
         [
-            "/Library/Fonts", # Additional fonts that can be used by all users. This is generally where fonts go if they are to be used by other applications.
+            "/Library/Fonts",  # additional fonts that can be used by all users. This is generally where fonts go if they are to be used by other applications.
             joinpath(homedir(), "Library/Fonts"), # Fonts specific to each user.
-            "/Network/Library/Fonts", # Fonts shared for users on a network
-            "/System/Library/Fonts", # System specific fonts
-            "/System/Library/Fonts/Supplemental", # new location since Catalina
+            "/Network/Library/Fonts",  # fonts shared for users on a network
+            "/System/Library/Fonts",  # system specific fonts
+            "/System/Library/Fonts/Supplemental",  # new location since Catalina
         ]
     elseif Sys.iswindows()  # COV_EXCL_LINE
         [
