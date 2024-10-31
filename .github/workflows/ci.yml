@@ -41,12 +41,12 @@ jobs:
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          UP_COLORMODE: '24bit'
+          COLORTERM: 'truecolor' # 24bit
       - uses: julia-actions/julia-runtest@latest
         if: startsWith(matrix.os, 'ubuntu')
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          UP_COLORMODE: '8bit'
+          COLORTERM: 'invalid' # 8bit - 256 colors
       - uses: julia-actions/julia-processcoverage@latest
       - uses: codecov/codecov-action@v4
         with:
