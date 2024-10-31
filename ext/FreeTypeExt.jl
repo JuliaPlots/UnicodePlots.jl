@@ -12,6 +12,7 @@ using FreeType
 
 const REGULAR_STYLES = "regular", "normal", "medium", "standard", "roman", "book"
 const FT_LIB = FT_Library[C_NULL]
+const LIB_LOCK = ReentrantLock()
 const VALID_FONTPATHS = String[]
 
 struct FontExtent{T}
@@ -23,16 +24,21 @@ end
 
 mutable struct FTFont
     ft_ptr::FT_Face
+    lock::ReentrantLock # lock this for the duration of any FT operation on ft_ptr
     function FTFont(ft_ptr::FT_Face)
-        face = new(ft_ptr)
-        finalizer(
-            face -> (face.ft_ptr != C_NULL && FT_LIB[1] != C_NULL) && FT_Done_Face(face),
-            face,
-        )
+        face = new(ft_ptr, ReentrantLock())
+        finalizer(safe_free, face)
         face
     end
 end
-FTFont(path::String) = FTFont(newface(path))
+
+function safe_free(face::FTFont)
+    @lock face.lock begin
+        (face.ft_ptr != C_NULL && FT_LIB[1] != C_NULL) && FT_Done_Face(face)
+    end
+end
+
+FTFont(path::String) = FTFont(new_face(path))
 FTFont(::Nothing) = nothing
 
 family_name(font::FTFont) = lowercase(ft_property(font, :family_name))
@@ -43,9 +49,9 @@ Base.propertynames(font::FTFont) = fieldnames(FT_FaceRec)
 Base.cconvert(::Type{FT_Face}, font::FTFont) = font
 Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = font.ft_ptr
 
-function ft_property(font::FTFont, fieldname::Symbol)
-    fontrect = unsafe_load(font.ft_ptr)
-    if (field = getfield(fontrect, fieldname)) isa Ptr{FT_String}
+function ft_property(face::FTFont, fieldname::Symbol)
+    font_rect = @lock face.lock unsafe_load(face.ft_ptr)
+    if (field = getfield(font_rect, fieldname)) isa Ptr{FT_String}
         field == C_NULL && return ""
         unsafe_string(field)
     else
@@ -60,10 +66,10 @@ Base.show(io::IO, font::FTFont) = print(
 
 check_error(err, error_msg) = err == 0 || error("$error_msg with error: $err")
 
-function newface(facename, faceindex::Real = 0, ftlib = FT_LIB)
+function new_face(name, index::Real = 0, ftlib = FT_LIB)
     face = Ref{FT_Face}()
-    err = FT_New_Face(ftlib[1], facename, Int32(faceindex), face)
-    check_error(err, "Couldn't load font $facename")
+    err = @lock LIB_LOCK FT_New_Face(ftlib[1], name, Int32(index), face)
+    check_error(err, "Couldn't load font $name")
     face[]
 end
 
@@ -87,11 +93,12 @@ fallback_fonts() =
 const FT_FONTS = Dict{String,FTFont}()
 
 """
-Match a font using the user-specified search string. Each part of the search string
-is searched in the family name first which has to match once to include the font
-in the candidate list. For fonts with a family match the style
-name is matched next. For fonts with the same family and style name scores, regular
-fonts are preferred (any font that is "regular", "normal", "medium", "standard" or "roman")
+Match a font using the user-specified search string.
+Each part of the search string is searched in the family name first,
+which has to match once to include the font in the candidate list.
+For fonts with a family match the style name is matched next.
+For fonts with the same family and style name scores, regular fonts are preferred
+(any font that is "regular", "normal", "medium", "standard" or "roman"),
 and as a last tie-breaker, shorter overall font names are preferred.
 
 Example:
@@ -163,7 +170,7 @@ function find_font(searchstring::String; additional_fonts::String = "")
         # we can compare all four tuple elements of the score at once in order of importance:
         # 1. number of family match characters
         # 2. number of style match characters
-        # 3. is font a "regular" style variant?
+        # 3. is font a "regular" style variant ?
         # 4. the negative length of the font name, the shorter the better
         if (family_match_score = first(score)) > 0 && score > best_score
             best_fpath = fpath
@@ -201,19 +208,24 @@ FontExtent(func::Function, ext::FontExtent) = FontExtent(
 )
 
 function set_pixelsize(face::FTFont, size::Integer)
-    check_error(FT_Set_Pixel_Sizes(face, size, size), "Couldn't set pixelsize")
+    @lock face.lock check_error(
+        FT_Set_Pixel_Sizes(face, size, size),
+        "Couldn't set pixelsize",
+    )
     size
 end
 
-glyph_index(face::FTFont, glyphname::String)::UInt64 = FT_Get_Name_Index(face, glyphname)
-glyph_index(face::FTFont, char::Char)::UInt64 = FT_Get_Char_Index(face, char)
+glyph_index(face::FTFont, glyphname::String)::UInt64 =
+    @lock face.lock FT_Get_Name_Index(face, glyphname)
+glyph_index(face::FTFont, char::Char)::UInt64 =
+    @lock face.lock FT_Get_Char_Index(face, char)
 glyph_index(face::FTFont, idx::Integer) = UInt64(idx)
 
 function kerning(face::FTFont, glyphspecs...)
     i1, i2 = glyph_index.(Ref(face), glyphspecs)
     kerning2d = Ref{FT_Vector}()
-    err = FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
-    # can error if font has no kerning! Since that's somewhat expected, we just return 0
+    err = @lock face.lock FT_Get_Kerning(face, i1, i2, FT_KERNING_DEFAULT, kerning2d)
+    # can error if font has no kerning ! Since that's somewhat expected, we just return 0
     err == 0 || return SVector(0.0, 0.0)
     divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
     SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
@@ -221,14 +233,14 @@ end
 
 function load_glyph(face::FTFont, glyph)
     gi = glyph_index(face, glyph)
-    err = FT_Load_Glyph(face, gi, FT_LOAD_RENDER)
+    err = @lock face.lock FT_Load_Glyph(face, gi, FT_LOAD_RENDER)
     check_error(err, "Could not load glyph $(repr(glyph)) from $face to render.")
 end
 
 function load_glyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     set_pix && set_pixelsize(face, pixelsize)
     load_glyph(face, glyph)
-    gl = unsafe_load(ft_property(face, :glyph))
+    gl = @lock face.lock unsafe_load(ft_property(face, :glyph))
     @assert gl.format == FT_GLYPH_FORMAT_BITMAP
     gl
 end
@@ -258,7 +270,7 @@ one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
 
 """
     render_string!(img::AbstractMatrix, str::String, face, pixelsize, y0, x0;
-    fcolor=one_or_typemax(T), bcolor=zero(T), halign=:hleft, valign=:vbaseline) -> Matrix
+                   fcolor=one_or_typemax(T), bcolor=zero(T), halign=:hleft, valign=:vbaseline) -> Matrix
 Render `str` into `img` using the font `face` of size `pixelsize` at coordinates `y0,x0`.
 Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 # Arguments
@@ -414,16 +426,22 @@ function UnicodePlots.render_string!(
 end
 
 function ft_init()
-    FT_LIB[1] != C_NULL && error("Freetype already initialized. init() called two times ?")
-    FT_Init_FreeType(FT_LIB) == 0
+    @lock LIB_LOCK begin
+        FT_LIB[1] != C_NULL &&
+            error("Freetype already initialized. init() called two times ?")
+        FT_Init_FreeType(FT_LIB) == 0
+    end
 end
 
 function ft_done()
-    FT_LIB[1] == C_NULL &&
-        error("Library == CNULL. done() called before init(), or done called two times ?")
-    err = FT_Done_FreeType(FT_LIB[1])
-    FT_LIB[1] = C_NULL
-    err == 0
+    @lock LIB_LOCK begin
+        FT_LIB[1] == C_NULL && error(
+            "Library == CNULL. done() called before init(), or done called two times ?",
+        )
+        err = FT_Done_FreeType(FT_LIB[1])
+        FT_LIB[1] = C_NULL
+        err == 0
+    end
 end
 
 add_recursive(result, path) =
@@ -441,11 +459,11 @@ function __init__()
     # so we supply a way to help it with an environment variable.
     font_paths = if Sys.isapple()  # COV_EXCL_LINE
         [
-            "/Library/Fonts", # Additional fonts that can be used by all users. This is generally where fonts go if they are to be used by other applications.
-            joinpath(homedir(), "Library/Fonts"), # Fonts specific to each user.
-            "/Network/Library/Fonts", # Fonts shared for users on a network
-            "/System/Library/Fonts", # System specific fonts
-            "/System/Library/Fonts/Supplemental", # new location since Catalina
+            "/Library/Fonts",  # additional fonts that can be used by all users: this is generally where fonts go if they are to be used by other applications
+            joinpath(homedir(), "Library/Fonts"),  # fonts specific to each user
+            "/Network/Library/Fonts",  # fonts shared for users on a network
+            "/System/Library/Fonts",  # system specific fonts
+            "/System/Library/Fonts/Supplemental",  # new location since Catalina
         ]
     elseif Sys.iswindows()  # COV_EXCL_LINE
         [

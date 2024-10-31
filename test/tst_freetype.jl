@@ -3,7 +3,8 @@ const FTE = if isdefined(Base, :get_extension)
 else
     UnicodePlots.FreeTypeExt
 end
-push!(FTE.VALID_FONTPATHS, joinpath(@__DIR__, "fonts"))
+const FT_DIR = joinpath(@__DIR__, "fonts")
+push!(FTE.VALID_FONTPATHS, FT_DIR)
 
 @testset "init and done" begin
     @test_throws ErrorException FTE.ft_init()
@@ -245,6 +246,23 @@ end
 
 @testset "misc" begin
     @test FTE.fallback_fonts() isa Tuple
+end
+
+@testset "thread safety" begin
+    mktempdir() do dir
+        n = 100
+        fontfiles = map(1:n) do i
+            cp(joinpath(FT_DIR, "hack_regular.ttf"), joinpath(dir, "hack_regular_$i.ttf"))
+        end
+        Threads.@threads for f in fontfiles
+            fo = FTE.FTFont(f)
+            Threads.@threads for i = 1:n
+                FTE.load_glyph(fo, i)
+                FTE.load_glyph(fo, i, 64)
+                FTE.render_face(fo, i, 16)
+            end
+        end
+    end
 end
 
 pop!(FTE.VALID_FONTPATHS)

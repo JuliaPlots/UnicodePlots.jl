@@ -22,17 +22,9 @@ jobs:
           - '1'
         experimental:
           - false
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         arch: [x64]
-        include:  # spare windows/macos CI credits
-          - os: windows-latest
-            experimental: false
-            version: '1'
-            arch: x64
-          - os: macOS-latest
-            experimental: false
-            version: '1'
-            arch: x64
+        include:
           - os: ubuntu-latest
             experimental: true
             version: 'nightly'
@@ -49,12 +41,12 @@ jobs:
       - uses: julia-actions/julia-runtest@latest
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          COLORTERM: 'truecolor'  # 24bit
+          COLORTERM: 'truecolor' # 24bit
       - uses: julia-actions/julia-runtest@latest
         if: startsWith(matrix.os, 'ubuntu')
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          COLORTERM: 'yes'  # 8bit - 256 colors
+          COLORTERM: 'invalid' # 8bit - 256 colors
       - uses: julia-actions/julia-processcoverage@latest
       - uses: codecov/codecov-action@v4
         with:
