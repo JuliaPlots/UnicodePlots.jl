@@ -459,8 +459,8 @@ function __init__()
     # so we supply a way to help it with an environment variable.
     font_paths = if Sys.isapple()  # COV_EXCL_LINE
         [
-            "/Library/Fonts",  # additional fonts that can be used by all users. This is generally where fonts go if they are to be used by other applications.
-            joinpath(homedir(), "Library/Fonts"), # Fonts specific to each user.
+            "/Library/Fonts",  # additional fonts that can be used by all users: this is generally where fonts go if they are to be used by other applications
+            joinpath(homedir(), "Library/Fonts"),  # fonts specific to each user
             "/Network/Library/Fonts",  # fonts shared for users on a network
             "/System/Library/Fonts",  # system specific fonts
             "/System/Library/Fonts/Supplemental",  # new location since Catalina
