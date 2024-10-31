@@ -22,17 +22,9 @@ jobs:
           - '1'
         experimental:
           - false
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         arch: [x64]
-        include:  # spare windows/macos CI credits
-          - os: windows-latest
-            experimental: false
-            version: '1'
-            arch: x64
-          - os: macOS-latest
-            experimental: false
-            version: '1'
-            arch: x64
+        include:
           - os: ubuntu-latest
             experimental: true
             version: 'nightly'
