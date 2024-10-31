@@ -169,7 +169,7 @@ function find_font(searchstring::String; additional_fonts::String = "")
         # we can compare all four tuple elements of the score at once in order of importance:
         # 1. number of family match characters
         # 2. number of style match characters
-        # 3. is font a "regular" style variant?
+        # 3. is font a "regular" style variant ?
         # 4. the negative length of the font name, the shorter the better
         if (family_match_score = first(score)) > 0 && score > best_score
             best_fpath = fpath

@@ -252,9 +252,7 @@ end
     mktempdir() do dir
         n = 100
         fontfiles = map(1:n) do i
-            p = joinpath(dir, "hack_regular_$i.ttf")
-            cp(joinpath(FT_DIR, "hack_regular.ttf"), p)
-            p
+            cp(joinpath(FT_DIR, "hack_regular.ttf"), joinpath(dir, "hack_regular_$i.ttf"))
         end
         Threads.@threads for f in fontfiles
             fo = FTE.FTFont(f)
