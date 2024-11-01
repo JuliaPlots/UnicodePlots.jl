@@ -14,4 +14,4 @@ jobs:
     - uses: codespell-project/actions-codespell@v2
       with:
         ignore_words_list: Missings,coo,ue,fo,ans
-        only_warn: 1
+        only_warn: 0
