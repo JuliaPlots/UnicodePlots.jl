@@ -786,8 +786,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       main() = begin
         rng = StableRNG(1337)
 
-        bb = parse(Bool, get(ENV, "BB", "false")) ? 9 : nothing
-        bb_glyph = parse(Bool, get(ENV, "BB_GL", "false")) ? 8 : nothing
+        bb = Base.get_bool_env("BB", false) ? 9 : nothing
+        bb_glyph = Base.get_bool_env("BB_GL", false) ? 8 : nothing
 
         banner()
       """

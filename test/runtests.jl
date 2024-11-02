@@ -38,7 +38,7 @@ test_ref(reference, actual) = @test_reference(
     format = "TXT"
 )
 
-is_ci() = get(ENV, "CI", "false") == "true"
+is_ci() = Base.get_bool_env("CI", false)
 
 # helpers
 
