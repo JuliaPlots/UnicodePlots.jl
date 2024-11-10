@@ -468,13 +468,17 @@ styledstrings_color(color::ColorType) =
         StyledStrings.Legacy.legacy_color(Int(color - THRESHOLD))
     end
 
-print_color(io::IO, face::StyledStrings.Face, args...) = print(io, StyledStrings.face!(Base.annotatedstring(args...), face))
+print_color(io::IO, face::StyledStrings.Face, args...) =
+    print(io, StyledStrings.face!(Base.annotatedstring(args...), face))
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
 
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if get(io, :color, false)
-        face = StyledStrings.Face(foreground = styledstrings_color(color), background = styledstrings_color(bgcol))
+        face = StyledStrings.Face(
+            foreground = styledstrings_color(color),
+            background = styledstrings_color(bgcol),
+        )
         print_color(io, face, args...)
     else
         print(io, args...)
@@ -524,7 +528,8 @@ c256(c::Integer) = c
 # `ColorType` conversion - colormaps
 ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
 ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
-ansi_color(color::NTuple{3,Integer})::ColorType = r32(color[1]) + g32(color[2]) + b32(color[3])
+ansi_color(color::NTuple{3,Integer})::ColorType =
+    r32(color[1]) + g32(color[2]) + b32(color[3])
 
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(face::StyledStrings.Face) = ansi_color(face.foreground)  # ignore bg & styles
@@ -548,24 +553,25 @@ function to_256_colors(color)
     UInt8(ansi)
 end
 
-ansi_color(color::StyledStrings.SimpleColor)::ColorType = let c = color.value
-    if COLORMODE[] ≡ COLORMODE_24BIT
-        if c isa Symbol
-            c4 = StyledStrings.ANSI_4BIT_COLORS[c]
-            c8 = ansi_4bit_to_8bit(UInt8(c4))
-            return USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
-        elseif c isa StyledStrings.RGBTuple
-            return r32(c.r) + g32(c.g) + b32(c.b)
-        end::ColorType
-    else  # 0-255 ansi stored in a UInt32
-        return THRESHOLD + if c isa Symbol
-            c4 = StyledStrings.ANSI_4BIT_COLORS[c]
-            ansi_4bit_to_8bit(UInt8(c4))
-        elseif c isa StyledStrings.RGBTuple
-            to_256_colors(c)
-        end::UInt8
+ansi_color(color::StyledStrings.SimpleColor)::ColorType =
+    let c = color.value
+        if COLORMODE[] ≡ COLORMODE_24BIT
+            if c isa Symbol
+                c4 = StyledStrings.ANSI_4BIT_COLORS[c]
+                c8 = ansi_4bit_to_8bit(UInt8(c4))
+                return USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+            elseif c isa StyledStrings.RGBTuple
+                return r32(c.r) + g32(c.g) + b32(c.b)
+            end::ColorType
+        else  # 0-255 ansi stored in a UInt32
+            return THRESHOLD + if c isa Symbol
+                c4 = StyledStrings.ANSI_4BIT_COLORS[c]
+                ansi_4bit_to_8bit(UInt8(c4))
+            elseif c isa StyledStrings.RGBTuple
+                to_256_colors(c)
+            end::UInt8
+        end
     end
-end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType = if color ≡ INVALID_COLOR
