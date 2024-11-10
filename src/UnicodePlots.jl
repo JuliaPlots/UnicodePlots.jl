@@ -1,6 +1,7 @@
 module UnicodePlots
 
 using PrecompileTools
+using StyledStrings
 using LinearAlgebra
 using StaticArrays
 using ColorTypes

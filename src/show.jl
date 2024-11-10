@@ -83,7 +83,7 @@ function print_title(
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nocol(io, post_pad, right_pad)
     (
-        count(string('\n'), title) + 1,  # NOTE: string(...) for compat with 1.6
+        count('\n', title) + 1,
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
     )
 end
@@ -145,7 +145,7 @@ end
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 function _show(end_io::IO, print_nocol, print_color, p::Plot)
-    buf = PipeBuffer()  # buffering, for performance
+    buf = Base.AnnotatedIOBuffer()  # buffering, for performance
     io_color = get(end_io, :color, false)
     io = IOContext(buf, :color => io_color, :displaysize => displaysize(end_io))
 
@@ -385,7 +385,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     end
 
     # delayed print (buffering)
-    print_nocol(end_io, read(buf, String))
+    print(end_io, read(seekstart(buf), Base.AnnotatedString))
 
     # return the approximate image size
     (

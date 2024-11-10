@@ -454,31 +454,44 @@ crayon_color(color::ColorType) =
         Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
     end
 
-function print_crayons(io, c, args...)
-    if CRAYONS_FAST[]
-        if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
-            print(io, Crayons.CSI)
-            Crayons._print(io, c)
-            print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
-        else
-            print(io, args...)
-        end
-    else
-        print(io, c, args..., CRAYONS_RESET)
-    end
-end
 
-print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
+ss_color(::Union{Missing,Nothing}) = nothing
+ss_color(color::ColorType) =
+    if color ≡ INVALID_COLOR
+        nothing
+    elseif color < THRESHOLD  # 24bit
+        StyledStrings.SimpleColor(red(color), grn(color), blu(color))
+    else  # 8bit
+        StyledStrings.Legacy.legacy_color(Int(color - THRESHOLD))
+    end
+
+# function print_crayons(io, c, args...)
+#     if CRAYONS_FAST[]
+#         if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
+#             print(io, Crayons.CSI)
+#             Crayons._print(io, c)
+#             print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
+#         else
+#             print(io, args...)
+#         end
+#     else
+#         print(io, c, args..., CRAYONS_RESET)
+#     end
+# end
+
+# print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
 
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if get(io, :color, false)
-        print_crayons(
-            io,
-            Crayon(crayon_color(color), crayon_color(bgcol), CRAYONS_EMPTY_STYLES...),
-            args...,
-        )
+        face = StyledStrings.Face(; foreground = ss_color(color), background = ss_color(bgcol))
+        print(io, StyledStrings.face!(Base.annotatedstring(args...), face))
+        # print_crayons(
+        #     io,
+        #     Crayon(crayon_color(color), crayon_color(bgcol), CRAYONS_EMPTY_STYLES...),
+        #     args...,
+        # )
     else
         print(io, args...)
     end
