@@ -19,7 +19,6 @@ using TestImages
 using ColorTypes
 using StableRNGs
 using StatsBase
-using Crayons
 using Unitful
 
 Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)

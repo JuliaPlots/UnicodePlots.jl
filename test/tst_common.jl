@@ -88,11 +88,7 @@ end
     @test UnicodePlots.c256(0) == 0
     @test UnicodePlots.c256(255) == 255
 
-    @test_throws ArgumentError UnicodePlots.colormode!(123456789)
-
-    _color_mode = UnicodePlots.colormode()
-    UnicodePlots.COLORMODE[] = Crayons.COLORS_16  # we only support 8bit or 24bit, not 4bit (terminal dependent)
-    @test_throws ArgumentError UnicodePlots.colormode()
+    @test_throws ArgumentError UnicodePlots.colormode!(123_456_789)
 
     UnicodePlots.colors256!()
     @test UnicodePlots.ansi_color(0x80) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
@@ -136,8 +132,6 @@ end
     @test UnicodePlots.ansi_color(:light_blue) == UnicodePlots.THRESHOLD + 0x0c
     UnicodePlots.USE_LUT[] = _lut
 
-    UnicodePlots.colormode!(_color_mode)
-
     if true  # physical average
         @test UnicodePlots.blend_colors(UInt32(0), UInt32(255)) == UInt32(180)
         @test UnicodePlots.blend_colors(0xff0000, 0x00ff00) == 0xb4b400  # red & green -> yellow
@@ -153,18 +147,7 @@ end
     @test UnicodePlots.complement(UnicodePlots.INVALID_COLOR) == UnicodePlots.INVALID_COLOR
     @test UnicodePlots.complement(0x003ae1c3) == 0x00c51e3c
 
-    io = PipeBuffer()
-    _cfast = UnicodePlots.CRAYONS_FAST[]
-    for fast ∈ (false, true)
-        UnicodePlots.CRAYONS_FAST[] = fast
-        UnicodePlots.print_crayons(io, Crayon(foreground = :red), 123)
-        UnicodePlots.print_crayons(io, Crayon(), 123)
-    end
-    UnicodePlots.CRAYONS_FAST[] = _cfast
-
     @test UnicodePlots.ignored_color(nothing)
-    @test UnicodePlots.crayon_color(missing) isa Crayons.ANSIColor
-    @test UnicodePlots.crayon_color(nothing) isa Crayons.ANSIColor
 end
 
 @testset "colormaps" begin

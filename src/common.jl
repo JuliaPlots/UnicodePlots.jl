@@ -152,8 +152,8 @@ const SUPERSCRIPT = Dict(
 ############################################################################################
 # define types
 const MarkerType = Union{Symbol,AbstractChar,AbstractString}
-const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
-const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
+const StyledStringsColorType = Union{Integer,Symbol,StyledStrings.RGBTuple,UInt32}
+const UserColorType = Union{StyledStrings.Face,StyledStringsColorType,NTuple{3,Integer},Nothing}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas), 8bit or 24bit
 
 ############################################################################################
@@ -181,20 +181,17 @@ const UnicodeType = UInt32
 
 ############################################################################################
 # colors
+@enum Colormode COLORMODE_24BIT COLORMODE_8BIT
 const THRESHOLD = UInt32(256^3)  # 8bit - 24bit threshold
-const COLORMODE = Ref(Crayons.COLORS_256)
+const COLORMODE = Ref(COLORMODE_24BIT)
 const INVALID_COLOR = typemax(ColorType)
 const USE_LUT = Ref(false)
 
-const CRAYONS_FAST = Ref(true)
-const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ ∈ 1:9)
-const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
-
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
-const COLOR_CYCLE_BRIGHT = map(s -> Symbol("light_", s), COLOR_CYCLE_FAINT)  # COV_EXCL_LINE
+const COLOR_CYCLE_BRIGHT = map(s -> Symbol("bright_", s), COLOR_CYCLE_FAINT)  # COV_EXCL_LINE
 const COLOR_CYCLE = Ref(COLOR_CYCLE_FAINT)
 
-const BORDER_COLOR = Ref(:dark_gray)
+const BORDER_COLOR = Ref(:gray)
 
 ############################################################################################
 
@@ -214,17 +211,20 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
+brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
+faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
+
 colormode() =
-    if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
+    if (cm = COLORMODE[]) ≡ COLORMODE_8BIT
         8
-    elseif cm ≡ Crayons.COLORS_24BIT
+    elseif cm ≡ COLORMODE_24BIT
         24
     else
         throw(ArgumentError("color mode $cm is unsupported"))
     end
 
-colors256!() = COLORMODE[] = Crayons.COLORS_256
-truecolors!() = COLORMODE[] = Crayons.COLORS_24BIT
+colors256!() = COLORMODE[] = COLORMODE_8BIT
+truecolors!() = COLORMODE[] = COLORMODE_24BIT
 
 function colormode!(mode)
     if mode ≡ 8
@@ -237,11 +237,6 @@ function colormode!(mode)
     nothing
 end
 
-brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
-faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
-
-# see gist.github.com/XVilka/8346728#checking-for-colorterm
-terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
 
 # specific to UnicodePlots
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
@@ -444,19 +439,8 @@ function sorted_keys_values(dict::Dict; k2s = true)
     first.(keys_vals), last.(keys_vals)
 end
 
-crayon_color(::Union{Missing,Nothing}) = Crayons.ANSIColor()
-crayon_color(color::ColorType) =
-    if color ≡ INVALID_COLOR
-        Crayons.ANSIColor()
-    elseif color < THRESHOLD  # 24bit
-        Crayons.ANSIColor(red(color), grn(color), blu(color), Crayons.COLORS_24BIT)
-    else  # 8bit
-        Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
-    end
-
-
-ss_color(::Union{Missing,Nothing}) = nothing
-ss_color(color::ColorType) =
+styledstrings_color(::Union{Missing,Nothing}) = nothing
+styledstrings_color(color::ColorType) =
     if color ≡ INVALID_COLOR
         nothing
     elseif color < THRESHOLD  # 24bit
@@ -465,33 +449,14 @@ ss_color(color::ColorType) =
         StyledStrings.Legacy.legacy_color(Int(color - THRESHOLD))
     end
 
-# function print_crayons(io, c, args...)
-#     if CRAYONS_FAST[]
-#         if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
-#             print(io, Crayons.CSI)
-#             Crayons._print(io, c)
-#             print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
-#         else
-#             print(io, args...)
-#         end
-#     else
-#         print(io, c, args..., CRAYONS_RESET)
-#     end
-# end
-
-# print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
+print_color(io::IO, face::StyledStrings.Face, args...) = print(io, StyledStrings.face!(Base.annotatedstring(args...), face))
 print_color(io::IO, color::UserColorType, args...) =
     print_color(io, ansi_color(color), args...)
 
 function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     if get(io, :color, false)
-        face = StyledStrings.Face(; foreground = ss_color(color), background = ss_color(bgcol))
-        print(io, StyledStrings.face!(Base.annotatedstring(args...), face))
-        # print_crayons(
-        #     io,
-        #     Crayon(crayon_color(color), crayon_color(bgcol), CRAYONS_EMPTY_STYLES...),
-        #     args...,
-        # )
+        face = StyledStrings.Face(foreground = styledstrings_color(color), background = styledstrings_color(bgcol))
+        print_color(io, face, args...)
     else
         print(io, args...)
     end
@@ -540,34 +505,48 @@ c256(c::Integer) = c
 # `ColorType` conversion - colormaps
 ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
 ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
+ansi_color(color::NTuple{3,Integer})::ColorType = r32(color[1]) + g32(color[2]) + b32(color[3])
 
 ansi_color(color::ColorType)::ColorType = color  # no-op
-ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
-ansi_color(::Missing) = INVALID_COLOR  # not a CrayonColorType
+ansi_color(face::StyledStrings.Face) = ansi_color(face.foreground)  # ignore bg & styles
+ansi_color(::Union{Nothing,Missing}) = INVALID_COLOR  # not a StyledStringsColorType
 
-function ansi_color(color::CrayonColorType)::ColorType
+function ansi_color(color::StyledStringsColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
-    ansi_color(Crayons._parse_color(color))
+    ansi_color(StyledStrings.SimpleColor(color))
 end
 
-ansi_color(c::Crayons.ANSIColor) = if COLORMODE[] ≡ Crayons.COLORS_24BIT
-    if c.style ≡ Crayons.COLORS_24BIT
-        r32(c.r) + g32(c.g) + b32(c.b)
-    elseif c.style ≡ Crayons.COLORS_256
-        USE_LUT[] ? LUT_8BIT[c.r + 1] : THRESHOLD + c.r
-    elseif c.style ≡ Crayons.COLORS_16
-        c8 = ansi_4bit_to_8bit(c.r)
-        USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+function to_256_colors(color)
+    r, g, b = rgb = color.r, color.g, color.b
+    ansi = if r == g == b && r % 10 == 8
+        232 + min((r - 8) ÷ 10, 23)  # gray level
+    elseif all(map(c -> (c & 0x1) == 0 && (c > 0 ? c == 128 || c == 192 : true), rgb))
+        (r >> 7) + 2(g >> 7) + 4(b >> 7)  # primary color
+    else
+        r6, g6, b6 = map(c -> c < 48 ? 0 : (c < 114 ? 1 : trunc(Int, (c - 35) / 40)), rgb)
+        16 + 36r6 + 6g6 + b6  # cube 6x6x6
+    end
+    return UInt8(ansi)
+end
+
+ansi_color(col::StyledStrings.SimpleColor) = let c = col.value
+    if COLORMODE[] ≡ COLORMODE_24BIT
+        if c isa Symbol
+            c4 = get(StyledStrings.ANSI_4BIT_COLORS, c, nothing)
+            c8 = ansi_4bit_to_8bit(UInt8(c4))
+            return USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
+        elseif c isa StyledStrings.RGBTuple
+            return r32(c.r) + g32(c.g) + b32(c.b)
+        end::ColorType
+    else  # 0-255 ansi stored in a UInt32
+        return THRESHOLD + if c isa Symbol
+            c4 = get(StyledStrings.ANSI_4BIT_COLORS, c, nothing)
+            ansi_4bit_to_8bit(UInt8(c4))
+        elseif c isa StyledStrings.RGBTuple
+            to_256_colors(c)
+        end::UInt8
     end::ColorType
-else  # 0-255 ansi stored in a UInt32
-    THRESHOLD + if c.style ≡ Crayons.COLORS_24BIT
-        Crayons.to_256_colors(c).r
-    elseif c.style ≡ Crayons.COLORS_256
-        c.r
-    elseif c.style ≡ Crayons.COLORS_16
-        ansi_4bit_to_8bit(c.r)
-    end::UInt8
-end::ColorType
+end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))
 complement(color::ColorType)::ColorType = if color ≡ INVALID_COLOR

@@ -225,7 +225,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         border_right_cbar_pad * '\n',
         🗹;
         p_width = p_width,
-        color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
+        color = io_color ? StyledStrings.Face(foreground = :white, weight = :bold) : nothing,
     )
     h_lbl = print_labels(
         io,
