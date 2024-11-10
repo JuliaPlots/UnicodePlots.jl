@@ -114,7 +114,7 @@ include("interface/imageplot.jl")
 function __init__()
     forced_24bit() && return init_24bit()
     forced_8bit() && return init_8bit()
-    Base.get_have_truecolor() ? init_24bit() : init_8bit()
+    get_have_truecolor() ? init_24bit() : init_8bit()
     nothing
 end
 
