@@ -112,18 +112,15 @@ include("interface/polarplot.jl")
 include("interface/imageplot.jl")
 
 function __init__()
-    if (terminal_24bit() || forced_24bit()) && !forced_8bit()
-        truecolors!()
-        USE_LUT[] ? brightcolors!() : faintcolors!()
-    else
-        colors256!()
-        faintcolors!()
-    end
+    forced_24bit() && return init_24bit()
+    forced_8bit() && return init_8bit()
+    get_have_truecolor() ? init_24bit() : init_8bit()
     nothing
 end
 
 # COV_EXCL_START
 function precompile_workload(io::IO = IOContext(devnull, :color => Base.get_have_color()))
+    __init__()
     surf(x, y) = sinc(√(x^2 + y^2))
     for T in (  # most common types
         Float64,

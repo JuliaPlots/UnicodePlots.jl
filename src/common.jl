@@ -240,8 +240,25 @@ end
 brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
 faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 
-# see gist.github.com/XVilka/8346728#checking-for-colorterm
-terminal_24bit() = lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
+function init_24bit()
+    truecolors!()
+    USE_LUT[] ? brightcolors!() : faintcolors!()
+    nothing
+end
+
+function init_8bit()
+    colors256!()
+    faintcolors!()
+    nothing
+end
+
+get_have_truecolor() =
+    if isdefined(Base, :get_have_truecolor)
+        Base.get_have_truecolor()
+    else
+        # see gist.github.com/XVilka/8346728#checking-for-colorterm
+        lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
+    end
 
 # specific to UnicodePlots
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
