@@ -537,13 +537,13 @@ function to_256_colors(color)
         r6, g6, b6 = map(c -> c < 48 ? 0 : (c < 114 ? 1 : trunc(Int, (c - 35) / 40)), rgb)
         16 + 36r6 + 6g6 + b6  # cube 6x6x6
     end
-    return UInt8(ansi)
+    UInt8(ansi)
 end
 
-ansi_color(col::StyledStrings.SimpleColor) = let c = col.value
+ansi_color(color::StyledStrings.SimpleColor)::ColorType = let c = color.value
     if COLORMODE[] ≡ COLORMODE_24BIT
         if c isa Symbol
-            c4 = get(StyledStrings.ANSI_4BIT_COLORS, c, nothing)
+            c4 = StyledStrings.ANSI_4BIT_COLORS[c]
             c8 = ansi_4bit_to_8bit(UInt8(c4))
             return USE_LUT[] ? LUT_8BIT[c8 + 1] : THRESHOLD + c8
         elseif c isa StyledStrings.RGBTuple
@@ -551,12 +551,12 @@ ansi_color(col::StyledStrings.SimpleColor) = let c = col.value
         end::ColorType
     else  # 0-255 ansi stored in a UInt32
         return THRESHOLD + if c isa Symbol
-            c4 = get(StyledStrings.ANSI_4BIT_COLORS, c, nothing)
+            c4 = StyledStrings.ANSI_4BIT_COLORS[c]
             ansi_4bit_to_8bit(UInt8(c4))
         elseif c isa StyledStrings.RGBTuple
             to_256_colors(c)
         end::UInt8
-    end::ColorType
+    end
 end
 
 complement(color::UserColorType)::ColorType = complement(ansi_color(color))

@@ -145,6 +145,9 @@ end
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 function _show(end_io::IO, print_nocol, print_color, p::Plot)
+    _have_truecolor = Base.have_truecolor
+    Base.have_truecolor = colormode() == 24
+
     buf = Base.AnnotatedIOBuffer()  # buffering, for performance
     io_color = get(end_io, :color, false)
     io = IOContext(buf, :color => io_color, :displaysize => displaysize(end_io))
@@ -386,6 +389,8 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
 
     # delayed print (buffering)
     print(end_io, read(seekstart(buf), Base.AnnotatedString))
+
+    Base.have_truecolor = _have_truecolor
 
     # return the approximate image size
     (
