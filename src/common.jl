@@ -252,6 +252,14 @@ function init_8bit()
     nothing
 end
 
+get_have_truecolor() =
+    if isdefined(Base, :get_have_truecolor)
+        Base.get_have_truecolor()
+    else
+        # see gist.github.com/XVilka/8346728#checking-for-colorterm
+        lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
+    end
+
 # specific to UnicodePlots
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
 forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
