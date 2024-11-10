@@ -152,8 +152,8 @@ const SUPERSCRIPT = Dict(
 ############################################################################################
 # define types
 const MarkerType = Union{Symbol,AbstractChar,AbstractString}
-const StyledStringsColorType = Union{Integer,Symbol,StyledStrings.RGBTuple,UInt32}
-const UserColorType = Union{StyledStrings.Face,StyledStringsColorType,NTuple{3,Integer},Nothing}  # allowed color type
+const StyledStringsColorType = Union{Symbol,StyledStrings.RGBTuple,NTuple{3,Integer},UInt32}  # from StyledStrings/src/faces.jl
+const UserColorType = Union{StyledStrings.Face,StyledStringsColorType,Nothing}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas), 8bit or 24bit
 
 ############################################################################################
@@ -214,6 +214,21 @@ const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
 faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 
+colors256!() = COLORMODE[] = COLORMODE_8BIT
+truecolors!() = COLORMODE[] = COLORMODE_24BIT
+
+function init_24bit()
+    truecolors!()
+    USE_LUT[] ? brightcolors!() : faintcolors!()
+    nothing
+end
+
+function init_8bit()
+    colors256!()
+    faintcolors!()
+    nothing
+end
+
 colormode() =
     if (cm = COLORMODE[]) ≡ COLORMODE_8BIT
         8
@@ -222,9 +237,6 @@ colormode() =
     else
         throw(ArgumentError("color mode $cm is unsupported"))
     end
-
-colors256!() = COLORMODE[] = COLORMODE_8BIT
-truecolors!() = COLORMODE[] = COLORMODE_24BIT
 
 function colormode!(mode)
     if mode ≡ 8
@@ -236,7 +248,6 @@ function colormode!(mode)
     end
     nothing
 end
-
 
 # specific to UnicodePlots
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")

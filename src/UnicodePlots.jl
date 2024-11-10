@@ -111,18 +111,6 @@ include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 include("interface/imageplot.jl")
 
-function init_24bit()
-    truecolors!()
-    USE_LUT[] ? brightcolors!() : faintcolors!()
-    nothing
-end
-
-function init_8bit()
-    colors256!()
-    faintcolors!()
-    nothing
-end
-
 function __init__()
     forced_24bit() && return init_24bit()
     forced_8bit() && return init_8bit()
