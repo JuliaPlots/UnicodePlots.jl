@@ -83,7 +83,7 @@ function print_title(
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nocol(io, post_pad, right_pad)
     (
-        count(string('\n'), title) + 1,  # NOTE: string(...) for compat with 1.6
+        count('\n', title) + 1,
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
     )
 end
