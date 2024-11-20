@@ -1,6 +1,3 @@
-const HEATMAP_SIGNS = [0 1; 0 1]
-const HEATMAP_DECODE = [HALF_BLOCK; HALF_BLOCK]
-
 """
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
@@ -24,12 +21,15 @@ struct HeatmapCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     xscale::XS
 end
 
+const HEATMAP_ENCODE = [0 1; 0 1]
+const HEATMAP_DECODE = [HALF_BLOCK; HALF_BLOCK]
+
 @inline nrows(c::HeatmapCanvas) = div(size(c.grid, 1) + 1, 2)
 
 @inline y_pixel_per_char(::Type{<:HeatmapCanvas}) = 2
 @inline x_pixel_per_char(::Type{<:HeatmapCanvas}) = 1
 
-@inline lookup_encode(::HeatmapCanvas) = HEATMAP_SIGNS
+@inline lookup_encode(::HeatmapCanvas) = HEATMAP_ENCODE
 @inline lookup_decode(::HeatmapCanvas) = HEATMAP_DECODE
 
 function HeatmapCanvas(args...; kw...)

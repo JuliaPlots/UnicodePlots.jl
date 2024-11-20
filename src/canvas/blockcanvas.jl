@@ -22,12 +22,11 @@ struct BlockCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     xscale::XS
 end
 
-const BLOCK_SIGNS = [
+const N_BLOCK = grid_type(BlockCanvas)(16)
+const BLOCK_ENCODE = [
     0b1000 0b0100
     0b0010 0b0001
 ]
-
-const N_BLOCK = grid_type(BlockCanvas)(16)
 const BLOCK_DECODE = Vector{Char}(undef, typemax(N_BLOCK))
 
 BLOCK_DECODE[1] = ' '
@@ -51,7 +50,7 @@ BLOCK_DECODE[(N_BLOCK + 1):typemax(N_BLOCK)] = UNICODE_TABLE[1:(typemax(N_BLOCK)
 @inline x_pixel_per_char(::Type{<:BlockCanvas}) = 2
 @inline y_pixel_per_char(::Type{<:BlockCanvas}) = 2
 
-@inline lookup_encode(::BlockCanvas) = BLOCK_SIGNS
+@inline lookup_encode(::BlockCanvas) = BLOCK_ENCODE
 @inline lookup_decode(::BlockCanvas) = BLOCK_DECODE
 @inline lookup_offset(::BlockCanvas) = N_BLOCK
 

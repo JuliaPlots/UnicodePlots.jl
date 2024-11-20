@@ -25,6 +25,7 @@ export Plot,
     BrailleCanvas,
     DensityCanvas,
     HeatmapCanvas,
+    FilledCanvas,
     BlockCanvas,
     AsciiCanvas,
     DotCanvas,
@@ -89,6 +90,7 @@ include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")
 include("canvas/dotcanvas.jl")
 include("canvas/heatmapcanvas.jl")
+include("canvas/filledcanvas.jl")
 
 include("description.jl")
 include("volume.jl")

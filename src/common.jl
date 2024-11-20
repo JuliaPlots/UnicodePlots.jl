@@ -204,6 +204,7 @@ const BASES = (identity = nothing, ln = "ℯ", log2 = "2", log10 = "10")
 
 const FULL_BLOCK = '█'
 const HALF_BLOCK = '▄'
+const EMPTY_BLOCK = '\0'
 
 # standard terminals seem to respect a 4:3 aspect ratio
 # unix.stackexchange.com/questions/148569/standard-terminal-font-aspect-ratio

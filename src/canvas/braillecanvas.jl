@@ -1,11 +1,3 @@
-# braille dots composing ⣿
-const BRAILLE_SIGNS = UnicodeType.([
-    '⠁' '⠈'
-    '⠂' '⠐'
-    '⠄' '⠠'
-    '⡀' '⢀'
-])
-
 """
 The type of canvas with the highest resolution for Unicode-based plotting.
 It uses the Unicode characters for the Braille symbols to represent individual pixel.
@@ -27,6 +19,14 @@ struct BrailleCanvas{YS<:Function,XS<:Function} <: Canvas
     yscale::YS
     xscale::XS
 end
+
+# braille dots composing ⣿
+const BRAILLE_ENCODE = UnicodeType.([
+    '⠁' '⠈'
+    '⠂' '⠐'
+    '⠄' '⠠'
+    '⡀' '⢀'
+])
 
 @inline blank(c::BrailleCanvas) = Char(BLANK_BRAILLE)
 
@@ -85,7 +85,7 @@ function pixel!(
     char_x, char_y, char_x_off, char_y_off = pixel_to_char_point_off(c, pixel_x, pixel_y)
     if checkbounds(Bool, c.grid, char_y, char_x)
         if BLANK_BRAILLE ≤ (val = c.grid[char_y, char_x]) ≤ FULL_BRAILLE
-            c.grid[char_y, char_x] = val | BRAILLE_SIGNS[char_y_off, char_x_off]
+            c.grid[char_y, char_x] = val | BRAILLE_ENCODE[char_y_off, char_x_off]
         end
         set_color!(c, char_x, char_y, color, blend)
     end
