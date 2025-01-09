@@ -39,6 +39,7 @@ test_ref(reference, actual) = @test_reference(
 )
 
 is_ci() = Base.get_bool_env("CI", false)
+is_pkgeval() = Base.get_bool_env("JULIA_PKGEVAL", false)
 
 # helpers
 
