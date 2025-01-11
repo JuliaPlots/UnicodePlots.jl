@@ -45,7 +45,7 @@ family_name(font::FTFont) = lowercase(ft_property(font, :family_name))
 style_name(font::FTFont) = lowercase(ft_property(font, :style_name))
 Base.propertynames(font::FTFont) = fieldnames(FT_FaceRec)
 
-# C interop
+# c interoperability
 Base.cconvert(::Type{FT_Face}, font::FTFont) = font
 Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = font.ft_ptr
 
@@ -79,7 +79,7 @@ add_mono(fts...) = tuple(map(x -> x * "Mono", fts)..., fts...)
 fallback_fonts() =
 # those fallback fonts are likely to fail braille characters
     if Sys.islinux()
-        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: tailing space intended
+        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: trailing space intended
     elseif Sys.isbsd()
         ("Courier New", "Helvetica")
     elseif Sys.iswindows()
