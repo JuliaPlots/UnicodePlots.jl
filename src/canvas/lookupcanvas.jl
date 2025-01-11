@@ -1,3 +1,6 @@
+"""
+Supertype for Look-Up Table (LUT) encoded canvases.
+"""
 abstract type LookupCanvas <: Canvas end
 
 function CreateLookupCanvas(

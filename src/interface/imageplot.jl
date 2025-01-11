@@ -1,7 +1,7 @@
 """
     imageplot(img; kw...)
 
-Plot an image using `ImageInTerminal` (`sixel`s are supported if the terminal emulator supports it).
+Plot an image using `ImageInTerminal` (`sixel`s are supported if the terminal emulator supports them).
 
 # Usage
 

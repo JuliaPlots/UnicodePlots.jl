@@ -110,7 +110,7 @@ end
     Y::AbstractVecOrMat,
     Z::AbstractVecOrMat,
     H::Union{AbstractVecOrMat,Nothing} = nothing;
-    color::UserColorType = nothing,  # NOTE: nothing as default (uses colormap), but allow single color
+    color::UserColorType = nothing,  # NOTE: `nothing` as default (uses a colormap), but allow a single color
     colormap = KEYWORDS.colormap,
     lines::Bool = false,
     zlim = KEYWORDS.zlim,

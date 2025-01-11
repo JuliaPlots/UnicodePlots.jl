@@ -144,6 +144,9 @@ end
 
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
+"""
+Display a `Plot` object to a terminal emulator.
+"""
 function _show(end_io::IO, print_nocol, print_color, p::Plot)
     buf = PipeBuffer()  # buffering, for performance
     io_color = get(end_io, :color, false)
@@ -406,7 +409,7 @@ function save_image end
 """
     png_image(p::Plot, font = nothing, pixelsize = 32, transparent = true, foreground = nothing, background = nothing, bounding_box = nothing, bounding_box_glyph = nothing)
 
-Render `png` image.
+Renders a `png` image.
 
 # Arguments
 - `pixelsize::Integer = 32`: controls the image size scaling.

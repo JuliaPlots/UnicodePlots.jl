@@ -8,7 +8,7 @@ Draws a staircase plot on a new canvas.
 
 The first (optional) vector `x` should contain the horizontal positions for all the points.
 The second vector `y` should then contain the corresponding vertical positions respectively.
-This means that the two vectors must be of the same length and ordering.
+This means that the two vectors must be of same length and ordering.
 
 # Usage
 

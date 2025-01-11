@@ -2,7 +2,7 @@
 The `BlockCanvas` is also Unicode-based.
 It has half the resolution of the `BrailleCanvas`.
 In contrast to BrailleCanvas, the pixels don't have visible spacing between them.
-This canvas effectively turns every character into 4 pixels that can individually be manipulated using binary operations.
+This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 """
 struct BlockCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     grid::Transpose{UInt16,Matrix{UInt16}}

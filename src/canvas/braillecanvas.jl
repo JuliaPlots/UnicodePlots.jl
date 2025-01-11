@@ -1,4 +1,4 @@
-# braille dots composing ⣿
+# braille dots composing the character '⣿'
 const BRAILLE_SIGNS = UnicodeType.([
     '⠁' '⠈'
     '⠂' '⠐'
@@ -9,7 +9,7 @@ const BRAILLE_SIGNS = UnicodeType.([
 """
 The type of canvas with the highest resolution for Unicode-based plotting.
 It uses the Unicode characters for the Braille symbols to represent individual pixel.
-This effectively turns every character into 8 pixels that can individually be manipulated using binary operations.
+This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
 """
 struct BrailleCanvas{YS<:Function,XS<:Function} <: Canvas
     grid::Transpose{UnicodeType,Matrix{UnicodeType}}

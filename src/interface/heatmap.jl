@@ -20,7 +20,7 @@ $(arguments(
         xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
         yoffset = "plotting offset for the `y` coordinate (after scaling)",
         xoffset = "plotting offset for the `x` coordinate (after scaling)",
-        array = "use array display convention (origin at the North-West corner of the plot, hence flipping `y` versus regular plots)"
+        array = "use array display convention (origin at the North-West corner of the plot, hence flipping `y` versus regular plots)",
     ); add = (Z_DESCRIPTION..., :fix_ar)
 ))
 
@@ -160,7 +160,7 @@ function heatmap(
         # for small plots, don't show colorbar by default
         get(pkw, :colorbar, false)
     else
-        # show colorbar by default, unless set to false, or labels == false
+        # show colorbar by default, unless set to false, or `labels = false`
         get(pkw, :colorbar, labels)
     end
 
