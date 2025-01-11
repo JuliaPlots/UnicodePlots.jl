@@ -72,7 +72,7 @@ Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionma
 # Arguments
 
     - `l`: left coordinate of the vertical clipping plane.
-    - `r` : right coordinate of the vertical clipping plane.
+    - `r`: right coordinate of the vertical clipping plane.
     - `b`: bottom coordinate of the horizontal clipping plane.
     - `t`: top coordinate of the horizontal clipping plane.
     - `n`: distance to the near depth clipping plane.
@@ -112,7 +112,7 @@ Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionm
 # Arguments
 
     - `l`: left coordinate of the vertical clipping plane.
-    - `r` : right coordinate of the vertical clipping plane.
+    - `r`: right coordinate of the vertical clipping plane.
     - `b`: bottom coordinate of the horizontal clipping plane.
     - `t`: top coordinate of the horizontal clipping plane.
     - `n`: distance to the near depth clipping plane.
@@ -138,7 +138,7 @@ ortho(l, r, b, t, n, f) = *(
 
 # Description
 
-Computes data center, minimum and maximum points, and cube diagonal.
+Computes data center, minimum and maximum points, and cube diagonal length.
 """
 function ctr_len_diag(x, y, z)
     mx, Mx = nanless_extrema(x)
@@ -238,7 +238,7 @@ struct MVP{E,T}
         is_ortho = projection ∈ (:ortho, :orthographic)
         ctr, mini, maxi, len, diag = ctr_len_diag(x, y, z)
 
-        # half the diagonal (cam distance to the center)
+        # half the diagonal (camera distance to the center)
         disto = dist = (diag / 2) / zoom
         distp = disto / 2
 
@@ -362,7 +362,7 @@ axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T}
 # Description
 
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
-If `p = (x, y)` is given, draws at screen coordinates.
+If `p = (x, y)` is given, draws at screen coordinates instead.
 """
 function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractFloat}
     tr = plot.projection
@@ -388,6 +388,7 @@ function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractF
 
     plot
 end
+
 draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T<:AbstractFloat} =
     let (x, y, z) = transform_matrix(plot.projection, :ortho) \ SVector(x, y, T(0), T(1))
         draw_axes!(plot, x, y, z, args...)

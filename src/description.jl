@@ -164,7 +164,7 @@ Adds default keywords to a function signature, in a docstring.
 
 # Arguments
 
-- `extra::NamedTuple`: add extra keywords in the form `keyword=value`.
+- `extra::NamedTuple`: add extra keywords in the form `keyword = value`.
 - `default::Tuple`: default `UnicodePlots` keywords.
 - `add::Tuple`: add extra symbols, not listed in `default` but present in `KEYWORDS`.
 - `remove::Tuple`: remove symbols from `default`.
@@ -190,7 +190,7 @@ Defines arguments for docstring genreration.
 
 # Arguments
 
-- `desc::NamedTuple`: add argument description in the form `arg=desc`.
+- `desc::NamedTuple`: add argument description in the form `arg = desc`.
 - `default::Tuple`: default `UnicodePlots` keywords.
 - `add::Tuple`: add extra symbols, not listed in `default` but present in `DESCRIPTION`.
 - `remove::Tuple`: remove symbols from `default`.

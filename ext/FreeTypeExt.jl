@@ -1,5 +1,5 @@
 # adapted from github.com/JuliaGraphics/FreeTypeAbstraction.jl/blob/master/src/rendering.jl
-# credits to the `FreeTypeAbstraction` authors
+# credits to the `FreeTypeAbstraction` authors (@SimonDanisch, @jkrumbiegel).
 
 module FreeTypeExt
 
@@ -24,7 +24,7 @@ end
 
 mutable struct FTFont
     ft_ptr::FT_Face
-    lock::ReentrantLock # lock this for the duration of any FT operation on ft_ptr
+    lock::ReentrantLock  # lock this for the duration of any FT operation on ft_ptr
     function FTFont(ft_ptr::FT_Face)
         face = new(ft_ptr, ReentrantLock())
         finalizer(safe_free, face)
@@ -79,7 +79,7 @@ add_mono(fts...) = tuple(map(x -> x * "Mono", fts)..., fts...)
 fallback_fonts() =
 # those fallback fonts are likely to fail braille characters
     if Sys.islinux()
-        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")
+        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: tailing space intended
     elseif Sys.isbsd()
         ("Courier New", "Helvetica")
     elseif Sys.iswindows()
@@ -274,16 +274,16 @@ one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
 Render `str` into `img` using the font `face` of size `pixelsize` at coordinates `y0,x0`.
 Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 # Arguments
-* `y0,x0`: origin is in upper left with positive `y` going down
-* `fcolor`: foreground color; AbstractVector{T}, typemax(T) for T<:Integer, otherwise one(T)
-* `gcolor`: background color; AbstractVector{T}, typemax(T) for T<:Integer, otherwise one(T)
-* `bcolor`: canvas background color; set to `nothing` for transparent
-* `halign`: :hleft, :hcenter, or :hright
-* `valign`: :vtop, :vcenter, :vbaseline, or :vbttom
-* `bbox_glyph`: glyph bounding box color (debugging)
-* `bbox`: bounding box color (debugging)
-* `gstr`: background string or array of chars (for background sizing)
-* `incx`: extra x spacing
+- `y0,x0`: origin is in upper left with positive `y` going down.
+- `fcolor`: foreground color; AbstractVector{T}, typemax(T) for T<:Integer, otherwise one(T).
+- `gcolor`: background color; AbstractVector{T}, typemax(T) for T<:Integer, otherwise one(T).
+- `bcolor`: canvas background color; set to `nothing` for transparent.
+- `halign`: :hleft, :hcenter, or :hright.
+- `valign`: :vtop, :vcenter, :vbaseline, or :vbttom.
+- `bbox_glyph`: glyph bounding box color (debugging).
+- `bbox`: bounding box color (debugging).
+- `gstr`: background string or array of chars (for background sizing).
+- `incx`: extra x spacing.
 """
 function UnicodePlots.render_string!(
     img::AbstractMatrix{T},
@@ -455,7 +455,7 @@ add_recursive(result, path) =
 function __init__()
     ft_init()
     atexit(ft_done)
-    # This method of finding fonts might not work for exotic platforms,
+    # this method of finding fonts might not work for exotic platforms,
     # so we supply a way to help it with an environment variable.
     font_paths = if Sys.isapple()  # COV_EXCL_LINE
         [
