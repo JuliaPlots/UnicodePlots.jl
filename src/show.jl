@@ -148,7 +148,10 @@ Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 Display a `Plot` object to a terminal emulator.
 """
 function _show(end_io::IO, print_nocol, print_color, p::Plot)
-    buf = PipeBuffer()  # buffering, for performance
+    _have_truecolor = Base.have_truecolor
+    Base.have_truecolor = colormode() == 24
+
+    buf = Base.AnnotatedIOBuffer()  # buffering, for performance
     io_color = get(end_io, :color, false)
     io = IOContext(buf, :color => io_color, :displaysize => displaysize(end_io))
 
@@ -228,7 +231,8 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         border_right_cbar_pad * '\n',
         🗹;
         p_width = p_width,
-        color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
+        color = io_color ? StyledStrings.Face(foreground = :white, weight = :bold) :
+                nothing,
     )
     h_lbl = print_labels(
         io,
@@ -388,7 +392,9 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     end
 
     # delayed print (buffering)
-    print_nocol(end_io, read(buf, String))
+    print(end_io, read(seekstart(buf), Base.AnnotatedString))
+
+    Base.have_truecolor = _have_truecolor
 
     # return the approximate image size
     (
