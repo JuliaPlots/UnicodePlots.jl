@@ -591,15 +591,14 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
 
-multiple_series_defaults(y::AbstractMatrix, kw::KWARGS, start) =
-    map(
-        iterable,
-        (
-            get(kw, :name, map(i -> "y$i", start:(start + size(y, 2)))),
-            get(kw, :color, :auto),
-            get(kw, :marker, :pixel),
-        ),
-    )
+multiple_series_defaults(y::AbstractMatrix, kw::KWARGS, start) = map(
+    iterable,
+    (
+        get(kw, :name, map(i -> "y$i", start:(start + size(y, 2)))),
+        get(kw, :color, :auto),
+        get(kw, :marker, :pixel),
+    ),
+)
 
 function colormap_callback(cmap::Symbol)
     cdata = ColorSchemes.colorschemes[cmap]

@@ -151,7 +151,7 @@ end
 
 Plot(; kw...) = Plot([], []; kw...)
 
-function plot_size(; max_width_ylims_labels = 1, kw...)
+function plot_size(; max_width_ylims_labels = 0, kw...)
     height = get(kw, :height, PLOT_KEYWORDS.height)
     width = get(kw, :width, PLOT_KEYWORDS.width)
     ylabel = get(kw, :ylabel, PLOT_KEYWORDS.ylabel)
@@ -271,7 +271,7 @@ function Plot(
         compact,
         margin,
         padding,
-        kw...
+        kw...,
     )
 
     (visible = width ≥ 0) && (width = max(width, min_width))

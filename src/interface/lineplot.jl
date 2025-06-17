@@ -212,12 +212,7 @@ lineplot(
     kw...,
 ) = lineplot(x, (float ∘ f).(x); name = function_name(f, name), xlabel, ylabel, kw...)
 
-function lineplot(
-    startx::Number,
-    endx::Number,
-    f::Function;
-    kw...,
-)
+function lineplot(startx::Number, endx::Number, f::Function; kw...)
     _, width = plot_size(; kw...)
     x = startx:(abs(endx - startx) / 3width):endx
     lineplot(x, f; width, kw...)
