@@ -149,7 +149,42 @@ function validate_input(x::AbstractVector, y::AbstractVector, z::Nothing)
     end
 end
 
-Plot(; kw...) = Plot([], []; kw...)
+function plot_size(; max_width_ylims_labels = 0, kw...)
+    height = get(kw, :height, PLOT_KEYWORDS.height)
+    width = get(kw, :width, PLOT_KEYWORDS.width)
+    ylabel = get(kw, :ylabel, PLOT_KEYWORDS.ylabel)
+    title = get(kw, :title, PLOT_KEYWORDS.title)
+    margin = get(kw, :margin, PLOT_KEYWORDS.margin)
+    padding = get(kw, :padding, PLOT_KEYWORDS.padding)
+    compact = get(kw, :compact, PLOT_KEYWORDS.compact)
+    borders = 2  # add spaces for 2x border
+    width_labels = if compact
+        max(length(ylabel), max_width_ylims_labels)
+    else
+        ll = length(ylabel)
+        ll + (ll > 0 ? 1 : 0) + max_width_ylims_labels  # one space in between
+    end
+    height_offset = (
+        1 +  # xticks line
+        1 +  # forced newline
+        1  # `julia>` prompt
+    )
+    (
+        something(
+            height ≡ :auto ?
+            displaysize(stdout)[1] - height_offset - borders - (isempty(title) ? 0 : 1) :
+            height,
+            DEFAULT_HEIGHT[],
+        ),
+        something(
+            width ≡ :auto ?
+            displaysize(stdout)[2] - margin - padding - width_labels - borders : width,
+            DEFAULT_WIDTH[],
+        ),
+    )
+end
+
+Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
 
 function Plot(
     x::AbstractVector,
@@ -193,26 +228,14 @@ function Plot(
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
-    height = something(height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height, DEFAULT_HEIGHT[])
-    width  = something(width ≡ :auto ? displaysize(stdout)[2] - 10 : width, DEFAULT_WIDTH[])
-
-    (visible = width ≥ 0) && (width = max(width, min_width))
-    height = max(height, min_height)
-
     x, y, z = validate_input(x, y, z)
-
-    base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
-    base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
-
-    xscale = scale_callback(xscale)
-    yscale = scale_callback(yscale)
 
     mvp = create_MVP(projection, x, y, z; kw...)
 
     xlim, ylim = unitless.(xlim), unitless.(ylim)
 
     (mx, Mx), (my, My) = if is_enabled(mvp)
-        (xscale ≢ identity || yscale ≢ identity) &&
+        (scale_callback(xscale) ≢ identity || scale_callback(yscale) ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
         grid = blend = false
 
@@ -223,6 +246,45 @@ function Plot(
     else
         extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
     end
+
+    max_width_ylims_labels = 0
+    if xticks || yticks
+        base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
+        base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
+
+        m_x, M_x, m_y, M_y =
+            nice_repr.((mx, Mx, my, My), Ref(unicode_exponent), Ref(thousands_separator))
+        if unicode_exponent
+            m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
+            m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
+        end
+        if xticks
+            base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
+            lab_x_bl = base_x_str * (xflip ? M_x : m_x)
+            lab_x_br = base_x_str * (xflip ? m_x : M_x)
+        end
+        if yticks
+            base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
+            lab_y_lt = base_y_str * (yflip ? M_y : m_y)
+            lab_y_lb = base_y_str * (yflip ? m_y : M_y)
+            max_width_ylims_labels = max(length(lab_y_lt), length(lab_y_lb))
+        end
+    end
+
+    height, width = plot_size(;
+        max_width_ylims_labels,
+        height,
+        width,
+        title,
+        ylabel,
+        compact,
+        margin,
+        padding,
+        kw...,
+    )
+
+    (visible = width ≥ 0) && (width = max(width, min_width))
+    height = max(height, min_height)
 
     can = canvas(
         height,
@@ -258,25 +320,16 @@ function Plot(
         thousands_separator,
         projection = mvp,
     )
-    if xticks || yticks
-        m_x, M_x, m_y, M_y = nice_repr.((mx, Mx, my, My), Ref(plot))
-        if unicode_exponent
-            m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
-            m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
-        end
-        bc = BORDER_COLOR[]
-        if xticks
-            base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            label!(plot, :bl, base_x_str * (xflip ? M_x : m_x); color = bc)
-            label!(plot, :br, base_x_str * (xflip ? m_x : M_x); color = bc)
-        end
-        if yticks
-            base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            label!(plot, :l, nrows(can), base_y_str * (yflip ? M_y : m_y); color = bc)
-            label!(plot, :l, 1, base_y_str * (yflip ? m_y : M_y); color = bc)
-        end
+    bc = BORDER_COLOR[]
+    if xticks
+        label!(plot, :bl, lab_x_bl; color = bc)
+        label!(plot, :br, lab_x_br; color = bc)
     end
-    if grid && (xscale ≡ identity && yscale ≡ identity)
+    if yticks
+        label!(plot, :l, nrows(can), lab_y_lt; color = bc)
+        label!(plot, :l, 1, lab_y_lb; color = bc)
+    end
+    if grid && (scale_callback(xscale) ≡ identity && scale_callback(yscale) ≡ identity)
         my < 0 < My && lines!(plot, mx, 0.0, Mx, 0.0)
         mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end

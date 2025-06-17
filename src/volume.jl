@@ -120,7 +120,7 @@ Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionm
 """
 ortho(l, r, b, t, n, f) = *(
     @SMatrix([  # scale
-        2/(r - l) 0 0 0
+        2 / (r - l) 0 0 0
         0 2/(t - b) 0 0
         0 0 2/(f - n) 0
         0 0 0 1
