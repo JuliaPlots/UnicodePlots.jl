@@ -30,7 +30,7 @@ jobs:
             version: 'nightly'
             arch: x64
           - os: ubuntu-latest
-            experimental: true
+            experimental: false
             version: 'pre'
             arch: x64
 
