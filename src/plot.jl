@@ -194,7 +194,7 @@ function Plot(
         throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
     height = something(height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height, DEFAULT_HEIGHT[])
-    width  = something(width ≡ :auto ? displaysize(stdout)[2] - 10 : width, DEFAULT_WIDTH[])
+    width  = something(width ≡ :auto ? displaysize(stdout)[2] - 10 - length(ylabel) : width, DEFAULT_WIDTH[])
 
     (visible = width ≥ 0) && (width = max(width, min_width))
     height = max(height, min_height)

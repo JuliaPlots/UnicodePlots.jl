@@ -227,7 +227,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         title(p),
         border_right_cbar_pad * '\n',
         🗹;
-        p_width = p_width,
+        p_width,
         color = io_color ? Crayon(foreground = :white, bold = true) : nothing,
     )
     h_lbl = print_labels(
