@@ -1,3 +1,5 @@
+const KWARGS = Union{NamedTuple,<:AbstractDict}
+
 const BLANK = 0x0020
 const BLANK_BRAILLE = 0x2800
 const FULL_BRAILLE = 0x28ff
@@ -298,32 +300,6 @@ function char_marker(marker::MarkerType)::Char
     end
 end
 
-function plot_size(; max_width_ylims_labels = 1, kw...)
-    height = get(kw, :height, PLOT_KEYWORDS.height)
-    width = get(kw, :width, PLOT_KEYWORDS.width)
-    ylabel = get(kw, :ylabel, PLOT_KEYWORDS.ylabel)
-    title = get(kw, :title, PLOT_KEYWORDS.title)
-    margin = get(kw, :margin, PLOT_KEYWORDS.margin)
-    padding = get(kw, :padding, PLOT_KEYWORDS.padding)
-    compact = get(kw, :compact, PLOT_KEYWORDS.compact)
-    offset = if compact
-        max(length(ylabel), max_width_ylims_labels)
-    else
-        ll = length(ylabel)
-        ll + (ll > 0 ? 1 : 0) + max_width_ylims_labels  # one space in between
-    end + 2  # add 2x border
-    (
-        something(
-            height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height,
-            DEFAULT_HEIGHT[],
-        ),
-        something(
-            width ≡ :auto ? displaysize(stdout)[2] - margin - padding - offset : width,
-            DEFAULT_WIDTH[],
-        ),
-    )
-end
-
 iterable(obj::AbstractVecOrMat) = obj
 iterable(obj) = Iterators.repeated(obj)
 
@@ -383,7 +359,7 @@ end
 
 function_name(f::Function, default) = isempty(default) ? string(nameof(f), "(x)") : default
 
-function default_formatter(kw::Union{NamedTuple,AbstractDict})
+function default_formatter(kw::KWARGS)
     unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
     thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
     x -> nice_repr(x, unicode_exponent, thousands_separator)
@@ -615,7 +591,7 @@ out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
 out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
     out_stream |> out_stream_size |> last
 
-multiple_series_defaults(y::AbstractMatrix, kw::Union{NamedTuple,AbstractDict}, start) =
+multiple_series_defaults(y::AbstractMatrix, kw::KWARGS, start) =
     map(
         iterable,
         (
@@ -661,14 +637,14 @@ mutable struct ColorMap
     callback::Function
 end
 
-split_plot_kw(kw::Union{NamedTuple,AbstractDict}) =
+split_plot_kw(kw::KWARGS) =
     if isempty(kw)
         pairs((;)), pairs((;))  # avoids `filter` allocations
     else
         filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
     end
 
-warn_on_lost_kw(kw::Union{NamedTuple,AbstractDict}) =
+warn_on_lost_kw(kw::KWARGS) =
     (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)
 
 # TermExt

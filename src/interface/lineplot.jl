@@ -216,10 +216,9 @@ function lineplot(
     startx::Number,
     endx::Number,
     f::Function;
-    width::Union{Integer,Nothing,Symbol} = nothing,
     kw...,
 )
-    _, width = plot_size(; width, kw...)
+    _, width = plot_size(; kw...)
     x = startx:(abs(endx - startx) / 3width):endx
     lineplot(x, f; width, kw...)
 end

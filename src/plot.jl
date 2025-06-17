@@ -151,6 +151,32 @@ end
 
 Plot(; kw...) = Plot([], []; kw...)
 
+function plot_size(; max_width_ylims_labels = 1, kw...)
+    height = get(kw, :height, PLOT_KEYWORDS.height)
+    width = get(kw, :width, PLOT_KEYWORDS.width)
+    ylabel = get(kw, :ylabel, PLOT_KEYWORDS.ylabel)
+    title = get(kw, :title, PLOT_KEYWORDS.title)
+    margin = get(kw, :margin, PLOT_KEYWORDS.margin)
+    padding = get(kw, :padding, PLOT_KEYWORDS.padding)
+    compact = get(kw, :compact, PLOT_KEYWORDS.compact)
+    offset = if compact
+        max(length(ylabel), max_width_ylims_labels)
+    else
+        ll = length(ylabel)
+        ll + (ll > 0 ? 1 : 0) + max_width_ylims_labels  # one space in between
+    end + 2  # add 2x border
+    (
+        something(
+            height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height,
+            DEFAULT_HEIGHT[],
+        ),
+        something(
+            width ≡ :auto ? displaysize(stdout)[2] - margin - padding - offset : width,
+            DEFAULT_WIDTH[],
+        ),
+    )
+end
+
 function Plot(
     x::AbstractVector,
     y::AbstractVector,
@@ -245,6 +271,7 @@ function Plot(
         compact,
         margin,
         padding,
+        kw...
     )
 
     (visible = width ≥ 0) && (width = max(width, min_width))
