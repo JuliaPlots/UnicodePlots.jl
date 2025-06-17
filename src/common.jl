@@ -471,7 +471,7 @@ crayon_color(color::ColorType) =
         Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
     end
 
-function print_crayons(io, c, args...)
+print_crayons(io, c, args...) =
     if CRAYONS_FAST[]
         if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
             print(io, Crayons.CSI)
@@ -483,7 +483,6 @@ function print_crayons(io, c, args...)
     else
         print(io, c, args..., CRAYONS_RESET)
     end
-end
 
 print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
