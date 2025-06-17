@@ -29,6 +29,10 @@ jobs:
             experimental: true
             version: 'nightly'
             arch: x64
+          - os: ubuntu-latest
+            experimental: true
+            version: 'pre'
+            arch: x64
 
     steps:
       - uses: actions/checkout@v4
