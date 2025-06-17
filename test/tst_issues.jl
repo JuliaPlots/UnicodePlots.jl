@@ -106,4 +106,26 @@
         @test heatmap([-Inf]') isa Plot
         @test heatmap([1 2; 3 Inf]) isa Plot
     end
+
+    @testset "width=:auto (#404)" begin
+        lineplot(
+            -1:1,
+            width = :auto,
+            ylim = (-0.456789, 0.456789),
+            margin = 0,
+            padding = 0,
+            ylabel = "a label",
+        )
+        lineplot(
+            -1:1,
+            width = :auto,
+            ylim = (-0.456789, 0.456789),
+            margin = 0,
+            padding = 0,
+            ylabel = "a label",
+            compact = true,
+        )
+        lineplot(-1:1, width = :auto, ylim = (-0.456789, 0.456789), margin = 0, padding = 0)
+        @test true
+    end
 end
