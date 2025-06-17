@@ -149,8 +149,6 @@ function validate_input(x::AbstractVector, y::AbstractVector, z::Nothing)
     end
 end
 
-Plot(; kw...) = Plot([], []; kw...)
-
 function plot_size(; max_width_ylims_labels = 0, kw...)
     height = get(kw, :height, PLOT_KEYWORDS.height)
     width = get(kw, :width, PLOT_KEYWORDS.width)
@@ -159,23 +157,34 @@ function plot_size(; max_width_ylims_labels = 0, kw...)
     margin = get(kw, :margin, PLOT_KEYWORDS.margin)
     padding = get(kw, :padding, PLOT_KEYWORDS.padding)
     compact = get(kw, :compact, PLOT_KEYWORDS.compact)
-    offset = if compact
+    borders = 2  # add spaces for 2x border
+    width_labels = if compact
         max(length(ylabel), max_width_ylims_labels)
     else
         ll = length(ylabel)
         ll + (ll > 0 ? 1 : 0) + max_width_ylims_labels  # one space in between
-    end + 2  # add 2x border
+    end
+    height_offset = (
+        1 +  # xticks line
+        1 +  # forced newline
+        1  # `julia>` prompt
+    )
     (
         something(
-            height ≡ :auto ? displaysize(stdout)[1] - 6 - (isempty(title) ? 0 : 1) : height,
+            height ≡ :auto ?
+            displaysize(stdout)[1] - height_offset - borders - (isempty(title) ? 0 : 1) :
+            height,
             DEFAULT_HEIGHT[],
         ),
         something(
-            width ≡ :auto ? displaysize(stdout)[2] - margin - padding - offset : width,
+            width ≡ :auto ?
+            displaysize(stdout)[2] - margin - padding - width_labels - borders : width,
             DEFAULT_WIDTH[],
         ),
     )
 end
+
+Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
 
 function Plot(
     x::AbstractVector,
