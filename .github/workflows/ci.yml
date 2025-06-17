@@ -27,10 +27,6 @@ jobs:
         include:
           - os: ubuntu-latest
             experimental: true
-            version: 'nightly'
-            arch: x64
-          - os: ubuntu-latest
-            experimental: false
             version: 'pre'
             arch: x64
 
