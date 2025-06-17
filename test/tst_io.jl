@@ -59,8 +59,8 @@ end
 sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 
 @testset "stringify plot - performance regression" begin
-    nightly = occursin("DEV", string(VERSION))  # or length(VERSION.prerelease) < 2
-    measure = Sys.islinux() && !nightly && !is_pkgeval()
+    stable = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
+    measure = Sys.islinux() && stable && !is_pkgeval()
 
     let p = heatmap(collect(1:30) * collect(1:30)')
         @test string(p; color = true) isa String  # 1st pass - ttfp
