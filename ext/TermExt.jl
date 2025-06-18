@@ -5,7 +5,7 @@ import Term
 
 function UnicodePlots.panel(p; kw...)
     p.margin[] = p.padding[] = 0  # make plots more compact
-    p.compact[] = true
+    p.compact_labels[] = p.compact[] = true
     Term.Panel(string(p; color = true); style = "hidden", fit = true, kw...)
 end
 

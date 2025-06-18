@@ -72,6 +72,7 @@ Here is a list of the main high-level functions for common scenarios:
   
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
+  When using `width=:auto`, it is advised to use the `compact=true` keyword in order to maximize the plot size.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 
@@ -623,7 +624,8 @@ The method `label!` is responsible for the setting all the textual decorations o
   - `colorbar_border::Symbol = :solid`: color bar bounding box style (`:solid`, `:bold`, `:dashed`, `:dotted`, `:ascii`, `:none`).
   - `canvas::UnionAll = BrailleCanvas`: type of canvas used for drawing.
   - `grid::Bool = true`: draws grid-lines at the origin.
-  - `compact::Bool = false`: compact plot labels.
+  - `compact_labels::Bool = false`: compact plot labels.
+  - `compact::Bool = false`: compress the plot (compact labels, removes margins and padding).
   - `unicode_exponent::Bool = true`: use `Unicode` symbols for exponents: e.g. `10²⸱¹` instead of `10^2.1`.
   - `thousands_separator::Char = ' '`: thousands separator character (use `Char(0)` to disable grouping digits).
   - `projection::Symbol = :orthographic`: projection for 3D plots (`:ortho(graphic)`, `:persp(ective)`, or `Model-View-Projection` (MVP) matrix).

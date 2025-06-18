@@ -1,9 +1,11 @@
+using Pkg; Pkg.instantiate()
 using UnicodePlots
 using Markdown
 using Term
 import Markdown: MD, Paragraph, plain
 
-main() = begin
+
+(@main) = begin
   warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/gen_docs.jl instead"
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "3.x"
@@ -376,6 +378,7 @@ $(indent(examples.lineplot3))
 $(indent(examples.lineplot4))
 
   One can adjust the plot `height` and `width` to the current terminal size by using `height=:auto` and/or `width=:auto`.
+  When using `width=:auto`, it is advised to use the `compact=true` keyword in order to maximize the plot size.
 
   You can reverse/flip the `Plot` axes by setting `xflip=true` and/or `yflip=true` on plot creation.
 
@@ -701,11 +704,11 @@ This code is free to use under the terms of the MIT license.
 Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in turn was inspired by [Drawille](https://github.com/asciimoo/drawille).
 """)
 
-  mkpath("imgs/$ver")
+  joinpath(@__DIR__, "imgs", ver) |> mkpath
 
   fix_rand(c) = replace(c, r"\bsprandn\b\(" => "_stable_sprand(rng, ", r"\brandn\b\(" => "randn(rng, ", r"\brand\b\(" => "rand(rng, ")
 
-  open("imgs/gen_imgs.jl", "w") do io
+  open(joinpath(@__DIR__, "imgs", "gen_imgs.jl"), "w") do io
     banner = """
     banner() = begin
       rng = StableRNG(1337)
@@ -714,7 +717,7 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
       panel(x; kw...) = begin
         xs = if x isa Plot
           # x.margin[] = p.padding[] = 0  # make plots more compact
-          # x.compact[] = true
+          # x.compact_labels[] = x.compact[] = true
           string(x, color=true)
         else
           x
@@ -728,16 +731,16 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
         cont = panel(contourplot(-3:.01:3, -7:.01:3, (x, y) -> exp(-(x / 2)^2 - ((y + 2) / 4)^2)); title="contourplot"),
         surf = panel(surfaceplot(-8:.5:8, -8:.5:8, (x, y) -> 15sinc(√(x^2 + y^2) / π)); title="surfaceplot"),
         iso = panel(isosurface(-1:.1:1, -1:.1:1, -1:.1:1, (x, y, z) -> (√(x^2 + y^2) - 0.5)^2 + z^2 - 0.2^2, cull=true, zoom=2, elevation=50); title="isosurface"),
-        vhist = panel(histogram(randn(1_000_000), nbins=150, vertical=true, compact=true); title="histogram (vertical)"),
+        vhist = panel(histogram(randn(1_000_000), nbins=150, vertical=true, compact_labels=true); title="histogram (vertical)"),
         hhist = panel(histogram(randn(1_000) .* 0.1, nbins=15); title="histogram (horizontal)"),
-        dens = panel(densityplot(randn(1_000), randn(1_000); xlabel="x label", ylabel="y label", compact=true); title="densityplot"),
+        dens = panel(densityplot(randn(1_000), randn(1_000); xlabel="x label", ylabel="y label", compact_labels=true); title="densityplot"),
         hmap = panel(heatmap(collect(0:20) * collect(0:20)', xfact=.1, yfact=.1, title="a matrix"); title="heatmap"),
         bar = panel(barplot(["Paris", "New York", "Madrid", "Berlin", "Amsterdam"], [2.244, 8.406, 3.165, 4.645, 0.821]); title="barplot"),
         polar = panel(polarplot(range(0, 2π, length=20), range(0, 2, length = 20)); title="polarplot"),
         box = panel(boxplot(["one", "two"], [collect(1:5), collect(3:6)]); title="boxplot"),
         stair = panel(stairs([1, 2, 4, 7, 8], [1, 3, 4, 2, 2]); title="stairs"),
         img = panel(imageplot(testimage("monarch_color_256")); title="imageplot"),
-        spy = panel(spy(sprandn(20, 50, .05); compact=true); title="spy"),
+        spy = panel(spy(sprandn(20, 50, .05); compact_labels=true); title="spy"),
       )
       g = grid(panels, layout=:(
         (line * scat * polar * stair) / (dens * cont * surf * iso) / (hhist * (box / spy) * hmap * img) / (vhist * bar)
@@ -811,14 +814,12 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   end
 
   write(stdout, readme)
-  open("../README.md", "w") do io
+  open(joinpath(@__DIR__, "..", "README.md"), "w") do io
     write(io, "<!-- $warn, and run \$ julia gen_docs.jl to render README.md !! -->\n")
     write(io, readme)
   end
   return
 end
-
-main()
 
 #=
 open("imgs/gen_all.sh", "w") do io

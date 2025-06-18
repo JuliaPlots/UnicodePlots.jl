@@ -112,8 +112,7 @@
             -1:1,
             width = :auto,
             ylim = (-0.456789, 0.456789),
-            margin = 0,
-            padding = 0,
+            compact = true,
             ylabel = "a label",
         ) isa Plot
         @test lineplot(
@@ -129,8 +128,7 @@
             -1:1,
             width = :auto,
             ylim = (-0.456789, 0.456789),
-            margin = 0,
-            padding = 0,
+            compact = true,
         ) isa Plot
     end
 end

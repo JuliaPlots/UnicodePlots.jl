@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.8] - 2025-06-18
+### Changed
+- Rename  `compact` to `compact_labels`.
+
+### Added
+- Add  `compact` option for labels and padding + margins removal for `width=:auto`.
+
+## [3.7] - 2024-10-26
+### Changed
+- Make `FreeTypeExt` thread-safe.
+
+## [3.8] - 2023-06-18
+### Added
+- Support `Term` extension, export `gridplot`.
+
 ## [3.6] - 2023-06-18
 ### Added
 - Support `Term` extension, export `gridplot`.
