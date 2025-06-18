@@ -34,7 +34,7 @@ end
     p = surfaceplot(A)
     test_ref("surfaceplot/matrix.txt", @show_col(p))
 
-    p = surfaceplot(A; padding = 0, margin = 0)
+    p = surfaceplot(A; compact = true)
     test_ref("surfaceplot/matrix_compact.txt", @show_col(p))
 end
 

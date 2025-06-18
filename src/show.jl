@@ -164,7 +164,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     nr, nc = nrows(g), ncols(g)
 
     p_width = nc + 2  # left corner + border length (number of graphics cols) + right corner
-    if p.compact[]
+    if p.compact_labels[]
         isempty(xlab) || label!(p, :b, xlab)
         isempty(ylab) || label!(p, :l, round(Int, nr / 2), ylab)
     end
@@ -184,7 +184,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         0
     end
     max_len_a = p.labels[] ? maximum(length ∘ no_ansi_escape, axes_labels) : 0
-    if !p.compact[] && p.labels[] && !isempty(ylab)
+    if !p.compact_labels[] && p.labels[] && !isempty(ylab)
         max_len_l += length(ylab) + 1
     end
 
@@ -194,7 +194,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
 
     plot_offset = max_len_l + p.margin[] + p.padding[]  # offset where the plot (including border) begins
     border_left_pad = 🗷^plot_offset  # padding-string between labels and border
-    plot_padding = 🗷^p.padding[]  # base padding-string (e.g. left to border)
+    plot_padding = 🗷^p.padding[]  # base padding-string (left to border and border to right)
 
     cbar_pad = if p.cmap.bar
         min_z_str, max_z_str =
@@ -284,7 +284,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
                 left_str  = left_str_
                 right_str = right_str_
             end
-            if !p.compact[] && row == y_lab_row
+            if !p.compact_labels[] && row == y_lab_row
                 # print ylabel
                 print_color(io, :normal, ylab)
                 print_nocol(io, 🗷^(max_len_l - length(ylab) - left_len))
@@ -371,7 +371,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
             🗹 * border_right_cbar_pad,
             🗹,
         )
-        if !p.compact[]
+        if !p.compact_labels[]
             h_w = print_title(
                 io,
                 print_nocol,

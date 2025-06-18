@@ -8,6 +8,7 @@
 
 /Manifest.toml
 /test/Manifest.toml
+/docs/Manifest.toml
 
 .DS_Store
 

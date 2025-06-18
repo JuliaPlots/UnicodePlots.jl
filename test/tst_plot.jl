@@ -66,11 +66,14 @@ end
         test_ref("plot/border_$(string(border)).txt", @show_col(p))
     end
 
-    p = @inferred Plot(_test_canvas(), xlabel = "x", ylabel = "y")
+    p = @inferred Plot(_test_canvas(); xlabel = "x", ylabel = "y")
     test_ref("plot/xylabel.txt", @show_col(p))
 
-    p = @inferred Plot(_test_canvas(), xlabel = "x", ylabel = "y", compact = true)
-    test_ref("plot/xylabel_compact.txt", @show_col(p))
+    p = @inferred Plot(_test_canvas(); xlabel = "x", ylabel = "y", compact_labels = true)
+    test_ref("plot/xylabel_compact_labels.txt", @show_col(p))
+
+    p = @inferred Plot(_test_canvas(); compact = true)
+    test_ref("plot/compact.txt", @show_col(p))
 end
 
 @testset "xyflip" begin

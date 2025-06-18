@@ -58,6 +58,7 @@ struct Plot{T<:GraphicsArea,E,F}
     unicode_exponent::RefValue{Bool}
     thousands_separator::RefValue{Char}
     border::RefValue{Symbol}
+    compact_labels::RefValue{Bool}
     compact::RefValue{Bool}
     labels::RefValue{Bool}
     labels_left::Dict{Int,String}
@@ -78,6 +79,7 @@ function Plot(
     unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
     thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
     border::Symbol = PLOT_KEYWORDS.border,
+    compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
     compact::Bool = PLOT_KEYWORDS.compact,
     margin::Integer = PLOT_KEYWORDS.margin,
     padding::Integer = PLOT_KEYWORDS.padding,
@@ -90,6 +92,11 @@ function Plot(
     ignored...,
 ) where {T<:GraphicsArea}
     margin < 0 && throw(ArgumentError("`margin` must be ≥ 0"))
+    padding < 0 && throw(ArgumentError("`padding` must be ≥ 0"))
+    if compact  # save space
+        margin = padding = 0
+        compact_labels = true
+    end
     projection = something(projection, MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
@@ -107,6 +114,7 @@ function Plot(
         Ref(unicode_exponent),
         Ref(thousands_separator),
         Ref(border),
+        Ref(compact_labels),
         Ref(compact),
         Ref(labels && graphics.visible),
         Dict{Int,String}(),
@@ -156,13 +164,13 @@ function plot_size(; max_width_ylims_labels = 0, kw...)
     title = get(kw, :title, PLOT_KEYWORDS.title)
     margin = get(kw, :margin, PLOT_KEYWORDS.margin)
     padding = get(kw, :padding, PLOT_KEYWORDS.padding)
-    compact = get(kw, :compact, PLOT_KEYWORDS.compact)
+    compact_labels = get(kw, :compact_labels, PLOT_KEYWORDS.compact_labels)
     borders = 2  # add spaces for 2x border
-    width_labels = if compact
-        max(length(ylabel), max_width_ylims_labels)
+    len_ylab = length(ylabel)
+    width_labels = if compact_labels
+        max(len_ylab, max_width_ylims_labels)
     else
-        ll = length(ylabel)
-        ll + (ll > 0 ? 1 : 0) + max_width_ylims_labels  # one space in between
+        len_ylab + (len_ylab > 0 ? 1 : 0) + max_width_ylims_labels  # one space in-between
     end
     height_offset = (
         1 +  # xticks line
@@ -178,7 +186,7 @@ function plot_size(; max_width_ylims_labels = 0, kw...)
         ),
         something(
             width ≡ :auto ?
-            displaysize(stdout)[2] - margin - padding - width_labels - borders : width,
+            displaysize(stdout)[2] - margin - 2padding - width_labels - borders : width,
             DEFAULT_WIDTH[],
         ),
     )
@@ -202,6 +210,7 @@ function Plot(
     height::Union{Integer,Nothing,Symbol} = nothing,
     width::Union{Integer,Nothing,Symbol} = nothing,
     border::Symbol = PLOT_KEYWORDS.border,
+    compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
     compact::Bool = PLOT_KEYWORDS.compact,
     blend::Bool = PLOT_KEYWORDS.blend,
     xlim = PLOT_KEYWORDS.xlim,
@@ -271,13 +280,18 @@ function Plot(
         end
     end
 
+    if compact  # save space
+        margin = padding = 0
+        compact_labels = true
+    end
+
     height, width = plot_size(;
         max_width_ylims_labels,
         height,
         width,
         title,
         ylabel,
-        compact,
+        compact_labels,
         margin,
         padding,
         kw...,
@@ -307,6 +321,7 @@ function Plot(
         margin,
         padding,
         border,
+        compact_labels,
         compact,
         labels,
         xlabel,

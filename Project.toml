@@ -56,24 +56,3 @@ StatsBase = "0.33 - 0.34"
 Term = "2"
 Unitful = "1"
 julia = "1.10"
-
-[extras]
-Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
-ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
-ImageMagick = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
-IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
-Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-ReferenceTests = "324d217c-45ce-50fc-942e-d289b448e8cf"
-StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
-Term = "22787eb5-b846-44ae-b979-8e399b8463ab"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
-TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
-Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
-
-[targets]
-test = ["Aqua", "DataFrames", "FileIO", "FreeType", "ImageInTerminal", "ImageMagick", "IntervalSets", "Pkg", "Random", "ReferenceTests", "StableRNGs", "Term", "Test", "TestImages", "TimerOutputs", "Unitful"]

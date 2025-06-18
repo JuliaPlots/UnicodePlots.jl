@@ -65,7 +65,7 @@ end
     )
     test_ref("spy/parameters_200x200_dotcanvas.txt", @show_col(p, :displaysize => T_SZ))
     seed!(RNG, 1_337)
-    p = spy(_stable_sprand(RNG, 200, 200, 0.99), show_zeros = true, compact = true)
+    p = spy(_stable_sprand(RNG, 200, 200, 0.99), show_zeros = true, compact_labels = true)
     test_ref("spy/parameters_200x200_zeros.txt", @show_col(p, :displaysize => T_SZ))
 end
 
