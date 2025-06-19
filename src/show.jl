@@ -90,18 +90,18 @@ end
 
 function print_border(
     io::IO,
-    print_nocol,
-    print_color,
-    loc::Symbol,
-    length::Integer,
+    print_nocol::Function,
+    print_color::Function,
+    bl::Char,
+    bd::String,
+    br::Char,
     left_pad::Union{Nothing,AbstractChar,AbstractString},
     right_pad::Union{Nothing,AbstractChar,AbstractString},
-    bmap = BORDERMAP[KEYWORDS.border],
-    color::UserColorType = BORDER_COLOR[],
+    color::UserColorType,
 )
-    left_pad ≡ nothing || print_nocol(io, string(left_pad))
-    print_color(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
-    right_pad ≡ nothing || print_nocol(io, string(right_pad))
+    left_pad ≡ nothing || print_nocol(io, left_pad)
+    print_color(io, color, bl, bd, br)
+    right_pad ≡ nothing || print_nocol(io, right_pad)
     nothing
 end
 
@@ -245,11 +245,12 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         io,
         print_nocol,
         print_color,
-        :t,
-        nc,
+        bmap[:tl],
+        bmap[:t]^nc,
+        bmap[:tr],
         border_left_pad,
         border_right_pad * (p.cmap.bar ? "" : "\n"),
-        bmap,
+        bc,
     )
     p.cmap.bar && print_colorbar_lim(
         io,
@@ -271,7 +272,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         # print left annotations
         print_nocol(io, 🗷^p.margin[])
         if has_labels
-            # Current labels to left and right of the row and their length
+            # current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")
             left_col   = get(p.colors_left, row, bc)
             right_str  = get(p.labels_right, row, "")
@@ -339,11 +340,12 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         io,
         print_nocol,
         print_color,
-        :b,
-        nc,
+        bmap[:bl],
+        bmap[:b]^nc,
+        bmap[:br],
         border_left_pad,
         border_right_pad,
-        bmap,
+        bc,
     )
     p.cmap.bar && print_colorbar_lim(
         io,

@@ -18,6 +18,7 @@ using TimerOutputs
 using TestImages
 using ColorTypes
 using StableRNGs
+using AllocCheck
 using StatsBase
 using Crayons
 using Unitful
@@ -106,6 +107,14 @@ macro timeit_include(path::AbstractString)
     :(@timeit TO $path @testset $path begin
         include($path)
     end) |> esc
+end
+
+macro no_allocs(ex)
+    f = gensym()
+    quote
+        @check_allocs $f() = $ex
+        $f()
+    end |> esc
 end
 
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
