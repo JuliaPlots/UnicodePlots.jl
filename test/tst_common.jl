@@ -49,8 +49,8 @@ end
     @test UnicodePlots.autolims([-3, 2]) == [-3, 2]
     @test UnicodePlots.autolims([-3, 2], 1:10) == [-3, 2]
     @test UnicodePlots.autolims([0, 0], 1:10) == [1, 10]
-    @test @no_allocs(UnicodePlots.autolims((-3., 2.))) == [-3, 2]
-    @test @no_allocs(UnicodePlots.autolims((0., 0.), 1:10)) == [1, 10]
+    @test @no_allocs(UnicodePlots.autolims((-3.0, 2.0))) == [-3, 2]
+    @test @no_allocs(UnicodePlots.autolims((0.0, 0.0), 1:10)) == [1, 10]
 end
 
 @testset "bordermap" begin

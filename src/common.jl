@@ -312,7 +312,7 @@ end
 
 meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
 
-as_float(x::NTuple{_, <:AbstractFloat}) where {_} = x
+as_float(x::NTuple{_,<:AbstractFloat}) where {_} = x
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
 
