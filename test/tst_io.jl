@@ -62,13 +62,12 @@ const ALPHA = length(VERSION.prerelease) > 0 && startswith("alpha", first(VERSIO
 const BETA = length(VERSION.prerelease) > 0 && startswith("beta", first(VERSION.prerelease))
 const RC = length(VERSION.prerelease) > 0 && startswith("rc", first(VERSION.prerelease))
 const PRE = ALPHA || BETA || RC
-const MEASURE = Sys.islinux() && (STABLE || PRE) && !is_pkgeval()
 
 macro measure(ex, tol, versioned)
     quote
         base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
-        if MEASURE
+        if Sys.islinux() && (STABLE || PRE) && !is_pkgeval()
             GC.enable(false)
             n = 10
             kb = fill(0.0, n)
