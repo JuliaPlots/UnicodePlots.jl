@@ -11,10 +11,6 @@
 ### Changed
 - Make `FreeTypeExt` thread-safe.
 
-## [3.8] - 2023-06-18
-### Added
-- Support `Term` extension, export `gridplot`.
-
 ## [3.6] - 2023-06-18
 ### Added
 - Support `Term` extension, export `gridplot`.
