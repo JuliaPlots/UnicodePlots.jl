@@ -56,7 +56,7 @@ end
     end
 end
 
-const STABLE =  Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
+const STABLE = Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
 const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
 
 macro measure(ex, tol, versioned)
@@ -72,7 +72,7 @@ macro measure(ex, tol, versioned)
             if haskey(dct, key)
                 kbytes, msecs = dct[key]
                 kb = round(Int, stats.bytes / 1e3)
-                ms = stats.time * 1e3
+                ms = round(stats.time * 1e3; digits = 3)
                 @show (VERSION, kb, ms)
                 @test kb < kbytes
                 @test ms < $tol * base_tol * msecs
