@@ -109,6 +109,14 @@ macro timeit_include(path::AbstractString)
     end) |> esc
 end
 
+macro no_allocs(ex)
+    f = gensym()
+    quote
+        @check_allocs $f() = $ex
+        $f()
+    end |> esc
+end
+
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
 
 #! format: off

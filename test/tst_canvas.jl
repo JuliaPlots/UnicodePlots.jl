@@ -65,13 +65,13 @@ end
             @test @inferred(lines!(c, 0.0, 0.0, 1.0, 1.0; color = :blue)) ≡ c
             @test @inferred(points!(c, x1, y1; color = :white)) ≡ c
             @test @inferred(pixel!(c, 2, 4, color = :cyan)) ≡ c
-            points!(c, x2, y2, color = :red)
-            lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
-            points!(c, 0.05, 0.3, color = :cyan)
+            @no_allocs points!(c, x2, y2, color = :red)
+            @no_allocs lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
+            @no_allocs points!(c, 0.05, 0.3, color = :cyan)
             lines!(c, [1.0, 2], [2.0, 1])
-            lines!(c, 0.0, 0.0, 0.9, 9999.0; color = :yellow)
-            lines!(c, 0, 0, 1, 1, color = :blue)
-            lines!(c, 0.1, 0.7, 0.9, 0.6; color = :red)
+            @no_allocs lines!(c, 0.0, 0.0, 0.9, 9999.0; color = :yellow)
+            @no_allocs lines!(c, 0, 0, 1, 1, color = :blue)
+            @no_allocs lines!(c, 0.1, 0.7, 0.9, 0.6; color = :red)
 
             postprocess! = preprocess!(devnull, c)
             test_ref(

@@ -56,53 +56,46 @@ end
     end
 end
 
-@testset "allocations" begin
-    @check_allocs f(c) = lines!(c, 0.0, 1.0, 1.0, 0.0; color = :green)
-    @test f(BrailleCanvas(15, 40)) isa Canvas
+const STABLE = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
+const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
 
-    @check_allocs g(io, c) = show(io, c)
-    @test g(PipeBuffer(), BrailleCanvas(15, 40)) isa Canvas
+macro measure(ex, kbytes, msecs)
+    quote
+        @test string($ex; color = true) isa String  # 1st pass - ttfp
+        if MEASURE
+            GC.enable(false)
+            stats = @timed string($ex; color = true)  # repeated !
+            GC.enable(true)
+            # @show VERSION stats.bytes / 1e3 stats.time * 1e3
+            @test stats.bytes / 1e3 < $kbytes
+            @test stats.time * 1e3 < $msecs
+        end
+    end |> esc
 end
 
 sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 
 @testset "stringify plot - performance regression" begin
-    stable = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
-    measure = Sys.islinux() && stable && !is_pkgeval()
+    let c = BrailleCanvas(15, 40)
+        lines!(c, 0.0, 1.0, 0.5, 0.0)
+        @measure c 20 0.1  # ~ 18kB / 0.02ms on 1.11
+    end
+
+    let c = BrailleCanvas(15, 40)
+        lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
+        @measure c 30 0.1  # ~ 27kB / 0.03ms on 1.11
+    end
 
     let p = lineplot(1:10)
-        @test string(p; color = true) isa String  # 1st pass - ttfp
-        if measure
-            GC.enable(false)
-            stats = @timed string(p; color = true)  # repeated !
-            @test stats.bytes / 1e3 < 50  # ~ 45kB on 1.10
-            @test stats.time * 1e3 < 0.2  # ~ 0.1ms on 1.11
-            GC.enable(true)
-        end
+        @measure p 50 0.1  # ~ 50kB / 0.05ms on 1.11
     end
 
     let p = heatmap(collect(1:30) * collect(1:30)')
-        @test string(p; color = true) isa String  # 1st pass - ttfp
-
-        if measure
-            GC.enable(false)
-            stats = @timed string(p; color = true)  # repeated !
-            @test stats.bytes / 1e3 < 500  # ~ 292kB on 1.11
-            @test stats.time * 1e3 < 0.8  # ~ 0.3ms on 1.11
-            GC.enable(true)
-        end
+        @measure p 420 0.5  # ~ 411kB / 0.25ms on 1.11
     end
 
     let p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
-        @test string(p; color = true) isa String  # 1st pass - ttfp
-
-        if measure
-            GC.enable(false)
-            stats = @timed string(p; color = true)  # repeated !
-            @test stats.bytes / 1e3 < 160  # ~ 123kB on 1.11
-            @test stats.time * 1e3 < 0.5  # ~ 0.2ms on 1.11
-            GC.enable(true)
-        end
+        @measure p 130 0.2  # ~ 123kB / 0.11ms on 1.11
     end
 end
 

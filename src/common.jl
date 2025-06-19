@@ -325,7 +325,7 @@ nice_repr(x::Number, _::Nothing) =
 
 function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
     thousands_separator == '\0' && return string(x)
-    xs = collect(reverse(string(abs(x))))
+    xs = abs(x) |> string |> reverse |> collect
     n = length(xs)
     v = sizehint!(Char[], n + 10)
     for (i, c) ∈ enumerate(xs)
@@ -420,6 +420,7 @@ function plotting_range_narrow(xmin, xmax)
     float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
+unitless(x) = x  # noop when Unitful is not loaded
 is_auto(lims) = all(iszero, lims)
 
 # NOTE: we need `SVector{2}(v)` for compiler inferrability, not `Svector(v)` !
@@ -431,8 +432,6 @@ scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
-
-unitless(x) = x  # noop when Unitful is not loaded
 
 function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol,Function})
     scale = scale_callback(scale)

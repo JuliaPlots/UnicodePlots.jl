@@ -25,7 +25,17 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
     bd = BORDER_SOLID
     bc = BORDER_COLOR[]
     bd_len = ncols(c)
-    print_border(io, print_nocol, print_color, bd[:tl], bd[:t], bd[:tr], bd_len, nothing, '\n', bc)
+    print_border(
+        io,
+        print_nocol,
+        print_color,
+        bd[:tl],
+        bd[:t]^bd_len,
+        bd[:tr],
+        nothing,
+        '\n',
+        bc,
+    )
     postprocess! = preprocess!(io, c)
     bl::Char, br::Char = bd[:l], bd[:r]
     for row ∈ 1:nrows(c)
@@ -35,7 +45,17 @@ function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
         row < nrows(c) && print_nocol(io, '\n')
     end
     postprocess!(c)
-    print_border(io, print_nocol, print_color, bd[:bl], bd[:b], bd[:br], bd_len, '\n', nothing, bc)
+    print_border(
+        io,
+        print_nocol,
+        print_color,
+        bd[:bl],
+        bd[:b]^bd_len,
+        bd[:br],
+        '\n',
+        nothing,
+        bc,
+    )
     nothing
 end
 
@@ -48,3 +68,9 @@ Optional step: pre-process canvas before printing rows (e.g. for costly computat
 Returns a callback for optional cleanup after printing.
 """
 preprocess!(::IO, c::GraphicsArea) = c -> nothing
+
+function Base.string(c::GraphicsArea; color = false)
+    io = PipeBuffer()
+    show(IOContext(io, :color => color), c)
+    read(io, String)
+end
