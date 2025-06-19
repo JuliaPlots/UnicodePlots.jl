@@ -67,8 +67,9 @@ macro measure(ex, tol, versioned)
             ms = fill(0.0, n)
             for i ∈ 1:n
                 stats = @timed string($ex; color = true)  # repeated !
-                kb[i] = stats.bytes / 1e3
-                ms[i] = stats.time * 1e3
+                kb[i] = stats.bytes / 1_000
+                ms[i] = stats.time * 1_000
+                # sleep(1e-2 + rand() / i)
             end
             GC.enable(true)
             key = VersionNumber(VERSION.major, VERSION.minor)
@@ -93,41 +94,41 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0)
         @measure c 1 Dict(
-            v"1.10" => (19, 0.031),
+            v"1.10" => (20, 0.031),
             v"1.11" => (18, 0.025),
-            v"1.12" => (20, 0.021),
+            v"1.12" => (21, 0.021),
         )
     end
 
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
         @measure c 1 Dict(
-            v"1.10" => (27, 0.039),
+            v"1.10" => (28, 0.039),
             v"1.11" => (24, 0.030),
-            v"1.12" => (29, 0.042),
+            v"1.12" => (30, 0.042),
         )
     end
 
     let p = lineplot(1:10)
         @measure p 1 Dict(
             v"1.10" => (50, 0.070),
-            v"1.11" => (43, 0.061),
+            v"1.11" => (44, 0.061),
             v"1.12" => (56, 0.045),
         )
     end
 
-    let p = heatmap(collect(1:30) * collect(1:30)')
+    let p = heatmap(collect(1:15) * collect(1:15)')
         @measure p 1 Dict(
-            v"1.10" => (356, 0.268),
-            v"1.11" => (411, 0.446),
-            v"1.12" => (552, 0.260),
+            v"1.10" => (153, 0.106),
+            v"1.11" => (182, 0.178),
+            v"1.12" => (244, 0.115),
         )
     end
 
     let p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
         @measure p 1 Dict(
-            v"1.10" => (151, 0.142),
-            v"1.11" => (123, 0.122),
+            v"1.10" => (152, 0.142),
+            v"1.11" => (124, 0.122),
             v"1.12" => (217, 0.106),
         )
     end
