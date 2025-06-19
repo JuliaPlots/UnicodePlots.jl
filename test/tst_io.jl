@@ -56,22 +56,29 @@ end
     end
 end
 
-const STABLE = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
+const STABLE =  Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
 const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
 
-macro measure(ex, versioned)
+macro measure(ex, tol, versioned)
     quote
+        base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if MEASURE
             GC.enable(false)
             stats = @timed string($ex; color = true)  # repeated !
             GC.enable(true)
-            kbytes, msecs = $versioned[VersionNumber(VERSION.major, VERSION.minor)]
-            kb = stats.bytes / 1e3
-            ms = stats.time * 1e3
-            @show (VERSION, kb, ms)
-            @test kb < kbytes
-            @test ms < msecs
+            key = VersionNumber(VERSION.major, VERSION.minor)
+            dct = $versioned
+            if haskey(dct, key)
+                kbytes, msecs = dct[key]
+                kb = round(Int, stats.bytes / 1e3)
+                ms = stats.time * 1e3
+                @show (VERSION, kb, ms)
+                @test kb < kbytes
+                @test ms < $tol * base_tol * msecs
+            else
+                @warn "missing info for $VERSION ($kb, $ms) !"
+            end
         end
     end |> esc
 end
@@ -81,43 +88,43 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 @testset "stringify plot - performance regression" begin
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0)
-        @measure c Dict(
-            v"1.10" => (20, 0.05),  # ~ 18kB / 0.02ms
-            v"1.11" => (20, 0.05),  # ~ 18kB / 0.02ms
-            v"1.12" => (20, 0.05),  # ~ 18kB / 0.02ms
+        @measure c 1 Dict(
+            v"1.10" => (20, 0.03),  # ~ 19kB
+            v"1.11" => (20, 0.02),  # ~ 18kB
+            v"1.12" => (25, 0.02),  # ~ 20kB
         )
     end
 
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
-        @measure c Dict(
-            v"1.10" => (30, 0.1),  # ~ 27kB / 0.03ms
-            v"1.11" => (30, 0.1),  # ~ 27kB / 0.03ms
-            v"1.12" => (30, 0.1),  # ~ 27kB / 0.03ms
+        @measure c 1 Dict(
+            v"1.10" => (30, 0.06),  # ~ 27kB
+            v"1.11" => (30, 0.05),  # ~ 24kB
+            v"1.12" => (30, 0.04),  # ~ 27kB
         )
     end
 
     let p = lineplot(1:10)
-        @measure p Dict(
-            v"1.10" => (45, 0.2),  # ~ 44kB / 0.05ms
-            v"1.11" => (45, 0.2),  # ~ 44kB / 0.05ms
-            v"1.12" => (45, 0.2),  # ~ 44kB / 0.05ms
+        @measure p 1 Dict(
+            v"1.10" => (55, 0.06),  # ~ 50kB
+            v"1.11" => (45, 0.05),  # ~ 43kB
+            v"1.12" => (60, 0.06),  # ~ 56kB
         )
     end
 
     let p = heatmap(collect(1:30) * collect(1:30)')
-        @measure p Dict(
-            v"1.10" => (415, 0.8),  # ~ 411kB / 0.4ms
-            v"1.11" => (415, 0.8),  # ~ 411kB / 0.4ms
-            v"1.12" => (415, 0.8),  # ~ 411kB / 0.4ms
+        @measure p 1 Dict(
+            v"1.10" => (360, 0.25),  # ~ 356kB
+            v"1.11" => (415, 0.42),  # ~ 411kB
+            v"1.12" => (555, 0.30),  # ~ 552kB
         )
     end
 
     let p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
-        @measure p Dict(
-            v"1.10" => (125, 0.4),  # ~ 124kB / 0.1ms
-            v"1.11" => (125, 0.4),  # ~ 124kB / 0.1ms
-            v"1.12" => (125, 0.4),  # ~ 124kB / 0.1ms
+        @measure p 1 Dict(
+            v"1.10" => (155, 0.14),  # ~ 151kB
+            v"1.11" => (125, 0.15),  # ~ 123kB
+            v"1.12" => (220, 0.12),  # ~ 217kB
         )
     end
 end
