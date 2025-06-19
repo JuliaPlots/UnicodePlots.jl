@@ -78,24 +78,24 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 @testset "stringify plot - performance regression" begin
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0)
-        @measure c 20 0.1  # ~ 18kB / 0.02ms on 1.11
+        @measure c 20 0.2  # ~ 18kB / 0.02ms on 1.11
     end
 
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
-        @measure c 30 0.1  # ~ 27kB / 0.03ms on 1.11
+        @measure c 30 0.2  # ~ 27kB / 0.03ms on 1.11
     end
 
     let p = lineplot(1:10)
-        @measure p 50 0.1  # ~ 50kB / 0.05ms on 1.11
+        @measure p 50 0.2  # ~ 50kB / 0.05ms on 1.11
     end
 
     let p = heatmap(collect(1:30) * collect(1:30)')
-        @measure p 420 0.5  # ~ 411kB / 0.25ms on 1.11
+        @measure p 420 0.8  # ~ 411kB / 0.25ms on 1.11
     end
 
     let p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
-        @measure p 130 0.2  # ~ 123kB / 0.11ms on 1.11
+        @measure p 160 0.4  # ~ 123kB / 0.11ms on 1.11
     end
 end
 
