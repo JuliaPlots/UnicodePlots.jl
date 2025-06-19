@@ -61,10 +61,10 @@ macro measure(ex, tol, versioned)
         base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if (
-            Sys.islinux() &&
+            UnicodePlots.get_have_truecolor() &&
             (STABLE || PRE) &&
-            !is_pkgeval() &&
-            UnicodePlots.get_have_truecolor()
+            Sys.islinux() &&
+            !is_pkgeval()
         )
             n = 10
             kb = fill(0.0, n)
