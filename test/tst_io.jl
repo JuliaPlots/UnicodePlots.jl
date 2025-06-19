@@ -56,8 +56,13 @@ end
     end
 end
 
-const STABLE = Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
-const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
+const STABLE = Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)
+const DEV = length(VERSION.prerelease) > 0 && first(VERSION.prerelease) == "DEV"
+const ALPHA = length(VERSION.prerelease) > 0 && startswith("alpha", first(VERSION.prerelease))
+const BETA = length(VERSION.prerelease) > 0 && startswith("beta", first(VERSION.prerelease))
+const RC = length(VERSION.prerelease) > 0 && startswith("rc", first(VERSION.prerelease))
+const PRE = ALPHA || BETA || RC
+const MEASURE = Sys.islinux() && (STABLE || PRE) && !is_pkgeval()
 
 macro measure(ex, tol, versioned)
     quote
