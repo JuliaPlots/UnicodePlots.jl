@@ -22,19 +22,20 @@ end
 Base.show(io::IO, c::GraphicsArea) = _show(io, print, print_color, c)
 
 function _show(io::IO, print_nocol, print_color, c::GraphicsArea)
-    b = BORDER_SOLID
+    bd = BORDER_SOLID
     bc = BORDER_COLOR[]
-    border_length = ncols(c)
-    print_border(io, print_nocol, print_color, :t, border_length, nothing, '\n', b, bc)
+    bd_len = ncols(c)
+    print_border(io, print_nocol, print_color, bd[:tl], bd[:t], bd[:tr], bd_len, nothing, '\n', bc)
     postprocess! = preprocess!(io, c)
+    bl::Char, br::Char = bd[:l], bd[:r]
     for row ∈ 1:nrows(c)
-        print_color(io, bc, b[:l])
+        print_color(io, bc, bl)
         print_row(io, print_nocol, print_color, c, row)
-        print_color(io, bc, b[:r])
+        print_color(io, bc, br)
         row < nrows(c) && print_nocol(io, '\n')
     end
     postprocess!(c)
-    print_border(io, print_nocol, print_color, :b, border_length, '\n', nothing, b, bc)
+    print_border(io, print_nocol, print_color, bd[:bl], bd[:b], bd[:br], bd_len, '\n', nothing, bc)
     nothing
 end
 

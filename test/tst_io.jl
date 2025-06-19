@@ -56,11 +56,30 @@ end
     end
 end
 
+@testset "allocations" begin
+    @check_allocs f(c) = lines!(c, 0.0, 1.0, 1.0, 0.0; color = :green)
+    @test f(BrailleCanvas(15, 40)) isa Canvas
+
+    @check_allocs g(io, c) = show(io, c)
+    @test g(PipeBuffer(), BrailleCanvas(15, 40)) isa Canvas
+end
+
 sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 
 @testset "stringify plot - performance regression" begin
     stable = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
     measure = Sys.islinux() && stable && !is_pkgeval()
+
+    let p = lineplot(1:10)
+        @test string(p; color = true) isa String  # 1st pass - ttfp
+        if measure
+            GC.enable(false)
+            stats = @timed string(p; color = true)  # repeated !
+            @test stats.bytes / 1e3 < 50  # ~ 45kB on 1.10
+            @test stats.time * 1e3 < 0.2  # ~ 0.1ms on 1.11
+            GC.enable(true)
+        end
+    end
 
     let p = heatmap(collect(1:30) * collect(1:30)')
         @test string(p; color = true) isa String  # 1st pass - ttfp

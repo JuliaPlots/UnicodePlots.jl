@@ -18,6 +18,7 @@ using TimerOutputs
 using TestImages
 using ColorTypes
 using StableRNGs
+using AllocCheck
 using StatsBase
 using Crayons
 using Unitful

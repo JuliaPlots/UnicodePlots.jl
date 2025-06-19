@@ -88,10 +88,31 @@ function print_title(
     )
 end
 
+"allocations free version"
 function print_border(
     io::IO,
-    print_nocol,
-    print_color,
+    print_nocol::Function,
+    print_color::Function,
+    bl::Char,
+    bd::Char,
+    br::Char,
+    length::Integer,
+    left_pad::Union{Nothing,AbstractChar,AbstractString},
+    right_pad::Union{Nothing,AbstractChar,AbstractString},
+    color::UserColorType
+)
+    left_pad ≡ nothing || print_nocol(io, left_pad)
+    print_color(io, color, bl)
+    foreach(c -> print_color(io, color, bd), 1:length)
+    print_color(io, color, br)
+    right_pad ≡ nothing || print_nocol(io, right_pad)
+    nothing
+end
+
+function print_border(
+    io::IO,
+    print_nocol::Function,
+    print_color::Function,
     loc::Symbol,
     length::Integer,
     left_pad::Union{Nothing,AbstractChar,AbstractString},
@@ -100,7 +121,10 @@ function print_border(
     color::UserColorType = BORDER_COLOR[],
 )
     left_pad ≡ nothing || print_nocol(io, string(left_pad))
-    print_color(io, color, bmap[Symbol(loc, :l)], bmap[loc]^length, bmap[Symbol(loc, :r)])
+    print_color(io, color, bmap[Symbol(loc, :l)])
+    char::Char = bmap[loc]
+    foreach(c -> print_color(io, color, char), 1:length)
+    print_color(io, color, bmap[Symbol(loc, :r)])
     right_pad ≡ nothing || print_nocol(io, string(right_pad))
     nothing
 end
@@ -271,7 +295,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
         # print left annotations
         print_nocol(io, 🗷^p.margin[])
         if has_labels
-            # Current labels to left and right of the row and their length
+            # current labels to left and right of the row and their length
             left_str   = get(p.labels_left, row, "")
             left_col   = get(p.colors_left, row, bc)
             right_str  = get(p.labels_right, row, "")
