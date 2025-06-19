@@ -61,7 +61,7 @@ const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
 
 macro measure(ex, tol, versioned)
     quote
-        base_tol = is_ci() ? 3 : 1.5
+        base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if MEASURE
             GC.enable(false)
