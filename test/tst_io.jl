@@ -60,11 +60,16 @@ macro measure(ex, tol, versioned)
     quote
         base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
-        if Sys.islinux() && (STABLE || PRE) && !is_pkgeval()
-            GC.enable(false)
+        if (
+            Sys.islinux() &&
+            (STABLE || PRE) &&
+            !is_pkgeval() &&
+            UnicodePlots.get_have_truecolor()
+        )
             n = 10
             kb = fill(0.0, n)
             ms = fill(0.0, n)
+            GC.enable(false)
             for i ∈ 1:n
                 stats = @timed string($ex; color = true)  # repeated !
                 kb[i] = stats.bytes / 1_000
