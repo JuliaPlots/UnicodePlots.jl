@@ -32,23 +32,25 @@
 end
 
 @testset "limits" begin
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0.1, 2]) ≡ (0.1, 2.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 1.1]) ≡ (0.0, 1.1)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [2, 3]) ≡ (2.0, 3.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [0, 0]) ≡ (1.0, 4.0)
-    @test UnicodePlots.extend_limits([1, 2, 3, 4], [1, 1]) ≡ (0.0, 2.0)
+    @test @no_allocs(UnicodePlots.extend_limits(1:4, (0.1, 2))) ≡ (0.1, 2.0)
+    @test @no_allocs(UnicodePlots.extend_limits(1:4, (0, 1.1))) ≡ (0.0, 1.1)
+    @test @no_allocs(UnicodePlots.extend_limits(1:4, (2, 3))) ≡ (2.0, 3.0)
+    @test @no_allocs(UnicodePlots.extend_limits(1:4, (0, 0))) ≡ (1.0, 4.0)
+    @test @no_allocs(UnicodePlots.extend_limits(1:4, (1, 1))) ≡ (0.0, 2.0)
 
     @test UnicodePlots.extend_limits([], (-1, 2)) ≡ (-1.0, 2.0)
 
-    @test UnicodePlots.is_auto((0, 0))
+    @test @no_allocs UnicodePlots.is_auto((0, 0))
+    @test @no_allocs !UnicodePlots.is_auto((-1, 1))
     @test UnicodePlots.is_auto([0, 0])
-    @test !UnicodePlots.is_auto((-1, 1))
     @test !UnicodePlots.is_auto([-1, 1])
 
     # `SVector` inferrability
     @test UnicodePlots.autolims([-3, 2]) == [-3, 2]
     @test UnicodePlots.autolims([-3, 2], 1:10) == [-3, 2]
     @test UnicodePlots.autolims([0, 0], 1:10) == [1, 10]
+    @test @no_allocs(UnicodePlots.autolims((-3., 2.))) == [-3, 2]
+    @test @no_allocs(UnicodePlots.autolims((0., 0.), 1:10)) == [1, 10]
 end
 
 @testset "bordermap" begin

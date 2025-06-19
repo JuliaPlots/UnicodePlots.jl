@@ -59,16 +59,19 @@ end
 const STABLE = isempty(VERSION.prerelease)  # occursin("DEV", string(VERSION)) or length(VERSION.prerelease) < 2
 const MEASURE = Sys.islinux() && STABLE && !is_pkgeval()
 
-macro measure(ex, kbytes, msecs)
+macro measure(ex, versioned)
     quote
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if MEASURE
             GC.enable(false)
             stats = @timed string($ex; color = true)  # repeated !
             GC.enable(true)
-            # @show VERSION stats.bytes / 1e3 stats.time * 1e3
-            @test stats.bytes / 1e3 < $kbytes
-            @test stats.time * 1e3 < $msecs
+            kbytes, msecs = $versioned[VersionNumber(VERSION.major, VERSION.minor)]
+            kb = stats.bytes / 1e3
+            ms = stats.time * 1e3
+            @show VERSION kb ms
+            @test kb < kbytes
+            @test ms < msecs
         end
     end |> esc
 end
@@ -78,24 +81,44 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
 @testset "stringify plot - performance regression" begin
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0)
-        @measure c 20 0.2  # ~ 18kB / 0.02ms on 1.11
+        @measure c Dict(
+            v"1.10" => (20, 0.1),  # ~ 18kB / 0.02ms
+            v"1.11" => (20, 0.1),  # ~ 18kB / 0.02ms
+            v"1.12" => (20, 0.1),  # ~ 18kB / 0.02ms
+        )
     end
 
     let c = BrailleCanvas(15, 40)
         lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
-        @measure c 30 0.2  # ~ 27kB / 0.03ms on 1.11
+        @measure c Dict(
+            v"1.10" => (30, 0.2),  # ~ 27kB / 0.03ms
+            v"1.11" => (30, 0.2),  # ~ 27kB / 0.03ms
+            v"1.12" => (30, 0.2),  # ~ 27kB / 0.03ms
+        )
     end
 
     let p = lineplot(1:10)
-        @measure p 50 0.2  # ~ 50kB / 0.05ms on 1.11
+        @measure p Dict(
+            v"1.10" => (50, 0.2),  # ~ 50kB / 0.05ms
+            v"1.11" => (50, 0.2),  # ~ 50kB / 0.05ms
+            v"1.12" => (50, 0.2),  # ~ 50kB / 0.05ms
+        )
     end
 
     let p = heatmap(collect(1:30) * collect(1:30)')
-        @measure p 420 0.8  # ~ 411kB / 0.25ms on 1.11
+        @measure p Dict(
+            v"1.10" => (420, 0.6),  # ~ 411kB / 0.25ms
+            v"1.11" => (420, 0.6),  # ~ 411kB / 0.25ms
+            v"1.12" => (420, 0.6),  # ~ 411kB / 0.25ms
+        )
     end
 
     let p = surfaceplot(-8:0.5:8, -8:0.5:8, sombrero; axes3d = false)
-        @measure p 160 0.4  # ~ 123kB / 0.11ms on 1.11
+        @measure p Dict(
+            v"1.10" => (160, 0.4),  # ~ 123kB / 0.11ms
+            v"1.11" => (160, 0.4),  # ~ 123kB / 0.11ms
+            v"1.12" => (160, 0.4),  # ~ 123kB / 0.11ms
+        )
     end
 end
 
