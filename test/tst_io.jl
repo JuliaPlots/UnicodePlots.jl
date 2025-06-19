@@ -56,17 +56,6 @@ end
     end
 end
 
-"""
-julia> is_prerelease("DEV")
-julia> is_prerelease("alpha")
-julia> is_prerelease("beta")
-julia> is_prerelease("rc")
-"""
-is_prerelease(label) =  length(VERSION.prerelease) > 0 && startswith(first(VERSION.prerelease), label)
-
-const STABLE = Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)
-const PRE = is_prerelease("alpha") || is_prerelease("beta") || is_prerelease("rc")
-
 macro measure(ex, tol, versioned)
     quote
         base_tol = is_ci() ? 2 : 1.25

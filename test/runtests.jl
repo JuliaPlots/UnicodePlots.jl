@@ -41,6 +41,17 @@ test_ref(reference, actual) = @test_reference(
 
 is_ci() = Base.get_bool_env("CI", false)
 is_pkgeval() = Base.get_bool_env("JULIA_PKGEVAL", false)
+"""
+julia> is_prerelease("DEV")
+julia> is_prerelease("alpha")
+julia> is_prerelease("beta")
+julia> is_prerelease("rc")
+"""
+is_prerelease(label) =
+    length(VERSION.prerelease) > 0 && startswith(first(VERSION.prerelease), label)
+
+const STABLE = Base.get_bool_env("UP_STABLE", false) || isempty(VERSION.prerelease)
+const PRE = is_prerelease("alpha") || is_prerelease("beta") || is_prerelease("rc")
 
 # helpers
 
