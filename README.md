@@ -1,4 +1,4 @@
-<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs/gen_docs.jl instead, and run $ julia gen_docs.jl to render README.md !! -->
+<!-- WARNING: this file has been automatically generated, please update UnicodePlots/docs-md/gen_docs.jl instead, and run $ julia gen_docs.jl to render README.md !! -->
 # UnicodePlots
 
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE.md)
@@ -780,7 +780,7 @@ The method `label!` is responsible for the setting all the textual decorations o
 
   The following snippet:
   ```bash
-  $ cd docs
+  $ cd docs-md
   $ julia gen_docs.jl
   $ (cd imgs; julia gen_imgs.jl)
   ```
