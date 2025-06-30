@@ -6,7 +6,7 @@ import Markdown: MD, Paragraph, plain
 
 
 (@main) = begin
-  warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs/gen_docs.jl instead"
+  warn = "WARNING: this file has been automatically generated, please update UnicodePlots/docs-md/gen_docs.jl instead"
   docs_url = "https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs"
   ver = "3.x"
 
@@ -287,7 +287,7 @@ The following types of `Canvas` are implemented:
   doc_update = plain_md_par("""
   The following snippet:
   ```bash
-  \$ cd docs
+  \$ cd docs-md
   \$ julia gen_docs.jl
   \$ (cd imgs; julia gen_imgs.jl)
   ```
