@@ -1,4 +1,4 @@
-name: TagBot
+name: tagbot
 on:
   issue_comment:
     types:
