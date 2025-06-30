@@ -1,3 +1,8 @@
+"""
+    ImageGraphics
+
+Structure to hold an image.
+"""
 struct ImageGraphics{C<:Colorant} <: GraphicsArea
     img::Matrix{C}
     sixel::RefValue{Bool}

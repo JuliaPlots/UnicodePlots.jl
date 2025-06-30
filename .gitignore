@@ -6,11 +6,11 @@
 *.cov
 *.swp
 
-/Manifest.toml
-/test/Manifest.toml
-/docs/Manifest.toml
+Manifest.toml
+
+docs-md/imgs/
+docs/build/
+
 
 .DS_Store
-
-docs/imgs/
 .old/

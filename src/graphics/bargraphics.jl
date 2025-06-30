@@ -1,3 +1,8 @@
+"""
+    BarplotGraphics
+
+Structure to hold bar based graphics.
+"""
 struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}

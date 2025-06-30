@@ -1,0 +1,5 @@
+# API
+
+```@autodocs
+Modules = [UnicodePlots]
+```

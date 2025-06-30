@@ -1,0 +1,33 @@
+name: docs
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'release-'
+    tags: '*'
+  release:
+    types: [published]
+
+jobs:
+  build:
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: read
+      statuses: write
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
+      - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        run: julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Build and deploy
+        run: julia --color=yes --project=docs docs/make.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{secrets.DOCUMENTER_KEY}}

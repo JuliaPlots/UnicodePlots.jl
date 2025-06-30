@@ -6,6 +6,11 @@ struct FiveNumberSummary
     maximum::Float64
 end
 
+"""
+    BoxplotGraphics
+
+Structure to hold box based graphics.
+"""
 struct BoxplotGraphics{R<:Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
     colors::Vector{ColorType}
