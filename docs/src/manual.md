@@ -188,7 +188,7 @@ using TestImages
 imageplot(testimage("monarch_color_256"), title="monarch")
 ```
 
-## Surface Plots: `surfaceplot`
+## Surface plots: `surfaceplot`
 Plots a colored surface using height values `z` above a `x-y` plane, in three dimensions (masking values using `NaN`s is supported).
 
 ```@example surface
@@ -208,7 +208,7 @@ surfaceplot(
 )
 ```
 
-## Iso-surface Plots: `isosurface`
+## Isosurface plots: `isosurface`
 Uses [`MarchingCubes.jl`](https://github.com/JuliaGeometry/MarchingCubes.jl) to extract an isosurface, where `isovalue` controls the surface isovalue.
 Using `centroid` enables plotting the triangulation centroids instead of the triangle vertices (better for small plots).
 Back face culling (hide not visible facets) can be activated using `cull=true`.
