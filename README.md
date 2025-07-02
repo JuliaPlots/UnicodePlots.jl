@@ -9,14 +9,14 @@
 [![Docs dev](https://img.shields.io/badge/docs-dev-blue.svg)](
   https://juliaplots.org/UnicodePlots.jl/dev/
 )
-[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](
-  https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html
-)
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](
   https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml
 )
 [![Coverage Status](https://codecov.io/gh/JuliaPlots/UnicodePlots.jl/branch/master/graphs/badge.svg?branch=master)](
   https://app.codecov.io/gh/JuliaPlots/UnicodePlots.jl
+)
+[![PkgEval](https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.named.svg)](
+  https://juliaci.github.io/NanosoldierReports/pkgeval_badges/U/UnicodePlots.html
 )
 [![JuliaHub deps](https://juliahub.com/docs/UnicodePlots/deps.svg)](
   https://juliahub.com/ui/Packages/UnicodePlots/Ctj9q?t=2
