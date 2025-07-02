@@ -2,14 +2,11 @@ name: docs
 
 on:
   push:
-    branches:
-      - 'main'
-      - 'release-'
+    branches: ['main', 'release-']
     tags: '*'
   release:
     types: [published]
   pull_request:
-    types: [labeled]
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
