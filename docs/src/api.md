@@ -53,7 +53,8 @@ using UnicodePlots
 using Markdown
 indent(x, n=1, tab=' '^2) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
 ex(x) = join(("```@example", "using UnicodePlots  # hide", x, "```"), '\n')
-desc_ex(k, d, n=2) = (
+desc_ex(k, d, n=2) = begin
+  return d  # FIXME: temporarily disable examples (fails to render properly)
   if k ≡ :border
     join((
       d,
@@ -72,8 +73,7 @@ desc_ex(k, d, n=2) = (
   else
     d
   end
-)
-# FIXME: examples are failing here ...
+end
 "All plots support the set (or a subset) of the following named parameters:\n" * join(
   (
     "- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
