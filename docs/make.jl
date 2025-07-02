@@ -1,4 +1,7 @@
-using Pkg; Pkg.resolve(); Pkg.instantiate()
+using Pkg
+if !Base.get_bool_env("CI", false)
+    Pkg.resolve(); Pkg.instantiate()
+end
 using Documenter, UnicodePlots
 
 format = Documenter.HTML(
