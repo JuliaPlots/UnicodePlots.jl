@@ -6,6 +6,7 @@ FreeType = "b38be410-82b0-50bf-ab77-7b57e271db43"
 ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
 IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Term = "22787eb5-b846-44ae-b979-8e399b8463ab"
 TestImages = "5e47fb64-e119-507b-a336-dd2b206d9990"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
