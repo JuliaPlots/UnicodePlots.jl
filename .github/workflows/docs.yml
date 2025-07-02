@@ -8,9 +8,12 @@ on:
     tags: '*'
   release:
     types: [published]
+  pull_request:
+    types: [labeled]
 
 jobs:
   build:
+    if: ${{ github.event.label.name == 'documentation' || github.event_name != 'pull_request' }}
     permissions:
       actions: write
       contents: write
