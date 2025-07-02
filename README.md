@@ -28,7 +28,7 @@
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
 ## Documentation
-Stable documentation is avaiblable here: https://juliaplots.org/UnicodePlots.jl/stable/
+Documentation is available here: https://juliaplots.org/UnicodePlots.jl/stable/
 
 ## License
 This code is free to use under the terms of the MIT license.
