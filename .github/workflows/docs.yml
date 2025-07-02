@@ -20,10 +20,7 @@ jobs:
       contents: write
       pull-requests: read
       statuses: write
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
@@ -33,5 +30,5 @@ jobs:
       - name: Build and deploy
         run: julia --color=yes --project=docs docs/make.jl
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{secrets.DOCUMENTER_KEY}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
