@@ -1,3 +1,6 @@
+import Pkg; Pkg.precompile()
+Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
+
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
 using UnicodePlots, Test
 
@@ -10,7 +13,6 @@ import Random: seed!
 import ColorSchemes
 import FileIO
 import Aqua
-import Pkg
 
 using ReferenceTests
 using LinearAlgebra
@@ -22,8 +24,6 @@ using AllocCheck
 using StatsBase
 using Crayons
 using Unitful
-
-Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
 
 include("fixes.jl")
 
