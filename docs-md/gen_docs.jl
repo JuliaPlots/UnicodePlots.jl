@@ -291,7 +291,7 @@ The following types of `Canvas` are implemented:
   \$ julia gen_docs.jl
   \$ (cd imgs; julia gen_imgs.jl)
   ```
-  will regenerate `README.md` and the example images with root (prefix) url $(docs_url).
+  will regenerate `README-old.md` and the example images with root (prefix) url $(docs_url).
   """)
 
   invalidations = plain_md_par("""
@@ -814,8 +814,8 @@ Inspired by [TextPlots.jl](https://github.com/sunetos/TextPlots.jl), which in tu
   end
 
   write(stdout, readme)
-  open(joinpath(@__DIR__, "..", "README.md"), "w") do io
-    write(io, "<!-- $warn, and run \$ julia gen_docs.jl to render README.md !! -->\n")
+  open(joinpath(@__DIR__, "..", "README-old.md"), "w") do io
+    write(io, "<!-- $warn, and run \$ julia gen_docs.jl to render README-old.md !! -->\n")
     write(io, readme)
   end
   return

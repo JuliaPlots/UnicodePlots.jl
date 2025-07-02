@@ -1,3 +1,4 @@
+using Pkg; Pkg.resolve(); Pkg.instantiate()
 using Documenter, UnicodePlots
 
 format = Documenter.HTML(
@@ -8,7 +9,9 @@ format = Documenter.HTML(
 )
 
 pages = [
-    "Home" => "index.md",
+    "Getting Started" => "getting-started.md",
+    "Manual" => "manual.md",
+    "Development" => "dev.md",
     "API" => "api.md",
 ]
 
