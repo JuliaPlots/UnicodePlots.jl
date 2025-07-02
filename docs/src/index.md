@@ -4,7 +4,7 @@ UnicodePlots is a [unicode-based](https://en.wikipedia.org/wiki/Unicode) scienti
 
 The source code is hosted on github: [UnicodePlots.jl](https://github.com/JuliaPlots/UnicodePlots.jl).
 
-# Installation
+## Installation
 
 To install UnicodePlots, start up `julia` in a terminal and type the following code snippet into the `REPL` (this makes use of the native `Julia` package manager named `Pkg`):
 ```julia
@@ -12,7 +12,7 @@ julia> using Pkg
 julia> Pkg.add("UnicodePlots")
 ```
 
-# Getting started
+## Getting started
 Here is a quick hello world example of a typical use-case:
 
 ```@example intro

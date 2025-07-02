@@ -41,23 +41,45 @@ for i in 1:10
   label!(plt, :l, i, string(i))
   label!(plt, :r, i, string(i))
 end
-display(plt)
+plt
 ```
 
 - `annotate!(plot::Plot, x::Number, y::Number, text::AbstractString; kw...)`
   - `text` arbitrary annotation at position (x, y)
 
 ## Keywords
-All plots support the set (or a subset) of the following named parameters:
-
 ```@eval
 using UnicodePlots
-join(
+using Markdown
+indent(x, n=1, tab=' '^2) = tab^n * join(x isa AbstractVector ? x : split(x, '\n'), '\n' * tab^n)
+ex(x) = join(("```@example", "using UnicodePlots  # hide", x, "```"), '\n')
+desc_ex(k, d, n=2) = (
+  if k ≡ :border
+    join((
+      d,
+      indent(ex("lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:dashed)"), n),
+      indent(ex("lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:ascii)"), n),
+      indent(ex("lineplot([-1., 2, 3, 7], [1.,2, 9, 4], canvas=DotCanvas, border=:bold)"), n),
+      indent(ex("lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:dotted)"), n),
+      indent(ex("lineplot([-1., 2, 3, 7], [1.,2, 9, 4], border=:none)"), n),
+    ), '\n')
+  elseif k ≡ :width
+    join((d, indent(ex("lineplot(1:.5:20, sin, width=60)"), n)), '\n')
+  elseif k ≡ :height
+    join((d, indent(ex("lineplot(1:.5:20, sin, height=18)"), n)), '\n')
+  elseif k ≡ :labels
+    join((d, indent(ex("lineplot(1:.5:20, sin, labels=false)"), n)), '\n')
+  else
+    d
+  end
+)
+# FIXME: examples are failing here ...
+"All plots support the set (or a subset) of the following named parameters:\n" * join(
   (
     "- `$(UnicodePlots.default_with_type(k))`: $(desc_ex(k, d * '.'))"
     for (k, d) ∈ pairs(UnicodePlots.DESCRIPTION) if k ∈ keys(UnicodePlots.KEYWORDS)
   ), '\n'
-)
+) |> Markdown.parse
 ```
 
 Note: If you want to print the plot into a file but have monospace issues with your font, you should probably try setting `border=:ascii` and `canvas=AsciiCanvas` (or `canvas=DotCanvas` for scatterplots).
