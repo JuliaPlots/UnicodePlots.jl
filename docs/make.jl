@@ -12,7 +12,7 @@ format = Documenter.HTML(
 )
 
 pages = [
-    "Getting Started" => "getting-started.md",
+    "Home" => "index.md",
     "Manual" => "manual.md",
     "Development" => "dev.md",
     "API" => "api.md",

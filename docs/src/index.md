@@ -12,8 +12,7 @@ julia> using Pkg
 julia> Pkg.add("UnicodePlots")
 ```
 
-# Introduction
-
+# Getting started
 Here is a quick hello world example of a typical use-case:
 
 ```@example intro
