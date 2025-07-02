@@ -5,8 +5,7 @@
 The primary structures that do all the heavy lifting behind the curtain are subtypes of `Canvas`. A canvas is a graphics object for rasterized plotting. Basically, it uses Unicode characters to represent pixel.
   
 Here is a simple example:
-```
-@example 
+```@example 
 import UnicodePlots: Plot, BrailleCanvas, lines!, points!, pixel!
 canvas = BrailleCanvas(15, 40,                    # number of rows and columns (characters)
                        origin_y=0., origin_x=0.,  # position in virtual space

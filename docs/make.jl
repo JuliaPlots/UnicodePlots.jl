@@ -13,8 +13,11 @@ format = Documenter.HTML(
 
 pages = [
     "Home" => "index.md",
-    "Manual" => "manual.md",
-    "Development" => "dev.md",
+    "Manual" => Any[
+        "Interface" => "interface.md",
+        "Notes" => "notes.md",
+        "Development" => "dev.md",
+    ],
     "API" => "api.md",
 ]
 
