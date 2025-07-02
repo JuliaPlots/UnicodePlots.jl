@@ -1,13 +1,13 @@
 # UnicodePlots
 
-[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](
-  LICENSE.md
-)
 [![Docs stable](https://img.shields.io/badge/docs-stable-blue.svg)](
   https://juliaplots.org/UnicodePlots.jl/stable/
 )
 [![Docs dev](https://img.shields.io/badge/docs-dev-blue.svg)](
   https://juliaplots.org/UnicodePlots.jl/dev/
+)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](
+  LICENSE.md
 )
 
 [![CI](https://github.com/JuliaPlots/UnicodePlots.jl/actions/workflows/ci.yml/badge.svg)](
