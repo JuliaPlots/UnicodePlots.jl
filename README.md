@@ -30,9 +30,9 @@
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
 ## Documentation
-The `Documenter` based documentation is available [HERE](https://juliaplots.org/UnicodePlots.jl/dev/).
+The [`Documenter`](https://github.com/JuliaDocs/Documenter.jl) based documentation is available [HERE](https://juliaplots.org/UnicodePlots.jl/dev/).
 
-The (older) `README.md` based documentation is available [HERE](https://github.com/JuliaPlots/UnicodePlots.jl/blob/main/README-old.md).
+The (older) [`Markdown`](https://en.wikipedia.org/wiki/Markdown) based documentation is available [HERE](https://github.com/JuliaPlots/UnicodePlots.jl/blob/main/README-old.md).
 
 ## License
 This code is free to use under the terms of the MIT license.
