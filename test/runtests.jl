@@ -1,4 +1,4 @@
-import Pkg;
+import Pkg
 Pkg.precompile()
 Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
 
