@@ -7,9 +7,9 @@ Printing plots to a file is one of those situations.
 The AsciiCanvas is best used in combination with `lineplot`.
 For `scatterplot` we suggest to use the `DotCanvas` instead.
 """
-struct AsciiCanvas{YS<:Function,XS<:Function} <: LookupCanvas
-    grid::Transpose{UInt16,Matrix{UInt16}}
-    colors::Transpose{ColorType,Matrix{ColorType}}
+struct AsciiCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+    grid::Transpose{UInt16, Matrix{UInt16}}
+    colors::Transpose{ColorType, Matrix{ColorType}}
     visible::Bool
     blend::Bool
     yflip::Bool
@@ -20,7 +20,7 @@ struct AsciiCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     origin_x::Float64
     height::Float64
     width::Float64
-    min_max::NTuple{2,UnicodeType}
+    min_max::NTuple{2, UnicodeType}
     yscale::YS
     xscale::XS
 end
@@ -32,7 +32,7 @@ const ASCII_SIGNS = [
     0b000_000_100 0b000_000_010 0b000_000_001
 ]
 
-const ASCII_LOOKUP = Dict{UInt16,Char}()
+const ASCII_LOOKUP = Dict{UInt16, Char}()
 ASCII_LOOKUP[0b101_000_000] = '"'
 ASCII_LOOKUP[0b111_111_111] = '@'
 # ASCII_LOOKUP[0b011_110_011] = '$'
@@ -106,10 +106,10 @@ ASCII_LOOKUP[0b110_011_110] = '}'
 
 const ASCII_DECODE = Vector{Char}(undef, typemax(N_ASCII))
 ASCII_DECODE[1] = ' '
-for i ∈ 2:N_ASCII
+for i in 2:N_ASCII
     min_dist = typemax(Int)
     min_char = ' '
-    for (k, v) ∈ sort_by_keys(ASCII_LOOKUP)
+    for (k, v) in sort_by_keys(ASCII_LOOKUP)
         if (cur_dist = count_ones(xor(typeof(N_ASCII)(i - 1), k))) < min_dist
             min_dist = cur_dist
             min_char = v

@@ -74,7 +74,7 @@ end
     J = [4, 7, 18, 9]
     V = [1, 2, -5, 3]
     A = sparse(I, J, V)
-    for xflip ∈ (true, false), yflip ∈ (true, false)
+    for xflip in (true, false), yflip in (true, false)
         test_ref(
             "spy/flip_xflip-$(xflip)_yflip-$(yflip).txt",
             @show_col(spy(A; xflip, yflip), :displaysize => T_SZ)

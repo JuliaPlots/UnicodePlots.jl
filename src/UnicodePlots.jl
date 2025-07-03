@@ -115,7 +115,7 @@ function __init__()
     forced_24bit() && return init_24bit()
     forced_8bit() && return init_8bit()
     get_have_truecolor() ? init_24bit() : init_8bit()
-    nothing
+    return nothing
 end
 
 # COV_EXCL_START
@@ -123,9 +123,9 @@ function precompile_workload(io::IO = IOContext(devnull, :color => Base.get_have
     __init__()
     surf(x, y) = sinc(√(x^2 + y^2))
     for T in (  # most common types
-        Float64,
-        Int,
-    )
+            Float64,
+            Int,
+        )
         I = one(T)
         plots = (
             lineplot(I:2),
@@ -158,6 +158,7 @@ function precompile_workload(io::IO = IOContext(devnull, :color => Base.get_have
         )
         foreach(p -> show(io, p), plots)
     end
+    return
 end
 
 @compile_workload begin

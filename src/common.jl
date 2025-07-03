@@ -1,133 +1,131 @@
-const KWARGS = Union{NamedTuple,<:AbstractDict}
+const KWARGS = Union{NamedTuple, <:AbstractDict}
 
 const BLANK = 0x0020
 const BLANK_BRAILLE = 0x2800
 const FULL_BRAILLE = 0x28ff
 
-#! format: off
 const BORDER_SOLID = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t  = '─',
-    l  = '│',
-    b  = '─',
-    r  = '│',
+    t = '─',
+    l = '│',
+    b = '─',
+    r = '│',
 )
 const BORDER_CORNERS = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t  = ' ',
-    l  = ' ',
-    b  = ' ',
-    r  = ' ',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
 )
 const BORDER_BARPLOT = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t  = ' ',
-    l  = '┤',
-    b  = ' ',
-    r  = ' ',
+    t = ' ',
+    l = '┤',
+    b = ' ',
+    r = ' ',
 )
 const BORDER_BOLD = (
     tl = '┏',
     tr = '┓',
     bl = '┗',
     br = '┛',
-    t  = '━',
-    l  = '┃',
-    b  = '━',
-    r  = '┃',
+    t = '━',
+    l = '┃',
+    b = '━',
+    r = '┃',
 )
 const BORDER_NONE = (
     tl = ' ',
     tr = ' ',
     bl = ' ',
     br = ' ',
-    t  = ' ',
-    l  = ' ',
-    b  = ' ',
-    r  = ' ',
+    t = ' ',
+    l = ' ',
+    b = ' ',
+    r = ' ',
 )
 const BORDER_BNONE = (
     tl = Char(BLANK_BRAILLE),
     tr = Char(BLANK_BRAILLE),
     bl = Char(BLANK_BRAILLE),
     br = Char(BLANK_BRAILLE),
-    t  = Char(BLANK_BRAILLE),
-    l  = Char(BLANK_BRAILLE),
-    b  = Char(BLANK_BRAILLE),
-    r  = Char(BLANK_BRAILLE),
+    t = Char(BLANK_BRAILLE),
+    l = Char(BLANK_BRAILLE),
+    b = Char(BLANK_BRAILLE),
+    r = Char(BLANK_BRAILLE),
 )
 const BORDER_DASHED = (
     tl = '┌',
     tr = '┐',
     bl = '└',
     br = '┘',
-    t  = '╌',
-    l  = '┊',
-    b  = '╌',
-    r  = '┊',
+    t = '╌',
+    l = '┊',
+    b = '╌',
+    r = '┊',
 )
 const BORDER_DOTTED = (
     tl = '⡤',
     tr = '⢤',
     bl = '⠓',
     br = '⠚',
-    t  = '⠤',
-    l  = '⡇',
-    b  = '⠒',
-    r  = '⢸',
+    t = '⠤',
+    l = '⡇',
+    b = '⠒',
+    r = '⢸',
 )
 const BORDER_ASCII = (
     tl = '+',
     tr = '+',
     bl = '+',
     br = '+',
-    t  = '-',
-    l  = '|',
-    b  = '-',
-    r  = '|',
+    t = '-',
+    l = '|',
+    b = '-',
+    r = '|',
 )
 const BORDERMAP = (
-    solid   = BORDER_SOLID,
+    solid = BORDER_SOLID,
     corners = BORDER_CORNERS,
     barplot = BORDER_BARPLOT,
-    bold    = BORDER_BOLD,
-    none    = BORDER_NONE,
-    bnone   = BORDER_BNONE,
-    dashed  = BORDER_DASHED,
-    dotted  = BORDER_DOTTED,
-    ascii   = BORDER_ASCII,
+    bold = BORDER_BOLD,
+    none = BORDER_NONE,
+    bnone = BORDER_BNONE,
+    dashed = BORDER_DASHED,
+    dotted = BORDER_DOTTED,
+    ascii = BORDER_ASCII,
 )
-#! format: on
 
 const MARKERS = (
-    circle    = '⚬',
-    rect      = '▫',
-    diamond   = '◇',
-    hexagon   = '⬡',
-    cross     = '✚',
-    xcross    = '✖',
+    circle = '⚬',
+    rect = '▫',
+    diamond = '◇',
+    hexagon = '⬡',
+    cross = '✚',
+    xcross = '✖',
     utriangle = '△',
     dtriangle = '▽',
     rtriangle = '▷',
     ltriangle = '◁',
-    pentagon  = '⬠',
-    star4     = '✦',
-    star5     = '★',
-    star6     = '✶',
-    star8     = '✴',
-    vline     = '|',
-    hline     = '―',
-    (+)       = '+',
-    (x)       = '⨯',
+    pentagon = '⬠',
+    star4 = '✦',
+    star5 = '★',
+    star6 = '✶',
+    star8 = '✴',
+    vline = '|',
+    hline = '―',
+    (+) = '+',
+    (x) = '⨯',
 )
 const SUPERSCRIPT = Dict(
     # '.' => '‧',  # U+2027: Hyphenation Point
@@ -153,27 +151,27 @@ const SUPERSCRIPT = Dict(
 
 ############################################################################################
 # define types
-const MarkerType = Union{Symbol,AbstractChar,AbstractString}
-const CrayonColorType = Union{Integer,Symbol,NTuple{3,Integer},Nothing}
-const UserColorType = Union{Crayon,CrayonColorType}  # allowed color type
+const MarkerType = Union{Symbol, AbstractChar, AbstractString}
+const CrayonColorType = Union{Integer, Symbol, NTuple{3, Integer}, Nothing}
+const UserColorType = Union{Crayon, CrayonColorType}  # allowed color type
 const ColorType = UInt32  # internal UnicodePlots color type (on canvas), 8bit or 24bit
 
 ############################################################################################
 # unicode table
 # en.wikipedia.org/wiki/Plane_(Unicode)
-const PLANE0_START = 0x00000
-const PLANE0_STOP = 0x0ffff
-const PLANE1_START = 0x10000
-const PLANE1_STOP = 0x1ffff
-const PLANE2_START = 0x20000
-const PLANE2_STOP = 0x2ffff
+const PLANE0_START = 0x00000000
+const PLANE0_STOP = 0x0000ffff
+const PLANE1_START = 0x00010000
+const PLANE1_STOP = 0x0001ffff
+const PLANE2_START = 0x00020000
+const PLANE2_STOP = 0x0002ffff
 
 # TODO: maybe later support plane 1 (SMP) and plane 2 (CJK) (needs UInt16 -> UInt32 grid change)
 const UNICODE_TABLE = Array{Char}(undef, (PLANE0_STOP - PLANE0_START + 1) + length(MARKERS))
-for i ∈ PLANE0_START:PLANE0_STOP
+for i in PLANE0_START:PLANE0_STOP
     UNICODE_TABLE[i + 1] = Char(i)
 end
-for (j, i) ∈ enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
+for (j, i) in enumerate(PLANE1_START:(PLANE1_START + (length(MARKERS) - 1)))
     UNICODE_TABLE[i + 1] = MARKERS[j]
 end
 
@@ -189,7 +187,7 @@ const INVALID_COLOR = typemax(ColorType)
 const USE_LUT = Ref(false)
 
 const CRAYONS_FAST = Ref(true)
-const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ ∈ 1:9)
+const CRAYONS_EMPTY_STYLES = Tuple(Crayons.ANSIStyle() for _ in 1:9)
 const CRAYONS_RESET = Crayons.CSI * "0" * Crayons.END_ANSI
 
 const COLOR_CYCLE_FAINT = :green, :blue, :red, :magenta, :yellow, :cyan
@@ -217,13 +215,13 @@ const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
 colormode() =
-    if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
-        8
-    elseif cm ≡ Crayons.COLORS_24BIT
-        24
-    else
-        throw(ArgumentError("color mode $cm is unsupported"))
-    end
+if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
+    8
+elseif cm ≡ Crayons.COLORS_24BIT
+    24
+else
+    throw(ArgumentError("color mode $cm is unsupported"))
+end
 
 colors256!() = COLORMODE[] = Crayons.COLORS_256
 truecolors!() = COLORMODE[] = Crayons.COLORS_24BIT
@@ -236,7 +234,7 @@ function colormode!(mode)
     else
         throw(ArgumentError("color mode $mode is unsupported, choose 8 or 24"))
     end
-    nothing
+    return nothing
 end
 
 brightcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_BRIGHT
@@ -245,22 +243,22 @@ faintcolors!() = COLOR_CYCLE[] = COLOR_CYCLE_FAINT
 function init_24bit()
     truecolors!()
     USE_LUT[] ? brightcolors!() : faintcolors!()
-    nothing
+    return nothing
 end
 
 function init_8bit()
     colors256!()
     faintcolors!()
-    nothing
+    return nothing
 end
 
 get_have_truecolor() =
-    if isdefined(Base, :get_have_truecolor)
-        Base.get_have_truecolor()
-    else
-        # see gist.github.com/XVilka/8346728#checking-for-colorterm
-        lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
-    end
+if isdefined(Base, :get_have_truecolor)
+    Base.get_have_truecolor()
+else
+    # see gist.github.com/XVilka/8346728#checking-for-colorterm
+    lowercase(get(ENV, "COLORTERM", "")) ∈ ("24bit", "truecolor")
+end
 
 # specific to UnicodePlots
 forced_24bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("24", "24bit", "truecolor")
@@ -275,9 +273,9 @@ forced_8bit() = lowercase(get(ENV, "UP_COLORMODE", "")) ∈ ("8", "8bit")
 Change and return the default plot size (height, width).
 """
 function default_size!(;
-    height::Union{Integer,Nothing} = nothing,
-    width::Union{Integer,Nothing} = nothing,
-)
+        height::Union{Integer, Nothing} = nothing,
+        width::Union{Integer, Nothing} = nothing,
+    )
     @assert height ≡ nothing || width ≡ nothing
     if height ≢ nothing
         DEFAULT_HEIGHT[] = height
@@ -288,11 +286,11 @@ function default_size!(;
     else
         default_size!(height = 15)
     end
-    DEFAULT_HEIGHT[], DEFAULT_WIDTH[]  # `displaysize` order convention
+    return DEFAULT_HEIGHT[], DEFAULT_WIDTH[]  # `displaysize` order convention
 end
 
 function char_marker(marker::MarkerType)::Char
-    if marker isa Symbol
+    return if marker isa Symbol
         get(MARKERS, marker, MARKERS[:circle])
     else
         length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
@@ -304,15 +302,15 @@ iterable(obj::AbstractVecOrMat) = obj
 iterable(obj) = Iterators.repeated(obj)
 
 function transform_name(tr, basename = "")
-    name = string(tr isa Union{Symbol,Function} ? tr : typeof(tr))
+    name = string(tr isa Union{Symbol, Function} ? tr : typeof(tr))
     name == "identity" && return basename
     name = occursin('#', name) ? "custom" : name
-    string(basename, " [", name, "]")
+    return string(basename, " [", name, "]")
 end
 
 meshgrid(x, y) = repeat(x, 1, length(y)), repeat(y', length(x), 1)
 
-as_float(x::NTuple{_,<:AbstractFloat}) where {_} = x
+as_float(x::NTuple{_, <:AbstractFloat}) where {_} = x
 as_float(x::AbstractVector{<:AbstractFloat}) = x
 as_float(x) = float.(x)
 
@@ -329,19 +327,19 @@ function nice_repr(x::Integer, ::Bool, thousands_separator::Char)::String
     xs = abs(x) |> string |> reverse |> collect
     n = length(xs)
     v = sizehint!(Char[], n + 10)
-    for (i, c) ∈ enumerate(xs)
+    for (i, c) in enumerate(xs)
         push!(v, c)
         (i < n && mod1(i, 3) == 3) && push!(v, thousands_separator)
     end
     reverse!(v)
-    (sign(x) ≥ 0 ? "" : "-") * String(v)
+    return (sign(x) ≥ 0 ? "" : "-") * String(v)
 end
 
 function nice_repr(
-    x::AbstractFloat,
-    unicode_exponent::Bool,
-    thousands_separator::Char,
-)::String
+        x::AbstractFloat,
+        unicode_exponent::Bool,
+        thousands_separator::Char,
+    )::String
     xr = (pseudo_int = roundable(x)) ? round(Int, x, RoundNearestTiesUp) : x
     iszero(xr) && return "0"
     str = compact_repr(xr)
@@ -355,7 +353,7 @@ function nice_repr(
     elseif pseudo_int
         str = nice_repr(xr, unicode_exponent, thousands_separator)
     end
-    str
+    return str
 end
 
 function_name(f::Function, default) = isempty(default) ? string(nameof(f), "(x)") : default
@@ -363,7 +361,7 @@ function_name(f::Function, default) = isempty(default) ? string(nameof(f), "(x)"
 function default_formatter(kw::KWARGS)
     unicode_exponent = get(kw, :unicode_exponent, PLOT_KEYWORDS.unicode_exponent)
     thousands_separator = get(kw, :thousands_separator, PLOT_KEYWORDS.thousands_separator)
-    x -> nice_repr(x, unicode_exponent, thousands_separator)
+    return x -> nice_repr(x, unicode_exponent, thousands_separator)
 end
 
 # workaround for github.com/JuliaMath/NaNMath.jl/issues/26
@@ -372,28 +370,34 @@ nanless_extrema(x) = any(isnan, x) ? NaNMath.extrema(x) : extrema(x)
 function ceil_neg_log10(x)
     val = -log10(x)
     isfinite(val) || return typemin(Int)
-    roundable(val) ? ceil(Int, val) : floor(Int, val)
+    return roundable(val) ? ceil(Int, val) : floor(Int, val)
 end
 
-round_up_subtick(x::T, m) where {T} = T(iszero(x) ? x : if x > 0
-    +ceil(+x; digits = ceil_neg_log10(m) + 1)
-else
-    -floor(-x; digits = ceil_neg_log10(m) + 1)
-end)
+round_up_subtick(x::T, m) where {T} = T(
+    iszero(x) ? x : if x > 0
+            +ceil(+x; digits = ceil_neg_log10(m) + 1)
+    else
+            -floor(-x; digits = ceil_neg_log10(m) + 1)
+    end
+)
 
-round_down_subtick(x::T, m) where {T} = T(iszero(x) ? x : if x > 0
-    floor(+x; digits = ceil_neg_log10(m) + 1)
-else
-    -ceil(-x; digits = ceil_neg_log10(m) + 1)
-end)
+round_down_subtick(x::T, m) where {T} = T(
+    iszero(x) ? x : if x > 0
+            floor(+x; digits = ceil_neg_log10(m) + 1)
+    else
+            -ceil(-x; digits = ceil_neg_log10(m) + 1)
+    end
+)
 
 float_round_log10(x::Integer, m) = float_round_log10(float(x), m)
 float_round_log10(x) = x > 0 ? float_round_log10(x, x) : float_round_log10(x, -x)
-float_round_log10(x::T, m) where {T<:AbstractFloat} = T(iszero(x) ? x : if x > 0
-    +round(+x; digits = ceil_neg_log10(m) + 1)
-else
-    -round(-x; digits = ceil_neg_log10(m) + 1)
-end)
+float_round_log10(x::T, m) where {T <: AbstractFloat} = T(
+    iszero(x) ? x : if x > 0
+            +round(+x; digits = ceil_neg_log10(m) + 1)
+    else
+            -round(-x; digits = ceil_neg_log10(m) + 1)
+    end
+)
 
 floor_base(x, b) = round_base(x, b, RoundDown)
 ceil_base(x, b) = round_base(x, b, RoundUp)
@@ -403,10 +407,10 @@ round_base(x::T, b, ::RoundingMode{:Up}) where {T} = T(b^ceil(log(b, x)))
 
 function superscript(s::AbstractString)::String
     v = collect(s)
-    for (i, k) ∈ enumerate(v)
+    for (i, k) in enumerate(v)
         v[i] = get(SUPERSCRIPT, k, k)
     end
-    String(v)
+    return String(v)
 end
 
 function plotting_range_narrow(xmin, xmax)
@@ -418,7 +422,7 @@ function plotting_range_narrow(xmin, xmax)
             return -Inf, +Inf
         end
     end
-    float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
+    return float(round_down_subtick(xmin, Δ)), float(round_up_subtick(xmax, Δ))
 end
 
 unitless(x) = x  # noop when Unitful is not loaded
@@ -434,7 +438,7 @@ scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 
-function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol,Function})
+function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol, Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
     if iszero(mi) && iszero(ma)
@@ -445,7 +449,7 @@ function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol,Function})
         mi -= 1
         ma += 1
     end
-    if scale ≡ identity
+    return if scale ≡ identity
         is_auto(lims) ? plotting_range_narrow(mi, ma) : (mi, ma)
     else
         scale(mi), scale(ma)
@@ -457,34 +461,34 @@ sort_by_keys(dict::Dict) = sort!(collect(dict), by = first)
 function sorted_keys_values(dict::Dict; k2s = true)
     # check and force key type to <: AbstractString if necessary
     if k2s && !(first(eltype(dict).types) <: AbstractString)
-        dict = Dict(string(k) => v for (k, v) ∈ pairs(dict))
+        dict = Dict(string(k) => v for (k, v) in pairs(dict))
     end
     keys_vals = sort_by_keys(dict)
-    first.(keys_vals), last.(keys_vals)
+    return first.(keys_vals), last.(keys_vals)
 end
 
-crayon_color(::Union{Missing,Nothing}) = Crayons.ANSIColor()
+crayon_color(::Union{Missing, Nothing}) = Crayons.ANSIColor()
 crayon_color(color::ColorType) =
-    if color ≡ INVALID_COLOR
-        Crayons.ANSIColor()
-    elseif color < THRESHOLD  # 24bit
-        Crayons.ANSIColor(red(color), grn(color), blu(color), Crayons.COLORS_24BIT)
-    else  # 8bit
-        Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
-    end
+if color ≡ INVALID_COLOR
+    Crayons.ANSIColor()
+elseif color < THRESHOLD  # 24bit
+    Crayons.ANSIColor(red(color), grn(color), blu(color), Crayons.COLORS_24BIT)
+else  # 8bit
+    Crayons.ANSIColor(color - THRESHOLD, Crayons.COLORS_256)
+end
 
 print_crayons(io, c, args...) =
-    if CRAYONS_FAST[]
-        if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
-            print(io, Crayons.CSI)
-            Crayons._print(io, c)
-            print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
-        else
-            print(io, args...)
-        end
+if CRAYONS_FAST[]
+    if Crayons.anyactive(c)  # bypass crayons checks (_have_color, _force_color)
+        print(io, Crayons.CSI)
+        Crayons._print(io, c)
+        print(io, Crayons.END_ANSI, args..., CRAYONS_RESET)
     else
-        print(io, c, args..., CRAYONS_RESET)
+        print(io, args...)
     end
+else
+    print(io, c, args..., CRAYONS_RESET)
+end
 
 print_color(io::IO, color::Crayon, args...) = print_crayons(io, color, args...)
 print_color(io::IO, color::UserColorType, args...) =
@@ -500,12 +504,12 @@ function print_color(io::IO, color::ColorType, args...; bgcol = missing)
     else
         print(io, args...)
     end
-    nothing
+    return nothing
 end
 
-@inline r32(r::Integer)::UInt32 = (r & 0xffffff) << 16
-@inline g32(g::Integer)::UInt32 = (g & 0xffffff) << 8
-@inline b32(b::Integer)::UInt32 = (b & 0xffffff)
+@inline r32(r::Integer)::UInt32 = (r & 0x00ffffff) << 16
+@inline g32(g::Integer)::UInt32 = (g & 0x00ffffff) << 8
+@inline b32(b::Integer)::UInt32 = (b & 0x00ffffff)
 
 @inline red(c::UInt32)::UInt8 = (c >> 16) & 0xff
 @inline grn(c::UInt32)::UInt8 = (c >> 8) & 0xff
@@ -516,8 +520,8 @@ end
 elseif a < THRESHOLD && b < THRESHOLD  # 24bit
     # physical average (UInt32 to prevent UInt8 overflow)
     r32(floor(UInt32, √((UInt32(red(a))^2 + UInt32(red(b))^2) / 2))) +
-    g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
-    b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
+        g32(floor(UInt32, √((UInt32(grn(a))^2 + UInt32(grn(b))^2) / 2))) +
+        b32(floor(UInt32, √((UInt32(blu(a))^2 + UInt32(blu(b))^2) / 2)))
     # binary or
     # r32(red(a) | red(b)) + g32(grn(a) | grn(b)) + b32(blu(a) | blu(b))
 elseif THRESHOLD ≤ a < INVALID_COLOR && THRESHOLD ≤ b < INVALID_COLOR  # 8bit
@@ -535,16 +539,16 @@ ignored_color(::Any) = false
 no_ansi_escape(str::AbstractString) = replace(str, r"\e\[[0-9;]*[a-zA-Z]" => "")
 
 ansi_4bit_to_8bit(c::UInt8) =
-    let (q, r) = divrem(c, 0x3c)  # UInt8(60)
-        UInt8(r + (q > 0x0 ? 0x8 : 0x0))
-    end
+let (q, r) = divrem(c, 0x3c)  # UInt8(60)
+    UInt8(r + (q > 0x00 ? 0x08 : 0x00))
+end
 
 c256(c::AbstractFloat) = round(UInt32, 255c)
 c256(c::Integer) = c
 
 # `ColorType` conversion - colormaps
 ansi_color(rgb::AbstractRGB) = ansi_color((c256(rgb.r), c256(rgb.g), c256(rgb.b)))
-ansi_color(rgb::NTuple{3,AbstractFloat}) = ansi_color(c256.(rgb))
+ansi_color(rgb::NTuple{3, AbstractFloat}) = ansi_color(c256.(rgb))
 
 ansi_color(color::ColorType)::ColorType = color  # no-op
 ansi_color(crayon::Crayon) = ansi_color(crayon.fg)  # ignore bg & styles
@@ -552,7 +556,7 @@ ansi_color(::Missing) = INVALID_COLOR  # not a CrayonColorType
 
 function ansi_color(color::CrayonColorType)::ColorType
     ignored_color(color) && return INVALID_COLOR
-    ansi_color(Crayons._parse_color(color))
+    return ansi_color(Crayons._parse_color(color))
 end
 
 ansi_color(c::Crayons.ANSIColor) = if COLORMODE[] ≡ Crayons.COLORS_24BIT
@@ -586,9 +590,9 @@ end::ColorType
 out_stream_size(out_stream::Nothing) = displaysize()
 out_stream_size(out_stream::IO) = displaysize(out_stream)
 
-out_stream_height(out_stream::Union{Nothing,IO} = nothing) =
+out_stream_height(out_stream::Union{Nothing, IO} = nothing) =
     out_stream |> out_stream_size |> first
-out_stream_width(out_stream::Union{Nothing,IO} = nothing) =
+out_stream_width(out_stream::Union{Nothing, IO} = nothing) =
     out_stream |> out_stream_size |> last
 
 multiple_series_defaults(y::AbstractMatrix, kw::KWARGS, start) = map(
@@ -602,7 +606,7 @@ multiple_series_defaults(y::AbstractMatrix, kw::KWARGS, start) = map(
 
 function colormap_callback(cmap::Symbol)
     cdata = ColorSchemes.colorschemes[cmap]
-    (z, minz, maxz) -> begin
+    return (z, minz, maxz) -> begin
         isfinite(z) || return INVALID_COLOR
         z01 =
             minz == maxz ? zero(z) :
@@ -613,7 +617,7 @@ function colormap_callback(cmap::Symbol)
 end
 
 function colormap_callback(cmap::AbstractVector)
-    (z, minz, maxz) -> begin
+    return (z, minz, maxz) -> begin
         isfinite(z) || return INVALID_COLOR
         i = if minz == maxz || z < minz
             1
@@ -632,16 +636,15 @@ colormap_callback(cmap::Function) = cmap
 mutable struct ColorMap
     border::Symbol
     bar::Bool
-    lim::NTuple{2,Number}
+    lim::NTuple{2, Number}
     callback::Function
 end
 
-split_plot_kw(kw::KWARGS) =
-    if isempty(kw)
-        pairs((;)), pairs((;))  # avoids `filter` allocations
-    else
-        filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
-    end
+split_plot_kw(kw::KWARGS) = if isempty(kw)
+    pairs((;)), pairs((;))  # avoids `filter` allocations
+else
+    filter(p -> p.first ∈ PLOT_KEYS, kw), filter(p -> p.first ∉ PLOT_KEYS, kw)
+end
 
 warn_on_lost_kw(kw::KWARGS) =
     (isempty(kw) || @warn "keyword(s) `$kw` will be lost"; nothing)

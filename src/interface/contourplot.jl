@@ -10,12 +10,14 @@ Draws a contour plot on a new canvas.
 
 # Arguments
 
-$(arguments(
-    (
-        A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
-        levels = "the number of contour levels",
-    ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
-))
+$(
+    arguments(
+        (
+            A = "`Matrix` of interest for which contours are extracted, or `Function` evaluated as `f(x, y)`",
+            levels = "the number of contour levels",
+        ); add = (Z_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid)
+    )
+)
 
 # Author(s)
 
@@ -50,13 +52,13 @@ julia> contourplot(-1:.1:1, -1:.1:1, (x, y) -> 1000√(x^2 + y^2))
 `Plot`, `lineplot`, `BrailleCanvas`
 """
 function contourplot(
-    x::AbstractVector,
-    y::AbstractVector,
-    A::Union{Function,AbstractMatrix};
-    canvas::Type = KEYWORDS.canvas,
-    colormap = KEYWORDS.colormap,
-    kw...,
-)
+        x::AbstractVector,
+        y::AbstractVector,
+        A::Union{Function, AbstractMatrix};
+        canvas::Type = KEYWORDS.canvas,
+        colormap = KEYWORDS.colormap,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     plot = Plot(
         extrema(x) |> collect,
@@ -70,33 +72,33 @@ function contourplot(
         pkw...,
     )
     A isa Function && (A = A.(x', y))
-    contourplot!(plot, x, y, A; colormap, okw...)
+    return contourplot!(plot, x, y, A; colormap, okw...)
 end
 
 @doc (@doc contourplot) function contourplot!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    A::AbstractMatrix;
-    name::AbstractString = KEYWORDS.name,
-    colormap = KEYWORDS.colormap,
-    zlim = KEYWORDS.zlim,
-    levels::Integer = 3,
-)
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector,
+        A::AbstractMatrix;
+        name::AbstractString = KEYWORDS.name,
+        colormap = KEYWORDS.colormap,
+        zlim = KEYWORDS.zlim,
+        levels::Integer = 3,
+    )
     isempty(name) || label!(plot, :r, string(name))
 
     mA, MA = nanless_extrema(A)
     plot.cmap.lim = (mh, Mh) = is_auto(zlim) ? (mA, MA) : zlim
     plot.cmap.callback = callback = colormap_callback(colormap)
 
-    for cl ∈ Contour.levels(Contour.contours(y, x, A, levels))
+    for cl in Contour.levels(Contour.contours(y, x, A, levels))
         color = callback(Contour.level(cl), mh, Mh)
-        for line ∈ Contour.lines(cl)
+        for line in Contour.lines(cl)
             yi, xi = Contour.coordinates(line)
             lineplot!(plot, xi, yi; color)
         end
     end
-    plot
+    return plot
 end
 
 """

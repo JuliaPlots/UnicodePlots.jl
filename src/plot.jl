@@ -15,10 +15,12 @@ additional information such as a title, border, and axis labels.
 
 # Arguments
 
-$(arguments(
-    (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
-    add = (:x, :y, :z, :canvas)
-))
+$(
+    arguments(
+        (; graphics = "the `GraphicsArea` (e.g. a subtype of `Canvas`) that the plot should decorate");
+        add = (:x, :y, :z, :canvas)
+    )
+)
 
 # Methods
 
@@ -44,9 +46,9 @@ Author(s)
 [`BarplotGraphics`](@ref), [`BrailleCanvas`](@ref),
 [`BlockCanvas`](@ref), [`AsciiCanvas`](@ref)
 """
-struct Plot{T<:GraphicsArea,E,F}
+struct Plot{T <: GraphicsArea, E, F}
     graphics::T
-    projection::MVP{E,F}
+    projection::MVP{E, F}
     autocolor::RefValue{Int}
     series::RefValue{Int}
     title::RefValue{String}
@@ -61,36 +63,36 @@ struct Plot{T<:GraphicsArea,E,F}
     compact_labels::RefValue{Bool}
     compact::RefValue{Bool}
     labels::RefValue{Bool}
-    labels_left::Dict{Int,String}
-    labels_right::Dict{Int,String}
-    colors_left::Dict{Int,ColorType}
-    colors_right::Dict{Int,ColorType}
-    decorations::Dict{Symbol,String}
-    colors_deco::Dict{Symbol,ColorType}
+    labels_left::Dict{Int, String}
+    labels_right::Dict{Int, String}
+    colors_left::Dict{Int, ColorType}
+    colors_right::Dict{Int, ColorType}
+    decorations::Dict{Symbol, String}
+    colors_deco::Dict{Symbol, ColorType}
     cmap::ColorMap
 end
 
 function Plot(
-    graphics::T;
-    title::AbstractString = PLOT_KEYWORDS.title,
-    xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
-    ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
-    zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
-    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
-    thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
-    border::Symbol = PLOT_KEYWORDS.border,
-    compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
-    compact::Bool = PLOT_KEYWORDS.compact,
-    margin::Integer = PLOT_KEYWORDS.margin,
-    padding::Integer = PLOT_KEYWORDS.padding,
-    labels::Bool = PLOT_KEYWORDS.labels,
-    colorbar::Bool = PLOT_KEYWORDS.colorbar,
-    colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
-    colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
-    colormap::Any = PLOT_KEYWORDS.colormap,
-    projection::Union{Nothing,MVP} = nothing,
-    ignored...,
-) where {T<:GraphicsArea}
+        graphics::T;
+        title::AbstractString = PLOT_KEYWORDS.title,
+        xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
+        ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
+        zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+        unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
+        thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
+        border::Symbol = PLOT_KEYWORDS.border,
+        compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
+        compact::Bool = PLOT_KEYWORDS.compact,
+        margin::Integer = PLOT_KEYWORDS.margin,
+        padding::Integer = PLOT_KEYWORDS.padding,
+        labels::Bool = PLOT_KEYWORDS.labels,
+        colorbar::Bool = PLOT_KEYWORDS.colorbar,
+        colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
+        colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
+        colormap::Any = PLOT_KEYWORDS.colormap,
+        projection::Union{Nothing, MVP} = nothing,
+        ignored...,
+    ) where {T <: GraphicsArea}
     margin < 0 && throw(ArgumentError("`margin` must be ≥ 0"))
     padding < 0 && throw(ArgumentError("`padding` must be ≥ 0"))
     if compact  # save space
@@ -100,7 +102,7 @@ function Plot(
     projection = something(projection, MVP())
     E = Val{is_enabled(projection)}
     F = typeof(projection.dist)
-    Plot{T,E,F}(
+    return Plot{T, E, F}(
         graphics,
         projection,
         Ref(0),
@@ -117,12 +119,12 @@ function Plot(
         Ref(compact_labels),
         Ref(compact),
         Ref(labels && graphics.visible),
-        Dict{Int,String}(),
-        Dict{Int,String}(),
-        Dict{Int,ColorType}(),
-        Dict{Int,ColorType}(),
-        Dict{Symbol,String}(),
-        Dict{Symbol,ColorType}(),
+        Dict{Int, String}(),
+        Dict{Int, String}(),
+        Dict{Int, ColorType}(),
+        Dict{Int, ColorType}(),
+        Dict{Symbol, String}(),
+        Dict{Symbol, ColorType}(),
         ColorMap(colorbar_border, colorbar, colorbar_lim, colormap_callback(colormap)),
     )
 end
@@ -137,7 +139,7 @@ Check for invalid input (length) and selects only finite input data.
 function validate_input(x::AbstractVector, y::AbstractVector, z::AbstractVector)
     (nx = length(x)) == (ny = length(y)) == (nz = length(z)) ||
         throw(DimensionMismatch("`x`, `y` and `z` must have same length"))
-    if nx == ny == nz == 0
+    return if nx == ny == nz == 0
         x, y, z
     else
         idx =
@@ -149,7 +151,7 @@ end
 function validate_input(x::AbstractVector, y::AbstractVector, z::Nothing)
     (nx = length(x)) == (ny = length(y)) ||
         throw(DimensionMismatch("`x` and `y` must have same length"))
-    if nx == ny == 0
+    return if nx == ny == 0
         x, y, z
     else
         idx = BitVector(map((i, j) -> isfinite(i) && isfinite(j), x, y))
@@ -174,19 +176,19 @@ function plot_size(; max_width_ylims_labels = 0, kw...)
     end
     height_offset = (
         1 +  # xticks line
-        1 +  # forced newline
-        1  # `julia>` prompt
+            1 +  # forced newline
+            1  # `julia>` prompt
     )
-    (
+    return (
         something(
             height ≡ :auto ?
-            displaysize(stdout)[1] - height_offset - borders - (isempty(title) ? 0 : 1) :
-            height,
+                displaysize(stdout)[1] - height_offset - borders - (isempty(title) ? 0 : 1) :
+                height,
             DEFAULT_HEIGHT[],
         ),
         something(
             width ≡ :auto ?
-            displaysize(stdout)[2] - margin - 2padding - width_labels - borders : width,
+                displaysize(stdout)[2] - margin - 2padding - width_labels - borders : width,
             DEFAULT_WIDTH[],
         ),
     )
@@ -195,45 +197,45 @@ end
 Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
 
 function Plot(
-    x::AbstractVector,
-    y::AbstractVector,
-    z::Union{AbstractVector,Nothing} = nothing,
-    canvas::Type{<:Canvas} = BrailleCanvas;
-    title::AbstractString = PLOT_KEYWORDS.title,
-    xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
-    ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
-    zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
-    unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
-    thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
-    xscale::Union{Symbol,Function} = PLOT_KEYWORDS.xscale,
-    yscale::Union{Symbol,Function} = PLOT_KEYWORDS.yscale,
-    height::Union{Integer,Nothing,Symbol} = nothing,
-    width::Union{Integer,Nothing,Symbol} = nothing,
-    border::Symbol = PLOT_KEYWORDS.border,
-    compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
-    compact::Bool = PLOT_KEYWORDS.compact,
-    blend::Bool = PLOT_KEYWORDS.blend,
-    xlim = PLOT_KEYWORDS.xlim,
-    ylim = PLOT_KEYWORDS.ylim,
-    margin::Integer = PLOT_KEYWORDS.margin,
-    padding::Integer = PLOT_KEYWORDS.padding,
-    labels::Bool = PLOT_KEYWORDS.labels,
-    colorbar::Bool = PLOT_KEYWORDS.colorbar,
-    colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
-    colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
-    colormap::Any = PLOT_KEYWORDS.colormap,
-    grid::Bool = PLOT_KEYWORDS.grid,
-    yticks::Bool = PLOT_KEYWORDS.yticks,
-    xticks::Bool = PLOT_KEYWORDS.xticks,
-    min_height::Integer = PLOT_KEYWORDS.min_height,
-    min_width::Integer = PLOT_KEYWORDS.min_width,
-    yflip::Bool = PLOT_KEYWORDS.yflip,
-    xflip::Bool = PLOT_KEYWORDS.xflip,
-    projection::Union{Nothing,Symbol,MVP} = nothing,
-    axes3d = PLOT_KEYWORDS.axes3d,
-    canvas_kw = PLOT_KEYWORDS.canvas_kw,
-    kw...,
-)
+        x::AbstractVector,
+        y::AbstractVector,
+        z::Union{AbstractVector, Nothing} = nothing,
+        canvas::Type{<:Canvas} = BrailleCanvas;
+        title::AbstractString = PLOT_KEYWORDS.title,
+        xlabel::AbstractString = PLOT_KEYWORDS.xlabel,
+        ylabel::AbstractString = PLOT_KEYWORDS.ylabel,
+        zlabel::AbstractString = PLOT_KEYWORDS.zlabel,
+        unicode_exponent::Bool = PLOT_KEYWORDS.unicode_exponent,
+        thousands_separator::Char = PLOT_KEYWORDS.thousands_separator,
+        xscale::Union{Symbol, Function} = PLOT_KEYWORDS.xscale,
+        yscale::Union{Symbol, Function} = PLOT_KEYWORDS.yscale,
+        height::Union{Integer, Nothing, Symbol} = nothing,
+        width::Union{Integer, Nothing, Symbol} = nothing,
+        border::Symbol = PLOT_KEYWORDS.border,
+        compact_labels::Bool = PLOT_KEYWORDS.compact_labels,
+        compact::Bool = PLOT_KEYWORDS.compact,
+        blend::Bool = PLOT_KEYWORDS.blend,
+        xlim = PLOT_KEYWORDS.xlim,
+        ylim = PLOT_KEYWORDS.ylim,
+        margin::Integer = PLOT_KEYWORDS.margin,
+        padding::Integer = PLOT_KEYWORDS.padding,
+        labels::Bool = PLOT_KEYWORDS.labels,
+        colorbar::Bool = PLOT_KEYWORDS.colorbar,
+        colorbar_border::Symbol = PLOT_KEYWORDS.colorbar_border,
+        colorbar_lim = PLOT_KEYWORDS.colorbar_lim,
+        colormap::Any = PLOT_KEYWORDS.colormap,
+        grid::Bool = PLOT_KEYWORDS.grid,
+        yticks::Bool = PLOT_KEYWORDS.yticks,
+        xticks::Bool = PLOT_KEYWORDS.xticks,
+        min_height::Integer = PLOT_KEYWORDS.min_height,
+        min_width::Integer = PLOT_KEYWORDS.min_width,
+        yflip::Bool = PLOT_KEYWORDS.yflip,
+        xflip::Bool = PLOT_KEYWORDS.xflip,
+        projection::Union{Nothing, Symbol, MVP} = nothing,
+        axes3d = PLOT_KEYWORDS.axes3d,
+        canvas_kw = PLOT_KEYWORDS.canvas_kw,
+        kw...,
+    )
     length(xlim) == length(ylim) == 2 ||
         throw(ArgumentError("`xlim` and `ylim` must be tuples or vectors of length 2"))
 
@@ -351,14 +353,14 @@ function Plot(
 
     (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * mx, 0.8 * my, nothing)
 
-    plot
+    return plot
 end
 
 function next_color!(plot::Plot)
     next_idx = plot.autocolor[] + 1
     next_color = COLOR_CYCLE[][next_idx]
     plot.autocolor[] = next_idx % length(COLOR_CYCLE[])
-    next_color
+    return next_color
 end
 
 """
@@ -377,7 +379,7 @@ Alternatively, the current title can be queried using `title`.
 """
 function title!(plot::Plot, title::AbstractString)
     plot.title[] = title
-    plot
+    return plot
 end
 
 """
@@ -396,7 +398,7 @@ Alternatively, the current label can be queried using `xlabel`.
 """
 function xlabel!(plot::Plot, xlabel::AbstractString)
     plot.xlabel[] = xlabel
-    plot
+    return plot
 end
 
 """
@@ -416,7 +418,7 @@ queried using `ylabel`
 """
 function ylabel!(plot::Plot, ylabel::AbstractString)
     plot.ylabel[] = ylabel
-    plot
+    return plot
 end
 
 """
@@ -435,7 +437,7 @@ Alternatively, the current label can be queried using `zlabel`.
 """
 function zlabel!(plot::Plot, zlabel::AbstractString)
     plot.zlabel[] = zlabel
-    plot
+    return plot
 end
 
 """
@@ -458,7 +460,7 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
         ArgumentError("unknown location $loc: try one of these :tl :t :tr :bl :b :br"),
     )
     if loc ≡ :l || loc ≡ :r
-        for row ∈ 1:nrows(plot.graphics)
+        for row in 1:nrows(plot.graphics)
             if loc ≡ :l
                 if !haskey(plot.labels_left, row) || isempty(plot.labels_left[row])
                     plot.labels_left[row] = value
@@ -477,19 +479,19 @@ function label!(plot::Plot, loc::Symbol, value::AbstractString, color::UserColor
         plot.decorations[loc] = value
         plot.colors_deco[loc] = ansi_color(color)
     end
-    plot
+    return plot
 end
 
 label!(plot::Plot, loc::Symbol, value::AbstractString; color::UserColorType = :normal) =
     label!(plot, loc, value, color)
 
 function label!(
-    plot::Plot,
-    loc::Symbol,
-    row::Integer,
-    value::AbstractString,
-    color::UserColorType,
-)
+        plot::Plot,
+        loc::Symbol,
+        row::Integer,
+        value::AbstractString,
+        color::UserColorType,
+    )
     if loc ≡ :l
         plot.labels_left[row] = value
         plot.colors_left[row] = ansi_color(color)
@@ -499,7 +501,7 @@ function label!(
     else
         throw(ArgumentError("unknown location $loc, try `:l` or `:r` instead"))
     end
-    plot
+    return plot
 end
 
 label!(
@@ -554,13 +556,13 @@ julia> annotate!(plt, 5, 5, "My text")
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function annotate!(
-    plot::Plot{<:Canvas},
-    x::Number,
-    y::Number,
-    text::Union{AbstractChar,AbstractString};
-    color = :normal,
-    kw...,
-)
+        plot::Plot{<:Canvas},
+        x::Number,
+        y::Number,
+        text::Union{AbstractChar, AbstractString};
+        color = :normal,
+        kw...,
+    )
     color = color ≡ :auto ? next_color!(plot) : color
     annotate!(
         plot.graphics,
@@ -571,26 +573,26 @@ function annotate!(
         blend_colors(plot.graphics, color);
         kw...,
     )
-    plot
+    return plot
 end
 
 transform(tr, args...) = args  # catch all
 transform(tr::MVP{Val{false}}, x, y, args...) = (x, y, args...)
 transform(tr::MVP{Val{false}}, x, y, ::Nothing, args...) = (x, y, args...)  # drop z
-transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector,Number}, args...) =
+transform(tr::MVP{Val{true}}, x, y, z::Union{AbstractVector, Number}, args...) =
     (tr(vcat(x', y', z', ones(1, length(x))))..., args...)
 
 function lines!(plot::Plot{<:Canvas}, args...; kw...)
     lines!(plot.graphics, transform(plot.projection, args...)...; kw...)
-    plot
+    return plot
 end
 
 function pixel!(plot::Plot{<:Canvas}, args...; kw...)
     pixel!(plot.graphics, transform(plot.projection, args...)...; kw...)
-    plot
+    return plot
 end
 
 function points!(plot::Plot{<:Canvas}, args...; kw...)
     points!(plot.graphics, transform(plot.projection, args...)...; kw...)
-    plot
+    return plot
 end

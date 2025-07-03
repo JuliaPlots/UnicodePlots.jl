@@ -1,0 +1,16 @@
+name: formatting
+on:
+  push:
+    branches: ['main', 'release-']
+    tags:
+      - '*'
+  pull_request:
+jobs:
+  runic:
+    name: Runic formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
+      - uses: julia-actions/cache@v2
+      - uses: fredrikekre/runic-action@v1

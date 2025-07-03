@@ -3,7 +3,7 @@
     test_ref("boxplot/default.txt", @show_col(p))
     p = boxplot("series1", [1, 2, 3, 4, 5])
     test_ref("boxplot/default_name.txt", @show_col(p))
-    for xlim ∈ ([-1, 8], (-1, 8))
+    for xlim in ([-1, 8], (-1, 8))
         p = boxplot(
             "series1",
             [1, 2, 3, 4, 5];
@@ -20,8 +20,8 @@
 end
 
 @testset "scaling" begin
-    for (i, max_x) ∈ enumerate([5, 6, 10, 20, 40])
-        for xlim ∈ ((0, max_x), [0, max_x])
+    for (i, max_x) in enumerate([5, 6, 10, 20, 40])
+        for xlim in ((0, max_x), [0, max_x])
             p = boxplot([1, 2, 3, 4, 5]; xlim)
             test_ref("boxplot/scale$i.txt", @show_col(p))
         end

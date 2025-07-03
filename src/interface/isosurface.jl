@@ -10,15 +10,17 @@ Extract and plot an isosurface from volumetric data, or a given implicit functio
 
 # Arguments
 
-$(arguments(
-    (
-        V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
-        isovalue = "chosen surface isovalue",
-        cull = "cull (hide) back faces",
-        legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
-        centroid = "display triangulation centroid instead of triangle vertices",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid, :xscale, :yscale)
-))
+$(
+    arguments(
+        (
+            V = "`Array` (volume) of interest for which a surface is extracted, or `Function` evaluated as `f(x, y, z)`",
+            isovalue = "chosen surface isovalue",
+            cull = "cull (hide) back faces",
+            legacy = "use the legacy Marching Cubes algorithm instead of the topology enhanced algorithm",
+            centroid = "display triangulation centroid instead of triangle vertices",
+        ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :z, :canvas), remove = (:blend, :grid, :xscale, :yscale)
+    )
+)
 
 # Author(s)
 
@@ -53,13 +55,13 @@ julia> isosurface(-1:.1:1, -1:.1:1, -1:.1:1, torus, elevation = 50, zoom = 2, cu
 `Plot`, `MVP`, `surfaceplot`, `BrailleCanvas`
 """
 function isosurface(
-    x::AbstractVector,
-    y::AbstractVector,
-    z::AbstractVector,
-    V::Union{Function,AbstractArray};
-    canvas::Type = BrailleCanvas,
-    kw...,
-)
+        x::AbstractVector,
+        y::AbstractVector,
+        z::AbstractVector,
+        V::Union{Function, AbstractArray};
+        canvas::Type = BrailleCanvas,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     V isa Function && (V = V.(x, y', reshape(z, 1, 1, length(z))))
 
@@ -70,21 +72,21 @@ function isosurface(
         labels = false,
         pkw...,
     )
-    isosurface!(plot, x, y, z, V; okw...)
+    return isosurface!(plot, x, y, z, V; okw...)
 end
 
 @doc (@doc isosurface) function isosurface!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    z::AbstractVector,
-    V::AbstractArray;
-    color::UserColorType = KEYWORDS.color,
-    isovalue::Number = 0,
-    centroid::Bool = true,
-    legacy::Bool = false,
-    cull::Bool = false,
-)
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector,
+        z::AbstractVector,
+        V::AbstractArray;
+        color::UserColorType = KEYWORDS.color,
+        isovalue::Number = 0,
+        centroid::Bool = true,
+        legacy::Bool = false,
+        cull::Bool = false,
+    )
     F = float(promote_type(eltype(x), eltype(y), eltype(z), eltype(V)))
 
     mc = MarchingCubes.MC(V, Int; x = collect(F, x), y = collect(F, y), z = collect(F, z))
@@ -100,12 +102,12 @@ end
     C = sizehint!(ColorType[], npts)
 
     color = ansi_color(color ≡ :auto ? next_color!(plot) : color)
-    @inbounds for (i1, i2, i3) ∈ mc.triangles
+    @inbounds for (i1, i2, i3) in mc.triangles
         (i1 ≤ 0 || i2 ≤ 0 || i3 ≤ 0) && continue  # invalid triangle
         back_face = (
             dot(mc.normals[i1], plot.projection.view_dir) < 0 &&
-            dot(mc.normals[i2], plot.projection.view_dir) < 0 &&
-            dot(mc.normals[i3], plot.projection.view_dir) < 0
+                dot(mc.normals[i2], plot.projection.view_dir) < 0 &&
+                dot(mc.normals[i3], plot.projection.view_dir) < 0
         )
         (cull && back_face) && continue
         v1 = mc.vertices[i1]
@@ -125,5 +127,5 @@ end
         end
     end
     # triangles vertices or centroid
-    points!(plot, X, Y, Z, C, falses(length(X)))
+    return points!(plot, X, Y, Z, C, falses(length(X)))
 end

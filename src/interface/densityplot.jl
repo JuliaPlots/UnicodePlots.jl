@@ -53,11 +53,11 @@ julia> densityplot(randn(1_000), randn(1_000); title = "Density Plot")
 [`Plot`](@ref), [`scatterplot`](@ref), [`DensityCanvas`](@ref)
 """
 function densityplot(
-    x::AbstractVector,
-    y::AbstractVector;
-    dscale::Union{Symbol,Function} = :identity,
-    kw...,
-)
+        x::AbstractVector,
+        y::AbstractVector;
+        dscale::Union{Symbol, Function} = :identity,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     plot = Plot(
         x,
@@ -68,7 +68,7 @@ function densityplot(
         grid = false,
         pkw...,
     )
-    scatterplot!(plot, x, y; okw...)
+    return scatterplot!(plot, x, y; okw...)
 end
 
 @doc (@doc densityplot) densityplot!(

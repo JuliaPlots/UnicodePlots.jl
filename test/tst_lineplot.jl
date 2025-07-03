@@ -7,11 +7,11 @@ y = [2, 0, -5, 2, -5]
     @test_throws ArgumentError lineplot(0, 3, Function[])
     @test_throws ArgumentError lineplot(x, Function[])
     @test_throws ArgumentError lineplot(Function[])
-    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2], [1, 2, 3])
-    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], [1, 2])
-    @test_throws Union{BoundsError,DimensionMismatch} lineplot([1, 2, 3], 1:2)
-    @test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, [1, 2])
-    @test_throws Union{BoundsError,DimensionMismatch} lineplot(1:3, 1:2)
+    @test_throws Union{BoundsError, DimensionMismatch} lineplot([1, 2], [1, 2, 3])
+    @test_throws Union{BoundsError, DimensionMismatch} lineplot([1, 2, 3], [1, 2])
+    @test_throws Union{BoundsError, DimensionMismatch} lineplot([1, 2, 3], 1:2)
+    @test_throws Union{BoundsError, DimensionMismatch} lineplot(1:3, [1, 2])
+    @test_throws Union{BoundsError, DimensionMismatch} lineplot(1:3, 1:2)
 end
 
 @testset "Nan / Inf" begin
@@ -21,16 +21,16 @@ end
 end
 
 @testset "numeric array types" begin
-    for p ∈ (
-        @binf(lineplot(x, y)),
-        @binf(lineplot(float.(x), y)),
-        @binf(lineplot(x, float.(y))),
-    )
+    for p in (
+            @binf(lineplot(x, y)),
+            @binf(lineplot(float.(x), y)),
+            @binf(lineplot(x, float.(y))),
+        )
         @test p isa Plot
         test_ref("lineplot/default.txt", @show_col(p))
     end
 
-    for p ∈ (@binf(lineplot(y)), @binf(lineplot(float.(y))))
+    for p in (@binf(lineplot(y)), @binf(lineplot(float.(y))))
         @test p isa Plot
         test_ref("lineplot/y_only.txt", @show_col(p))
     end
@@ -45,10 +45,10 @@ end
 end
 
 @testset "axis scaling and offsets" begin
-    p = @binf lineplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
+    p = @binf lineplot(x .* 1.0e3 .+ 15, y .* 1.0e-3 .- 15)
     test_ref("lineplot/scale1.txt", @show_col(p))
 
-    p = @binf lineplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
+    p = @binf lineplot(x .* 1.0e-3 .+ 15, y .* 1.0e3 .- 15)
     test_ref("lineplot/scale2.txt", @show_col(p))
     tx = [-1.0, 2, 3, 700_000]
     ty = [1.0, 2, 9, 4_000_000]
@@ -126,7 +126,7 @@ end
 
     @test_throws DimensionMismatch lineplot(-0.5, 3, [sin, cos]; name = ["s", "c", "d"])
     @test_throws DimensionMismatch lineplot(-0.5, 3, [sin, cos]; color = [:red])
-    for (xlim, ylim) ∈ zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
+    for (xlim, ylim) in zip(((-0.5, 2.5), [-0.5, 2.5]), ((-0.9, 1.2), [-0.9, 1.2]))
         p = @binf lineplot(
             -0.5,
             3,
@@ -144,7 +144,7 @@ end
 end
 
 @testset "keyword arguments" begin
-    for (xlim, ylim) ∈ zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
+    for (xlim, ylim) in zip(((-1.5, 3.5), [-1.5, 3.5]), ((-5.5, 2.5), [-5.5, 2.5]))
         p = @binf lineplot(x, y, xlim = (-1.5, 3.5), ylim = (-5.5, 2.5))
         test_ref("lineplot/limits.txt", @show_col(p))
     end
@@ -218,7 +218,7 @@ end
 @testset "scales" begin
     x = y = collect(10:10:1_000)
     tmp = tempname()
-    for s ∈ (:ln, :log2, :log10)
+    for s in (:ln, :log2, :log10)
         fscale = UnicodePlots.FSCALES[s]
 
         xs = fscale.(x)
@@ -300,7 +300,7 @@ end
     lineplot!(p, x, y2)
     test_ref("lineplot/matrix_auto.txt", @show_col(p))
 
-    for name ∈ (["1", "2", "3"], ["1" "2" "3"])
+    for name in (["1", "2", "3"], ["1" "2" "3"])
         p = lineplot(x, y1; name, color = [:red :green :blue])
         lineplot!(p, x, y2; name = ["4" "5"], color = [:yellow :cyan])
         test_ref("lineplot/matrix_parameters.txt", @show_col(p))

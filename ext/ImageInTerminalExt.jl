@@ -18,7 +18,7 @@ function UnicodePlots.terminal_specs(img)
         end
     end
     # COV_EXCL_STOP
-    char_h ≢ nothing && char_w ≢ nothing, char_h, char_w
+    return char_h ≢ nothing && char_w ≢ nothing, char_h, char_w
 end
 
 UnicodePlots.imageplot(img::AbstractArray{<:Colorant}; kw...) =

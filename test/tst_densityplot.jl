@@ -28,12 +28,12 @@ end
     # sqrt: we start to see underlying data
     # x -> log(1 + x): start to see the 2D normal law profile
     # x -> x / (x + 1): peak hidden
-    for (dscale, name) ∈ (
-        (identity, "identity"),
-        (sqrt, "sqrt"),
-        (x -> log(1 + x), "log"),
-        (x -> x / (x + 1), "custom"),
-    )
+    for (dscale, name) in (
+            (identity, "identity"),
+            (sqrt, "sqrt"),
+            (x -> log(1 + x), "log"),
+            (x -> x / (x + 1), "custom"),
+        )
         x′ = copy(x)
         x′[round(Int, 0.1length(x)):round(Int, 0.6length(x))] .= 0.5maximum(x)
         p = densityplot(x′, y; dscale)

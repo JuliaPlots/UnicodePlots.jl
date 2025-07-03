@@ -1,6 +1,6 @@
 @testset "aspect ratio" begin
     seed!(RNG, 1_337)
-    for i ∈ 1:minimum(T_SZ)
+    for i in 1:minimum(T_SZ)
         @test heatmap(rand(i, i)).graphics.grid |> size == (i, i)
     end
     p = @hinf heatmap(collect(1:30) * collect(1:30)'; fix_ar = true)
@@ -28,7 +28,7 @@ end
 @testset "color maps" begin
     x = collect(0:30) * collect(0:30)'
 
-    for colormap ∈ (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
+    for colormap in (:viridis, :inferno, :plasma, :magma, :cividis, :grays, :jet1)
         p = @hinf heatmap(x; colormap)
         test_ref(
             "heatmap/colormap_$(size(x, 1))x$(size(x, 2))_$colormap.txt",
@@ -51,11 +51,11 @@ end
 
 @testset "squareness (aspect ratio)" begin
     seed!(RNG, 1_337)
-    for m ∈ 1:minimum(T_SZ)
+    for m in 1:minimum(T_SZ)
         p = @hinf heatmap(randn(RNG, m, m))
         @test size(p.graphics.grid) == (m, m)
     end
-    for m ∈ minimum(T_SZ):maximum(T_SZ)
+    for m in minimum(T_SZ):maximum(T_SZ)
         p = @hinf heatmap(randn(RNG, m, m))
         s1, s2 = size(p.graphics.grid)
         @test s1 == s2
@@ -68,31 +68,31 @@ end
 end
 
 @testset "sizing" begin
-    for dims ∈ (
-        (0, 0),
-        (1, 1),
-        (2, 1),
-        (1, 2),
-        (2, 2),
-        (3, 6),
-        (6, 3),
-        (9, 4),
-        (4, 9),
-        (5, 0),
-        (0, 5),
-        (5, 1),
-        (1, 5),
-        (10, 0),
-        (0, 10),
-        (6, 8),
-        (8, 6),
-        (10, 10),
-        (10, 15),
-        (15, 10),
-        (60, 60),
-        (200, 20),
-        (20, 200),
-    )
+    for dims in (
+            (0, 0),
+            (1, 1),
+            (2, 1),
+            (1, 2),
+            (2, 2),
+            (3, 6),
+            (6, 3),
+            (9, 4),
+            (4, 9),
+            (5, 0),
+            (0, 5),
+            (5, 1),
+            (1, 5),
+            (10, 0),
+            (0, 10),
+            (6, 8),
+            (8, 6),
+            (10, 10),
+            (10, 15),
+            (15, 10),
+            (60, 60),
+            (200, 20),
+            (20, 200),
+        )
         seed!(RNG, 1_337)
         p = @hinf heatmap(randn(RNG, dims); labels = false)
         @test p isa Plot
@@ -104,20 +104,20 @@ end
 end
 
 kw2str(kw) = replace(
-    replace(join(("$(k)_$(v)" for (k, v) ∈ pairs(kw)), '_'), r"[\[\]\(\),]" => ""),
+    replace(join(("$(k)_$(v)" for (k, v) in pairs(kw)), '_'), r"[\[\]\(\),]" => ""),
     ' ' => '_',
 )
 
 @testset "axis scaling" begin
     x = repeat(collect(0:10), outer = (1, 11))
 
-    for kw ∈ (
-        (; xfact = 0.1),
-        (; yfact = 0.1),
-        (; xfact = 0.1, xoffset = -0.5),
-        (; yfact = 0.1, yoffset = -0.5),
-        (; xfact = 0.1, xoffset = -0.5, yfact = 10, yoffset = -50),
-    )
+    for kw in (
+            (; xfact = 0.1),
+            (; yfact = 0.1),
+            (; xfact = 0.1, xoffset = -0.5),
+            (; yfact = 0.1, yoffset = -0.5),
+            (; xfact = 0.1, xoffset = -0.5, yfact = 10, yoffset = -50),
+        )
         p = @hinf heatmap(x; kw...)
         test_ref(
             "heatmap/scaling_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",
@@ -129,20 +129,20 @@ end
 @testset "axis limits" begin
     x = collect(0:30) * collect(0:30)'
 
-    for kw ∈ (
-        (; ylim = (10, 20)),
-        (; ylim = (50, 50)),
-        (; ylim = (1, 50)),
-        (; xlim = (10, 20)),
-        (; xlim = (50, 60)),
-        (; xlim = (1, 50)),
-        (; xlim = (10, 20), ylim = (10, 20)),
-        (; xlim = (1, 50), ylim = (1, 50)),
-        (; xlim = (0, 0.1), xfact = 0.01),
-        (; ylim = (0, 0.1), yfact = 0.01),
-        (; xlim = (0, 0.1), xfact = 0.01, ylim = (0.1, 0.2), yfact = 0.01),
-        (; zlim = (0, 2maximum(x))),
-    )
+    for kw in (
+            (; ylim = (10, 20)),
+            (; ylim = (50, 50)),
+            (; ylim = (1, 50)),
+            (; xlim = (10, 20)),
+            (; xlim = (50, 60)),
+            (; xlim = (1, 50)),
+            (; xlim = (10, 20), ylim = (10, 20)),
+            (; xlim = (1, 50), ylim = (1, 50)),
+            (; xlim = (0, 0.1), xfact = 0.01),
+            (; ylim = (0, 0.1), yfact = 0.01),
+            (; xlim = (0, 0.1), xfact = 0.01, ylim = (0.1, 0.2), yfact = 0.01),
+            (; zlim = (0, 2maximum(x))),
+        )
         p = @hinf heatmap(x; kw...)
         test_ref(
             "heatmap/limits_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",
@@ -154,11 +154,11 @@ end
 @testset "parameters" begin
     seed!(RNG, 1_337)
     x = randn(RNG, 60, 60)
-    for kw ∈ (
-        (; colorbar = false),
-        (; labels = false),
-        (; title = "hmap", zlabel = "lab", colorbar_border = :ascii, colormap = :inferno),
-    )
+    for kw in (
+            (; colorbar = false),
+            (; labels = false),
+            (; title = "hmap", zlabel = "lab", colorbar_border = :ascii, colormap = :inferno),
+        )
         p = @hinf heatmap(x; kw...)
         test_ref(
             "heatmap/parameters_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",
@@ -166,10 +166,10 @@ end
         )
     end
 
-    for sz ∈ ((10, 10), (10, 11))
+    for sz in ((10, 10), (10, 11))
         seed!(RNG, 1_337)
         x = randn(RNG, sz...)
-        for kw ∈ ((; xfact = 0.1), (; yfact = 1))
+        for kw in ((; xfact = 0.1), (; yfact = 1))
             p = @hinf heatmap(x; kw...)
             test_ref(
                 "heatmap/parameters_$(size(x, 1))x$(size(x, 2))_$(kw2str(kw)).txt",

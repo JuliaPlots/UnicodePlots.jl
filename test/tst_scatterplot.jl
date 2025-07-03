@@ -14,8 +14,8 @@ end
 
 @testset "boundaries" begin
     # tests that the two points are drawn correctly on the canvas
-    for canvas ∈ (BrailleCanvas, AsciiCanvas, DotCanvas)
-        for width ∈ (20:10:60), height ∈ (10:5:30)
+    for canvas in (BrailleCanvas, AsciiCanvas, DotCanvas)
+        for width in (20:10:60), height in (10:5:30)
             p = scatterplot(1:2, reverse(1:2); height, width, canvas)
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
             @test last(p.graphics.grid) != UnicodePlots.blank(p.graphics)
@@ -24,16 +24,16 @@ end
 end
 
 @testset "positional types" begin
-    for p ∈ (
-        @binf(scatterplot(x, y)),
-        @binf(scatterplot(float.(x), y)),
-        @binf(scatterplot(x, float.(y))),
-    )
+    for p in (
+            @binf(scatterplot(x, y)),
+            @binf(scatterplot(float.(x), y)),
+            @binf(scatterplot(x, float.(y))),
+        )
         @test p isa Plot
         test_ref("scatterplot/default.txt", @show_col(p))
     end
 
-    for p ∈ (@binf(scatterplot(y)), @binf(scatterplot(float.(y))))
+    for p in (@binf(scatterplot(y)), @binf(scatterplot(float.(y))))
         @test p isa Plot
         test_ref("scatterplot/y_only.txt", @show_col(p))
     end
@@ -46,9 +46,9 @@ end
     @test p isa Plot
     test_ref("scatterplot/range2.txt", @show_col(p))
 
-    p = @binf scatterplot(x .* 1e3 .+ 15, y .* 1e-3 .- 15)
+    p = @binf scatterplot(x .* 1.0e3 .+ 15, y .* 1.0e-3 .- 15)
     test_ref("scatterplot/scale1.txt", @show_col(p))
-    p = @binf scatterplot(x .* 1e-3 .+ 15, y .* 1e3 .- 15)
+    p = @binf scatterplot(x .* 1.0e-3 .+ 15, y .* 1.0e3 .- 15)
     test_ref("scatterplot/scale2.txt", @show_col(p))
     miny = -1.2796649117521434e218
     maxy = -miny
@@ -107,7 +107,7 @@ end
 
     n = collect(1:length(UnicodePlots.MARKERS))
     m = collect(keys(UnicodePlots.MARKERS))
-    for canvas ∈ (BrailleCanvas, DotCanvas, AsciiCanvas)
+    for canvas in (BrailleCanvas, DotCanvas, AsciiCanvas)
         p = scatterplot(n, n, title = "Supported markers", marker = m)
         test_ref("scatterplot/markers_$(canvas).txt", @show_col(p))
     end
@@ -130,7 +130,7 @@ end
     scatterplot!(p, x, y2, marker = :pentagon)
     test_ref("scatterplot/matrix_auto.txt", @show_col(p))
 
-    for name ∈ (["1", "2"], ["1" "2"])
+    for name in (["1", "2"], ["1" "2"])
         p = scatterplot(x, y1; name, color = [:red :green], marker = [:utriangle :rect])
         scatterplot!(
             p,

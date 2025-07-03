@@ -3,7 +3,7 @@
         @test @no_allocs(UnicodePlots.plotting_range_narrow(0, 1)) ≡ (0.0, 1.0)
         @test @no_allocs(UnicodePlots.plotting_range_narrow(0.0, 1)) ≡ (0.0, 1.0)
         @test @no_allocs(UnicodePlots.plotting_range_narrow(0, 1.0f0)) ≡ (0.0, 1.0f0)
-        @test @no_allocs(UnicodePlots.plotting_range_narrow(0x0, 0x1)) ≡ (0.0, 1.0)
+        @test @no_allocs(UnicodePlots.plotting_range_narrow(0x00, 0x01)) ≡ (0.0, 1.0)
     end
 
     @test_logs (:warn, "Invalid plotting range") UnicodePlots.plotting_range_narrow(
@@ -65,7 +65,7 @@ end
     @test haskey(UnicodePlots.BORDERMAP, :dotted)
     @test haskey(UnicodePlots.BORDERMAP, :dashed)
     @test haskey(UnicodePlots.BORDERMAP, :ascii)
-    for (k, v) ∈ zip(bmap_keys, UnicodePlots.BORDERMAP)
+    for (k, v) in zip(bmap_keys, UnicodePlots.BORDERMAP)
         @test length(keys(v)) == 8
         @test haskey(v, :tl)
         @test haskey(v, :tr)
@@ -102,12 +102,12 @@ end
     @test @no_allocs(UnicodePlots.ansi_color(0x80)) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test @no_allocs(UnicodePlots.ansi_color(128)) == UnicodePlots.THRESHOLD + 0x80  # ansi 128
     @test @no_allocs(UnicodePlots.ansi_color((0.0, 0.0, 0.0))) ==
-          UnicodePlots.THRESHOLD + 0x0  # float 0 - 1 range
+        UnicodePlots.THRESHOLD + 0x00  # float 0 - 1 range
     @test @no_allocs(UnicodePlots.ansi_color((1.0, 1.0, 1.0))) ==
-          UnicodePlots.THRESHOLD + 0xe7  # float 0 - 1 range
-    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == UnicodePlots.THRESHOLD + 0x0
+        UnicodePlots.THRESHOLD + 0xe7  # float 0 - 1 range
+    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == UnicodePlots.THRESHOLD + 0x00
     @test @no_allocs(UnicodePlots.ansi_color((255, 255, 255))) ==
-          UnicodePlots.THRESHOLD + 0xe7  # ansi 231
+        UnicodePlots.THRESHOLD + 0xe7  # ansi 231
     @test @no_allocs(UnicodePlots.ansi_color(:red)) == UnicodePlots.THRESHOLD + 0x01
     @test @no_allocs(UnicodePlots.ansi_color(:green)) == UnicodePlots.THRESHOLD + 0x02
     @test @no_allocs(UnicodePlots.ansi_color(:blue)) == UnicodePlots.THRESHOLD + 0x04
@@ -118,26 +118,26 @@ end
     UnicodePlots.truecolors!()
     _lut = UnicodePlots.USE_LUT[]
     UnicodePlots.USE_LUT[] = true
-    @test @no_allocs(UnicodePlots.ansi_color(0x80)) == 0xaf00d7
-    @test @no_allocs(UnicodePlots.ansi_color(128)) == 0xaf00d7
-    @test @no_allocs(UnicodePlots.ansi_color((0.0, 0.0, 0.0))) == 0x0
-    @test @no_allocs(UnicodePlots.ansi_color((1.0, 1.0, 1.0))) == 0xffffff
-    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == 0x0
-    @test @no_allocs(UnicodePlots.ansi_color((255, 255, 255))) == 0xffffff
-    @test @no_allocs(UnicodePlots.ansi_color(:red)) == 0x800000
-    @test @no_allocs(UnicodePlots.ansi_color(:green)) == 0x008000
-    @test @no_allocs(UnicodePlots.ansi_color(:blue)) == 0x000080
-    @test @no_allocs(UnicodePlots.ansi_color(:light_red)) == 0xff0000
-    @test @no_allocs(UnicodePlots.ansi_color(:light_green)) == 0x00ff00
-    @test @no_allocs(UnicodePlots.ansi_color(:light_blue)) == 0x0000ff
+    @test @no_allocs(UnicodePlots.ansi_color(0x80)) == 0x00af00d7
+    @test @no_allocs(UnicodePlots.ansi_color(128)) == 0x00af00d7
+    @test @no_allocs(UnicodePlots.ansi_color((0.0, 0.0, 0.0))) == 0x00
+    @test @no_allocs(UnicodePlots.ansi_color((1.0, 1.0, 1.0))) == 0x00ffffff
+    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == 0x00
+    @test @no_allocs(UnicodePlots.ansi_color((255, 255, 255))) == 0x00ffffff
+    @test @no_allocs(UnicodePlots.ansi_color(:red)) == 0x00800000
+    @test @no_allocs(UnicodePlots.ansi_color(:green)) == 0x00008000
+    @test @no_allocs(UnicodePlots.ansi_color(:blue)) == 0x00000080
+    @test @no_allocs(UnicodePlots.ansi_color(:light_red)) == 0x00ff0000
+    @test @no_allocs(UnicodePlots.ansi_color(:light_green)) == 0x0000ff00
+    @test @no_allocs(UnicodePlots.ansi_color(:light_blue)) == 0x000000ff
     UnicodePlots.USE_LUT[] = false
     @test @no_allocs(UnicodePlots.ansi_color(0x80)) == UnicodePlots.THRESHOLD + 0x80
     @test @no_allocs(UnicodePlots.ansi_color(128)) == UnicodePlots.THRESHOLD + 0x80
-    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == 0x0
-    @test @no_allocs(UnicodePlots.ansi_color((255, 255, 255))) == 0xffffff
-    @test @no_allocs(UnicodePlots.ansi_color(:red)) == UnicodePlots.THRESHOLD + 0x1
-    @test @no_allocs(UnicodePlots.ansi_color(:green)) == UnicodePlots.THRESHOLD + 0x2
-    @test @no_allocs(UnicodePlots.ansi_color(:blue)) == UnicodePlots.THRESHOLD + 0x4
+    @test @no_allocs(UnicodePlots.ansi_color((0, 0, 0))) == 0x00
+    @test @no_allocs(UnicodePlots.ansi_color((255, 255, 255))) == 0x00ffffff
+    @test @no_allocs(UnicodePlots.ansi_color(:red)) == UnicodePlots.THRESHOLD + 0x01
+    @test @no_allocs(UnicodePlots.ansi_color(:green)) == UnicodePlots.THRESHOLD + 0x02
+    @test @no_allocs(UnicodePlots.ansi_color(:blue)) == UnicodePlots.THRESHOLD + 0x04
     @test @no_allocs(UnicodePlots.ansi_color(:light_red)) == UnicodePlots.THRESHOLD + 0x09
     @test @no_allocs(UnicodePlots.ansi_color(:light_green)) == UnicodePlots.THRESHOLD + 0x0a
     @test @no_allocs(UnicodePlots.ansi_color(:light_blue)) == UnicodePlots.THRESHOLD + 0x0c
@@ -147,23 +147,23 @@ end
 
     @static if true  # physical average
         @test @no_allocs(UnicodePlots.blend_colors(UInt32(0), UInt32(255))) == UInt32(180)
-        @test @no_allocs(UnicodePlots.blend_colors(0xff0000, 0x00ff00)) == 0xb4b400  # red & green -> yellow
-        @test @no_allocs(UnicodePlots.blend_colors(0x00ff00, 0x0000ff)) == 0x00b4b4  # green & blue -> cyan
-        @test @no_allocs(UnicodePlots.blend_colors(0xff0000, 0x0000ff)) == 0xb400b4  # red & blue -> magenta
+        @test @no_allocs(UnicodePlots.blend_colors(0x00ff0000, 0x0000ff00)) == 0x00b4b400  # red & green -> yellow
+        @test @no_allocs(UnicodePlots.blend_colors(0x0000ff00, 0x000000ff)) == 0x0000b4b4  # green & blue -> cyan
+        @test @no_allocs(UnicodePlots.blend_colors(0x00ff0000, 0x000000ff)) == 0x00b400b4  # red & blue -> magenta
     else  # binary or
         @test @no_allocs(UnicodePlots.blend_colors(UInt32(0), UInt32(255))) == UInt32(255)
-        @test @no_allocs(UnicodePlots.blend_colors(0xff0000, 0x00ff00)) == 0xffff00
-        @test @no_allocs(UnicodePlots.blend_colors(0x00ff00, 0x0000ff)) == 0x00ffff
-        @test @no_allocs(UnicodePlots.blend_colors(0xff0000, 0x0000ff)) == 0xff00ff
+        @test @no_allocs(UnicodePlots.blend_colors(0x00ff0000, 0x0000ff00)) == 0x00ffff00
+        @test @no_allocs(UnicodePlots.blend_colors(0x0000ff00, 0x000000ff)) == 0x0000ffff
+        @test @no_allocs(UnicodePlots.blend_colors(0x00ff0000, 0x000000ff)) == 0x00ff00ff
     end
 
     @test @no_allocs(UnicodePlots.complement(UnicodePlots.INVALID_COLOR)) ==
-          UnicodePlots.INVALID_COLOR
+        UnicodePlots.INVALID_COLOR
     @test @no_allocs(UnicodePlots.complement(0x003ae1c3)) == 0x00c51e3c
 
     io = PipeBuffer()
     _cfast = UnicodePlots.CRAYONS_FAST[]
-    for fast ∈ (false, true)
+    for fast in (false, true)
         UnicodePlots.CRAYONS_FAST[] = fast
         UnicodePlots.print_crayons(io, Crayon(foreground = :red), 123)
         UnicodePlots.print_crayons(io, Crayon(), 123)
@@ -197,13 +197,13 @@ end
         @test rgt == UnicodePlots.THRESHOLD + 0x91
     elseif UnicodePlots.colormode() == 24
         @test @no_allocs(UnicodePlots.red(lft)) ==
-              @no_allocs(UnicodePlots.grn(lft)) ==
-              @no_allocs(UnicodePlots.blu(lft)) ==
-              @no_allocs(UnicodePlots.c256(0.25))
+            @no_allocs(UnicodePlots.grn(lft)) ==
+            @no_allocs(UnicodePlots.blu(lft)) ==
+            @no_allocs(UnicodePlots.c256(0.25))
         @test @no_allocs(UnicodePlots.red(rgt)) ==
-              @no_allocs(UnicodePlots.grn(rgt)) ==
-              @no_allocs(UnicodePlots.blu(rgt)) ==
-              @no_allocs(UnicodePlots.c256(0.75))
+            @no_allocs(UnicodePlots.grn(rgt)) ==
+            @no_allocs(UnicodePlots.blu(rgt)) ==
+            @no_allocs(UnicodePlots.c256(0.75))
     else
         @test false
     end
@@ -259,8 +259,8 @@ end
     @test default_size!() == (15, 40)
 
     @test UnicodePlots.nice_repr(2.1e-9, true, ' ') == "2.1e⁻⁹"
-    @test UnicodePlots.nice_repr(1e20, false, ' ') == "1e20"
-    @test UnicodePlots.nice_repr(1e20, true, ' ') == "1e²⁰"
+    @test UnicodePlots.nice_repr(1.0e20, false, ' ') == "1e20"
+    @test UnicodePlots.nice_repr(1.0e20, true, ' ') == "1e²⁰"
     @test UnicodePlots.nice_repr(1.0, true, ' ') == "1"
     @test UnicodePlots.nice_repr(10, true, ' ') == "10"
     @test UnicodePlots.nice_repr(1 + 0.1eps(), true, ' ') == "1"

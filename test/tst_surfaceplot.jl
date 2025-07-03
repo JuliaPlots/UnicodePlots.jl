@@ -67,11 +67,11 @@ end
 
 @testset "slice" begin
     data = zeros(40, 20, 20)
-    x, y, z = (axes(data, d) for d ∈ 1:ndims(data))
+    x, y, z = (axes(data, d) for d in 1:ndims(data))
     xc, yc, zc = 30, 8, 8  # centers
     xr, yr, zr = 10, 6, 3  # radii
 
-    for k ∈ z, j ∈ y, i ∈ x  # ellipsoid
+    for k in z, j in y, i in x  # ellipsoid
         data[i, j, k] = ((i - xc) / xr)^2 + ((j - yc) / yr)^2 + ((k - zc) / zr)^2
     end
 

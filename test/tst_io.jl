@@ -12,18 +12,18 @@
 
     A = repeat(collect(0:10)', outer = (11, 1))
     # complex right padding, with colorbar and limit labels
-    for zlabel in ("zlab", ""), n = 1:10
+    for zlabel in ("zlab", ""), n in 1:10
         @show_col heatmap(A; margin = 0, title = "fancy", zlabel, zlim = (1, 10^n))
     end
 end
 
 @testset "savefig" begin
     font_found = UnicodePlots.get_font_face() ≢ nothing  # `PkgEval` can fail
-    for p ∈ (
-        lineplot(-π / 2, 2π, [cos, sin, x -> 0.5, x -> -0.5], title = "fancy title"),
-        barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
-    )
-        for bbox ∈ (nothing, :red), tr ∈ (true, false)
+    for p in (
+            lineplot(-π / 2, 2π, [cos, sin, x -> 0.5, x -> -0.5], title = "fancy title"),
+            barplot([:a, :b, :c, :d, :e], [20, 30, 60, 50, 40]),
+        )
+        for bbox in (nothing, :red), tr in (true, false)
             tmp = tempname() * ".png"
 
             savefig(
@@ -57,20 +57,20 @@ end
 end
 
 macro measure(ex, tol, versioned)
-    quote
+    return quote
         base_tol = is_ci() ? 2 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if (
-            UnicodePlots.get_have_truecolor() &&
-            (STABLE || PRE) &&
-            Sys.islinux() &&
-            !is_pkgeval()
-        )
+                UnicodePlots.get_have_truecolor() &&
+                    (STABLE || PRE) &&
+                    Sys.islinux() &&
+                    !is_pkgeval()
+            )
             n = 10
             kb = fill(0.0, n)
             ms = fill(0.0, n)
             GC.enable(false)
-            for i ∈ 1:n
+            for i in 1:n
                 stats = @timed string($ex; color = true)  # repeated !
                 kb[i] = stats.bytes / 1_000
                 ms[i] = stats.time * 1_000
@@ -109,14 +109,14 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         lines!(c, 0.0, 1.0, 0.5, 0.0; color = :green)
         @measure c 1 Dict(
             v"1.10" => (28, 0.039),
-            v"1.11" => (24, 0.030),
+            v"1.11" => (24, 0.03),
             v"1.12" => (30, 0.042),
         )
     end
 
     let p = lineplot(1:10)
         @measure p 1 Dict(
-            v"1.10" => (50, 0.070),
+            v"1.10" => (50, 0.07),
             v"1.11" => (44, 0.061),
             v"1.12" => (56, 0.045),
         )

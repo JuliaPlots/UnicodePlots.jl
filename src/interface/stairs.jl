@@ -16,10 +16,12 @@ This means that the two vectors must be of same length and ordering.
 
 # Arguments
 
-$(arguments(
-    (; style = "specifies where the transition of the stair takes place (can be either `:pre` or `:post`)");
-    add = (:x, :y, :canvas)
-))
+$(
+    arguments(
+        (; style = "specifies where the transition of the stair takes place (can be either `:pre` or `:post`)");
+        add = (:x, :y, :canvas)
+    )
+)
 
 # Author(s)
 
@@ -75,19 +77,19 @@ function compute_stair_lines(X::AbstractVector, Y::AbstractVector, style::Symbol
     x_vex[1] = first(X)
     y_vex[1] = first(Y)
     if style ≡ :post
-        for i ∈ 2:length(X)
+        for i in 2:length(X)
             x_vex[i + o + 1] = x_vex[i + o] = X[i]
             y_vex[i + o] = Y[i - 1]
             y_vex[i + o + 1] = Y[i]
             o += 1
         end
     elseif style ≡ :pre
-        for i ∈ 2:length(X)
+        for i in 2:length(X)
             x_vex[i + o] = X[i - 1]
             x_vex[i + o + 1] = X[i]
             y_vex[i + o + 1] = y_vex[i + o] = Y[i]
             o += 1
         end
     end
-    x_vex, y_vex
+    return x_vex, y_vex
 end

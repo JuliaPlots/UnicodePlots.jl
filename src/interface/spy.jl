@@ -14,20 +14,22 @@ specified by `maxwidth` and `maxheight`.
 
 # Usage
 
-    spy(A; $(keywords((maxwidth = 0, maxheight = 0, zeros = false); add=(:fix_ar, :canvas))))
+    spy(A; $(keywords((maxwidth = 0, maxheight = 0, zeros = false); add = (:fix_ar, :canvas))))
 
 # Arguments
 
-$(arguments(
-    (
-        A = "matrix of interest for which non-zero elements should be drawn",
-        maxheight = "maximum number of character rows that should be used for plotting",
-        maxwidth = "maximum number of characters per row that should be used for plotting",
-        height = "exact number of character rows that should be used for plotting (`0` stands for automatic)",
-        width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
-        show_zeros = "show zeros pattern instead of default nonzeros",
-    ); add=(:fix_ar, :canvas),
-))
+$(
+    arguments(
+        (
+            A = "matrix of interest for which non-zero elements should be drawn",
+            maxheight = "maximum number of character rows that should be used for plotting",
+            maxwidth = "maximum number of characters per row that should be used for plotting",
+            height = "exact number of character rows that should be used for plotting (`0` stands for automatic)",
+            width = "exact number of characters per row that should be used for plotting (`0` stands for automatic)",
+            show_zeros = "show zeros pattern instead of default nonzeros",
+        ); add = (:fix_ar, :canvas),
+    )
+)
 
 # Author(s)
 
@@ -74,42 +76,42 @@ function spy(A::AbstractMatrix; kw...)
         rows, cols = getindex.(Z, 1), getindex.(Z, 2)
         vals = zeros(eltype(vals), length(rows))
     end
-    spy(size(A)..., rows, cols, vals; kw...)
+    return spy(size(A)..., rows, cols, vals; kw...)
 end
 
 _strict_non_zeros(rows, cols, vals) =
-    let I = findall(!iszero, vals)  # findnz(A) returns stored zeros, ignore those
-        rows[I], cols[I], vals[I]
-    end
+let I = findall(!iszero, vals)  # findnz(A) returns stored zeros, ignore those
+    rows[I], cols[I], vals[I]
+end
 
 _findnz(A::AbstractMatrix) =
-    let I = findall(!iszero, A)
-        getindex.(I, 1), getindex.(I, 2), A[I]
-    end
+let I = findall(!iszero, A)
+    getindex.(I, 1), getindex.(I, 2), A[I]
+end
 
 _findnz(A::AbstractSparseMatrix) = findnz(A)
 
 function spy(
-    nrow::Integer,
-    ncol::Integer,
-    rows::AbstractArray{<:Integer},
-    cols::AbstractArray{<:Integer},
-    vals::AbstractArray;
-    maxwidth::Integer = 0,
-    maxheight::Integer = 0,
-    out_stream::Union{Nothing,IO} = nothing,
-    height::Union{Nothing,Integer} = nothing,
-    width::Union{Nothing,Integer} = nothing,
-    margin::Integer = KEYWORDS.margin,
-    padding::Integer = KEYWORDS.padding,
-    color::UserColorType = KEYWORDS.color,
-    canvas::Type{<:Canvas} = KEYWORDS.canvas,
-    fix_ar::Bool = KEYWORDS.fix_ar,
-    show_zeros::Bool = false,
-    xflip::Bool = false,
-    yflip::Bool = true,
-    kw...,
-)
+        nrow::Integer,
+        ncol::Integer,
+        rows::AbstractArray{<:Integer},
+        cols::AbstractArray{<:Integer},
+        vals::AbstractArray;
+        maxwidth::Integer = 0,
+        maxheight::Integer = 0,
+        out_stream::Union{Nothing, IO} = nothing,
+        height::Union{Nothing, Integer} = nothing,
+        width::Union{Nothing, Integer} = nothing,
+        margin::Integer = KEYWORDS.margin,
+        padding::Integer = KEYWORDS.padding,
+        color::UserColorType = KEYWORDS.color,
+        canvas::Type{<:Canvas} = KEYWORDS.canvas,
+        fix_ar::Bool = KEYWORDS.fix_ar,
+        show_zeros::Bool = false,
+        xflip::Bool = false,
+        yflip::Bool = true,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     warn_on_lost_kw(okw)
 
@@ -172,5 +174,5 @@ function spy(
     end
     isempty(xlabel(plot)) &&
         xlabel!(plot, nice_repr(length(vals), plot) * (show_zeros ? " ⩵ 0" : " ≠ 0"))
-    plot
+    return plot
 end
