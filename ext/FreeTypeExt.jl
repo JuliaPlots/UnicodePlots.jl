@@ -16,10 +16,10 @@ const LIB_LOCK = ReentrantLock()
 const VALID_FONTPATHS = String[]
 
 struct FontExtent{T}
-    vertical_bearing::SVector{2,T}
-    horizontal_bearing::SVector{2,T}
-    advance::SVector{2,T}
-    scale::SVector{2,T}
+    vertical_bearing::SVector{2, T}
+    horizontal_bearing::SVector{2, T}
+    advance::SVector{2, T}
+    scale::SVector{2, T}
 end
 
 mutable struct FTFont
@@ -28,12 +28,12 @@ mutable struct FTFont
     function FTFont(ft_ptr::FT_Face)
         face = new(ft_ptr, ReentrantLock())
         finalizer(safe_free, face)
-        face
+        return face
     end
 end
 
 function safe_free(face::FTFont)
-    @lock face.lock begin
+    return @lock face.lock begin
         (face.ft_ptr != C_NULL && FT_LIB[1] != C_NULL) && FT_Done_Face(face)
     end
 end
@@ -51,7 +51,7 @@ Base.unsafe_convert(::Type{FT_Face}, font::FTFont) = font.ft_ptr
 
 function ft_property(face::FTFont, fieldname::Symbol)
     font_rect = @lock face.lock unsafe_load(face.ft_ptr)
-    if (field = getfield(font_rect, fieldname)) isa Ptr{FT_String}
+    return if (field = getfield(font_rect, fieldname)) isa Ptr{FT_String}
         field == C_NULL && return ""
         unsafe_string(field)
     else
@@ -70,27 +70,27 @@ function new_face(name, index::Real = 0, ftlib = FT_LIB)
     face = Ref{FT_Face}()
     err = @lock LIB_LOCK FT_New_Face(ftlib[1], name, Int32(index), face)
     check_error(err, "Couldn't load font $name")
-    face[]
+    return face[]
 end
 
 add_mono(fts...) = tuple(map(x -> x * "Mono", fts)..., fts...)
 
 # COV_EXCL_START
 fallback_fonts() =
-# those fallback fonts are likely to fail braille characters
+    # those fallback fonts are likely to fail braille characters
     if Sys.islinux()
-        add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: trailing space intended
-    elseif Sys.isbsd()
-        ("Courier New", "Helvetica")
-    elseif Sys.iswindows()
-        ("Courier New", "Arial")
-    else
-        @warn "Unsupported $(Base.KERNEL)"
-        ("Courier", "Helvetica")
-    end::Tuple
+    add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: trailing space intended
+elseif Sys.isbsd()
+    ("Courier New", "Helvetica")
+elseif Sys.iswindows()
+    ("Courier New", "Arial")
+else
+    @warn "Unsupported $(Base.KERNEL)"
+    ("Courier", "Helvetica")
+end::Tuple
 # COV_EXCL_STOP
 
-const FT_FONTS = Dict{String,FTFont}()
+const FT_FONTS = Dict{String, FTFont}()
 
 """
 Match a font using the user-specified search string.
@@ -124,7 +124,7 @@ Then this is how this function would match different search strings:
 - "times"               => no match
 - "arial"               => no match
 """
-function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
+function match_font(face::FTFont, searchparts)::Tuple{Int, Int, Bool, Int}
     fname, sname = family_name(face), style_name(face)
     is_regular_style = any(occursin.(REGULAR_STYLES, Ref(sname)))
 
@@ -145,7 +145,7 @@ function match_font(face::FTFont, searchparts)::Tuple{Int,Int,Bool,Int}
         return family_score, 0, is_regular_style, fontlength_penalty
 
     style_score = sum(map(length, filter(part -> occursin(part, sname), remaining_parts)))  # COV_EXCL_LINE
-    family_score, style_score, is_regular_style, fontlength_penalty  # COV_EXCL_LINE
+    return family_score, style_score, is_regular_style, fontlength_penalty  # COV_EXCL_LINE
 end
 
 function find_font(searchstring::String; additional_fonts::String = "")
@@ -178,7 +178,7 @@ function find_font(searchstring::String; additional_fonts::String = "")
         end
         finalize(face)
     end
-    FTFont(best_fpath)
+    return FTFont(best_fpath)
 end
 
 hadvance(ext::FontExtent) = ext.advance[1]
@@ -192,13 +192,13 @@ rightinkbound(ext::FontExtent) = leftinkbound(ext) + inkwidth(ext)
 bottominkbound(ext::FontExtent) = hbearing_ori_to_top(ext) - inkheight(ext)
 topinkbound(ext::FontExtent) = hbearing_ori_to_top(ext)
 
-FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T<:AbstractFloat} =
+FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T <: AbstractFloat} =
     FontExtent(
-        SVector{2,T}(fontmetric.vertBearingX, fontmetric.vertBearingY) ./ scale,
-        SVector{2,T}(fontmetric.horiBearingX, fontmetric.horiBearingY) ./ scale,
-        SVector{2,T}(fontmetric.horiAdvance, fontmetric.vertAdvance) ./ scale,
-        SVector{2,T}(fontmetric.width, fontmetric.height) ./ scale,
-    )
+    SVector{2, T}(fontmetric.vertBearingX, fontmetric.vertBearingY) ./ scale,
+    SVector{2, T}(fontmetric.horiBearingX, fontmetric.horiBearingY) ./ scale,
+    SVector{2, T}(fontmetric.horiAdvance, fontmetric.vertAdvance) ./ scale,
+    SVector{2, T}(fontmetric.width, fontmetric.height) ./ scale,
+)
 
 FontExtent(func::Function, ext::FontExtent) = FontExtent(
     func(ext.vertical_bearing),
@@ -212,7 +212,7 @@ function set_pixelsize(face::FTFont, size::Integer)
         FT_Set_Pixel_Sizes(face, size, size),
         "Couldn't set pixelsize",
     )
-    size
+    return size
 end
 
 glyph_index(face::FTFont, glyphname::String)::UInt64 =
@@ -228,7 +228,7 @@ function kerning(face::FTFont, glyphspecs...)
     # can error if font has no kerning ! Since that's somewhat expected, we just return 0
     err == 0 || return SVector(0.0, 0.0)
     divisor = 64  # 64 since metrics are in 1/64 units (units to 26.6 fractional pixels)
-    SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
+    return SVector(kerning2d[].x / divisor, kerning2d[].y / divisor)
 end
 
 function load_glyph(face::FTFont, glyph)
@@ -242,7 +242,7 @@ function load_glyph(face::FTFont, glyph, pixelsize::Integer; set_pix = true)
     load_glyph(face, glyph)
     gl = @lock face.lock unsafe_load(ft_property(face, :glyph))
     @assert gl.format == FT_GLYPH_FORMAT_BITMAP
-    gl
+    return gl
 end
 
 function glyph_bitmap(bitmap::FT_Bitmap)
@@ -250,22 +250,22 @@ function glyph_bitmap(bitmap::FT_Bitmap)
     bmp = Matrix{UInt8}(undef, bitmap.width, bitmap.rows)
     row = bitmap.buffer
     bitmap.pitch < 0 && (row -= bitmap.pitch * (rbmpRec.rows - 1))
-    for r = 1:(bitmap.rows)
+    for r in 1:(bitmap.rows)
         bmp[:, r] = unsafe_wrap(Array, row, bitmap.width)
         row += bitmap.pitch
     end
-    bmp
+    return bmp
 end
 
 render_face(face::FTFont, glyph, pixelsize::Integer; kw...) =
-    let gl = load_glyph(face, glyph, pixelsize; kw...)
-        glyph_bitmap(gl.bitmap), FontExtent(gl.metrics)
-    end
+let gl = load_glyph(face, glyph, pixelsize; kw...)
+    glyph_bitmap(gl.bitmap), FontExtent(gl.metrics)
+end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
     FontExtent(load_glyph(face, glyph, pixelsize).metrics)
 
-one_or_typemax(::Type{T}) where {T<:Union{Real,Colorant}} =
+one_or_typemax(::Type{T}) where {T <: Union{Real, Colorant}} =
     T <: Integer ? typemax(T) : oneunit(T)
 
 """
@@ -286,23 +286,23 @@ Uses the conventions of freetype.org/freetype2/docs/glyphs/glyphs-3.html
 - `incx`: extra x spacing.
 """
 function UnicodePlots.render_string!(
-    img::AbstractMatrix{T},
-    fstr::Union{AbstractVector{Char},String},
-    face::FTFont,
-    pixelsize::Int,
-    y0,
-    x0;
-    fcolor::Union{AbstractVector{T},T} = one_or_typemax(T),
-    gcolor::Union{AbstractVector{T},T,Nothing} = nothing,
-    bcolor::Union{T,Nothing} = zero(T),
-    halign::Symbol = :hleft,
-    valign::Symbol = :vbaseline,
-    bbox_glyph::Union{T,Nothing} = nothing,
-    bbox::Union{T,Nothing} = nothing,
-    gstr::Union{AbstractVector{Char},String,Nothing} = nothing,
-    off_bg::Int = 0,
-    incx::Int = 0,
-) where {T<:Union{Real,Colorant}}
+        img::AbstractMatrix{T},
+        fstr::Union{AbstractVector{Char}, String},
+        face::FTFont,
+        pixelsize::Int,
+        y0,
+        x0;
+        fcolor::Union{AbstractVector{T}, T} = one_or_typemax(T),
+        gcolor::Union{AbstractVector{T}, T, Nothing} = nothing,
+        bcolor::Union{T, Nothing} = zero(T),
+        halign::Symbol = :hleft,
+        valign::Symbol = :vbaseline,
+        bbox_glyph::Union{T, Nothing} = nothing,
+        bbox::Union{T, Nothing} = nothing,
+        gstr::Union{AbstractVector{Char}, String, Nothing} = nothing,
+        off_bg::Int = 0,
+        incx::Int = 0,
+    ) where {T <: Union{Real, Colorant}}
     set_pixelsize(face, pixelsize)
 
     fstr = fstr isa AbstractVector ? fstr : collect(fstr)
@@ -333,10 +333,10 @@ function UnicodePlots.render_string!(
     px = x0 - (halign ≡ :hright ? sum_adv_x : halign ≡ :hcenter ? sum_adv_x >> 1 : 0)
     py =
         y0 + (
-            valign ≡ :vtop ? y_max :
+        valign ≡ :vtop ? y_max :
             valign ≡ :vbottom ? y_min :
             valign ≡ :vcenter ? (y_max - y_min) >> 1 + y_min : 0
-        )
+    )
 
     if bcolor ≢ nothing
         img[
@@ -367,7 +367,7 @@ function UnicodePlots.render_string!(
         col_lo, col_hi = 1 + max(0, -ox), sx - max(0, ox + sx - imgw)
 
         if gcol ≡ nothing
-            for r = row_lo:row_hi, c = col_lo:col_hi
+            for r in row_lo:row_hi, c in col_lo:col_hi
                 (bm = bitmap[c, r]) == 0 && continue
                 color = bm / bitmap_max * fcol
                 img[oy + r, ox + c] = T <: Integer ? round(T, color) : T(color)
@@ -385,12 +385,12 @@ function UnicodePlots.render_string!(
             bx1, bx2 = px, px + ax
             r1, r2 = clamp(by1, 1, imgh), clamp(by2, 1, imgh)
             c1, c2 = clamp(bx1, 1, imgw), clamp(bx2, 1, imgw)
-            for r = (r1 + off_bg):(r2 - off_bg), c = (c1 + off_bg):(c2 - off_bg)
+            for r in (r1 + off_bg):(r2 - off_bg), c in (c1 + off_bg):(c2 - off_bg)
                 img[r, c] = gcol
             end
 
             # render character by drawing the corresponding glyph
-            for r = row_lo:row_hi, c = col_lo:col_hi
+            for r in row_lo:row_hi, c in col_lo:col_hi
                 (bm = bitmap[c, r]) == 0 && continue
                 w1 = bm / bitmap_max
                 color0 = w1 * fcol
@@ -422,11 +422,11 @@ function UnicodePlots.render_string!(
 
         px += ax + incx
     end
-    img
+    return img
 end
 
 function ft_init()
-    @lock LIB_LOCK begin
+    return @lock LIB_LOCK begin
         FT_LIB[1] != C_NULL &&
             error("Freetype already initialized. init() called two times ?")
         FT_Init_FreeType(FT_LIB) == 0
@@ -434,7 +434,7 @@ function ft_init()
 end
 
 function ft_done()
-    @lock LIB_LOCK begin
+    return @lock LIB_LOCK begin
         FT_LIB[1] == C_NULL && error(
             "Library == CNULL. done() called before init(), or done called two times ?",
         )
@@ -446,11 +446,11 @@ end
 
 add_recursive(result, path) =
     for p in readdir(path)
-        if (pabs = joinpath(path, p)) |> isdir
-            push!(result, pabs)
-            add_recursive(result, pabs)
-        end
+    if (pabs = joinpath(path, p)) |> isdir
+        push!(result, pabs)
+        add_recursive(result, pabs)
     end
+end
 
 function __init__()
     ft_init()
@@ -473,11 +473,11 @@ function __init__()
     else
         result = String[]
         for p in (
-            "/usr/share/fonts",
-            joinpath(homedir(), ".fonts"),
-            joinpath(homedir(), ".local/share/fonts"),
-            "/usr/local/share/fonts",
-        )
+                "/usr/share/fonts",
+                joinpath(homedir(), ".fonts"),
+                joinpath(homedir(), ".local/share/fonts"),
+                "/usr/local/share/fonts",
+            )
             if isdir(p)
                 push!(result, p)
                 add_recursive(result, p)
@@ -488,12 +488,12 @@ function __init__()
     env_path = get(ENV, "UP_FONT_PATH", nothing)
     env_path ≡ nothing || push!(font_paths, env_path)
     append!(VALID_FONTPATHS, filter(isdir, font_paths))
-    nothing
+    return nothing
 end
 
 function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
     face = nothing
-    for name ∈ filter(!isnothing, (font, "JuliaMono", fallback...))
+    for name in filter(!isnothing, (font, "JuliaMono", fallback...))
         if (face = get(FT_FONTS, name, nothing)) ≡ nothing
             if (ft = find_font(name)) ≢ nothing
                 face = FT_FONTS[name] = ft
@@ -503,7 +503,7 @@ function UnicodePlots.get_font_face(font = nothing, fallback = fallback_fonts())
             break  # found in cache
         end
     end
-    face
+    return face
 end
 
 UnicodePlots.save_image(fn::AbstractString, args...; kw...) =

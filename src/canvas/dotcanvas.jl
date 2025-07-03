@@ -7,9 +7,9 @@ Printing plots to a file is one of those situations.
 The DotCanvas is best used in combination with `scatterplot`.
 For `lineplot` we suggest to use the `AsciiCanvas` instead.
 """
-struct DotCanvas{YS<:Function,XS<:Function} <: LookupCanvas
-    grid::Transpose{UInt16,Matrix{UInt16}}
-    colors::Transpose{ColorType,Matrix{ColorType}}
+struct DotCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+    grid::Transpose{UInt16, Matrix{UInt16}}
+    colors::Transpose{ColorType, Matrix{ColorType}}
     visible::Bool
     blend::Bool
     yflip::Bool
@@ -20,7 +20,7 @@ struct DotCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     origin_x::Float64
     height::Float64
     width::Float64
-    min_max::NTuple{2,UnicodeType}
+    min_max::NTuple{2, UnicodeType}
     xscale::XS
     yscale::YS
 end

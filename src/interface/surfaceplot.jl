@@ -13,13 +13,15 @@ The `x`, `y` and `z` axes of the 3D cartesian frame are mapped respectively to t
 
 # Arguments
 
-$(arguments(
-    (
-        A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
-        lines = "use `lineplot` instead of `scatterplot` (for regular increasing data)",
-        zscale = "scale heights (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
-    ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name, :xscale, :yscale)
-))
+$(
+    arguments(
+        (
+            A = "`Matrix` of surface heights, or `Function` evaluated as `f(x, y)`",
+            lines = "use `lineplot` instead of `scatterplot` (for regular increasing data)",
+            zscale = "scale heights (`:identity`, `:aspect`, tuple of (min, max) values, or arbitrary scale function)",
+        ); add = (Z_DESCRIPTION..., PROJ_DESCRIPTION..., :x, :y, :canvas), remove = (:blend, :grid, :name, :xscale, :yscale)
+    )
+)
 
 # Author(s)
 
@@ -54,14 +56,14 @@ julia> surfaceplot(-8:.5:8, -8:.5:8, sombrero)
 `Plot`, `MVP`, `lineplot`, `scatterplot`, `BrailleCanvas`
 """
 function surfaceplot(
-    x::AbstractVecOrMat,
-    y::AbstractVecOrMat,
-    A::Union{Function,AbstractVecOrMat};
-    zscale::Union{Symbol,Function,NTuple} = KEYWORDS.zscale,
-    canvas::Type = KEYWORDS.canvas,
-    colormap = KEYWORDS.colormap,
-    kw...,
-)
+        x::AbstractVecOrMat,
+        y::AbstractVecOrMat,
+        A::Union{Function, AbstractVecOrMat};
+        zscale::Union{Symbol, Function, NTuple} = KEYWORDS.zscale,
+        canvas::Type = KEYWORDS.canvas,
+        colormap = KEYWORDS.colormap,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     X, Y = if x isa AbstractVector && y isa AbstractVector && !(A isa AbstractVector)
         meshgrid(x, y)
@@ -101,21 +103,21 @@ function surfaceplot(
         colormap,
         pkw...,
     )
-    surfaceplot!(plot, X, Y, Z, H; colormap, okw...)
+    return surfaceplot!(plot, X, Y, Z, H; colormap, okw...)
 end
 
 @doc (@doc surfaceplot) function surfaceplot!(
-    plot::Plot{<:Canvas},
-    X::AbstractVecOrMat,  # support AbstractVector for `Plots.jl`
-    Y::AbstractVecOrMat,
-    Z::AbstractVecOrMat,
-    H::Union{AbstractVecOrMat,Nothing} = nothing;
-    color::UserColorType = nothing,  # NOTE: `nothing` as default (uses a colormap), but allow a single color
-    colormap = KEYWORDS.colormap,
-    lines::Bool = false,
-    zlim = KEYWORDS.zlim,
-    kw...,
-)
+        plot::Plot{<:Canvas},
+        X::AbstractVecOrMat,  # support AbstractVector for `Plots.jl`
+        Y::AbstractVecOrMat,
+        Z::AbstractVecOrMat,
+        H::Union{AbstractVecOrMat, Nothing} = nothing;
+        color::UserColorType = nothing,  # NOTE: `nothing` as default (uses a colormap), but allow a single color
+        colormap = KEYWORDS.colormap,
+        lines::Bool = false,
+        zlim = KEYWORDS.zlim,
+        kw...,
+    )
     H = something(H, Z)
     length(X) == length(Y) == length(Z) == length(H) ||
         throw(DimensionMismatch("`X`, `Y`, `Z` and `H` must have same length"))
@@ -129,19 +131,19 @@ end
 
     F = float(promote_type(eltype(X), eltype(Y), eltype(Z)))
     if (
-        lines &&
-        cmapped &&
-        X isa AbstractMatrix &&
-        Y isa AbstractMatrix &&
-        Z isa AbstractMatrix &&
-        H isa AbstractMatrix
-    )
+            lines &&
+                cmapped &&
+                X isa AbstractMatrix &&
+                Y isa AbstractMatrix &&
+                Z isa AbstractMatrix &&
+                H isa AbstractMatrix
+        )
         m, n = size(X)
         col_cb = h -> callback(h, mh, Mh)
-        buf = MMatrix{4,2,F}(undef)
+        buf = MMatrix{4, 2, F}(undef)
         incs = (0, 0, 1, 0), (0, 0, 0, 1), (0, 0, 1, 1), (1, 0, 0, 1)
-        @inbounds for j ∈ axes(X, 2), i ∈ axes(X, 1)
-            for inc ∈ incs
+        @inbounds for j in axes(X, 2), i in axes(X, 1)
+            for inc in incs
                 (i1 = i + inc[1]) > m && continue
                 (j1 = j + inc[2]) > n && continue
                 (i2 = i + inc[3]) > m && continue
@@ -186,7 +188,7 @@ end
         end
         points!(plot, vec(X), vec(Y), vec(Z), colors, falses(npts))
     end
-    plot
+    return plot
 end
 
 """

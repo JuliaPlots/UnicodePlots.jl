@@ -58,7 +58,7 @@ end
     )
     test_ref("histogram/parameters1_nolabels.txt", @print_col(p))
 
-    for symbols ∈ (["="], ['='], tuple("="), tuple('='))
+    for symbols in (["="], ['='], tuple("="), tuple('='))
         p = histogram(
             x,
             title = "My Histogram",

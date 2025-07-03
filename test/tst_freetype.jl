@@ -23,7 +23,7 @@ face = FTE.find_font("hack")  # must occur after `ft_init` and `ft_done` !
     FTE.set_pixelsize(face, 64)  # should be the default
     img, extent = FTE.render_face(face, 'C', 64)
     @test size(img) == (30, 49)
-    @test typeof(img) == Array{UInt8,2}
+    @test typeof(img) == Array{UInt8, 2}
 
     @test FTE.hadvance(extent) == 39
     @test FTE.vadvance(extent) == 62
@@ -53,7 +53,7 @@ face = FTE.find_font("hack")  # must occur after `ft_init` and `ft_done` !
     @test maximum(a) ≤ 1.0
 
     @test UnicodePlots.render_string!(zeros(UInt8, 20, 100), "helgo", face, 10, 25, 80) isa
-          Matrix
+        Matrix
 end
 
 @testset "ways to access glyphs" begin
@@ -190,7 +190,7 @@ end
 
 @testset "array of grays" begin
     @test UnicodePlots.render_string!(zeros(Gray, 20, 100), "helgo", face, 10, 10, 50) isa
-          Matrix
+        Matrix
     @test UnicodePlots.render_string!(
         zeros(Gray{Float64}, 20, 100),
         "helgo",
@@ -203,8 +203,8 @@ end
 end
 
 @testset "per char background / colors" begin
-    for str ∈ ("helgo", collect("helgo"))
-        fcolor = [RGB{Float32}(rand(3)...) for _ ∈ 1:length(str)]
+    for str in ("helgo", collect("helgo"))
+        fcolor = [RGB{Float32}(rand(3)...) for _ in 1:length(str)]
         @test UnicodePlots.render_string!(
             zeros(RGB{Float32}, 20, 100),
             str,
@@ -214,7 +214,7 @@ end
             1;
             fcolor = fcolor,
         ) isa Matrix
-        gcolor = [RGB{Float32}(rand(3)...) for _ ∈ 1:length(str)]
+        gcolor = [RGB{Float32}(rand(3)...) for _ in 1:length(str)]
         gstr = fill('█', length(str))
         @test UnicodePlots.render_string!(
             zeros(RGB{Float32}, 20, 100),
@@ -256,7 +256,7 @@ end
         end
         Threads.@threads for f in fontfiles
             fo = FTE.FTFont(f)
-            Threads.@threads for i = 1:n
+            Threads.@threads for i in 1:n
                 FTE.load_glyph(fo, i)
                 FTE.load_glyph(fo, i, 64)
                 FTE.render_face(fo, i, 16)

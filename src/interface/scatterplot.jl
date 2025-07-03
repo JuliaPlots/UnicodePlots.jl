@@ -18,12 +18,14 @@ This means that the two vectors must be of same length and ordering.
 
 # Arguments
 
-$(arguments(
-    (
-        marker = "choose a marker from $(keys(MARKERS)), a `Char`, a unit length `String` or a `Vector` of these",
-        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
-    ); add = (:x, :y, :canvas)
-))
+$(
+    arguments(
+        (
+            marker = "choose a marker from $(keys(MARKERS)), a `Char`, a unit length `String` or a `Vector` of these",
+            color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
+        ); add = (:x, :y, :canvas)
+    )
+)
 
 Author(s)
 
@@ -61,35 +63,35 @@ julia> scatterplot(randn(50), randn(50), title = "My Scatterplot")
 [`AsciiCanvas`](@ref), [`DotCanvas`](@ref)
 """
 function scatterplot(
-    x::AbstractVector,
-    y::AbstractVector,
-    z::Union{AbstractVector,Nothing} = nothing;
-    canvas::Type = KEYWORDS.canvas,
-    kw...,
-)
+        x::AbstractVector,
+        y::AbstractVector,
+        z::Union{AbstractVector, Nothing} = nothing;
+        canvas::Type = KEYWORDS.canvas,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
-    scatterplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
+    return scatterplot!(Plot(x, y, z, canvas; pkw...), x, y, z; okw...)
 end
 
 scatterplot(; kw...) = lineplot([]; kw...)
 scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
 
 @doc (@doc scatterplot) function scatterplot!(
-    plot::Plot{<:Canvas},
-    x::AbstractVector,
-    y::AbstractVector,
-    z::Union{AbstractVector,Nothing} = nothing;
-    color::Union{UserColorType,AbstractVector} = KEYWORDS.color,
-    marker::Union{MarkerType,AbstractVector} = :pixel,
-    name = KEYWORDS.name,
-    kw...,
-)
+        plot::Plot{<:Canvas},
+        x::AbstractVector,
+        y::AbstractVector,
+        z::Union{AbstractVector, Nothing} = nothing;
+        color::Union{UserColorType, AbstractVector} = KEYWORDS.color,
+        marker::Union{MarkerType, AbstractVector} = :pixel,
+        name = KEYWORDS.name,
+        kw...,
+    )
     color = color ≡ :auto ? next_color!(plot) : color
     col_vec = color isa AbstractVector
     isempty(name) || label!(plot, :r, string(name), col_vec ? first(color) : color)
     if marker ∈ (:pixel, :auto)
         if col_vec
-            @inbounds for i ∈ eachindex(color)
+            @inbounds for i in eachindex(color)
                 points!(plot, x[i], y[i], z ≡ nothing ? z : z[i]; color = color[i])
             end
         else
@@ -97,12 +99,12 @@ scatterplot(y::AbstractVector; kw...) = scatterplot(axes(y, 1), y; kw...)
         end
     else
         z ≡ nothing || throw(ArgumentError("unsupported scatter with 3D data"))
-        for (xi, yi, mi, ci) ∈ zip(x, y, iterable(marker), iterable(color))
+        for (xi, yi, mi, ci) in zip(x, y, iterable(marker), iterable(color))
             annotate!(plot, xi, yi, char_marker(mi); color = ci, kw...)
         end
     end
     plot.series[] += 1
-    plot
+    return plot
 end
 
 scatterplot!(plot::Plot{<:Canvas}, y::AbstractVector; kw...) =
@@ -121,17 +123,17 @@ function scatterplot(x::AbstractVector, y::AbstractMatrix; kw...)
         marker = first(markers),
         filter(k -> k.first ∉ (:name, :color, :marker), kw)...,
     )
-    for (i, (name, color, marker, ys)) ∈ enumerate(zip(names, colors, markers, eachcol(y)))
+    for (i, (name, color, marker, ys)) in enumerate(zip(names, colors, markers, eachcol(y)))
         i == 1 && continue
         scatterplot!(plot, x, ys; name, color, marker)
     end
-    plot
+    return plot
 end
 
 function scatterplot!(plot::Plot{<:Canvas}, x::AbstractVector, y::AbstractMatrix; kw...)
     names, colors, markers = multiple_series_defaults(y, kw, plot.series[] + 1)
-    for (name, color, marker, ys) ∈ zip(names, colors, markers, eachcol(y))
+    for (name, color, marker, ys) in zip(names, colors, markers, eachcol(y))
         scatterplot!(plot, x, ys; name, color, marker)
     end
-    plot
+    return plot
 end

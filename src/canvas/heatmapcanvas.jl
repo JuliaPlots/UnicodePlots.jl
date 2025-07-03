@@ -6,9 +6,9 @@ The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character into two pixels (top and bottom).
 """
-struct HeatmapCanvas{YS<:Function,XS<:Function} <: LookupCanvas
-    grid::Transpose{UInt8,Matrix{UInt8}}
-    colors::Transpose{ColorType,Matrix{ColorType}}
+struct HeatmapCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+    grid::Transpose{UInt8, Matrix{UInt8}}
+    colors::Transpose{ColorType, Matrix{ColorType}}
     visible::Bool
     blend::Bool
     yflip::Bool
@@ -19,7 +19,7 @@ struct HeatmapCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     origin_x::Float64
     height::Float64
     width::Float64
-    min_max::NTuple{2,UnicodeType}
+    min_max::NTuple{2, UnicodeType}
     yscale::YS
     xscale::XS
 end
@@ -42,7 +42,7 @@ function HeatmapCanvas(args...; kw...)
         kw...,
     )
     fill!(c.colors, ansi_color(:black))  # black background by default
-    c
+    return c
 end
 
 function print_row(io::IO, _, print_color, c::HeatmapCanvas, row::Integer)
@@ -52,11 +52,11 @@ function print_row(io::IO, _, print_color, c::HeatmapCanvas, row::Integer)
     # extend the plot upwards by half a row
     isodd(size(c.grid, 1)) && (row -= 1)
 
-    for col ∈ 1:ncols(c)
+    for col in 1:ncols(c)
         # for odd numbers of rows, only print the foreground for the top row
         bgcol = row > 1 ? c.colors[row - 1, col] : missing
         print_color(io, c.colors[row, col], HALF_BLOCK; bgcol)
     end
 
-    nothing
+    return nothing
 end

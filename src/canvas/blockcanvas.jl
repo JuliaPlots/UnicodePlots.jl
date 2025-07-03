@@ -4,9 +4,9 @@ It has half the resolution of the `BrailleCanvas`.
 In contrast to BrailleCanvas, the pixels don't have visible spacing between them.
 This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 """
-struct BlockCanvas{YS<:Function,XS<:Function} <: LookupCanvas
-    grid::Transpose{UInt16,Matrix{UInt16}}
-    colors::Transpose{ColorType,Matrix{ColorType}}
+struct BlockCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+    grid::Transpose{UInt16, Matrix{UInt16}}
+    colors::Transpose{ColorType, Matrix{ColorType}}
     visible::Bool
     blend::Bool
     yflip::Bool
@@ -17,7 +17,7 @@ struct BlockCanvas{YS<:Function,XS<:Function} <: LookupCanvas
     origin_x::Float64
     height::Float64
     width::Float64
-    min_max::NTuple{2,UnicodeType}
+    min_max::NTuple{2, UnicodeType}
     yscale::YS
     xscale::XS
 end

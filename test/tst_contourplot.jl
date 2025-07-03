@@ -1,10 +1,10 @@
 @testset "padding" begin
     x = y = -1:0.1:1
-    for padding ∈ 0:3
+    for padding in 0:3
         p = contourplot(
             x,
             y,
-            (x, y) -> 1e4 * √(x^2 + y^2);
+            (x, y) -> 1.0e4 * √(x^2 + y^2);
             labels = false,
             margin = 0,
             padding,

@@ -11,7 +11,7 @@ end
 
 Structure to hold box based graphics.
 """
-struct BoxplotGraphics{R<:Number} <: GraphicsArea
+struct BoxplotGraphics{R <: Number} <: GraphicsArea
     data::Vector{FiveNumberSummary}
     colors::Vector{ColorType}
     char_width::Int
@@ -20,13 +20,13 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
     max_x::RefValue{R}
 
     function BoxplotGraphics(
-        data::AbstractVector{R},
-        char_width::Integer;
-        visible::Bool = KEYWORDS.visible,
-        color::Union{UserColorType,AbstractVector} = :green,
-        min_x::Union{Number,Nothing} = nothing,
-        max_x::Union{Number,Nothing} = nothing,
-    ) where {R<:Number}
+            data::AbstractVector{R},
+            char_width::Integer;
+            visible::Bool = KEYWORDS.visible,
+            color::Union{UserColorType, AbstractVector} = :green,
+            min_x::Union{Number, Nothing} = nothing,
+            max_x::Union{Number, Nothing} = nothing,
+        ) where {R <: Number}
         char_width = max(char_width, 10)
         mi, ma = extrema(data)
         min_x = R(something(min_x, mi))
@@ -47,7 +47,7 @@ struct BoxplotGraphics{R<:Number} <: GraphicsArea
             percentile(data, 75),
             ma,
         )
-        new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
+        return new{R}([summary], colors, char_width, visible, Ref(min_x), Ref(max_x))
     end
 end
 
@@ -55,10 +55,10 @@ end
 @inline ncols(c::BoxplotGraphics) = c.char_width
 
 function addseries!(
-    c::BoxplotGraphics,
-    data::AbstractVector{R},
-    color::UserColorType = nothing,
-) where {R<:Number}
+        c::BoxplotGraphics,
+        data::AbstractVector{R},
+        color::UserColorType = nothing,
+    ) where {R <: Number}
     mi, ma = extrema(data)
     push!(
         c.data,
@@ -73,7 +73,7 @@ function addseries!(
     push!(c.colors, suitable_color(c, color))
     c.min_x[] = min(mi, c.min_x[])
     c.max_x[] = max(ma, c.max_x[])
-    c
+    return c
 end
 
 transform(c::BoxplotGraphics, value) = clamp(
@@ -107,19 +107,19 @@ function print_row(io::IO, _, print_color, c::BoxplotGraphics, row::Integer)
     chars[transform(c, series.maximum)] = max_char
 
     # Fill in gaps with lines
-    for i ∈ (transform(c, series.minimum) + 1):(transform(c, series.lower_quartile) - 1)
+    for i in (transform(c, series.minimum) + 1):(transform(c, series.lower_quartile) - 1)
         chars[i] = line_char
     end
-    for i ∈ (transform(c, series.lower_quartile) + 1):(transform(c, series.median) - 1)
+    for i in (transform(c, series.lower_quartile) + 1):(transform(c, series.median) - 1)
         chars[i] = line_box_char
     end
-    for i ∈ (transform(c, series.median) + 1):(transform(c, series.upper_quartile) - 1)
+    for i in (transform(c, series.median) + 1):(transform(c, series.upper_quartile) - 1)
         chars[i] = line_box_char
     end
-    for i ∈ (transform(c, series.upper_quartile) + 1):(transform(c, series.maximum) - 1)
+    for i in (transform(c, series.upper_quartile) + 1):(transform(c, series.maximum) - 1)
         chars[i] = line_char
     end
 
     print_color(io, c.colors[I], String(chars))
-    nothing
+    return nothing
 end

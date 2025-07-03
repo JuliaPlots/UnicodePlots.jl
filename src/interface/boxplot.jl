@@ -17,19 +17,21 @@ and the keys, which have to be strings, will be used as the labels.
 
 # Usage
     
-    boxplot([text], data; $(keywords((border = :corners, color = :green,), remove = (:ylim, :height, :grid))))
+    boxplot([text], data; $(keywords((border = :corners, color = :green), remove = (:ylim, :height, :grid))))
     boxplot(dict; kw...)
 
 # Arguments
 
-$(arguments(
-    (
-        text = "the labels/captions of the boxes (optional)",
-        data = "a vector of vectors, with each inner vector representing a data series (choose a vector of vectors over a matrix to allow series of different lengths)",
-        dict = "a dictionary in which the keys will be used as `text` and the values will be used as `data`",
-        color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
-    ); remove = (:ylim, :yscale, :height, :grid)
-))
+$(
+    arguments(
+        (
+            text = "the labels/captions of the boxes (optional)",
+            data = "a vector of vectors, with each inner vector representing a data series (choose a vector of vectors over a matrix to allow series of different lengths)",
+            dict = "a dictionary in which the keys will be used as `text` and the values will be used as `data`",
+            color = "`Vector` of colors, or scalar - $(DESCRIPTION[:color])",
+        ); remove = (:ylim, :yscale, :height, :grid)
+    )
+)
 
 # Author(s)
 
@@ -53,13 +55,13 @@ julia> boxplot([1, 2, 3, 7]; title = "Test")
 [`Plot`](@ref), [`histogram`](@ref), [`BoxplotGraphics`](@ref)
 """
 function boxplot(
-    text::AbstractVector{<:AbstractString},
-    data::AbstractVector{<:AbstractArray{<:Number}};
-    color::Union{UserColorType,AbstractVector} = :green,
-    width::Union{Nothing,Integer} = nothing,
-    xlim = KEYWORDS.xlim,
-    kw...,
-)
+        text::AbstractVector{<:AbstractString},
+        data::AbstractVector{<:AbstractArray{<:Number}};
+        color::Union{UserColorType, AbstractVector} = :green,
+        width::Union{Nothing, Integer} = nothing,
+        xlim = KEYWORDS.xlim,
+        kw...,
+    )
     pkw, okw = split_plot_kw(kw)
     length(xlim) == 2 ||
         throw(ArgumentError("`xlim` must be a tuple or a vector of length 2"))
@@ -77,19 +79,19 @@ function boxplot(
     label!(plot, :b, mean_x_str; color = BORDER_COLOR[])
     label!(plot, :br, max_x_str; color = BORDER_COLOR[])
 
-    for (i, name) ∈ enumerate(text)
+    for (i, name) in enumerate(text)
         # Find end of last 3-line region, then add 2 for center of current
         length(name) > 0 && label!(plot, :l, 3(i - 1) + 2, name)
     end
-    plot
+    return plot
 end
 
 @doc (@doc boxplot) function boxplot!(
-    plot::Plot{<:BoxplotGraphics},
-    data::AbstractVector{<:Number};
-    name = KEYWORDS.name,
-    kw...,
-)
+        plot::Plot{<:BoxplotGraphics},
+        data::AbstractVector{<:Number};
+        name = KEYWORDS.name,
+        kw...,
+    )
     isempty(data) && throw(ArgumentError("can't append empty array to boxplot"))
 
     addseries!(plot.graphics, data)
@@ -104,7 +106,7 @@ end
     label!(plot, :bl, min_x_str)
     label!(plot, :b, mean_x_str)
     label!(plot, :br, max_x_str)
-    plot
+    return plot
 end
 
 boxplot!(plot, name, data::AbstractVector{<:Number}; kw...) =

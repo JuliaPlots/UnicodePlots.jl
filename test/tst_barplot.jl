@@ -85,7 +85,7 @@ end
     )
     test_ref("barplot/parameters1_nolabels.txt", @print_col(p))
 
-    for sym ∈ ("=", '=')
+    for sym in ("=", '=')
         p = barplot(
             ["Paris", "New York", "Moskau", "Madrid"],
             [2.244, 8.406, 11.92, 3.165],

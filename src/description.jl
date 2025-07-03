@@ -151,13 +151,11 @@ const DEFAULT_EXCLUDED = (
 
 base_type(x) = replace(string(typeof(x).name.name), "64" => "")
 
-default_with_type(s::Symbol) = (
-    if s ∈ keys(KEYWORDS)
-        "$s::$(base_type(KEYWORDS[s])) = $(KEYWORDS[s] |> repr)"
-    else
-        s |> string
-    end
-)
+default_with_type(s::Symbol) = if s ∈ keys(KEYWORDS)
+    "$s::$(base_type(KEYWORDS[s])) = $(KEYWORDS[s] |> repr)"
+else
+    s |> string
+end
 
 """
     keywords([extra]; default = DEFAULT_KW, add = (), exclude = DEFAULT_EXCLUDED, remove = ())
@@ -172,17 +170,17 @@ Adds default keywords to a function signature, in a docstring.
 - `remove::Tuple`: remove symbols from `default`.
 """
 function keywords(
-    extra::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KW,
-    add::Tuple = (),
-    exclude::Tuple = DEFAULT_EXCLUDED,
-    remove::Tuple = (),
-)
+        extra::NamedTuple = NamedTuple();
+        default::Tuple = DEFAULT_KW,
+        add::Tuple = (),
+        exclude::Tuple = DEFAULT_EXCLUDED,
+        remove::Tuple = (),
+    )
     all_kw = (; KEYWORDS..., extra...)
     candidates = keys(extra) ∪ filter(x -> x ∈ add ∪ default, keys(KEYWORDS))  # extra goes first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
-    join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k ∈ kw), ", ")
+    return join((k isa Symbol ? "$k = $(all_kw[k] |> repr)" : k for k in kw), ", ")
 end
 
 """
@@ -198,12 +196,12 @@ Defines arguments for docstring genreration.
 - `remove::Tuple`: remove symbols from `default`.
 """
 function arguments(
-    desc::NamedTuple = NamedTuple();
-    default::Tuple = DEFAULT_KW,
-    add::Tuple = (),
-    exclude::Tuple = DEFAULT_EXCLUDED,
-    remove::Tuple = (),
-)
+        desc::NamedTuple = NamedTuple();
+        default::Tuple = DEFAULT_KW,
+        add::Tuple = (),
+        exclude::Tuple = DEFAULT_EXCLUDED,
+        remove::Tuple = (),
+    )
     get_description(n, d) = begin
         str = d[n]
         @assert first(str) ≡ '`' || islowercase(first(str))  # description starts with a lowercase string, or `something`
@@ -214,8 +212,8 @@ function arguments(
     candidates = keys(desc) ∪ filter(x -> x ∈ add ∪ default, keys(DESCRIPTION))  # desc goes first !
     kw = filter(x -> x ∉ setdiff(exclude ∪ remove, add), candidates)
     @assert allunique(kw)  # extra check
-    join(
-        ("- **`$(default_with_type(k))`** : $(get_description(k, all_desc))." for k ∈ kw),
+    return join(
+        ("- **`$(default_with_type(k))`** : $(get_description(k, all_desc))." for k in kw),
         '\n',
     )
 end

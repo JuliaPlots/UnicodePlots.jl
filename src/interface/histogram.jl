@@ -17,12 +17,12 @@ Note internally that `horizontal_histogram` is a simply wrapper for
 $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); add = (:symbols,)))
 """
 function horizontal_histogram(
-    hist::Histogram;
-    symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
-    xscale = KEYWORDS.xscale,
-    info::AbstractString = "",  # unused in horizontal version
-    kw...,
-)
+        hist::Histogram;
+        symbols = ('▏', '▎', '▍', '▌', '▋', '▊', '▉', '█'),
+        xscale = KEYWORDS.xscale,
+        info::AbstractString = "",  # unused in horizontal version
+        kw...,
+    )
     edges, counts = hist.edges[1], hist.weights
     labels = Vector{String}(undef, length(counts))
     binwidths = diff(edges)
@@ -30,7 +30,7 @@ function horizontal_histogram(
     # this is done to make all decimal points align.
     pad_left, pad_right = 0, 0
     io = PipeBuffer()
-    for i ∈ eachindex(counts)
+    for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
@@ -42,7 +42,7 @@ function horizontal_histogram(
     # compute the labels using the computed padding
     l_chr = hist.closed ≡ :right ? '(' : '['
     r_chr = hist.closed ≡ :right ? ']' : ')'
-    for i ∈ eachindex(counts)
+    for i in eachindex(counts)
         binwidth = binwidths[i]
         val1 = float_round_log10(edges[i], binwidth)
         val2 = float_round_log10(val1 + binwidth, binwidth)
@@ -68,7 +68,7 @@ function horizontal_histogram(
         xlabel = transform_name(xscale, "Frequency"),
         kw...,
     )
-    plot
+    return plot
 end
 
 """
@@ -87,12 +87,12 @@ Draws a vertical histogram of the given `StatsBase.Histogram`.
 $(arguments((hist = "a fitted `StatsBase.Histogram` that should be plotted",); add = (:symbols,)))
 """
 function vertical_histogram(
-    hist::Histogram;
-    symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
-    info::AbstractString = "",
-    color::UserColorType = :green,
-    kw...,
-)
+        hist::Histogram;
+        symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
+        info::AbstractString = "",
+        color::UserColorType = :green,
+        kw...,
+    )
     edges, counts = first(hist.edges), hist.weights
     centers = (edges[begin:(end - 1)] + edges[(begin + 1):end]) / 2
     plot = Plot(
@@ -109,11 +109,11 @@ function vertical_histogram(
     max_val = maximum(counts)
     nsyms = length(symbols)
     nr = nrows(plot.graphics)
-    for (x, y) ∈ zip(centers, counts)
+    for (x, y) in zip(centers, counts)
         frac = float(max_val > 0 ? max(y, zero(y)) / max_val : 0)
         n_full = (nsyms > 1 ? floor : round)(Int, frac * nr)
         δ = max_val / nr
-        for r ∈ 1:n_full
+        for r in 1:n_full
             annotate!(plot, x, (r - 0.5) * δ, symbols[nsyms]; color)
         end
         if nsyms > 1 && (rem = frac * nr - n_full) > 0
@@ -122,7 +122,7 @@ function vertical_histogram(
             end
         end
     end
-    plot
+    return plot
 end
 
 """
@@ -138,15 +138,17 @@ Draws a horizontal or vertical histogram of the given `data`, fitted to an `Hist
 
 # Arguments
 
-$(arguments(
-    (
-        x = "array of numbers for which the histogram should be computed",
-        nbins = "approximate number of bins that should be used",
-        closed = "if `:left` (default), the bin intervals are left-closed ``[a, b)``; if `:right`, intervals are right-closed ``(a, b]``",
-        vertical = "vertical histogram instead of the default horizontal one",
-        stats = "display statistics (vertical only)",
-    ); add = (:symbols,)
-))
+$(
+    arguments(
+        (
+            x = "array of numbers for which the histogram should be computed",
+            nbins = "approximate number of bins that should be used",
+            closed = "if `:left` (default), the bin intervals are left-closed ``[a, b)``; if `:right`, intervals are right-closed ``(a, b]``",
+            vertical = "vertical histogram instead of the default horizontal one",
+            stats = "display statistics (vertical only)",
+        ); add = (:symbols,)
+    )
+)
 
 # Author(s)
 
@@ -206,12 +208,12 @@ function histogram(x::AbstractArray; closed = :left, vertical = false, stats = t
         μ = sum(x_plot) / len
         σ = √(sum((x_plot .- μ) .^ 2) / len)
         "μ ± σ: " *
-        lpad(round(μ; digits), digits + 1) *
-        " ± " *
-        lpad(round(σ; digits), digits + 1)
+            lpad(round(μ; digits), digits + 1) *
+            " ± " *
+            lpad(round(σ; digits), digits + 1)
     else
         ""
     end
     callable = vertical ? vertical_histogram : horizontal_histogram
-    callable(hist; info, filter(p -> p.first ≢ :nbins, kw)...)
+    return callable(hist; info, filter(p -> p.first ≢ :nbins, kw)...)
 end

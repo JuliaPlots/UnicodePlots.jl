@@ -53,7 +53,7 @@ function _test_canvas(; kw...)
     lines!(canvas, 0.2, 0.7, 1.0, 0.0; color = :red)
     lines!(canvas, 0.0, 2.0, 0.5, 0.0; color = :green)
     points!(canvas, 0.5, 0.8)
-    canvas
+    return canvas
 end
 
 @testset "canvas / xylabel" begin
@@ -61,7 +61,7 @@ end
     test_ref("plot/canvas_only.txt", @print_col(p))
     test_ref("plot/canvas_only.txt", @show_col(p))
 
-    for border ∈ (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
+    for border in (:solid, :corners, :barplot, :bold, :ascii, :none, :dashed, :dotted)
         local p = @inferred Plot(_test_canvas(); border)
         test_ref("plot/border_$(string(border)).txt", @show_col(p))
     end
@@ -121,7 +121,7 @@ end
     @test @inferred(label!(p, :r, ":r auto 2", :blue)) ≡ p
     test_ref("plot/title_auto.txt", @show_col(p))
 
-    for i ∈ 1:10
+    for i in 1:10
         @test @inferred(label!(p, :l, i, "$i", color = :green)) ≡ p
         @test @inferred(label!(p, :r, i, "$i", :yellow)) ≡ p
     end
@@ -178,7 +178,7 @@ end
     @test @inferred(annotate!(p, 0.0, 0.25, '🗹')) ≡ p  # Char
     test_ref("plot/annotations_BrailleCanvas.txt", @show_col(p))
 
-    for sym ∈ (:AsciiCanvas, :DotCanvas, :BlockCanvas)
+    for sym in (:AsciiCanvas, :DotCanvas, :BlockCanvas)
         p = lineplot([-1, 1], [-1, 1], canvas = getproperty(UnicodePlots, sym))
         annotate!(p, +0, +0, "Origin")
         annotate!(p, +0, +1, "North")
@@ -193,7 +193,7 @@ end
     end
 
     p = lineplot([-1, 1], [-1, 1])
-    for h ∈ (:right, :left, :center, :hcenter), v ∈ (:top, :bottom, :center, :vcenter)
+    for h in (:right, :left, :center, :hcenter), v in (:top, :bottom, :center, :vcenter)
         annotate!(p, 0, 0, "Origin"; halign = h, valign = v)
     end
 end

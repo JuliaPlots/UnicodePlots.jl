@@ -7,7 +7,7 @@ function interval_range(x::IntervalSets.AbstractInterval, length, step)
     if length ≡ nothing && step ≡ nothing
         length = UnicodePlots.DEFAULT_WIDTH[]
     end
-    range(x; length, step)
+    return range(x; length, step)
 end
 
 UnicodePlots.lineplot(

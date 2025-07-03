@@ -7,11 +7,11 @@ using Random
 function _stable_sprand(rng, m::Integer, n::Integer, density::AbstractFloat)
     I = Int[]
     J = Int[]
-    for li ∈ randsubseq(rng, 1:(m * n), density)
+    for li in randsubseq(rng, 1:(m * n), density)
         j, i = divrem(li - 1, m)
         push!(I, i + 1)
         push!(J, j + 1)
     end
     V = rand(rng, length(I))
-    sparse(I, J, V)
+    return sparse(I, J, V)
 end

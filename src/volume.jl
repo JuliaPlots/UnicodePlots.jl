@@ -1,37 +1,47 @@
-translate_4x4(v) = @SMatrix([
-    1 0 0 v[1]
-    0 1 0 v[2]
-    0 0 1 v[3]
-    0 0 0 1
-])
+translate_4x4(v) = @SMatrix(
+    [
+        1 0 0 v[1]
+        0 1 0 v[2]
+        0 0 1 v[3]
+        0 0 0 1
+    ]
+)
 
-scale_4x4(v) = @SMatrix([
-    v[1] 0 0 0
-    0 v[2] 0 0
-    0 0 v[3] 0
-    0 0 0 1
-])
+scale_4x4(v) = @SMatrix(
+    [
+        v[1] 0 0 0
+        0 v[2] 0 0
+        0 0 v[3] 0
+        0 0 0 1
+    ]
+)
 
-rotd_x(θ) = @SMatrix([
-    1 0 0 0
-    0 cosd(θ) -sind(θ) 0
-    0 sind(θ) +cosd(θ) 0
-    0 0 0 1
-])
+rotd_x(θ) = @SMatrix(
+    [
+        1 0 0 0
+        0 cosd(θ) -sind(θ) 0
+        0 sind(θ) +cosd(θ) 0
+        0 0 0 1
+    ]
+)
 
-rotd_y(θ) = @SMatrix([
-    +cosd(θ) 0 sind(θ) 0
-    0 1 0 0
-    -sind(θ) 0 cosd(θ) 0
-    0 0 0 1
-])
+rotd_y(θ) = @SMatrix(
+    [
+        +cosd(θ) 0 sind(θ) 0
+        0 1 0 0
+        -sind(θ) 0 cosd(θ) 0
+        0 0 0 1
+    ]
+)
 
-rotd_z(θ) = @SMatrix([
-    cosd(θ) -sind(θ) 0 0
-    sind(θ) +cosd(θ) 0 0
-    0 0 1 0
-    0 0 0 1
-])
+rotd_z(θ) = @SMatrix(
+    [
+        cosd(θ) -sind(θ) 0 0
+        sind(θ) +cosd(θ) 0 0
+        0 0 1 0
+        0 0 0 1
+    ]
+)
 
 """
     lookat(eye, target, up_vector)
@@ -51,15 +61,15 @@ function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     l = normalize(cross(up_vector, f))  # left vector
     u = cross(f, l)  # up vector
 
-    @SMatrix(
-        [
-            l[1] l[2] l[3] -dot(l, eye)
-            u[1] u[2] u[3] -dot(u, eye)
-            f[1] f[2] f[3] -dot(f, eye)
-            0 0 0 1
-        ]
-    ),
-    f
+    return @SMatrix(
+            [
+                l[1] l[2] l[3] -dot(l, eye)
+                u[1] u[2] u[3] -dot(u, eye)
+                f[1] f[2] f[3] -dot(f, eye)
+                0 0 0 1
+            ]
+        ),
+        f
 end
 
 """
@@ -80,25 +90,31 @@ Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionma
 """
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
-    *(
-        @SMatrix([  # scale
-            2n/(r - l) 0 0 0
-            0 2n/(t - b) 0 0
-            0 0 1 0
-            0 0 0 1
-        ]),
-        @SMatrix([  # translate
-            1 0 0 (l + r)/2n
-            0 1 0 (b + t)/2n
-            0 0 1 0
-            0 0 0 1
-        ]),
-        @SMatrix([  # perspective
-            -1 0 0 0  # flip x
-            0 -1 0 0  # flip y
-            0 0 (f + n)/(f - n) -2f * n/(f - n)
-            0 0 1 0
-        ]),
+    return *(
+        @SMatrix(
+            [  # scale
+                2n / (r - l) 0 0 0
+                0 2n / (t - b) 0 0
+                0 0 1 0
+                0 0 0 1
+            ]
+        ),
+        @SMatrix(
+            [  # translate
+                1 0 0 (l + r) / 2n
+                0 1 0 (b + t) / 2n
+                0 0 1 0
+                0 0 0 1
+            ]
+        ),
+        @SMatrix(
+            [  # perspective
+                -1 0 0 0  # flip x
+                0 -1 0 0  # flip y
+                0 0 (f + n) / (f - n) -2f * n / (f - n)
+                0 0 1 0
+            ]
+        ),
     )
 end
 
@@ -119,18 +135,22 @@ Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionm
     - `f`: distance to the far depth clipping plane.
 """
 ortho(l, r, b, t, n, f) = *(
-    @SMatrix([  # scale
-        2 / (r - l) 0 0 0
-        0 2/(t - b) 0 0
-        0 0 2/(f - n) 0
-        0 0 0 1
-    ]),
-    @SMatrix([  # translate
-        1 0 0 -(l + r)/2
-        0 1 0 -(b + t)/2
-        0 0 1 -(n + f)/2
-        0 0 0 1
-    ]),
+    @SMatrix(
+        [  # scale
+            2 / (r - l) 0 0 0
+            0 2 / (t - b) 0 0
+            0 0 2 / (f - n) 0
+            0 0 0 1
+        ]
+    ),
+    @SMatrix(
+        [  # translate
+            1 0 0 -(l + r) / 2
+            0 1 0 -(b + t) / 2
+            0 0 1 -(n + f) / 2
+            0 0 0 1
+        ]
+    ),
 )
 
 """
@@ -149,7 +169,7 @@ function ctr_len_diag(x, y, z)
     ly = My - my
     lz = Mz - mz
 
-    (
+    return (
         SVector(mx + 0.5lx, my + 0.5ly, mz + 0.5lz),
         SVector(mx, my, mz),
         SVector(Mx, My, Mz),
@@ -192,7 +212,7 @@ function view_matrix(center, distance, elevation, azimuth, up)
         ],
         shift,
     )
-    lookat(center .+ cam_move, center, up_vector)
+    return lookat(center .+ cam_move, center, up_vector)
 end
 
 """
@@ -205,31 +225,31 @@ Build up the "Model - View - Projection" transformation matrix (see codinglabs.n
 This is typically used to adjust how 3D plot is viewed, see also
 the `projection` keyword in [`surfaceplot`](@ref), [`isosurface`](@ref).
 """
-struct MVP{E,T}
-    mvp_mat::SMatrix{4,4,T}
-    mvp_ortho_mat::SMatrix{4,4,T}
-    mvp_persp_mat::SMatrix{4,4,T}
-    view_dir::SVector{3,T}
+struct MVP{E, T}
+    mvp_mat::SMatrix{4, 4, T}
+    mvp_ortho_mat::SMatrix{4, 4, T}
+    mvp_persp_mat::SMatrix{4, 4, T}
+    view_dir::SVector{3, T}
     ortho::Bool
     dist::T
 
     function MVP()  # placeholder for 2D (disabled)
         dummy = zeros(Bool, 4, 4)
-        new{Val{false},Bool}(dummy, dummy, dummy, zeros(Bool, 3), true, true)
+        return new{Val{false}, Bool}(dummy, dummy, dummy, zeros(Bool, 3), true, true)
     end
 
     function MVP(
-        x,
-        y,
-        z;
-        projection = KEYWORDS.projection,
-        elevation = KEYWORDS.elevation,
-        azimuth = KEYWORDS.azimuth,
-        zoom = KEYWORDS.zoom,
-        near = KEYWORDS.near,
-        far = KEYWORDS.far,
-        up = KEYWORDS.up,
-    )
+            x,
+            y,
+            z;
+            projection = KEYWORDS.projection,
+            elevation = KEYWORDS.elevation,
+            azimuth = KEYWORDS.azimuth,
+            zoom = KEYWORDS.zoom,
+            near = KEYWORDS.near,
+            far = KEYWORDS.far,
+            up = KEYWORDS.up,
+        )
         @assert projection ∈ (:ortho, :orthographic, :persp, :perspective)
         @assert -180 ≤ azimuth ≤ 180
         @assert -90 ≤ elevation ≤ 90
@@ -247,7 +267,7 @@ struct MVP{E,T}
         elev = clamp(elevation, -90 + δ, 90 - δ)
 
         # Model Matrix
-        M = SMatrix{4,4,F}(I)  # we don't scale, nor translate, nor rotate input data
+        M = SMatrix{4, 4, F}(I)  # we don't scale, nor translate, nor rotate input data
 
         # View Matrix
         V_ortho, view_dir = view_matrix(ctr, disto, elev, azimuth, up)
@@ -261,7 +281,7 @@ struct MVP{E,T}
         MVP_ortho = P_ortho * V_ortho * M
         MVP_persp = P_persp * V_persp * M
 
-        new{Val{true},F}(
+        return new{Val{true}, F}(
             is_ortho ? MVP_ortho : MVP_persp,
             MVP_ortho,
             MVP_persp,
@@ -279,13 +299,13 @@ create_MVP(::Nothing, args...; _...) = MVP()  # NOTE: kw are expected to be lost
 @inline is_enabled(::MVP{Val{false}}) = false
 @inline is_enabled(::MVP{Val{true}}) = true
 
-@inline transform_matrix(t::MVP{Val{true},T}, n::Symbol) where {T} = if n ≡ :user
+@inline transform_matrix(t::MVP{Val{true}, T}, n::Symbol) where {T} = if n ≡ :user
     t.mvp_mat
 elseif n ∈ (:ortho, :orthographic)
     t.mvp_ortho_mat
 elseif n ∈ (:persp, :perspective)
     t.mvp_persp_mat
-end::SMatrix{4,4,T}
+end::SMatrix{4, 4, T}
 
 @inline is_ortho(t::MVP, n::Symbol) = if n ≡ :user
     t.ortho
@@ -296,22 +316,22 @@ elseif n ∈ (:persp, :perspective)
 end::Bool
 
 "transform a matrix of points, with allocation"
-function (tr::MVP{Val{true},T})(p::AbstractMatrix, n::Symbol = :user) where {T}
+function (tr::MVP{Val{true}, T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     o = Array{T}(undef, 4, size(p, 2))
     tr(p, o, n)
-    @view(o[1, :]), @view(o[2, :])
+    return @view(o[1, :]), @view(o[2, :])
 end
 
 "inplace transform"
-function (tr::MVP{Val{true},T})(
-    p::AbstractMatrix,
-    o::AbstractMatrix,
-    n::Symbol = :user,
-) where {T}
+function (tr::MVP{Val{true}, T})(
+        p::AbstractMatrix,
+        o::AbstractMatrix,
+        n::Symbol = :user,
+    ) where {T}
     mul!(o, transform_matrix(tr, n), p)
     persp = !is_ortho(tr, n)
     # homogeneous coordinates
-    @inbounds for i ∈ axes(p, 2)
+    @inbounds for i in axes(p, 2)
         w = o[4, i]
         if abs(w) > eps(T)
             o[1, i] /= w
@@ -326,11 +346,11 @@ function (tr::MVP{Val{true},T})(
             end
         end
     end
-    nothing
+    return nothing
 end
 
 "transform a vector"
-function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
+function (tr::MVP{Val{true}, T})(v::SVector{4}, n::Symbol = :user) where {T}
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates
     if abs(w) > eps(T)
@@ -342,19 +362,23 @@ function (tr::MVP{Val{true},T})(v::SVector{4}, n::Symbol = :user) where {T}
         x /= z
         y /= z
     end
-    (x, y)
+    return (x, y)
 end
 
 (tr::MVP{Val{true}})(v::AbstractVector{T}, n::Symbol = :user) where {T} =
     tr(SVector(v[1], v[2], v[3], length(v) == 4 ? v[4] : T(1)), n)
 
 axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T} =
-    tr(@SMatrix([
-        start[1] stop[1]
-        start[2] stop[2]
-        start[3] stop[3]
-        T(1) T(1)
-    ]), proj)
+    tr(
+    @SMatrix(
+        [
+            start[1] stop[1]
+            start[2] stop[2]
+            start[3] stop[3]
+            T(1) T(1)
+        ]
+    ), proj
+)
 
 """
     draw_axes!(plot, x, y, z, scale = 0.25)
@@ -364,7 +388,7 @@ axis_line(tr, proj, start::AbstractVector{T}, stop::AbstractVector{T}) where {T}
 Draws (X, Y, Z) cartesian coordinates axes in (R, G, B) colors, at position `p = (x, y, z)`.
 If `p = (x, y)` is given, draws at screen coordinates instead.
 """
-function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractFloat}
+function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T <: AbstractFloat}
     tr = plot.projection
     # constant apparent size, independent of zoom level
     len = T(scale * tr.dist)
@@ -386,10 +410,10 @@ function draw_axes!(plot, x::T, y::T, z::T, scale = T(0.25)) where {T<:AbstractF
         color = :blue,
     )
 
-    plot
+    return plot
 end
 
-draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T<:AbstractFloat} =
-    let (x, y, z) = transform_matrix(plot.projection, :ortho) \ SVector(x, y, T(0), T(1))
-        draw_axes!(plot, x, y, z, args...)
-    end
+draw_axes!(plot, x::T, y::T, z::Nothing, args...) where {T <: AbstractFloat} =
+let (x, y, z) = transform_matrix(plot.projection, :ortho) \ SVector(x, y, T(0), T(1))
+    draw_axes!(plot, x, y, z, args...)
+end

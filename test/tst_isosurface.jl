@@ -29,6 +29,6 @@ end
 
 @testset "legacy" begin
     x = y = z = -3:0.25:3
-    p = isosurface(x, y, z, (x, y, z) -> x * exp(-x^2 - y^2 - z^2) - 1e-4; legacy = true)
+    p = isosurface(x, y, z, (x, y, z) -> x * exp(-x^2 - y^2 - z^2) - 1.0e-4; legacy = true)
     test_ref("isosurface/legacy.txt", @show_col(p))
 end

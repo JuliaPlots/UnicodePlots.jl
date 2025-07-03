@@ -13,16 +13,18 @@ of the matrix as `x` and `y` coordinates respectively.
 
 # Arguments
 
-$(arguments(
-    (
-        A = "input matrix (color values)",
-        yfact = "scale for the `y` coordinate labels (defaults to 0 - i.e. each row in `A` maps to one unit, `y` origin starting at 1). If set to anything else, the y origin will start at 0",
-        xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
-        yoffset = "plotting offset for the `y` coordinate (after scaling)",
-        xoffset = "plotting offset for the `x` coordinate (after scaling)",
-        array = "use array display convention (origin at the North-West corner of the plot, hence flipping `y` versus regular plots)",
-    ); add = (Z_DESCRIPTION..., :fix_ar)
-))
+$(
+    arguments(
+        (
+            A = "input matrix (color values)",
+            yfact = "scale for the `y` coordinate labels (defaults to 0 - i.e. each row in `A` maps to one unit, `y` origin starting at 1). If set to anything else, the y origin will start at 0",
+            xfact = "scale for the `x` coordinate (defaults to 0 - i.e. each column in `A` maps to one unit, `x` origin starting at 1). If set to anything else, the x origin will start at 0",
+            yoffset = "plotting offset for the `y` coordinate (after scaling)",
+            xoffset = "plotting offset for the `x` coordinate (after scaling)",
+            array = "use array display convention (origin at the North-West corner of the plot, hence flipping `y` versus regular plots)",
+        ); add = (Z_DESCRIPTION..., :fix_ar)
+    )
+)
 
 # Author(s)
 
@@ -48,25 +50,25 @@ julia> heatmap(repeat(collect(0:10)', outer=(11, 1)), zlabel="z")
 `Plot`, `HeatmapCanvas`
 """
 function heatmap(
-    A::AbstractMatrix{T};
-    xlim = KEYWORDS.xlim,
-    ylim = KEYWORDS.ylim,
-    zlim = KEYWORDS.zlim,
-    yoffset::Number = 0.0,
-    xoffset::Number = 0.0,
-    out_stream::Union{Nothing,IO} = nothing,
-    height::Union{Nothing,Integer} = nothing,
-    width::Union{Nothing,Integer} = nothing,
-    margin::Integer = KEYWORDS.margin,
-    padding::Integer = KEYWORDS.padding,
-    colormap = KEYWORDS.colormap,
-    yfact::Union{Nothing,Number} = nothing,
-    xfact::Union{Nothing,Number} = nothing,
-    fix_ar::Bool = KEYWORDS.fix_ar,
-    labels::Bool = KEYWORDS.labels,
-    array::Bool = false,
-    kw...,
-) where {T}
+        A::AbstractMatrix{T};
+        xlim = KEYWORDS.xlim,
+        ylim = KEYWORDS.ylim,
+        zlim = KEYWORDS.zlim,
+        yoffset::Number = 0.0,
+        xoffset::Number = 0.0,
+        out_stream::Union{Nothing, IO} = nothing,
+        height::Union{Nothing, Integer} = nothing,
+        width::Union{Nothing, Integer} = nothing,
+        margin::Integer = KEYWORDS.margin,
+        padding::Integer = KEYWORDS.padding,
+        colormap = KEYWORDS.colormap,
+        yfact::Union{Nothing, Number} = nothing,
+        xfact::Union{Nothing, Number} = nothing,
+        fix_ar::Bool = KEYWORDS.fix_ar,
+        labels::Bool = KEYWORDS.labels,
+        array::Bool = false,
+        kw...,
+    ) where {T}
     pkw, okw = split_plot_kw(kw)
     warn_on_lost_kw(okw)
 
@@ -92,7 +94,7 @@ function heatmap(
     # select a subset of A based on the supplied limits
     subset(lims, vec) = begin
         first = findfirst(x -> x ≥ lims[1], vec)
-        last  = findlast(x -> x ≤ lims[2], vec)
+        last = findlast(x -> x ≤ lims[2], vec)
         (first ≡ nothing || last ≡ nothing) ? (1:0) : (first:last)
     end
 
@@ -122,11 +124,11 @@ function heatmap(
 
     # if A is an rgb image, translate the colors directly to the terminal
     callback =
-        if length(A) > 0 && isconcretetype(T) && all(x -> x ∈ fieldnames(T), (:r, :g, :b))
-            (A, mi, ma) -> ansi_color(c256.((A.r, A.g, A.b)))
-        else
-            colormap_callback(colormap)
-        end
+    if length(A) > 0 && isconcretetype(T) && all(x -> x ∈ fieldnames(T), (:r, :g, :b))
+        (A, mi, ma) -> ansi_color(c256.((A.r, A.g, A.b)))
+    else
+        colormap_callback(colormap)
+    end
 
     data_ar = ncols / nrows  # data aspect ratio
 
@@ -188,10 +190,10 @@ function heatmap(
         filter(x -> x.first ≢ :colorbar, pairs(pkw))...,
     )
 
-    for row ∈ eachindex(Y)
-        color = ColorType[ansi_color(callback(x, mi, ma)) for x ∈ view(A, row, :)]
+    for row in eachindex(Y)
+        color = ColorType[ansi_color(callback(x, mi, ma)) for x in view(A, row, :)]
         blend = blend_colors.(Ref(plot.graphics), color)
         points!(plot, X, fill(Y[row], length(X)), color, blend)
     end
-    plot
+    return plot
 end

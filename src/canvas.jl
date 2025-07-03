@@ -54,8 +54,8 @@ pixel!(c::Canvas, pixel_x::Integer, pixel_y::Integer; color::UserColorType = :no
 
 points!(
     c::Canvas,
-    x::Union{Number,AbstractVector},
-    y::Union{Number,AbstractVector};
+    x::Union{Number, AbstractVector},
+    y::Union{Number, AbstractVector};
     color::UserColorType = :normal,
 ) = points!(c, x, y, ansi_color(color), blend_colors(c, color))
 
@@ -83,16 +83,16 @@ points!(c::Canvas, x::Number, y::Number, color::ColorType, blend::Bool) = pixel!
 
 # implementation of the digital differential analyser (DDA)
 function lines!(
-    c::Canvas,
-    x1::Number,
-    y1::Number,
-    x2::Number,
-    y2::Number,
-    c_or_v1::Union{AbstractFloat,ColorType},  # either floating point values or colors
-    blend::Bool,
-    c_or_v2::Union{Nothing,AbstractFloat,ColorType} = nothing,
-    col_cb::Union{Nothing,Function} = nothing,  # color callback (map values to colors)
-)
+        c::Canvas,
+        x1::Number,
+        y1::Number,
+        x2::Number,
+        y2::Number,
+        c_or_v1::Union{AbstractFloat, ColorType},  # either floating point values or colors
+        blend::Bool,
+        c_or_v2::Union{Nothing, AbstractFloat, ColorType} = nothing,
+        col_cb::Union{Nothing, Function} = nothing,  # color callback (map values to colors)
+    )
     (valid_x(c, x1) || valid_x(c, x2)) || return c
     (valid_y(c, y1) || valid_y(c, y2)) || return c
 
@@ -118,7 +118,7 @@ function lines!(
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), col_cb(c_or_v1), blend)
         start_x, start_y = cur_x, cur_y
         iΔ = inv(√(Δx^2 + Δy^2))
-        for _ ∈ range(1, length = len)
+        for _ in range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
@@ -134,7 +134,7 @@ function lines!(
         end
     else
         pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1, blend)
-        for _ ∈ range(1, length = len)
+        for _ in range(1, length = len)
             cur_x += δx
             cur_y += δy
             (cur_y < py || cur_y > Py) && continue
@@ -142,79 +142,79 @@ function lines!(
             pixel!(c, floor(Int, cur_x), floor(Int, cur_y), c_or_v1, blend)
         end
     end
-    c
+    return c
 end
 
 # low-level (vectors)
 function points!(
-    c::Canvas,
-    X::AbstractVector,
-    Y::AbstractVector,
-    color::ColorType,
-    blend::Bool,
-)
+        c::Canvas,
+        X::AbstractVector,
+        Y::AbstractVector,
+        color::ColorType,
+        blend::Bool,
+    )
     @assert length(X) == length(Y)
-    @inbounds for i ∈ eachindex(X, Y)
+    @inbounds for i in eachindex(X, Y)
         (x = X[i]) |> isfinite || continue
         (y = Y[i]) |> isfinite || continue
         points!(c, x, y, color, blend)
     end
-    c
+    return c
 end
 
 function points!(
-    c::Canvas,
-    X::AbstractVector,
-    Y::AbstractVector,
-    color::AbstractVector{ColorType},
-    blend::AbstractVector{Bool},
-)
+        c::Canvas,
+        X::AbstractVector,
+        Y::AbstractVector,
+        color::AbstractVector{ColorType},
+        blend::AbstractVector{Bool},
+    )
     @assert length(X) == length(Y) == length(color) == length(blend)
-    @inbounds for i ∈ eachindex(X, Y, color, blend)
+    @inbounds for i in eachindex(X, Y, color, blend)
         (x = X[i]) |> isfinite || continue
         (y = Y[i]) |> isfinite || continue
         points!(c, x, y, color[i], blend[i])
     end
-    c
+    return c
 end
 
 function lines!(
-    c::Canvas,
-    X::AbstractVector,
-    Y::AbstractVector,
-    color::ColorType,
-    blend::Bool,
-)
+        c::Canvas,
+        X::AbstractVector,
+        Y::AbstractVector,
+        color::ColorType,
+        blend::Bool,
+    )
     length(X) == length(Y) ||
         throw(DimensionMismatch("`X` and `Y` must be the same length"))
-    @inbounds for i ∈ 2:length(X)
+    @inbounds for i in 2:length(X)
         (x = X[i]) |> isfinite || continue
         (y = Y[i]) |> isfinite || continue
         (xm1 = X[i - 1]) |> isfinite || continue
         (ym1 = Y[i - 1]) |> isfinite || continue
         lines!(c, xm1, ym1, x, y, color, blend)
     end
-    c
+    return c
 end
 
 ############################################################
 function get_canvas_dimensions_for_matrix(
-    canvas::Type{T},
-    nrow::Integer,
-    ncol::Integer,
-    max_height::Integer,
-    max_width::Integer,
-    height::Union{Nothing,Integer},
-    width::Union{Nothing,Integer},
-    margin::Integer,
-    padding::Integer,
-    out_stream::Union{Nothing,IO},
-    fix_ar::Bool;
-    extra_rows = 0,
-    extra_cols = 0,
-) where {T<:Canvas}
+        canvas::Type{T},
+        nrow::Integer,
+        ncol::Integer,
+        max_height::Integer,
+        max_width::Integer,
+        height::Union{Nothing, Integer},
+        width::Union{Nothing, Integer},
+        margin::Integer,
+        padding::Integer,
+        out_stream::Union{Nothing, IO},
+        fix_ar::Bool;
+        extra_rows = 0,
+        extra_cols = 0,
+    ) where {T <: Canvas}
     canv_height = nrow / y_pixel_per_char(T)
-    canv_width  = ncol / x_pixel_per_char(T)
+    canv_width = ncol / x_pixel_per_char(T)
     # e.g. heatmap(collect(1:2) * collect(1:2)') with nrow = 2, ncol = 2
     # on a HeatmapCanvas, x_pixel_per_char = 1 and y_pixel_per_char = 2
     # hence the canvas aspect ratio (canv_ar) is 2
@@ -223,10 +223,10 @@ function get_canvas_dimensions_for_matrix(
     # min_canv_height := minimal number of y canvas characters
     # (holding y_pixel_per_char pixels) to represent the input data
     min_canv_height = ceil(Int, canv_height)
-    min_canv_width  = ceil(Int, canv_width)
+    min_canv_width = ceil(Int, canv_width)
 
     height_diff = extra_rows
-    width_diff  = margin + padding + length(string(ncol)) + extra_cols
+    width_diff = margin + padding + length(string(ncol)) + extra_cols
 
     term_height, term_width = out_stream_size(out_stream)
     max_height = max_height > 0 ? max_height : term_height - height_diff
@@ -243,13 +243,13 @@ function get_canvas_dimensions_for_matrix(
         # to plot the matrix in the correct aspect ratio (within specified bounds)
         if min_canv_height > min_canv_width
             # long matrix (according to pixel density)
-            width  = min(min_canv_height * canv_ar, max_width)
+            width = min(min_canv_height * canv_ar, max_width)
             height = min(width / canv_ar, max_height)
-            width  = min(height * canv_ar, max_width)
+            width = min(height * canv_ar, max_width)
         else
             # wide matrix
             height = min(min_canv_width / canv_ar, max_height)
-            width  = min(height * canv_ar, max_width)
+            width = min(height * canv_ar, max_width)
             height = min(width / canv_ar, max_height)
         end
     end
@@ -261,19 +261,19 @@ function get_canvas_dimensions_for_matrix(
     end
 
     height = round(Int, height / (fix_ar ? ASPECT_RATIO[] : 1))  # optional terminal aspect ratio (4:3) correction
-    width  = round(Int, width)
+    width = round(Int, width)
 
     # the canvas will target a (height, width) grid to represent the input data
-    height, width, max_height, max_width
+    return height, width, max_height, max_width
 end
 
 function align_char_point(
-    text::AbstractString,
-    char_x::Integer,
-    char_y::Integer,
-    halign::Symbol,
-    valign::Symbol,
-)
+        text::AbstractString,
+        char_x::Integer,
+        char_y::Integer,
+        halign::Symbol,
+        valign::Symbol,
+    )
     nchar = length(text)
     char_x = if halign ∈ (:center, :hcenter)
         char_x - nchar ÷ 2
@@ -293,92 +293,92 @@ function align_char_point(
     else
         throw(ArgumentError("`valign=$valign` not supported"))
     end
-    char_x, char_y
+    return char_x, char_y
 end
 
-function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
+function pixel_to_char_point(c::C, pixel_x::Number, pixel_y::Number) where {C <: Canvas}
     # when hitting boundaries with canvases capable of encoding more than 1 pixel per char (see ref(1))
     pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
     pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
-    (
+    return (
         floor(Int, pixel_x / x_pixel_per_char(C)) + 1,
         floor(Int, pixel_y / y_pixel_per_char(C)) + 1,
     )
 end
 
-function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C<:Canvas}
+function pixel_to_char_point_off(c::C, pixel_x::Number, pixel_y::Number) where {C <: Canvas}
     pixel_x ≥ pixel_width(c) && (pixel_x -= 1)
     pixel_y ≥ pixel_height(c) && (pixel_y -= 1)
     qx, rx = divrem(pixel_x, x_pixel_per_char(C))
     qy, ry = divrem(pixel_y, y_pixel_per_char(C))
-    (Int(qx) + 1, Int(qy) + 1, Int(rx) + 1, Int(ry) + 1)
+    return (Int(qx) + 1, Int(qy) + 1, Int(rx) + 1, Int(ry) + 1)
 end
 
 function annotate!(
-    c::Canvas,
-    x::Number,
-    y::Number,
-    text::AbstractString,
-    color::ColorType,
-    blend::Bool;
-    halign::Symbol = :center,
-    valign::Symbol = :center,
-)
+        c::Canvas,
+        x::Number,
+        y::Number,
+        text::AbstractString,
+        color::ColorType,
+        blend::Bool;
+        halign::Symbol = :center,
+        valign::Symbol = :center,
+    )
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_x, char_y = align_char_point(text, char_x, char_y, halign, valign)
-    for char ∈ text
+    for char in text
         char_point!(c, char_x, char_y, char, color, blend)
         char_x += 1
     end
-    c
+    return c
 end
 
 function annotate!(
-    c::Canvas,
-    x::Number,
-    y::Number,
-    text::AbstractChar,
-    color::ColorType,
-    blend::Bool,
-)
+        c::Canvas,
+        x::Number,
+        y::Number,
+        text::AbstractChar,
+        color::ColorType,
+        blend::Bool,
+    )
     valid_x(c, x) || return c
     valid_y(c, y) || return c
 
     char_x, char_y = pixel_to_char_point(c, scale_x_to_pixel(c, x), scale_y_to_pixel(c, y))
     char_point!(c, char_x, char_y, text, color, blend)
-    c
+    return c
 end
 
 @inline function char_point!(
-    c::Canvas,
-    char_x::Integer,
-    char_y::Integer,
-    char::AbstractChar,
-    color::ColorType,
-    blend::Bool,
-)
+        c::Canvas,
+        char_x::Integer,
+        char_y::Integer,
+        char::AbstractChar,
+        color::ColorType,
+        blend::Bool,
+    )
     if checkbounds(Bool, c.grid, char_y, char_x)
         c.grid[char_y, char_x] = lookup_offset(c) + grid_type(c)(char)
         set_color!(c, char_x, char_y, color, blend)
     end
-    nothing
+    return nothing
 end
 
 @inline function set_color!(
-    c::Canvas,
-    x::Integer,
-    y::Integer,
-    color::ColorType,
-    blend::Bool,
-)
+        c::Canvas,
+        x::Integer,
+        y::Integer,
+        color::ColorType,
+        blend::Bool,
+    )
     col::ColorType = c.colors[y, x]
     c.colors[y, x] = if col ≡ INVALID_COLOR || !blend
         color
     else
         blend_colors(col, color)
     end::ColorType
-    nothing
+    return nothing
 end

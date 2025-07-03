@@ -1,17 +1,17 @@
 const WIDTH_CB = 4  # NOTE: 4 = 2border + 2gradient => colorbar width
 
 function print_colorbar_row(
-    io::IO,
-    print_nocol,
-    print_color,
-    p::Plot,
-    row::Integer,
-    nr::Integer,
-    zlab,
-    bc,
-    max_len::Integer,
-    blank::AbstractChar,
-)
+        io::IO,
+        print_nocol,
+        print_color,
+        p::Plot,
+        row::Integer,
+        nr::Integer,
+        zlab,
+        bc,
+        max_len::Integer,
+        blank::AbstractChar,
+    )
     lab = ""
     cmap = p.cmap
     b = BORDERMAP[cmap.border]
@@ -37,20 +37,20 @@ function print_colorbar_row(
     lpad = isempty(zlab) ? 0 : p.padding[]
     rpad = max_len - lpad - WIDTH_CB - length(lab)
     print_nocol(io, blank^lpad * lab * blank^rpad)
-    nothing
+    return nothing
 end
 
 function print_colorbar_lim(
-    io::IO,
-    print_nocol,
-    print_color,
-    p::Plot,
-    lab::AbstractString,
-    bc,
-    max_len::Integer,
-    blank::AbstractChar,
-    trail,
-)
+        io::IO,
+        print_nocol,
+        print_color,
+        p::Plot,
+        lab::AbstractString,
+        bc,
+        max_len::Integer,
+        blank::AbstractChar,
+        trail,
+    )
     lpad = p.padding[] + if (len = length(lab)) ≥ WIDTH_CB
         -(len - WIDTH_CB) ÷ 2  # wide label mode (left shifted)
     else
@@ -61,20 +61,20 @@ function print_colorbar_lim(
     print_nocol(io, blank^lpad)
     print_color(io, bc, lab)
     print_nocol(io, blank^rpad * trail)
-    nothing
+    return nothing
 end
 
 function print_title(
-    io::IO,
-    print_nocol,
-    print_color,
-    left_pad::AbstractString,
-    title::AbstractString,
-    right_pad::AbstractString,
-    blank::AbstractChar;
-    p_width::Integer = 0,
-    color::UserColorType = :normal,
-)
+        io::IO,
+        print_nocol,
+        print_color,
+        left_pad::AbstractString,
+        title::AbstractString,
+        right_pad::AbstractString,
+        blank::AbstractChar;
+        p_width::Integer = 0,
+        color::UserColorType = :normal,
+    )
     isempty(title) && return (0, 0)
     offset = round(Int, p_width / 2 - length(title) / 2, RoundNearestTiesUp)
     pre_pad = blank^max(0, offset)
@@ -82,53 +82,53 @@ function print_title(
     print_color(io, color, title)
     post_pad = blank^(max(0, p_width - length(pre_pad) - length(title)))
     print_nocol(io, post_pad, right_pad)
-    (
+    return (
         count('\n', title) + 1,
         length(strip(left_pad * pre_pad * title * post_pad * right_pad, '\n')),
     )
 end
 
 function print_border(
-    io::IO,
-    print_nocol::Function,
-    print_color::Function,
-    bl::Char,
-    bd::String,
-    br::Char,
-    left_pad::Union{Nothing,AbstractChar,AbstractString},
-    right_pad::Union{Nothing,AbstractChar,AbstractString},
-    color::UserColorType,
-)
+        io::IO,
+        print_nocol::Function,
+        print_color::Function,
+        bl::Char,
+        bd::String,
+        br::Char,
+        left_pad::Union{Nothing, AbstractChar, AbstractString},
+        right_pad::Union{Nothing, AbstractChar, AbstractString},
+        color::UserColorType,
+    )
     left_pad ≡ nothing || print_nocol(io, left_pad)
     print_color(io, color, bl, bd, br)
     right_pad ≡ nothing || print_nocol(io, right_pad)
-    nothing
+    return nothing
 end
 
 function print_labels(
-    io::IO,
-    print_nocol,
-    print_color,
-    p::Plot,
-    mloc::Symbol,
-    border_length,
-    left_pad::AbstractString,
-    right_pad::AbstractString,
-    blank::AbstractChar,
-)
+        io::IO,
+        print_nocol,
+        print_color,
+        p::Plot,
+        mloc::Symbol,
+        border_length,
+        left_pad::AbstractString,
+        right_pad::AbstractString,
+        blank::AbstractChar,
+    )
     p.labels[] || return 0
-    bc        = BORDER_COLOR[]
-    lloc      = Symbol(mloc, :l)
-    rloc      = Symbol(mloc, :r)
-    left_str  = get(p.decorations, lloc, "")
-    mid_str   = get(p.decorations, mloc, "")
+    bc = BORDER_COLOR[]
+    lloc = Symbol(mloc, :l)
+    rloc = Symbol(mloc, :r)
+    left_str = get(p.decorations, lloc, "")
+    mid_str = get(p.decorations, mloc, "")
     right_str = get(p.decorations, rloc, "")
     (isempty(left_str) && isempty(mid_str) && isempty(right_str)) && return 0
-    left_col  = get(p.colors_deco, lloc, bc)
-    mid_col   = get(p.colors_deco, mloc, bc)
+    left_col = get(p.colors_deco, lloc, bc)
+    mid_col = get(p.colors_deco, mloc, bc)
     right_col = get(p.colors_deco, rloc, bc)
-    left_len  = length(left_str)
-    mid_len   = length(mid_str)
+    left_len = length(left_str)
+    mid_len = length(mid_str)
     right_len = length(right_str)
     print_nocol(io, left_pad)
     print_color(io, left_col, left_str)
@@ -268,21 +268,21 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     y_lab_row = round(nr / 2, RoundNearestTiesUp)
 
     # plot all rows
-    for row ∈ 1:nr
+    for row in 1:nr
         # print left annotations
         print_nocol(io, 🗷^p.margin[])
         if has_labels
             # current labels to left and right of the row and their length
-            left_str   = get(p.labels_left, row, "")
-            left_col   = get(p.colors_left, row, bc)
-            right_str  = get(p.labels_right, row, "")
-            right_col  = get(p.colors_right, row, bc)
-            left_str_  = no_ansi_escape(left_str)
+            left_str = get(p.labels_left, row, "")
+            left_col = get(p.colors_left, row, bc)
+            right_str = get(p.labels_right, row, "")
+            right_col = get(p.colors_right, row, bc)
+            left_str_ = no_ansi_escape(left_str)
             right_str_ = no_ansi_escape(right_str)
-            left_len   = length(left_str_)
-            right_len  = length(right_str_)
+            left_len = length(left_str_)
+            right_len = length(right_str_)
             if !io_color
-                left_str  = left_str_
+                left_str = left_str_
                 right_str = right_str_
             end
             if !p.compact_labels[] && row == y_lab_row
@@ -393,7 +393,7 @@ function _show(end_io::IO, print_nocol, print_color, p::Plot)
     print_nocol(end_io, read(buf, String))
 
     # return the approximate image size
-    (
+    return (
         h_ttl + 1 + nr + 1 + h_lbl,  # +1 for borders
         max(
             w_ttl,
@@ -424,16 +424,16 @@ Renders a `png` image.
 - `row_fact::Union{Nothing,Real} = nothing`: row spacing multiplier (e.g. for histogram).
 """
 function png_image(
-    p::Plot;
-    font::Union{Nothing,AbstractString} = nothing,
-    pixelsize::Integer = 32,
-    transparent::Bool = true,
-    foreground::UserColorType = nothing,
-    background::UserColorType = nothing,
-    bounding_box_glyph::UserColorType = nothing,
-    bounding_box::UserColorType = nothing,
-    row_fact::Union{Nothing,Real} = nothing,
-)
+        p::Plot;
+        font::Union{Nothing, AbstractString} = nothing,
+        pixelsize::Integer = 32,
+        transparent::Bool = true,
+        foreground::UserColorType = nothing,
+        background::UserColorType = nothing,
+        bounding_box_glyph::UserColorType = nothing,
+        bounding_box::UserColorType = nothing,
+        row_fact::Union{Nothing, Real} = nothing,
+    )
     canvas = p.graphics
     #####################################
     # visual fixes
@@ -442,11 +442,13 @@ function png_image(
     else
         0
     end
-    row_fact = something(row_fact, if canvas isa BarplotGraphics  # histogram
-        1.08
-    else
-        1.0
-    end)
+    row_fact = something(
+        row_fact, if canvas isa BarplotGraphics  # histogram
+            1.08
+        else
+            1.0
+        end
+    )
     #####################################
 
     fg_color = ansi_color(something(foreground, transparent ? 244 : 252))
@@ -516,7 +518,7 @@ function png_image(
     lfcols = sizehint!([RGBA{Float32}[]], nr)
     lgcols = sizehint!([RGBA{Float32}[]], nr)
     r = 1
-    for (fchar, gchar, fcol, gcol) ∈ zip(fchars, gchars, fcolors, gcolors)
+    for (fchar, gchar, fcol, gcol) in zip(fchars, gchars, fcolors, gcolors)
         if fchar ≡ '\n'
             r += 1
             push!(lfchars, Char[])
@@ -572,7 +574,7 @@ function png_image(
         )
     end
 
-    img
+    return img
 end
 
 """
@@ -605,14 +607,14 @@ function savefig(p::Plot, filename::AbstractString; color::Bool = false, kw...)
         (img = png_image(p; kw...)) ≢ nothing && save_image(filename, img)
     else
         "extension \"$ext\" is unsupported: `savefig` only supports writing to `txt` or `png` files" |>
-        ArgumentError |>
-        throw
+            ArgumentError |>
+            throw
     end
-    nothing
+    return nothing
 end
 
 function Base.string(p::Plot; color = false)
     io = PipeBuffer()
     show(IOContext(io, :color => color), p)
-    read(io, String)
+    return read(io, String)
 end

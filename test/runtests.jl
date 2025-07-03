@@ -59,7 +59,7 @@ const PRE = is_prerelease("alpha") || is_prerelease("beta") || is_prerelease("rc
 "a plot must be square"
 macro check_padding(x)
     tmp = gensym()
-    quote
+    return quote
         $tmp = UnicodePlots.no_ansi_escape($x)
         if length.(split($tmp, '\n')) |> unique |> length == 1
             @test true
@@ -72,7 +72,7 @@ end
 
 macro show_col(p, kv...)
     tmp = gensym()
-    quote
+    return quote
         $tmp = @io2str $(:(show(IOContext(::IO, :color => true, $(kv...)), $p)))
         @check_padding $tmp
         $tmp
@@ -80,7 +80,7 @@ macro show_col(p, kv...)
 end
 macro show_nocol(p, kv...)
     tmp = gensym()
-    quote
+    return quote
         $tmp = @io2str $(:(show(IOContext(::IO, :color => false, $(kv...)), $p)))
         @check_padding $tmp
         $tmp
@@ -88,7 +88,7 @@ macro show_nocol(p, kv...)
 end
 macro print_col(p, kv...)
     tmp = gensym()
-    quote
+    return quote
         $tmp = @io2str $(:(print(IOContext(::IO, :color => true, $(kv...)), $p)))
         @check_padding $tmp
         $tmp
@@ -96,7 +96,7 @@ macro print_col(p, kv...)
 end
 macro print_nocol(p, kv...)
     tmp = gensym()
-    quote
+    return quote
         $tmp = @io2str $(:(print(IOContext(::IO, :color => false, $(kv...)), $p)))
         @check_padding $tmp
         $tmp
@@ -108,22 +108,24 @@ end
 const ID = typeof(identity)
 
 macro binf(ex)
-    :(@inferred(Plot{BrailleCanvas{ID,ID}}, $ex)) |> esc
+    return :(@inferred(Plot{BrailleCanvas{ID, ID}}, $ex)) |> esc
 end
 
 macro hinf(ex)
-    :(@inferred(Plot{HeatmapCanvas{ID,ID}}, $ex)) |> esc
+    return :(@inferred(Plot{HeatmapCanvas{ID, ID}}, $ex)) |> esc
 end
 
 macro timeit_include(path::AbstractString)
-    :(@timeit TO $path @testset $path begin
-        include($path)
-    end) |> esc
+    return :(
+        @timeit TO $path @testset $path begin
+            include($path)
+        end
+    ) |> esc
 end
 
 macro no_allocs(ex)
     f = gensym()
-    quote
+    return quote
         @check_allocs $f() = $ex
         $f()
     end |> esc

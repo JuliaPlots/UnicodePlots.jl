@@ -3,7 +3,7 @@
 
 Structure to hold bar based graphics.
 """
-struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
+struct BarplotGraphics{R <: Number, F <: Function, XS <: Function} <: GraphicsArea
     bars::Vector{R}
     colors::Vector{ColorType}
     char_width::Int
@@ -16,16 +16,16 @@ struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
     xscale::XS
 
     function BarplotGraphics(
-        bars::AbstractVector{R},
-        char_width::Int;
-        symbols::Union{AbstractVector,Tuple} = KEYWORDS.symbols,
-        color::Union{UserColorType,AbstractVector} = :green,
-        maximum::Union{Number,Nothing} = nothing,
-        formatter::Function = default_formatter((;)),
-        visible::Bool = KEYWORDS.visible,
-        xscale = KEYWORDS.xscale,
-    ) where {R<:Number}
-        for s ∈ symbols
+            bars::AbstractVector{R},
+            char_width::Int;
+            symbols::Union{AbstractVector, Tuple} = KEYWORDS.symbols,
+            color::Union{UserColorType, AbstractVector} = :green,
+            maximum::Union{Number, Nothing} = nothing,
+            formatter::Function = default_formatter((;)),
+            visible::Bool = KEYWORDS.visible,
+            xscale = KEYWORDS.xscale,
+        ) where {R <: Number}
+        for s in symbols
             length(s) == 1 ||
                 throw(ArgumentError("symbol has to be a single character, got \"$s\""))
         end
@@ -36,7 +36,7 @@ struct BarplotGraphics{R<:Number,F<:Function,XS<:Function} <: GraphicsArea
         else
             fill(ansi_color(color), length(bars))
         end
-        new{R,typeof(formatter),typeof(xscale)}(
+        return new{R, typeof(formatter), typeof(xscale)}(
             bars,
             colors,
             char_width,
@@ -55,10 +55,10 @@ end
 @inline ncols(c::BarplotGraphics) = c.char_width
 
 function addrow!(
-    c::BarplotGraphics{R},
-    bars::AbstractVector{R},
-    color::Union{UserColorType,AbstractVector} = nothing,
-) where {R<:Number}
+        c::BarplotGraphics{R},
+        bars::AbstractVector{R},
+        color::Union{UserColorType, AbstractVector} = nothing,
+    ) where {R <: Number}
     append!(c.bars, bars)
     colors = if color isa AbstractVector
         ansi_color.(color)
@@ -66,24 +66,24 @@ function addrow!(
         fill(suitable_color(c, color), length(bars))
     end
     append!(c.colors, colors)
-    c
+    return c
 end
 
 function addrow!(
-    c::BarplotGraphics{R},
-    bar::Number,
-    color::UserColorType = nothing,
-) where {R<:Number}
+        c::BarplotGraphics{R},
+        bar::Number,
+        color::UserColorType = nothing,
+    ) where {R <: Number}
     push!(c.bars, R(bar))
     push!(c.colors, suitable_color(c, color))
-    c
+    return c
 end
 
 function preprocess!(::IO, c::BarplotGraphics)
     max_val, i = findmax(c.xscale.(c.bars))
     c.max_val[] = max(max_val, c.maximum)
     c.max_len[] = length(c.formatter(c.bars[i]))
-    c -> (c.max_val[] = -Inf; c.max_len[] = 0)
+    return c -> (c.max_val[] = -Inf; c.max_len[] = 0)
 end
 
 function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::Integer)
@@ -108,5 +108,5 @@ function print_row(io::IO, print_nocol, print_color, c::BarplotGraphics, row::In
     end
     pad_len = max(max_bar_width + 1 + c.max_len[] - bar_head - len, 0)
     print_nocol(io, ' '^round(Int, pad_len))
-    nothing
+    return nothing
 end

@@ -66,13 +66,13 @@ end
 @testset "azimuth / elevation" begin
     ellipsoid(θs = (-π / 2):(π / 10):(π / 2), ϕs = (-π):(π / 10):π, a = 2, b = 0.5, c = 1) =
         (
-            [a * cos(θ) .* cos(ϕ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
-            [b * cos(θ) .* sin(ϕ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
-            [c * sin(θ) for (ϕ, θ) ∈ Iterators.product(ϕs, θs)] |> vec,
-        )
+        [a * cos(θ) .* cos(ϕ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
+        [b * cos(θ) .* sin(ϕ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
+        [c * sin(θ) for (ϕ, θ) in Iterators.product(ϕs, θs)] |> vec,
+    )
 
     x, y, z = ellipsoid()
-    for (pl, azimuth, elevation) ∈ [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
+    for (pl, azimuth, elevation) in [("yz", 0, 0), ("xz", -90, 0), ("xy", -90, 90)]
         p = Plot(x, y, z; title = "plane=$pl", projection = :ortho, elevation, azimuth)
         scatterplot!(p, x, y, z)
 
@@ -81,7 +81,7 @@ end
 end
 
 @testset "cube" begin
-    for projection ∈ (:ortho, :orthographic, :persp, :perspective)
+    for projection in (:ortho, :orthographic, :persp, :perspective)
         ortho = projection ∈ (:ortho, :orthographic)
 
         T = MVP(
@@ -120,7 +120,7 @@ end
             title = "proj=$projection",
             axes3d = false,
         )
-        for (i, s) ∈ enumerate(cube)
+        for (i, s) in enumerate(cube)
             i == 1 && continue
             lineplot!(p, segment2xyz(s)...)
         end
@@ -130,7 +130,7 @@ end
 end
 
 @testset "zoom" begin
-    for zoom ∈ (0.5, 1, 2)
+    for zoom in (0.5, 1, 2)
         T = MVP([-1, 1], [-1, 1], [-1, 1]; zoom)
 
         tetrahedron = (
@@ -149,9 +149,9 @@ end
         )
 
         segments2xyz(segments) = (
-            [p[1] for s ∈ segments for p ∈ s],
-            [p[2] for s ∈ segments for p ∈ s],
-            [p[3] for s ∈ segments for p ∈ s],
+            [p[1] for s in segments for p in s],
+            [p[2] for s in segments for p in s],
+            [p[3] for s in segments for p in s],
         )
 
         p = lineplot(

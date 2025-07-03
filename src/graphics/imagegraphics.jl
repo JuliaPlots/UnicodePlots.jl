@@ -3,7 +3,7 @@
 
 Structure to hold an image.
 """
-struct ImageGraphics{C<:Colorant} <: GraphicsArea
+struct ImageGraphics{C <: Colorant} <: GraphicsArea
     img::Matrix{C}
     sixel::RefValue{Bool}
     visible::Bool
@@ -15,7 +15,7 @@ end
 
 function ImageGraphics(img::AbstractArray{<:Colorant})
     h = size(img, 1)
-    ImageGraphics(
+    return ImageGraphics(
         img,
         Ref(false),
         true,
@@ -63,7 +63,7 @@ function preprocess!(io::IO, c::ImageGraphics)
             append!(c.chars[row], chars)
             _fgcol = ansi_color(fgcol)
             _bgcol = ansi_color(bgcol)
-            for _ ∈ eachindex(chars)
+            for _ in eachindex(chars)
                 push!(c.fgcols[row], _fgcol)
                 push!(c.bgcols[row], _bgcol)
             end
@@ -72,7 +72,7 @@ function preprocess!(io::IO, c::ImageGraphics)
         imshow(ctx, c.img; callback)
         length(c.chars), length(c.chars |> first)
     end
-    postprocess
+    return postprocess
 end
 
 function print_row(io::IO, print_nocol, print_color, c::ImageGraphics, row::Integer)
@@ -83,12 +83,12 @@ function print_row(io::IO, print_nocol, print_color, c::ImageGraphics, row::Inte
         bgcols = c.bgcols[row]
         fgcols = c.fgcols[row]
         chars = c.chars[row]
-        for col ∈ 1:ncols(c)
+        for col in 1:ncols(c)
             # NOTE: the last row can be hidden (only the upper pixel colored)
             # see XTermColors.jl/src/ascii.jl - SmallBlocks encoder
             bgcol = (bgcol = bgcols[col]) == INVALID_COLOR ? missing : bgcol
             print_color(io, fgcols[col], chars[col]; bgcol)
         end
     end
-    nothing
+    return nothing
 end
