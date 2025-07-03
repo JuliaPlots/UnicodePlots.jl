@@ -1,4 +1,5 @@
-import Pkg; Pkg.precompile()
+import Pkg;
+Pkg.precompile()
 Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
 
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
