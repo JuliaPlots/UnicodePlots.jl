@@ -29,6 +29,8 @@
 
 Advanced [`Unicode`](https://en.wikipedia.org/wiki/Unicode) plotting library designed for use in `Julia`'s `REPL`.
 
+<img src="https://github.com/JuliaPlots/UnicodePlots.jl/raw/unicodeplots-docs/3.x/banner.jpg" width="900">
+
 ## Documentation
 The [`Documenter`](https://github.com/JuliaDocs/Documenter.jl) based documentation is available [HERE](https://juliaplots.org/UnicodePlots.jl/dev/).
 
