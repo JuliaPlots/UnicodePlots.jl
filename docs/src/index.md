@@ -29,7 +29,7 @@ plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example", name="my line",
                xlabel="x", ylabel="y", canvas=DotCanvas, border=:ascii)
 ```
 
-Some plot methods have a mutating variant that ends with an exclamation mark:
+Some plot methods have a mutating variant that ends with an exclamation mark ([bang convention](https://docs.julialang.org/en/v1/manual/style-guide/#bang-convention)):
 
 ```@example intro
 lineplot!(plt, [0, 4, 8], [10, 1, 10], color=:cyan, name="other line")
