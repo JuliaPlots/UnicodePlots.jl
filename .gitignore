@@ -6,6 +6,7 @@
 *.cov
 *.swp
 
+Manifest-v*.toml
 Manifest.toml
 
 docs-md/imgs/
