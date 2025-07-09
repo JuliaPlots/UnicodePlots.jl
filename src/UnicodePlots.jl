@@ -23,6 +23,7 @@ export Plot,
     BoxplotGraphics,
     GraphicsArea,
     BrailleCanvas,
+    OctantCanvas,
     DensityCanvas,
     HeatmapCanvas,
     BlockCanvas,
@@ -84,6 +85,7 @@ include("graphics/imagegraphics.jl")
 include("canvas.jl")
 include("canvas/lookupcanvas.jl")
 include("canvas/braillecanvas.jl")
+include("canvas/octantcanvas.jl")
 include("canvas/densitycanvas.jl")
 include("canvas/blockcanvas.jl")
 include("canvas/asciicanvas.jl")

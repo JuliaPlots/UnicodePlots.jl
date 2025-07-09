@@ -111,6 +111,10 @@ macro binf(ex)
     return :(@inferred(Plot{BrailleCanvas{ID, ID}}, $ex)) |> esc
 end
 
+macro oinf(ex)
+    return :(@inferred(Plot{OctantCanvas{ID, ID}}, $ex)) |> esc
+end
+
 macro hinf(ex)
     return :(@inferred(Plot{HeatmapCanvas{ID, ID}}, $ex)) |> esc
 end
