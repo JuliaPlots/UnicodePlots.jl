@@ -30,7 +30,6 @@ const OCTANT_SIGNS = [
 ]
 
 const N_OCTANT = grid_type(OctantCanvas)(256)
-const OCTANT_DECODE = Vector{Char}(undef, typemax(N_OCTANT))
 
 # The array is stored according to the octant bit pattern:
 #     0 1
