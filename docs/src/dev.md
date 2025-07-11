@@ -33,19 +33,22 @@ Plot(canvas)
 The following types of `Canvas` are implemented:
 
 - **BrailleCanvas**:
-  This type of canvas is probably the one with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
+  This type of canvas is probably one of the two with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [Braille](https://en.wikipedia.org/wiki/Braille) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations.
+
+- **OctantCanvas**:
+  This type of canvas is the other with the highest resolution for `Unicode` plotting. It essentially uses the Unicode characters of the [octant](https://unicode.org/charts/PDF/Unicode-16.0/U160-1CC00.pdf) symbols as pixels. This effectively turns every character into eight pixels that can individually be manipulated using binary operations. `Unicode` octants require support for Unicode 16 which was released in 2024. Some terminal emulators draw these characters directly, others use a font for rendering. If neither supports it then this canvas will not work. If `OctantCanvas` is working, then it should look similar to `BrailleCanvas`.
 
 - **BlockCanvas**:
-  This canvas is also `Unicode` based. It has half the resolution of the BrailleCanvas. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
+  This canvas is also `Unicode` based. It has half the resolution of the `BrailleCanvas` or `OctantCanvas`. In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them. This canvas effectively turns every character into four pixels that can individually be manipulated using binary operations.
 
 - **HeatmapCanvas**:
-  This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
+  This canvas is also `Unicode` based. It has half the resolution of the `BlockCanvas` or `OctantCanvas`. This canvas effectively turns every character into two color pixels, using the foreground and background terminal colors. As such, the number of rows of the canvas is half the number of `y` coordinates being displayed.
 
 - **AsciiCanvas** and **DotCanvas**:
   These two canvas utilizes only standard `ASCII` character for drawing. Naturally, it doesn't look quite as nice as the Unicode-based ones. However, in some situations it might yield better results. Printing plots to a file is one of those situations.
 
 - **DensityCanvas**:
-  Unlike the `BrailleCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of data-points.
+  Unlike the `BrailleCanvas` or `OctantCanvas`, the density canvas does not simply mark a "pixel" as set. Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character. Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of data-points.
 
 - **BarplotGraphics**:
   This graphics area is special in that it does not support any pixel manipulation. It is essentially the barplot without decorations but the numbers. It does only support one method `addrow!` which allows the user to add additional bars to the graphics object.

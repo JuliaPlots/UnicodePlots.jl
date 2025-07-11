@@ -22,7 +22,7 @@ lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example", name="my line", xlabel="
 
 There are other types of `Canvas` available (see section [Low-level Interface](https://github.com/JuliaPlots/UnicodePlots.jl#low-level-interface)).
 
-In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas` or `BlockCanvas` might lead to better results:
+In some situations, such as printing to a file, using `AsciiCanvas`, `DotCanvas`, `BlockCanvas` or `OctantCanvas` might lead to better results:
 
 ```@example intro
 plt = lineplot([-1, 2, 3, 7], [-1, 2, 9, 4], title="Example", name="my line",

@@ -14,7 +14,7 @@ end
 
 @testset "boundaries" begin
     # tests that the two points are drawn correctly on the canvas
-    for canvas in (BrailleCanvas, AsciiCanvas, DotCanvas)
+    for canvas in (BrailleCanvas, OctantCanvas, AsciiCanvas, DotCanvas)
         for width in (20:10:60), height in (10:5:30)
             p = scatterplot(1:2, reverse(1:2); height, width, canvas)
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
