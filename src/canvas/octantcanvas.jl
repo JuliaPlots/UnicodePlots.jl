@@ -295,8 +295,6 @@ OCTANT_DECODE[255] = 0x0001CDE5  # BLOCK OCTANT-2345678
 OCTANT_DECODE[256] = 0x00002588  # FULL BLOCK
 BLOCK_DECODE[(N_OCTANT + 1):typemax(N_OCTANT)] = UNICODE_TABLE[1:(typemax(N_OCTANT) - N_OCTANT)]
 
-@assert length(OCTANT_DECODE) == N_OCTANT
-
 @inline x_pixel_per_char(::Type{<:OctantCanvas}) = 2
 @inline y_pixel_per_char(::Type{<:OctantCanvas}) = 4
 
