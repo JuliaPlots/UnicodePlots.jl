@@ -10,6 +10,7 @@ end
 @testset "interface" begin
     for (T, xres, yres) in (
             (BrailleCanvas, 2, 4),
+            (OctantCanvas, 2, 4),
             (DensityCanvas, 1, 2),
             (BlockCanvas, 2, 2),
             (AsciiCanvas, 3, 3),
