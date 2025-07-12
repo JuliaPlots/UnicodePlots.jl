@@ -14,7 +14,7 @@ end
 
 @testset "boundaries" begin
     # tests that the two points are drawn correctly on the canvas
-    for canvas in (BrailleCanvas, OctantCanvas, AsciiCanvas, DotCanvas)
+    for canvas in (BrailleCanvas, OctantCanvas, DotCanvas, AsciiCanvas)
         for width in (20:10:60), height in (10:5:30)
             p = scatterplot(1:2, reverse(1:2); height, width, canvas)
             @test first(p.graphics.grid) != UnicodePlots.blank(p.graphics)
@@ -107,7 +107,7 @@ end
 
     n = collect(1:length(UnicodePlots.MARKERS))
     m = collect(keys(UnicodePlots.MARKERS))
-    for canvas in (BrailleCanvas, DotCanvas, AsciiCanvas)
+    for canvas in (BrailleCanvas, OctantCanvas, DotCanvas, AsciiCanvas)
         p = scatterplot(n, n, title = "Supported markers", marker = m)
         test_ref("scatterplot/markers_$(canvas).txt", @show_col(p))
     end
