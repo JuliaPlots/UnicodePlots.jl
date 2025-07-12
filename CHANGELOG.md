@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.8.1] - 2025-07-12
+### Added
+- Add `OctantCanvas`.
+
 ## [3.8] - 2025-06-18
 ### Changed
 - Rename  `compact` to `compact_labels`.
