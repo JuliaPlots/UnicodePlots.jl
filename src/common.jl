@@ -214,8 +214,7 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
-colormode() =
-if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
+colormode() = if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
     8
 elseif cm ≡ Crayons.COLORS_24BIT
     24
@@ -252,8 +251,7 @@ function init_8bit()
     return nothing
 end
 
-get_have_truecolor() =
-if isdefined(Base, :get_have_truecolor)
+get_have_truecolor() = if isdefined(Base, :get_have_truecolor)
     Base.get_have_truecolor()
 else
     # see gist.github.com/XVilka/8346728#checking-for-colorterm
@@ -289,13 +287,11 @@ function default_size!(;
     return DEFAULT_HEIGHT[], DEFAULT_WIDTH[]  # `displaysize` order convention
 end
 
-function char_marker(marker::MarkerType)::Char
-    return if marker isa Symbol
-        get(MARKERS, marker, MARKERS[:circle])
-    else
-        length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
-        first(marker)
-    end
+char_marker(marker::MarkerType)::Char = if marker isa Symbol
+    get(MARKERS, marker, MARKERS[:circle])
+else
+    length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
+    first(marker)
 end
 
 iterable(obj::AbstractVecOrMat) = obj
