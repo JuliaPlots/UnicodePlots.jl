@@ -287,13 +287,11 @@ function default_size!(;
     return DEFAULT_HEIGHT[], DEFAULT_WIDTH[]  # `displaysize` order convention
 end
 
-function char_marker(marker::MarkerType)::Char
-    return if marker isa Symbol
-        get(MARKERS, marker, MARKERS[:circle])
-    else
-        length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
-        first(marker)
-    end
+char_marker(marker::MarkerType)::Char = if marker isa Symbol
+    get(MARKERS, marker, MARKERS[:circle])
+else
+    length(marker) ≡ 1 || throw(ArgumentError("`marker` keyword has a non unit length"))
+    first(marker)
 end
 
 iterable(obj::AbstractVecOrMat) = obj

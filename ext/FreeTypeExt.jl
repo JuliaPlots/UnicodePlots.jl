@@ -191,8 +191,7 @@ rightinkbound(ext::FontExtent) = leftinkbound(ext) + inkwidth(ext)
 bottominkbound(ext::FontExtent) = hbearing_ori_to_top(ext) - inkheight(ext)
 topinkbound(ext::FontExtent) = hbearing_ori_to_top(ext)
 
-FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T <: AbstractFloat} =
-    FontExtent(
+FontExtent(fontmetric::FT_Glyph_Metrics, scale::T = 64.0) where {T <: AbstractFloat} = FontExtent(
     SVector{2, T}(fontmetric.vertBearingX, fontmetric.vertBearingY) ./ scale,
     SVector{2, T}(fontmetric.horiBearingX, fontmetric.horiBearingY) ./ scale,
     SVector{2, T}(fontmetric.horiAdvance, fontmetric.vertAdvance) ./ scale,
