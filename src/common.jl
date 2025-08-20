@@ -214,8 +214,7 @@ const ASPECT_RATIO = Ref(4 / 3)
 const DEFAULT_HEIGHT = Ref(15)
 const DEFAULT_WIDTH = Ref(round(Int, DEFAULT_HEIGHT[] * 2ASPECT_RATIO[]))
 
-colormode() =
-if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
+colormode() = if (cm = COLORMODE[]) ≡ Crayons.COLORS_256
     8
 elseif cm ≡ Crayons.COLORS_24BIT
     24
@@ -252,8 +251,7 @@ function init_8bit()
     return nothing
 end
 
-get_have_truecolor() =
-if isdefined(Base, :get_have_truecolor)
+get_have_truecolor() = if isdefined(Base, :get_have_truecolor)
     Base.get_have_truecolor()
 else
     # see gist.github.com/XVilka/8346728#checking-for-colorterm

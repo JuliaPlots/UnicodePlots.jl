@@ -76,9 +76,8 @@ end
 add_mono(fts...) = tuple(map(x -> x * "Mono", fts)..., fts...)
 
 # COV_EXCL_START
-fallback_fonts() =
-    # those fallback fonts are likely to fail braille characters
-    if Sys.islinux()
+# those fallback fonts are likely to fail braille characters
+fallback_fonts() = if Sys.islinux()
     add_mono("DejaVu Sans ", "Ubuntu ", "Noto ", "Free", "Liberation ")  # NOTE: trailing space intended
 elseif Sys.isbsd()
     ("Courier New", "Helvetica")
@@ -257,9 +256,9 @@ function glyph_bitmap(bitmap::FT_Bitmap)
     return bmp
 end
 
-render_face(face::FTFont, glyph, pixelsize::Integer; kw...) =
-let gl = load_glyph(face, glyph, pixelsize; kw...)
-    glyph_bitmap(gl.bitmap), FontExtent(gl.metrics)
+function render_face(face::FTFont, glyph, pixelsize::Integer; kw...)
+    gl = load_glyph(face, glyph, pixelsize; kw...)
+    return glyph_bitmap(gl.bitmap), FontExtent(gl.metrics)
 end
 
 extents(face::FTFont, glyph, pixelsize::Integer) =
@@ -444,8 +443,7 @@ function ft_done()
     end
 end
 
-add_recursive(result, path) =
-    for p in readdir(path)
+add_recursive(result, path) = for p in readdir(path)
     if (pabs = joinpath(path, p)) |> isdir
         push!(result, pabs)
         add_recursive(result, pabs)
