@@ -16,4 +16,4 @@ Pkg = "1"
 TestImages = "1"
 
 [sources]
-UnicodePlots = {path = ".."}
+UnicodePlots = {path = "../UnicodePlots"}

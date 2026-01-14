@@ -13,7 +13,7 @@ In that case, the keys will be used as the names and the values,
 which have to be numeric, will be used as the heights of the bars.
 
 # Usage
-    
+
     barplot(text, heights; $(keywords((border = :barplot, color = :green, maximum = nothing), remove = (:xlim, :ylim, :yscale, :height, :grid), add = (:symbols,))))
     barplot(dict; kw...)
 
@@ -42,12 +42,12 @@ $(
 julia> barplot(["Paris", "New York", "Madrid"],
                [2.244, 8.406, 3.165],
                xlabel = "population [in mil]")
-            ┌                                        ┐ 
-      Paris ┤■■■■■■■■■ 2.244                           
-   New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406   
-     Madrid ┤■■■■■■■■■■■■ 3.165                        
-            └                                        ┘ 
-                        population [in mil]            
+            ┌                                        ┐
+      Paris ┤■■■■■■■■■ 2.244
+   New York ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 8.406
+     Madrid ┤■■■■■■■■■■■■ 3.165
+            └                                        ┘
+                        population [in mil]
 ```
 
 # See also

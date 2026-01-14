@@ -42,16 +42,24 @@ jobs:
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@latest
+        with:
+          project: UnicodePlots
       - uses: julia-actions/julia-runtest@latest
+        with:
+          project: UnicodePlots
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          COLORTERM: 'truecolor' # 24bit
+          COLORTERM: 'truecolor'  # 24bit
       - uses: julia-actions/julia-runtest@latest
+        with:
+          project: UnicodePlots
         if: startsWith(matrix.os, 'ubuntu')
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
-          COLORTERM: 'invalid' # 8bit - 256 colors
+          COLORTERM: 'invalid'  # 8bit - 256 colors
       - uses: julia-actions/julia-processcoverage@latest
+        with:
+          directories: UnicodePlots/src,UnicodePlots/ext
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

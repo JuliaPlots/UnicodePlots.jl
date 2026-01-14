@@ -9,5 +9,7 @@ jobs:
     steps:
       - uses: JuliaRegistries/compathelper-action@v1
         with:
+          version: '3'
+          cmd: 'CompatHelper.main(subdirs=["UnicodePlots"])'
           token: ${{ secrets.GITHUB_TOKEN }}
           ssh: ${{ secrets.DOCUMENTER_KEY }}
