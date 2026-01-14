@@ -16,7 +16,7 @@ In that case, the values, which have to be numeric, will be used as the data ser
 and the keys, which have to be strings, will be used as the labels.
 
 # Usage
-    
+
     boxplot([text], data; $(keywords((border = :corners, color = :green), remove = (:ylim, :height, :grid))))
     boxplot(dict; kw...)
 
@@ -41,13 +41,13 @@ $(
 
 ```julia-repl
 julia> boxplot([1, 2, 3, 7]; title = "Test")
-                       Test                    
-    ┌                                        ┐ 
-     ╷   ┌────┬─────────┐                   ╷  
-     ├───┤    │         ├───────────────────┤  
-     ╵   └────┴─────────┘                   ╵  
-    └                                        ┘ 
-     1                  4                   7  
+                       Test
+    ┌                                        ┐
+     ╷   ┌────┬─────────┐                   ╷
+     ├───┤    │         ├───────────────────┤
+     ╵   └────┴─────────┘                   ╵
+    └                                        ┘
+     1                  4                   7
 ```
 
 # See also

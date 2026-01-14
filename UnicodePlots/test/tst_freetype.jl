@@ -3,7 +3,7 @@ const FTE = if isdefined(Base, :get_extension)
 else
     UnicodePlots.FreeTypeExt
 end
-const FT_DIR = joinpath(@__DIR__, "fonts")
+const FT_DIR = joinpath(@__DIR__, "..", "..", "assets", "fonts")
 push!(FTE.VALID_FONTPATHS, FT_DIR)
 
 @testset "init and done" begin

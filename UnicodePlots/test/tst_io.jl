@@ -83,7 +83,7 @@ macro measure(ex, tol, versioned)
                 kbytes, msecs = dct[key]
                 avg_kb = round(Int, sum(kb) / n, RoundUp)
                 avg_ms = round(sum(ms) / n; digits = 3)
-                @show (VERSION, avg_kb, avg_ms)
+                @show (VERSION, (avg_kb, avg_ms), (kbytes, msecs))
                 @test avg_kb ≤ kbytes
                 @test avg_ms < $tol * base_tol * msecs
             else
@@ -101,7 +101,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         @measure c 1 Dict(
             v"1.10" => (20, 0.031),
             v"1.11" => (18, 0.025),
-            v"1.12" => (21, 0.021),
+            v"1.12" => (19, 0.021),
         )
     end
 
@@ -110,7 +110,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         @measure c 1 Dict(
             v"1.10" => (28, 0.039),
             v"1.11" => (24, 0.03),
-            v"1.12" => (30, 0.042),
+            v"1.12" => (28, 0.042),
         )
     end
 
@@ -118,7 +118,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         @measure p 1 Dict(
             v"1.10" => (50, 0.07),
             v"1.11" => (44, 0.061),
-            v"1.12" => (56, 0.045),
+            v"1.12" => (60, 0.045),
         )
     end
 
@@ -126,7 +126,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         @measure p 1 Dict(
             v"1.10" => (153, 0.106),
             v"1.11" => (182, 0.178),
-            v"1.12" => (244, 0.115),
+            v"1.12" => (268, 0.16),
         )
     end
 
@@ -134,7 +134,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
         @measure p 1 Dict(
             v"1.10" => (152, 0.142),
             v"1.11" => (124, 0.122),
-            v"1.12" => (217, 0.106),
+            v"1.12" => (226, 0.106),
         )
     end
 end

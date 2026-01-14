@@ -34,7 +34,7 @@ const T_SZ = (24, 80)  # default terminal size on unix
 
 # see JuliaTesting/ReferenceTests.jl/pull/91
 test_ref(reference, actual) = @test_reference(
-    joinpath("references_$(UnicodePlots.colormode())", reference),
+    joinpath(@__DIR__, "..", "..", "assets", "references_$(UnicodePlots.colormode())", reference),
     actual,
     render = ReferenceTests.BeforeAfterFull(),
     format = "TXT"

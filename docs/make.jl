@@ -5,6 +5,7 @@ end
 using Documenter, UnicodePlots
 
 format = Documenter.HTML(
+    inventory_version = pkgversion(UnicodePlots),
     prettyurls = Base.get_bool_env("CI", false),
     size_threshold = nothing,
     edit_link = "main",
