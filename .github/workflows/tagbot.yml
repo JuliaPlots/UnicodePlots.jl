@@ -2,8 +2,7 @@ name: tagbot
 
 on:
   issue_comment:
-    types:
-      - created
+    types: ['created']
   workflow_dispatch:
     inputs:
       lookback:
