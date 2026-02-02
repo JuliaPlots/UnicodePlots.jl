@@ -1,4 +1,2 @@
-name = "UnicodePlotsWS"
-
 [workspace]
 projects = ["UnicodePlots", "docs", "docs-md"]
