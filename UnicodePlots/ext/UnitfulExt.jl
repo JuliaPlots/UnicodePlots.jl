@@ -1,7 +1,14 @@
 module UnitfulExt
 
 import UnicodePlots: UnicodePlots, KEYWORDS, Plot, Canvas, unitless
-import Unitful: Quantity, RealOrRealQuantity, ustrip, unit
+import Unitful: Unitful, AbstractQuantity, ustrip, unit
+
+# compat for Unitful < 1.6
+const RealOrRealQuantity = if isdefined(Unitful, :RealOrRealQuantity)
+    Unitful.RealOrRealQuantity
+else
+    Union{Real, AbstractQuantity{<:Real}}
+end
 
 function unit_str(x, fancy)
     io = IOContext(PipeBuffer(), :fancy_exponent => fancy)
@@ -14,11 +21,11 @@ unit_label(label::AbstractString, unit::AbstractString) =
 unit_label(label::AbstractString, unit::Nothing) = rstrip(label)
 
 number_unit(x::Union{AbstractVector, Number}, args...) = x, nothing
-number_unit(x::AbstractVector{<:Quantity}, fancy = true) =
+number_unit(x::AbstractVector{<:AbstractQuantity}, fancy = true) =
     ustrip.(x), unit_str(first(x), fancy)
-number_unit(x::Quantity, fancy = true) = ustrip(x), unit_str(x, fancy)
+number_unit(x::AbstractQuantity, fancy = true) = ustrip(x), unit_str(x, fancy)
 
-unitless(x::Quantity) = ustrip(x)  # NOTE: keep in sync with src/common.jl
+unitless(x::AbstractQuantity) = ustrip(x)  # NOTE: keep in sync with src/common.jl
 
 # ---------------------------------------------------------------------------- #
 # lineplot
@@ -51,7 +58,7 @@ end
 UnicodePlots.lineplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
+    y::AbstractVector{<:AbstractQuantity};
     kw...,
 ) = UnicodePlots.lineplot!(plot, unitless.(x), unitless.(y); kw...)
 
@@ -86,7 +93,7 @@ end
 UnicodePlots.scatterplot!(
     plot::Plot{<:Canvas},
     x::AbstractVector{<:RealOrRealQuantity},
-    y::AbstractVector{<:Quantity};
+    y::AbstractVector{<:AbstractQuantity};
     kw...,
 ) = UnicodePlots.scatterplot!(plot, unitless.(x), unitless.(y); kw...)
 
