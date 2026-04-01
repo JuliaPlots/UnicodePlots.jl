@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@latest
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - run: julia --project=docs --color=yes -e 'using Pkg; Pkg.instantiate()'
       - run: julia --project=docs --color=yes docs/make.jl
         env:
