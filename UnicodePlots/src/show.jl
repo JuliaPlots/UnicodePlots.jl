@@ -145,6 +145,8 @@ end
 Base.show(io::IO, p::Plot) = _show(io, print, print_color, p)
 
 """
+    _show(::IO, print_nocol, print_color, p::Plot)
+
 Display a `Plot` object to a terminal emulator.
 """
 function _show(end_io::IO, print_nocol, print_color, p::Plot)

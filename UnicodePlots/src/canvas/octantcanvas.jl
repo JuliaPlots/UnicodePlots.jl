@@ -1,4 +1,6 @@
 """
+    OctantCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+
 The `OctantCanvas` is also Unicode-based.
 It has the same resolution as `BrailleCanvas`.
 In contrast to `BrailleCanvas`, the pixels don't have visible spacing between them.

@@ -315,14 +315,22 @@ elseif n ∈ (:persp, :perspective)
     false
 end::Bool
 
-"transform a matrix of points, with allocation"
+"""
+    (tr::MVP)(p::AbstractMatrix, n)
+
+Transform a matrix of points, with allocation
+"""
 function (tr::MVP{Val{true}, T})(p::AbstractMatrix, n::Symbol = :user) where {T}
     o = Array{T}(undef, 4, size(p, 2))
     tr(p, o, n)
     return @view(o[1, :]), @view(o[2, :])
 end
 
-"inplace transform"
+"""
+    (tr::MVP)(p, o, n)
+
+inplace transform
+"""
 function (tr::MVP{Val{true}, T})(
         p::AbstractMatrix,
         o::AbstractMatrix,
@@ -349,7 +357,11 @@ function (tr::MVP{Val{true}, T})(
     return nothing
 end
 
-"transform a vector"
+"""
+    (tr::MVP)(v::AbstractVector, n)
+
+Transform a vector
+"""
 function (tr::MVP{Val{true}, T})(v::SVector{4}, n::Symbol = :user) where {T}
     x, y, z, w = transform_matrix(tr, n) * v
     # homogeneous coordinates

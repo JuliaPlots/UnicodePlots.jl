@@ -1,6 +1,8 @@
 const DEN_SIGNS = Ref((' ', '░', '▒', '▓', '█'))
 
 """
+    DensityCanvas{YS <: Function, XS <: Function, DS <: Function} <: Canvas
+
 Unlike the `BrailleCanvas`, the density canvas does not simply mark a pixel as set.
 Instead it increments a counter per character that keeps track of the frequency of pixels drawn in that character.
 Together with a variable that keeps track of the maximum frequency, the canvas can thus draw the density of datapoints.
