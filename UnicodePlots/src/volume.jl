@@ -52,9 +52,9 @@ Computes the scene camera (see songho.ca/opengl/gl_camera.html).
 
 # Arguments
 
-    - `eye`: position of the camera in world space (e.g. [0, 0, 10]).
-    - `target`: target point to look at in world space (usually to origin = [0, 0, 0]).
-    - `up_vector`: up vector (usually +z = [0, 0, 1]).
+- `eye`: position of the camera in world space (e.g. [0, 0, 10]).
+- `target`: target point to look at in world space (usually to origin = [0, 0, 0]).
+- `up_vector`: up vector (usually +z = [0, 0, 1]).
 """
 function lookat(eye, target = [0, 0, 0], up_vector = [0, 0, 1])
     f = normalize(eye - target)  # forward vector
@@ -81,12 +81,12 @@ Computes the perspective projection matrix (see songho.ca/opengl/gl_projectionma
 
 # Arguments
 
-    - `l`: left coordinate of the vertical clipping plane.
-    - `r`: right coordinate of the vertical clipping plane.
-    - `b`: bottom coordinate of the horizontal clipping plane.
-    - `t`: top coordinate of the horizontal clipping plane.
-    - `n`: distance to the near depth clipping plane.
-    - `f`: distance to the far depth clipping plane.
+- `l`: left coordinate of the vertical clipping plane.
+- `r`: right coordinate of the vertical clipping plane.
+- `b`: bottom coordinate of the horizontal clipping plane.
+- `t`: top coordinate of the horizontal clipping plane.
+- `n`: distance to the near depth clipping plane.
+- `f`: distance to the far depth clipping plane.
 """
 function frustum(l, r, b, t, n, f)
     @assert n > 0 && f > 0
@@ -127,12 +127,12 @@ Computes the orthographic projection matrix (see songho.ca/opengl/gl_projectionm
 
 # Arguments
 
-    - `l`: left coordinate of the vertical clipping plane.
-    - `r`: right coordinate of the vertical clipping plane.
-    - `b`: bottom coordinate of the horizontal clipping plane.
-    - `t`: top coordinate of the horizontal clipping plane.
-    - `n`: distance to the near depth clipping plane.
-    - `f`: distance to the far depth clipping plane.
+- `l`: left coordinate of the vertical clipping plane.
+- `r`: right coordinate of the vertical clipping plane.
+- `b`: bottom coordinate of the horizontal clipping plane.
+- `t`: top coordinate of the horizontal clipping plane.
+- `n`: distance to the near depth clipping plane.
+- `f`: distance to the far depth clipping plane.
 """
 ortho(l, r, b, t, n, f) = *(
     @SMatrix(
