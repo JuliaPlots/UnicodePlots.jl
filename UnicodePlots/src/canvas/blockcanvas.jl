@@ -1,4 +1,6 @@
 """
+    BlockCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+
 The `BlockCanvas` is also Unicode-based.
 It has half the resolution of the `BrailleCanvas`.
 In contrast to BrailleCanvas, the pixels don't have visible spacing between them.

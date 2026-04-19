@@ -2,6 +2,8 @@ const HEATMAP_SIGNS = [0 1; 0 1]
 const HEATMAP_DECODE = [HALF_BLOCK; HALF_BLOCK]
 
 """
+    HeatmapCanvas{YS <: Function, XS <: Function} <: LookupCanvas
+
 The `HeatmapCanvas` is also Unicode-based.
 It has a half the resolution of the `BlockCanvas`.
 This canvas effectively turns every character into two pixels (top and bottom).
