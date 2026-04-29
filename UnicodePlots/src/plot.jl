@@ -263,8 +263,12 @@ function Plot(
         base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
         base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
 
+        # use original value labels for custom scaling functions
+        m_x, M_x = xscale isa Function ? extend_limits(x, xlim, :identity) : (mx, Mx)
+        m_y, M_y = yscale isa Function ? extend_limits(y, ylim, :identity) : (my, My)
+
         m_x, M_x, m_y, M_y =
-            nice_repr.((mx, Mx, my, My), Ref(unicode_exponent), Ref(thousands_separator))
+            nice_repr.((m_x, M_x, m_y, M_y), Ref(unicode_exponent), Ref(thousands_separator))
         if unicode_exponent
             m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
             m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
