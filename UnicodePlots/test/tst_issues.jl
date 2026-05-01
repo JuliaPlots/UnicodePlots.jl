@@ -58,7 +58,7 @@
     end
 
     @testset "invalid data (#297)" begin
-        @test_logs (:warn, "Invalid plotting range") lineplot(
+        @test_logs (:warn, "Invalid plotting range") match_mode=:any lineplot(
             [
                 nextfloat(-Inf),
                 prevfloat(+Inf),

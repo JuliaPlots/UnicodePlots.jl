@@ -294,7 +294,7 @@ function Plot(
     (visible = width ≥ 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
-    (scaled_mx, scaled_Mx), (scaled_my, scaled_My) = if is_enabled(mvp)
+    (mx, Mx), (my, My) = if is_enabled(mvp)
         (scale_callback(xscale) ≢ identity || scale_callback(yscale) ≢ identity) &&
             throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
         grid = blend = false
@@ -310,10 +310,10 @@ function Plot(
     can = canvas(
         height,
         width;
-        origin_y = scaled_my,
-        origin_x = scaled_mx,
-        height = scaled_My - scaled_my,
-        width = scaled_Mx - scaled_mx,
+        origin_y = my,
+        origin_x = mx,
+        height = My - my,
+        width = Mx - mx,
         blend,
         visible,
         yscale,
@@ -352,11 +352,11 @@ function Plot(
         label!(plot, :l, 1, lab_y_lb; color = bc)
     end
     if grid && (scale_callback(xscale) ≡ identity && scale_callback(yscale) ≡ identity)
-        scaled_my < 0 < scaled_My && lines!(plot, scaled_mx, 0.0, scaled_Mx, 0.0)
-        scaled_mx < 0 < scaled_Mx && lines!(plot, 0.0, scaled_my, 0.0, scaled_My)
+        my < 0 < My && lines!(plot, mx, 0.0, Mx, 0.0)
+        mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
     end
 
-    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * scaled_mx, 0.8 * scaled_my, nothing)
+    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * mx, 0.8 * my, nothing)
 
     return plot
 end
