@@ -194,12 +194,14 @@ function plot_size(; max_width_ylims_labels = 0, kw...)
     )
 end
 
-Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
-
-function axis_label(dat, lim, scale, flip, unicode_exponent, thousands_separator)
+function axis_label(mvp, dat, lim, scale, flip, unicode_exponent, thousands_separator)
     base = scale isa Symbol ? get(BASES, scale, nothing) : nothing
 
-    min_val, max_val = extend_limits(dat, lim, base ≡ nothing ? :identity : scale)
+    min_val, max_val = if is_enabled(mvp)
+        autolims(lim)
+    else
+        extend_limits(dat, lim, base ≡ nothing ? identity : scale)
+    end
 
     min_lab = nice_repr(min_val, unicode_exponent, thousands_separator)
     max_lab = nice_repr(max_val, unicode_exponent, thousands_separator)
@@ -215,6 +217,8 @@ function axis_label(dat, lim, scale, flip, unicode_exponent, thousands_separator
 
     flip ? (max_lab, min_lab) : (min_lab, max_lab)
 end
+
+Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
 
 function Plot(
         x::AbstractVector,
@@ -261,16 +265,16 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
-    mvp = create_MVP(projection, x, y, z; kw...)
-
     xlim, ylim = unitless.(xlim), unitless.(ylim)
+
+    mvp = create_MVP(projection, x, y, z; kw...)
 
     max_width_ylims_labels = 0
     if xticks
-        lab_x_bl, lab_x_br = axis_label(x, xlim, xscale, xflip, unicode_exponent, thousands_separator)
+        lab_x_bl, lab_x_br = axis_label(mvp, x, xlim, xscale, xflip, unicode_exponent, thousands_separator)
     end
     if yticks
-        lab_y_lt, lab_y_lb = axis_label(y, ylim, yscale, yflip, unicode_exponent, thousands_separator)
+        lab_y_lt, lab_y_lb = axis_label(mvp, y, ylim, yscale, yflip, unicode_exponent, thousands_separator)
         max_width_ylims_labels = max(length(lab_y_lt), length(lab_y_lb))
     end
 

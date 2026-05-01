@@ -249,8 +249,8 @@ end
 
     # arbitrary scale functions
     for (xscale, yscale, name) ∈ (
-        (x -> x^3, nothing, "xscale_x^3"),
-        (nothing, y -> y^3, "yscale_x^3"),
+        (x -> x^3, identity, "xscale_x^3"),
+        (identity, y -> y^3, "yscale_x^3"),
         (log10, log10, "xyscale_log10"),
     )
         test_ref(
