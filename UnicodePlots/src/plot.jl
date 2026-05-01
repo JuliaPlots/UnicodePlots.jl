@@ -215,7 +215,7 @@ function axis_label(mvp, dat, lim, scale, flip, unicode_exponent, thousands_sepa
         min_lab, max_lab = base_str * min_lab, base_str * max_lab
     end
 
-    flip ? (max_lab, min_lab) : (min_lab, max_lab)
+    return flip ? (max_lab, min_lab) : (min_lab, max_lab)
 end
 
 Plot(; kw...) = Plot(Float64[], Float64[]; kw...)

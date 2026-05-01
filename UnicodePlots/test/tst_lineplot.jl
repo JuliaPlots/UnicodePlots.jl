@@ -248,11 +248,11 @@ end
     end
 
     # arbitrary scale functions
-    for (xscale, yscale, name) ∈ (
-        (x -> x^3, identity, "xscale_x^3"),
-        (identity, y -> y^3, "yscale_x^3"),
-        (log10, log10, "xyscale_log10"),
-    )
+    for (xscale, yscale, name) in (
+            (x -> x^3, identity, "xscale_x^3"),
+            (identity, y -> y^3, "yscale_x^3"),
+            (log10, log10, "xyscale_log10"),
+        )
         test_ref(
             "lineplot/custom_$(name).txt",
             @show_col(lineplot(1:10, 1:10; xscale, yscale))
