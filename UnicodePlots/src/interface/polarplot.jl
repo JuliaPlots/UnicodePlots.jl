@@ -113,7 +113,7 @@ end
     label!(plot, :r, row, degrees ? "0°" : "0"; color = grid_color)
     label!(plot, :t, degrees ? "90°" : "π / 2"; color = grid_color)
     label!(plot, :l, row, degrees ? "180°" : "π"; color = grid_color)
-    label!(plot, :b, degrees ? "270°" : "3π / 4"; color = grid_color)
+    label!(plot, :b, degrees ? "270°" : "3π / 2"; color = grid_color)
 
     for r in range(mr, Mr; length = num_rad_lab)
         annotate!(
