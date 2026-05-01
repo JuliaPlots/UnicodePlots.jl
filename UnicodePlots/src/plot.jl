@@ -196,6 +196,26 @@ end
 
 Plot(; kw...) = Plot(Float64[], Float64[]; kw...)
 
+function axis_label(dat, lim, scale, flip, unicode_exponent, thousands_separator)
+    base = scale isa Symbol ? get(BASES, scale, nothing) : nothing
+
+    min_val, max_val = extend_limits(dat, lim, base ≡ nothing ? :identity : scale)
+
+    min_lab = nice_repr(min_val, unicode_exponent, thousands_separator)
+    max_lab = nice_repr(max_val, unicode_exponent, thousands_separator)
+
+    if base ≢ nothing
+        if unicode_exponent
+            min_lab = superscript(min_lab)
+            max_lab = superscript(max_lab)
+        end
+        base_str = base * (unicode_exponent ? "" : "^")
+        min_lab, max_lab = base_str * min_lab, base_str * max_lab
+    end
+
+    flip ? (max_lab, min_lab) : (min_lab, max_lab)
+end
+
 function Plot(
         x::AbstractVector,
         y::AbstractVector,
@@ -245,45 +265,13 @@ function Plot(
 
     xlim, ylim = unitless.(xlim), unitless.(ylim)
 
-    (mx, Mx), (my, My) = if is_enabled(mvp)
-        (scale_callback(xscale) ≢ identity || scale_callback(yscale) ≢ identity) &&
-            throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
-        grid = blend = false
-
-        # normalized coordinates, but allow override (artifact for zooming):
-        # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
-        # should be close to using `zoom = 2`.
-        autolims(xlim), autolims(ylim)
-    else
-        extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
-    end
-
     max_width_ylims_labels = 0
-    if xticks || yticks
-        base_x = xscale isa Symbol ? get(BASES, xscale, nothing) : nothing
-        base_y = yscale isa Symbol ? get(BASES, yscale, nothing) : nothing
-
-        # use original value labels for custom scaling functions
-        m_x, M_x = xscale isa Function ? extend_limits(x, xlim, :identity) : (mx, Mx)
-        m_y, M_y = yscale isa Function ? extend_limits(y, ylim, :identity) : (my, My)
-
-        m_x, M_x, m_y, M_y =
-            nice_repr.((m_x, M_x, m_y, M_y), Ref(unicode_exponent), Ref(thousands_separator))
-        if unicode_exponent
-            m_x, M_x = map(v -> base_x ≡ nothing ? v : superscript(v), (m_x, M_x))
-            m_y, M_y = map(v -> base_y ≡ nothing ? v : superscript(v), (m_y, M_y))
-        end
-        if xticks
-            base_x_str = base_x ≡ nothing ? "" : base_x * (unicode_exponent ? "" : "^")
-            lab_x_bl = base_x_str * (xflip ? M_x : m_x)
-            lab_x_br = base_x_str * (xflip ? m_x : M_x)
-        end
-        if yticks
-            base_y_str = base_y ≡ nothing ? "" : base_y * (unicode_exponent ? "" : "^")
-            lab_y_lt = base_y_str * (yflip ? M_y : m_y)
-            lab_y_lb = base_y_str * (yflip ? m_y : M_y)
-            max_width_ylims_labels = max(length(lab_y_lt), length(lab_y_lb))
-        end
+    if xticks
+        lab_x_bl, lab_x_br = axis_label(x, xlim, xscale, xflip, unicode_exponent, thousands_separator)
+    end
+    if yticks
+        lab_y_lt, lab_y_lb = axis_label(y, ylim, yscale, yflip, unicode_exponent, thousands_separator)
+        max_width_ylims_labels = max(length(lab_y_lt), length(lab_y_lb))
     end
 
     if compact  # save space
@@ -306,13 +294,26 @@ function Plot(
     (visible = width ≥ 0) && (width = max(width, min_width))
     height = max(height, min_height)
 
+    (scaled_mx, scaled_Mx), (scaled_my, scaled_My) = if is_enabled(mvp)
+        (scale_callback(xscale) ≢ identity || scale_callback(yscale) ≢ identity) &&
+            throw(ArgumentError("`xscale` or `yscale` are unsupported in 3D"))
+        grid = blend = false
+
+        # normalized coordinates, but allow override (artifact for zooming):
+        # using `xlim = (-0.5, 0.5)` & `ylim = (-0.5, 0.5)`
+        # should be close to using `zoom = 2`.
+        autolims(xlim), autolims(ylim)
+    else
+        extend_limits(x, xlim, xscale), extend_limits(y, ylim, yscale)
+    end
+
     can = canvas(
         height,
         width;
-        origin_y = my,
-        origin_x = mx,
-        height = My - my,
-        width = Mx - mx,
+        origin_y = scaled_my,
+        origin_x = scaled_mx,
+        height = scaled_My - scaled_my,
+        width = scaled_Mx - scaled_mx,
         blend,
         visible,
         yscale,
@@ -351,11 +352,11 @@ function Plot(
         label!(plot, :l, 1, lab_y_lb; color = bc)
     end
     if grid && (scale_callback(xscale) ≡ identity && scale_callback(yscale) ≡ identity)
-        my < 0 < My && lines!(plot, mx, 0.0, Mx, 0.0)
-        mx < 0 < Mx && lines!(plot, 0.0, my, 0.0, My)
+        scaled_my < 0 < scaled_My && lines!(plot, scaled_mx, 0.0, scaled_Mx, 0.0)
+        scaled_mx < 0 < scaled_Mx && lines!(plot, 0.0, scaled_my, 0.0, scaled_My)
     end
 
-    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * mx, 0.8 * my, nothing)
+    (is_enabled(mvp) && axes3d) && draw_axes!(plot, 0.8 * scaled_mx, 0.8 * scaled_my, nothing)
 
     return plot
 end

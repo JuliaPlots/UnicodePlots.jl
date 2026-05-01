@@ -429,12 +429,13 @@ autolims(lims) = is_auto(lims) ? SVector(-1.0, 1.0) : SVector{2}(as_float(lims))
 autolims(lims, vec::AbstractVector) =
     is_auto(lims) && length(vec) > 0 ? SVector{2}(extrema(vec)) : SVector{2}(as_float(lims))
 
+scale_callback(scale::Nothing) = identity
 scale_callback(scale::Symbol) = FSCALES[scale]
 scale_callback(scale::Function) = scale
 
 extend_limits(vec, lims) = extend_limits(vec, lims, :identity)
 
-function extend_limits(vec::AbstractVector, lims, scale::Union{Symbol, Function})
+function extend_limits(vec::AbstractVector, lims, scale::Union{Nothing, Symbol, Function})
     scale = scale_callback(scale)
     mi, ma = as_float(extrema(lims))
     if iszero(mi) && iszero(ma)

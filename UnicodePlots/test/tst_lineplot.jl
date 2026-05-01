@@ -247,9 +247,17 @@ end
         )
     end
 
-    lineplot(1:10, 1:10, xscale = x -> log10(x))  # arbitrary scale function
-    scl(x) = log(x)
-    lineplot(1:10, 1:10, yscale = scl)
+    # arbitrary scale functions
+    for (xscale, yscale, name) ∈ (
+        (x -> x^3, nothing, "xscale_x^3"),
+        (nothing, y -> y^3, "yscale_x^3"),
+        (log10, log10, "xyscale_log10"),
+    )
+        test_ref(
+            "lineplot/custom_$(name).txt",
+            @show_col(lineplot(1:10, 1:10; xscale, yscale))
+        )
+    end
 end
 
 @testset "arrows" begin
