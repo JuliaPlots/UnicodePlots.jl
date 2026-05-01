@@ -265,9 +265,9 @@ function Plot(
 
     x, y, z = validate_input(x, y, z)
 
-    xlim, ylim = unitless.(xlim), unitless.(ylim)
-
     mvp = create_MVP(projection, x, y, z; kw...)
+
+    xlim, ylim = unitless.(xlim), unitless.(ylim)
 
     max_width_ylims_labels = 0
     if xticks
