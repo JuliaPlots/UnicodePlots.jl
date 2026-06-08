@@ -91,13 +91,16 @@ function vertical_histogram(
         symbols = ('▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'),
         info::AbstractString = "",
         color::UserColorType = :green,
+        canvas::Type{<:Canvas} = BlockCanvas,
         kw...,
     )
     edges, counts = first(hist.edges), hist.weights
     centers = (edges[begin:(end - 1)] + edges[(begin + 1):end]) / 2
     plot = Plot(
         float.(centers),
-        float.(counts);
+        float.(counts),
+        nothing,
+        canvas;
         grid = false,
         border = :corners,
         xlim = extrema(edges),
