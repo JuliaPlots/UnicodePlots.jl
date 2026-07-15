@@ -13,6 +13,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [compat]
 Documenter = "1"
 Pkg = "1"
+Term = "2.0.8"
 TestImages = "1"
 
 [sources]
