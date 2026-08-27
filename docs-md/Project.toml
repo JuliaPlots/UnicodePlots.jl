@@ -7,3 +7,7 @@ UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [sources]
 UnicodePlots = {path = "../UnicodePlots"}
+
+[compat]
+ImageInTerminal = "0.5.4"
+Term = "2"
