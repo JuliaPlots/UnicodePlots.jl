@@ -16,6 +16,7 @@ FreeType = "4"
 ImageInTerminal = "0.5"
 IntervalSets = "0.7"
 Pkg = "1"
+Term = "2"
 TestImages = "1"
 
 [sources]
