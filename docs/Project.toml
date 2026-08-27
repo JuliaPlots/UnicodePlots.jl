@@ -14,6 +14,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 Documenter = "1"
 FreeType = "4"
 ImageInTerminal = "0.5"
+IntervalSets = "0.7"
 Pkg = "1"
 TestImages = "1"
 
