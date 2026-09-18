@@ -69,7 +69,9 @@ export scatterplot!,
     boxplot!,
     boxplot,
     stairs!,
-    stairs
+    stairs,
+    geoplot!,
+    geoplot
 
 # methods without mutating variants
 export horizontal_histogram, vertical_histogram, histogram, heatmap, spy, imageplot
@@ -112,6 +114,7 @@ include("interface/spy.jl")
 include("interface/boxplot.jl")
 include("interface/polarplot.jl")
 include("interface/imageplot.jl")
+include("interface/geoplot.jl")
 
 function __init__()
     forced_24bit() && return init_24bit()
