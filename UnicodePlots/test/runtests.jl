@@ -3,6 +3,7 @@ Pkg.precompile()
 Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
 
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
+import GeoInterface as GI  # weak dep
 using UnicodePlots, Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
@@ -136,34 +137,37 @@ macro no_allocs(ex)
 end
 
 println("\n== start: testing with $(UnicodePlots.colormode())bit colormode ==\n")
-Crayons.force_color(true)  # withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
 
-@timeit_include "tst_freetype.jl"
-@timeit_include "tst_depwarn.jl"
-@timeit_include "tst_issues.jl"
-@timeit_include "tst_io.jl"
-@timeit_include "tst_common.jl"
-@timeit_include "tst_graphics.jl"
-@timeit_include "tst_canvas.jl"
-@timeit_include "tst_plot.jl"
-@timeit_include "tst_scatterplot.jl"
-@timeit_include "tst_lineplot.jl"
-@timeit_include "tst_densityplot.jl"
-@timeit_include "tst_histogram.jl"
-@timeit_include "tst_barplot.jl"
-@timeit_include "tst_spy.jl"
-@timeit_include "tst_boxplot.jl"
-@timeit_include "tst_contourplot.jl"
-@timeit_include "tst_polarplot.jl"
-@timeit_include "tst_heatmap.jl"
-@timeit_include "tst_volume.jl"
-@timeit_include "tst_surfaceplot.jl"
-@timeit_include "tst_isosurface.jl"
-@timeit_include "tst_imageplot.jl"
-@timeit_include "tst_quality.jl"
+#! format: off
+withenv("FORCE_COLOR" => "X") do  # JuliaPlots/UnicodePlots.jl/issues/134
+    @timeit_include "tst_freetype.jl"
+    @timeit_include "tst_depwarn.jl"
+    @timeit_include "tst_issues.jl"
+    @timeit_include "tst_io.jl"
+    @timeit_include "tst_common.jl"
+    @timeit_include "tst_graphics.jl"
+    @timeit_include "tst_canvas.jl"
+    @timeit_include "tst_plot.jl"
+    @timeit_include "tst_scatterplot.jl"
+    @timeit_include "tst_lineplot.jl"
+    @timeit_include "tst_densityplot.jl"
+    @timeit_include "tst_histogram.jl"
+    @timeit_include "tst_barplot.jl"
+    @timeit_include "tst_spy.jl"
+    @timeit_include "tst_boxplot.jl"
+    @timeit_include "tst_contourplot.jl"
+    @timeit_include "tst_polarplot.jl"
+    @timeit_include "tst_heatmap.jl"
+    @timeit_include "tst_volume.jl"
+    @timeit_include "tst_surfaceplot.jl"
+    @timeit_include "tst_isosurface.jl"
+    @timeit_include "tst_imageplot.jl"
+    @timeit_include "tst_geoplot.jl"
+    @timeit_include "tst_quality.jl"
+end
+#! format: on
 
-# ~ 94s  - 9.88GiB on 1.11
-# ~ 123s - 11.8GiB on 1.13
+# ~ 94s & 9.88GiB on 1.11
 print_timer(TO; compact = true, sortby = :firstexec)
 
 println("\n== end: testing with $(UnicodePlots.colormode())bit colormode ==")

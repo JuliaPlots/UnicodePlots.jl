@@ -60,9 +60,10 @@ function UnicodePlots.geoplot!(
             isempty(name) || label!(plot, :r, string(name), first(color))
             color
         else  # categorical values, one color and label per unique value
-            palette = Dict(c => next_color!(plot) for c in unique(color))
-            for (c, col) in palette
-                label!(plot, :r, string(c), col)
+            categories = unique(color)
+            palette = Dict(c => next_color!(plot) for c in categories)
+            for c in categories
+                label!(plot, :r, string(c), palette[c])
             end
             map(c -> palette[c], color)
         end
