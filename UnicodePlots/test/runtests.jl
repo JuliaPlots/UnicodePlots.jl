@@ -3,6 +3,7 @@ Pkg.precompile()
 Pkg.status(; outdated = true, mode = Pkg.PKGMODE_MANIFEST)
 
 using ImageInTerminal, FreeType, FileIO, IntervalSets, Unitful, Term  # weak deps, or @require
+import GeoInterface as GI  # weak dep
 using UnicodePlots, Test
 
 import UnicodePlots: lines!, points!, pixel!, nrows, ncols
