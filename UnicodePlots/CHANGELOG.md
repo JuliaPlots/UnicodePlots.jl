@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.0] - 2026-09-20
+### Changed
+- Require `Crayons ≥ 4.2`  (color encoding changed).
+
+### Added
+- Add `GeoInterface` extension.
+
 ## [3.8.1] - 2025-07-12
 ### Added
 - Add `OctantCanvas`.
