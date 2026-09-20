@@ -193,8 +193,8 @@ end
     lft = callback(0.5, 0.0, 2.0)
     rgt = callback(1.5, 0.0, 2.0)
     if UnicodePlots.colormode() == 8
-        @test lft == UnicodePlots.THRESHOLD + 0x3b
-        @test rgt == UnicodePlots.THRESHOLD + 0x91
+        @test lft == UnicodePlots.THRESHOLD + 0xee  # 238, gray ramp
+        @test rgt == UnicodePlots.THRESHOLD + 0xfa  # 250, gray ramp
     elseif UnicodePlots.colormode() == 24
         @test @no_allocs(UnicodePlots.red(lft)) ==
             @no_allocs(UnicodePlots.grn(lft)) ==

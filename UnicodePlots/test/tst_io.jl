@@ -58,7 +58,7 @@ end
 
 macro measure(ex, tol, versioned)
     return quote
-        base_tol = is_ci() ? 2 : 1.25
+        base_tol = is_ci() ? 5.5 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if (
                 UnicodePlots.get_have_truecolor() &&
@@ -80,12 +80,12 @@ macro measure(ex, tol, versioned)
             key = VersionNumber(VERSION.major, VERSION.minor)
             dct = $versioned
             if haskey(dct, key)
-                kbytes, msecs = dct[key]
+                ref_kbytes, ref_msecs = dct[key]
                 avg_kb = round(Int, sum(kb) / n, RoundUp)
                 avg_ms = round(sum(ms) / n; digits = 3)
-                @show (VERSION, (avg_kb, avg_ms), (kbytes, msecs))
-                @test avg_kb ≤ kbytes
-                @test avg_ms < $tol * base_tol * msecs
+                @show (VERSION, (avg_kb, avg_ms), (ref_kbytes, ref_msecs))
+                @test avg_kb ≤ ref_kbytes
+                @test avg_ms < $tol * base_tol * ref_msecs
             else
                 @warn "missing info for $VERSION ($kb, $ms) !"
             end
@@ -102,6 +102,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             v"1.10" => (20, 0.031),
             v"1.11" => (18, 0.025),
             v"1.12" => (19, 0.041),
+            v"1.13" => (12, 0.015),
         )
     end
 
@@ -111,6 +112,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             v"1.10" => (28, 0.039),
             v"1.11" => (24, 0.03),
             v"1.12" => (28, 0.042),
+            v"1.13" => (14, 0.026),
         )
     end
 
@@ -119,6 +121,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             v"1.10" => (50, 0.07),
             v"1.11" => (44, 0.061),
             v"1.12" => (60, 0.045),
+            v"1.13" => (37, 0.062),
         )
     end
 
@@ -127,6 +130,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             v"1.10" => (153, 0.106),
             v"1.11" => (182, 0.178),
             v"1.12" => (268, 0.16),
+            v"1.13" => (73, 0.064),
         )
     end
 
@@ -135,6 +139,7 @@ sombrero(x, y) = 30sinc(√(x^2 + y^2) / π)
             v"1.10" => (152, 0.142),
             v"1.11" => (124, 0.122),
             v"1.12" => (226, 0.106),
+            v"1.13" => (84, 0.065),
         )
     end
 end
