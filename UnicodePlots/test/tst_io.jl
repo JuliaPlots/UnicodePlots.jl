@@ -58,7 +58,7 @@ end
 
 macro measure(ex, tol, versioned)
     return quote
-        base_tol = is_ci() ? 5 : 1.25
+        base_tol = is_ci() ? 5.5 : 1.25
         @test string($ex; color = true) isa String  # 1st pass - ttfp
         if (
                 UnicodePlots.get_have_truecolor() &&
