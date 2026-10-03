@@ -44,28 +44,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: julia-actions/setup-julia@latest
+      - uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v3
-      - uses: julia-actions/julia-buildpkg@latest
+      - uses: julia-actions/julia-buildpkg@v1
         with:
           project: UnicodePlots
-      - uses: julia-actions/julia-runtest@latest
+      - uses: julia-actions/julia-runtest@v1
         with:
           project: UnicodePlots
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
           COLORTERM: 'truecolor'  # 24bit
-      - uses: julia-actions/julia-runtest@latest
+      - uses: julia-actions/julia-runtest@v1
         with:
           project: UnicodePlots
         if: startsWith(matrix.os, 'ubuntu')
         env:
           JULIA_DEBUG: 'Main,UnicodePlots'
           COLORTERM: 'invalid'  # 8bit - 256 colors
-      - uses: julia-actions/julia-processcoverage@latest
+      - uses: julia-actions/julia-processcoverage@v1
         with:
           directories: UnicodePlots/src,UnicodePlots/ext
       - uses: codecov/codecov-action@v7
