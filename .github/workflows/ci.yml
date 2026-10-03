@@ -22,13 +22,21 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - 'lts'  # oldest compatible version declared in Project.toml
+          - 'min-minor'  # oldest compatible version declared in Project.toml
           - '1'
         experimental:
           - false
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest]
         arch: [x64]
         include:
+          - os: macos-latest
+            experimental: false
+            arch: aarch64
+            version: 'min-minor'
+          - os: macos-latest
+            experimental: false
+            arch: aarch64
+            version: '1'
           - os: ubuntu-latest
             experimental: true
             version: 'pre'
